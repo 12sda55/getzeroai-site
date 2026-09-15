@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>附录 · 速查手册 | Spring AI 2.0 学习指南</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">AI</span>
+    <span>Spring AI 2.0 学习指南<small>企业级智能应用开发实践</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与环境准备</option>
+    <option value="ch01.html">01 · Spring AI 入门</option>
+    <option value="ch02.html">02 · 提示词与对话</option>
+    <option value="ch03.html">03 · 结构化输出与 Advisors</option>
+    <option value="ch04.html">04 · 嵌入模型与向量数据库</option>
+    <option value="ch05.html">05 · RAG</option>
+    <option value="ch06.html">06 · 记忆与多模型</option>
+    <option value="ch07.html">07 · 工具调用</option>
+    <option value="ch08.html">08 · MCP</option>
+    <option value="ch09.html">09 · 智能体</option>
+    <option value="ch10.html">10 · 可观测性与评估</option>
+    <option value="ch11.html">11 · 综合项目</option>
+    <option value="appendix.html">附录 · 速查手册</option>
+  </select>
+  <a class="tb-link" href="index.html#env">环境准备</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>Spring AI 入门</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>提示词与对话</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>结构化输出与 Advisors</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>嵌入模型与向量数据库</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>RAG</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>记忆与多模型</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>工具调用</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>MCP</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>智能体</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>可观测性与评估</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>综合项目</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>速查手册 / 排错表</span></a>
+    <div class="sb-sub">
+      <a href="#a1">A.1 命令速查</a>
+      <a href="#a2">A.2 配置模板全家桶</a>
+      <a href="#a3">A.3 异常排查对照表</a>
+      <a href="#a4">A.4 核心 API 速查</a>
+      <a href="#a5">A.5 提示词模板库</a>
+      <a href="#a6">A.6 术语表</a>
+      <a href="#a7">A.7 学习资源地图</a>
+      <a href="#a8">A.8 上线自检清单</a>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="index.html">总览</a> / 附录</div>
+  <h1><span class="ch-tag">APPENDIX</span>速查手册与排错表</h1>
+  <p class="lead">这一页是你学习过程中<strong>最常回来翻的</strong>。命令、配置模板、异常对照、术语解释，都集中在这里。
+  建议收藏这个页面的锚点。</p>
+</div>
+
+<h2 id="a1"><span class="h2-num">A.1</span>命令速查</h2>
+
+<h3>Docker / 基础设施</h3>
+
+<pre><code><span class="cm"># ---------- 启动与停止 ----------</span>
+cd D:/work/springai-lab
+docker compose up -d                      <span class="cm"># 后台启动全部服务</span>
+docker compose up -d mysql redis pgvector zipkin   <span class="cm"># 只启动核心四个</span>
+docker compose ps                          <span class="cm"># 查看状态（等 STATUS 变 healthy）</span>
+docker compose logs -f milvus              <span class="cm"># 跟踪某个服务日志</span>
+docker compose restart app                 <span class="cm"># 重启应用容器</span>
+docker compose down                        <span class="cm"># 停止并删除容器（保留数据卷）</span>
+docker compose down -v                     <span class="cm"># ★ 同时删除数据卷（数据全丢，慎用）</span>
+
+<span class="cm"># ---------- 连通性验证 ----------</span>
+docker exec -it sai-mysql mysql -uroot -proot123456 -e <span class="st">"SELECT VERSION();"</span>
+docker exec -it sai-redis redis-cli -a redis123456 ping              <span class="cm"># 期望 PONG</span>
+docker exec -it sai-pgvector psql -U ai -d vectordb -c <span class="st">"\dx"</span>        <span class="cm"># 看 vector 扩展</span>
+curl http://localhost:9411/health                                    <span class="cm"># Zipkin</span>
+curl http://localhost:9091/healthz                                   <span class="cm"># Milvus</span>
+
+<span class="cm"># ---------- 清理（磁盘不够时） ----------</span>
+docker system df                           <span class="cm"># 看磁盘占用</span>
+docker system prune -a                     <span class="cm"># 清理无用镜像与容器（不会删卷）</span>
+docker volume ls                           <span class="cm"># 列出数据卷</span></code></pre>
+
+<h3>Maven</h3>
+
+<pre><code>mvn -v                                              <span class="cm"># 版本 + JDK 版本</span>
+mvn clean compile                                   <span class="cm"># 编译</span>
+mvn clean package -DskipTests                       <span class="cm"># 打包（跳过测试，快）</span>
+mvn spring-boot:run                                 <span class="cm"># 直接运行</span>
+
+<span class="cm"># 看 Spring AI 依赖树（排查"依赖没进来"）</span>
+mvn -q dependency:tree -Dincludes=org.springframework.ai
+
+<span class="cm"># 强制更新依赖（镜像换了之后用）</span>
+mvn -U clean package -DskipTests
+
+<span class="cm"># 清本地仓库里某个包的缓存（解决"jar 损坏"）</span>
+rm -rf ~/.m2/repository/org/springframework/ai
+
+<span class="cm"># 只跑某个测试类 / 某个方法</span>
+mvn test -Dtest=RagEvaluationTest
+mvn test -Dtest=RagEvaluationTest#跑一遍RAG评测并输出报告</code></pre>
+
+<h3>接口验证（curl）</h3>
+
+<pre><code><span class="cm"># 普通 POST</span>
+curl -X POST http://localhost:8080/api/v1/chat/ask \
+  -H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"message":"退款要几天到账"}'</span>
+
+<span class="cm"># 流式（-N 关闭缓冲才能看到逐字效果）</span>
+curl -N -X POST http://localhost:8080/api/v1/chat/stream \
+  -H <span class="st">"Content-Type: application/json"</span> \
+  -d <span class="st">'{"message":"从1数到10"}'</span>
+
+<span class="cm"># GET 带参数</span>
+curl <span class="st">"http://localhost:8080/api/v1/vector/search?q=退款&topK=5&threshold=0.5"</span>
+
+<span class="cm"># 只看 HTTP 状态码</span>
+curl -s -o /dev/null -w <span class="st">"%{http_code}\n"</span> http://localhost:8080/actuator/health
+
+<span class="cm"># 格式化 JSON 输出（装了 jq 的话）</span>
+curl -s ... | jq .
+
+<span class="cm"># 直连模型厂商 API 验证密钥（排除代码因素）</span>
+curl https://api.deepseek.com/chat/completions \
+  -H <span class="st">"Content-Type: application/json"</span> \
+  -H <span class="st">"Authorization: Bearer $OPENAI_API_KEY"</span> \
+  -d <span class="st">'{"model":"deepseek-chat","messages":[{"role":"user","content":"你好"}]}'</span></code></pre>
+
+<h3>数据库</h3>
+
+<pre><code><span class="cm"># ---------- PostgreSQL / pgvector ----------</span>
+docker exec -it sai-pgvector psql -U ai -d vectordb
+
+<span class="cm">-- 看每个租户灌了多少块</span>
+SELECT metadata->>'tenantId' AS tenant, COUNT(*)
+FROM vector_store GROUP BY 1;
+
+<span class="cm">-- 看某个来源的块数与内容预览</span>
+SELECT id, LEFT(content, 60) FROM vector_store
+WHERE metadata->>'source' = <span class="st">'refund-policy.md'</span> LIMIT 5;
+
+<span class="cm">-- 清空某个租户的数据（重建索引前）</span>
+DELETE FROM vector_store WHERE metadata->>'tenantId' = <span class="st">'t1'</span>;
+
+<span class="cm">-- 看索引是否建上（HNSW）</span>
+SELECT indexname, indexdef FROM pg_indexes WHERE tablename = <span class="st">'vector_store'</span>;
+
+<span class="cm"># ---------- MySQL ----------</span>
+docker exec -it sai-mysql mysql -uroot -proot123456 springai_lab
+
+<span class="cm">-- 看会话记忆（排查"记忆串味"）</span>
+SELECT conversation_id, type, LEFT(content, 50) AS preview, timestamp
+FROM spring_ai_chat_memory
+WHERE conversation_id = <span class="st">'t1|u1001|s1'</span>
+ORDER BY timestamp DESC LIMIT 10;
+
+<span class="cm">-- 成本归因：按意图统计</span>
+SELECT intent, COUNT(*), ROUND(AVG(cost_yuan), 4) AS avg_cost
+FROM qa_audit GROUP BY intent ORDER BY avg_cost DESC;
+
+<span class="cm">-- 找出"检索没命中"的问题（知识盲区）</span>
+SELECT question, COUNT(*) FROM qa_audit
+WHERE citation_count = 0
+GROUP BY question ORDER BY COUNT(*) DESC LIMIT 20;</code></pre>
+
+<h2 id="a2"><span class="h2-num">A.2</span>配置模板全家桶</h2>
+
+<p>这是<strong>一份可以直接用的完整 application.yml</strong>，把课程里所有章节需要的配置都收进来了。
+用不到的段落注释掉即可。</p>
+
+<pre><code>spring:
+  application:
+    name: springai-lab
+  profiles:
+    active: dev              <span class="cm"># dev / local / prod</span>
+
+  <span class="cm"># ==================== 模型配置 ====================</span>
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.7
+          max-tokens: 2048
+        connect-timeout: 30s
+        read-timeout: 120s
+      embedding:
+        options:
+          model: text-embedding-3-small
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: qwen2.5:7b
+      embedding:
+        options:
+          model: nomic-embed-text
+      init:
+        pull-model-strategy: never
+
+    <span class="cm"># ==================== 重试（第 6 章） ====================</span>
+    retry:
+      max-attempts: 3
+      on-client-errors: false       <span class="cm"># ★ 4xx 不重试</span>
+      backoff:
+        initial-interval: 2s
+        multiplier: 2
+        max-interval: 10s
+
+    <span class="cm"># ==================== 会话记忆（第 6 章） ====================</span>
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always
+          <span class="cm"># redis:</span>
+          <span class="cm">#   time-to-live: 24h</span>
+
+    <span class="cm"># ==================== 向量库（第 4 章） ====================</span>
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        table-name: vector_store
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1536            <span class="cm"># ★ 必须等于模型输出维度</span>
+        max-document-batch-size: 10000
+      <span class="cm"># milvus:</span>
+      <span class="cm">#   client: { host: localhost, port: 19530 }</span>
+      <span class="cm">#   collection-name: vector_store</span>
+      <span class="cm">#   embedding-dimension: 1536</span>
+      <span class="cm">#   index-type: IVF_FLAT</span>
+      <span class="cm">#   metric-type: COSINE</span>
+      <span class="cm">#   initialize-schema: true</span>
+
+    <span class="cm"># ==================== MCP 客户端（第 8 章） ====================</span>
+    mcp:
+      client:
+        enabled: true
+        name: springai-lab
+        version: 1.0.0
+        initialized: true
+        toolcallback:
+          enabled: true             <span class="cm"># ★ 自动把 MCP 工具注册为 ToolCallback</span>
+        stdio:
+          servers-configuration: classpath:mcp-servers.json
+          request-timeout: 60s
+
+    <span class="cm"># ==================== 可观测性（第 10 章） ====================</span>
+    chat:
+      observations:
+        log-prompt: false           <span class="cm"># 生产必须 false！</span>
+        log-completion: false
+
+  <span class="cm"># ==================== 数据源 ====================</span>
+  datasource:
+    url: jdbc:mysql://localhost:3306/springai_lab?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+    username: root
+    password: root123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 5000
+      max-lifetime: 1200000
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: redis123456
+      timeout: 3s
+
+  <span class="cm"># ==================== 上传限制（知识库文档） ====================</span>
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+
+server:
+  port: 8080
+  shutdown: graceful             <span class="cm"># 优雅停机，避免正在处理的请求被中断</span>
+  tomcat:
+    threads:
+      max: 200
+    connection-timeout: 10s
+
+<span class="cm"># ==================== 管理端点 ====================</span>
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    sampling:
+      probability: 0.2           <span class="cm"># 生产 0.1~0.2；开发用 1.0</span>
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+<span class="cm"># ==================== Resilience4j（第 6 章） ====================</span>
+resilience4j:
+  retry:
+    instances:
+      aiChat:
+        max-attempts: 3
+        wait-duration: 1s
+        retry-exceptions:
+          - org.springframework.web.client.ResourceAccessException
+  circuitbreaker:
+    instances:
+      aiChat:
+        sliding-window-size: 20
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+
+<span class="cm"># ==================== 业务自定义配置 ====================</span>
+app:
+  ai:
+    enabled: true                <span class="cm"># ★ 应急开关：false 则 AI 功能整体关闭</span>
+  knowledge:
+    docs-path: classpath:docs/*.md
+    top-k: 5
+    similarity-threshold: 0.5
+    chunk-size: 600
+  agent:
+    max-steps: 8
+    max-tokens: 30000
+    max-millis: 120000
+    pending-action-expire-minutes: 15
+    high-risk-tools: submitRefund,createTicket,sendEmail,cancelOrder
+  pricing:
+    models:
+      deepseek-chat: { input: 1.0, output: 2.0 }
+      qwen-plus:     { input: 0.8, output: 2.0 }
+      ollama-local:  { input: 0.0, output: 0.0 }
+
+<span class="cm"># ==================== 日志 ====================</span>
+logging:
+  level:
+    root: info
+    com.example.springai: info
+    org.springframework.ai: warn        <span class="cm"># 生产用 warn，开发用 debug</span>
+  pattern:
+    console: <span class="st">"%d{HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-}] %logger{36} - %msg%n"</span>
+  file:
+    name: logs/springai-lab.log
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30
+      total-size-cap: 5GB</code></pre>
+
+<h2 id="a3"><span class="h2-num">A.3</span>异常排查对照表（按报错关键词找）</h2>
+
+<table>
+  <thead><tr><th style="width:300px">报错关键词</th><th style="width:120px">章节</th><th>原因与解决</th></tr></thead>
+  <tbody>
+    <tr><td><code>No qualifying bean of type 'ChatModel'</code></td><td>1</td><td>缺 starter 或 api-key 为空导致自动配置未生效</td></tr>
+    <tr><td><code>401 Unauthorized</code></td><td>1</td><td>密钥错/过期，或环境变量未被读取（IDEA 启动配置勾选 Include system env）</td></tr>
+    <tr><td><code>404 Not Found</code>（模型接口）</td><td>1</td><td>base-url 多写了 <code>/v1</code>，简化到纯域名</td></tr>
+    <tr><td><code>429 Too Many Requests</code></td><td>1/6</td><td>触发限流：加退避重试、降低并发、升级配额</td></tr>
+    <tr><td><code>SocketTimeoutException</code></td><td>1</td><td>读超时太短，设 <code>read-timeout: 120s</code></td></tr>
+    <tr><td><code>Not enough variable values available</code></td><td>2</td><td>模板占位符没传参数；或提示词里的 JSON 花括号需转义/换定界符</td></tr>
+    <tr><td><code>JsonParseException: Unexpected character</code></td><td>3</td><td>模型用 ```json 包裹了输出，或前面有解释文字。提示词明确「只输出 JSON」</td></tr>
+    <tr><td><code>Cannot deserialize value ... from String</code></td><td>3</td><td>模型带单位（"899元"）、日期格式不符。字段描述里写死格式</td></tr>
+    <tr><td>对象字段全是 null</td><td>3</td><td>JSON key 与 Java 字段名不一致，用 <code>@JsonProperty</code> 映射</td></tr>
+    <tr><td><code>expected 1536 dimensions, not 1024</code></td><td>4</td><td>建表维度与模型维度不一致，改 <code>dimensions</code> 或换模型（需重灌）</td></tr>
+    <tr><td><code>extension "vector" is not available</code></td><td>4</td><td>用了普通 postgres 镜像，必须用 <code>pgvector/pgvector:pg16</code></td></tr>
+    <tr><td><code>relation "vector_store" does not exist</code></td><td>4</td><td>设 <code>initialize-schema: true</code>，或手工执行 init SQL 后重启</td></tr>
+    <tr><td>检索结果永远为空</td><td>4/5</td><td>阈值太高 → 先设 0 看分数分布；或查询语言与语料语言不匹配</td></tr>
+    <tr><td>检索结果大量重复</td><td>4</td><td>重复灌库，灌前先 <code>delete(filter)</code> 做幂等</td></tr>
+    <tr><td>元数据过滤语法报错</td><td>4</td><td>字符串必须用单引号；元数据类型要统一</td></tr>
+    <tr><td><code>allowEmptyContext</code> 抛异常</td><td>5</td><td>默认 false，检索为空会抛异常。设 <code>true</code> 并在提示词里定义空上下文回答</td></tr>
+    <tr><td>回答里出现知识库没有的信息</td><td>5</td><td>提示词没禁止编造 / 阈值太低捞进无关片段 / temperature 太高</td></tr>
+    <tr><td>A 用户看到 B 用户的对话</td><td>2/6</td><td>conversationId 固定值或未传；统一走 <code>ConversationIds.of()</code></td></tr>
+    <tr><td>重启后记忆丢失</td><td>6</td><td>用了 InMemory 实现，换 JDBC/Redis</td></tr>
+    <tr><td>熔断一直不恢复</td><td>6</td><td>下游真故障，需人工介入检查密钥/配额/网络</td></tr>
+    <tr><td>降级方法未生效</td><td>6</td><td>降级方法必须 public，参数一致，末尾多一个 Throwable</td></tr>
+    <tr><td>模型不使用工具</td><td>7</td><td>描述太模糊 / 模型不支持 function calling / 工具太多（&gt;15）</td></tr>
+    <tr><td>模型用错工具</td><td>7</td><td>工具职责重叠，合并或在描述里写「不要用于……」</td></tr>
+    <tr><td>工具异常导致 500</td><td>7</td><td>配 <code>DefaultToolExecutionExceptionProcessor.alwaysThrow(false)</code></td></tr>
+    <tr><td>工具被重复执行</td><td>7/9</td><td>Agent 循环里没关 <code>internalToolExecutionEnabled</code>；或写操作未幂等</td></tr>
+    <tr><td>MCP 客户端「无法解析消息」</td><td>8</td><td>Server stdout 被日志污染：设 <code>web-application-type: none</code>，禁止 <code>System.out</code></td></tr>
+    <tr><td>MCP 工具列表为空</td><td>8</td><td>缺 <code>ToolCallbackProvider</code> bean，或 <code>toolcallback.enabled=false</code></td></tr>
+    <tr><td>Agent 只调一次工具就结束</td><td>9</td><td>没关自动工具执行；或提示词没说明可多步</td></tr>
+    <tr><td>Agent 死循环</td><td>9</td><td>没设最大步数；加重复调用检测</td></tr>
+    <tr><td>Agent 卡住不动</td><td>9</td><td>工具返回空或异常，模型无法判断下一步；返回要带明确状态</td></tr>
+    <tr><td>确认接口「编号不存在」</td><td>9</td><td>待确认操作存在内存里，重启丢了 → 持久化</td></tr>
+    <tr><td>Zipkin 看不到 trace</td><td>10</td><td>采样率 0 / 端点地址错 / 缺依赖三者之一</td></tr>
+    <tr><td>Prometheus 内存暴涨</td><td>10</td><td>指标标签基数过高（放了 userId/query），删掉高基数标签</td></tr>
+    <tr><td>MDC 里 traceId 串了</td><td>10</td><td>finally 里没 <code>MDC.remove()</code></td></tr>
+    <tr><td>容器内连不上数据库</td><td>11</td><td>用了 <code>localhost</code>，必须用 compose 里的 service 名</td></tr>
+    <tr><td>应用启动时数据库连接失败</td><td>11</td><td>用 <code>depends_on: condition: service_healthy</code> 等依赖真正就绪</td></tr>
+    <tr><td>容器日志时间差 8 小时</td><td>11</td><td>容器默认 UTC，加 tzdata 并设置 Asia/Shanghai</td></tr>
+  </tbody>
+</table>
+
+<h2 id="a4"><span class="h2-num">A.4</span>核心 API 速查</h2>
+
+<table>
+  <thead><tr><th style="width:230px">接口 / 类</th><th>关键方法</th><th style="width:70px">章节</th></tr></thead>
+  <tbody>
+    <tr><td><code>ChatModel</code></td><td><code>call(Prompt)</code> / <code>call(String)</code> / <code>stream(Prompt)</code></td><td>1</td></tr>
+    <tr><td><code>ChatClient</code></td><td><code>prompt().user(...).call().content()</code> / <code>.stream()</code> / <code>.entity(Class)</code></td><td>1</td></tr>
+    <tr><td><code>ChatClient.Builder</code></td><td><code>defaultSystem</code> / <code>defaultAdvisors</code> / <code>defaultTools</code> / <code>defaultOptions</code></td><td>1</td></tr>
+    <tr><td><code>PromptTemplate</code></td><td><code>builder().template(...).build()</code> → <code>create(Map)</code></td><td>2</td></tr>
+    <tr><td><code>Message</code> 家族</td><td><code>SystemMessage</code> / <code>UserMessage</code> / <code>AssistantMessage</code> / <code>ToolResponseMessage</code></td><td>2</td></tr>
+    <tr><td><code>Media</code></td><td><code>new Media(MimeType, Resource/URI/byte[])</code></td><td>2</td></tr>
+    <tr><td><code>ChatMemory</code></td><td><code>add</code> / <code>get</code> / <code>clear</code>；<code>ChatMemory.CONVERSATION_ID</code></td><td>2/6</td></tr>
+    <tr><td><code>BeanOutputConverter&lt;T&gt;</code></td><td><code>getFormat()</code> / <code>convert(String)</code></td><td>3</td></tr>
+    <tr><td><code>CallAdvisor</code></td><td><code>adviseCall(request, chain)</code> / <code>getOrder()</code> / <code>getName()</code></td><td>3</td></tr>
+    <tr><td><code>EmbeddingModel</code></td><td><code>embed(String)</code> / <code>embedForResponse(List)</code></td><td>4</td></tr>
+    <tr><td><code>VectorStore</code></td><td><code>add</code> / <code>delete</code> / <code>similaritySearch(SearchRequest)</code></td><td>4</td></tr>
+    <tr><td><code>SearchRequest</code></td><td><code>builder().query().topK().similarityThreshold().filterExpression()</code></td><td>4</td></tr>
+    <tr><td><code>Document</code></td><td><code>new Document(text, metadata)</code>；<code>getText/getMetadata/getScore</code></td><td>4</td></tr>
+    <tr><td><code>TokenTextSplitter</code></td><td><code>builder().withChunkSize().withKeepSeparator()...build()</code>；<code>apply(docs)</code></td><td>5</td></tr>
+    <tr><td><code>QuestionAnswerAdvisor</code></td><td><code>builder(vectorStore).searchRequest().promptTemplate().build()</code></td><td>5</td></tr>
+    <tr><td><code>RetrievalAugmentationAdvisor</code></td><td><code>builder().documentRetriever().queryTransformers().queryAugmenter()</code></td><td>5</td></tr>
+    <tr><td><code>ModelRouter</code>（自定义）</td><td><code>route(TaskType)</code>；注入 <code>Map&lt;String, ChatClient&gt;</code></td><td>6</td></tr>
+    <tr><td><code>@Tool</code> / <code>@ToolParam</code></td><td>注解方法即可；<code>returnDirect</code> 支持结果直出</td><td>7</td></tr>
+    <tr><td><code>ToolCallbacks</code></td><td><code>ToolCallbacks.from(bean...)</code></td><td>7</td></tr>
+    <tr><td><code>ToolContext</code></td><td>方法参数注入；<code>getContext().get("userId")</code></td><td>7</td></tr>
+    <tr><td><code>ToolExecutionExceptionProcessor</code></td><td><code>DefaultToolExecutionExceptionProcessor.builder().alwaysThrow(false)</code></td><td>7</td></tr>
+    <tr><td><code>MethodToolCallbackProvider</code></td><td><code>builder().toolObjects(bean).build()</code></td><td>8</td></tr>
+    <tr><td><code>McpSyncClient</code></td><td><code>listTools()</code> / <code>callTool(CallToolRequest)</code> / <code>getServerInfo()</code></td><td>8</td></tr>
+    <tr><td><code>ToolCallingChatOptions</code></td><td><code>builder().toolCallbacks(...).internalToolExecutionEnabled(false)</code></td><td>9</td></tr>
+    <tr><td><code>ObservationRegistry</code></td><td><code>Observation.createNotStarted(name, registry).observe(...)</code></td><td>10</td></tr>
+    <tr><td><code>MeterRegistry</code></td><td><code>counter(...)</code> / <code>timer(...)</code> / <code>summary(...)</code></td><td>10</td></tr>
+    <tr><td><code>RelevancyEvaluator</code></td><td><code>builder().chatClientBuilder(...).build()</code>；<code>evaluate(request)</code></td><td>10</td></tr>
+    <tr><td><code>FactCheckingEvaluator</code></td><td>同上，用于查幻觉</td><td>10</td></tr>
+  </tbody>
+</table>
+
+<h2 id="a5"><span class="h2-num">A.5</span>提示词模板库（直接抄）</h2>
+
+<h3>① 通用系统提示骨架</h3>
+
+<pre><code>你是{公司}{角色}，服务于{服务对象}。
+
+## 你的职责
+{用 2~3 条列出能做的事}
+
+## 硬性规则
+1. {最重要的一条：什么绝对不能做}
+2. {信息不足时怎么办}
+3. {越界问题时怎么办}
+
+## 输出风格
+{长度限制、语气、格式要求}
+
+## 兜底
+如果{无法处理的情况}，请{具体动作}。</code></pre>
+
+<h3>② RAG 问答模板</h3>
+
+<pre><code>请严格依据下方【参考资料】回答用户问题。
+
+【参考资料】
+{question_answer_context}
+
+【回答要求】
+1. 只使用参考资料中的信息；资料不足时回答"根据现有资料无法确定"。
+2. 结论后用 [序号] 标注来源。
+3. 用自己的话组织，不要照抄原文。
+4. 回答不超过 300 字。
+
+【用户问题】
+{query}</code></pre>
+
+<h3>③ 信息抽取模板</h3>
+
+<pre><code>你是一名信息抽取助手。请从下面的文本中提取结构化信息。
+
+【抽取规则】
+1. 找不到的字段返回 null（列表返回 []），严禁编造或推测。
+2. {字段级特殊规则，如"金额只输出数字，不带单位"}。
+3. 只输出 JSON 对象本身，不要解释，不要代码块标记。
+
+【待抽取文本】
+{input}
+
+{format}</code></pre>
+
+<h3>④ 意图分类模板</h3>
+
+<pre><code>你是一个意图分类器。请判断用户问题属于哪一类。
+
+【分类规则】
+1. {类别 A 的特征} → CATEGORY_A
+2. {类别 B 的特征} → CATEGORY_B
+3. {类别 C 的特征} → CATEGORY_C
+
+【注意】
+- {歧义情况的判定规则，如"同时涉及 A 和 B 时归为 B"}。
+- 不要输出解释，只输出 JSON。
+
+【用户问题】
+{question}
+
+【最近对话】
+{recentHistory}</code></pre>
+
+<h3>⑤ Agent 任务规划模板</h3>
+
+<pre><code>你是任务规划专家。请把用户需求拆解成可执行的步骤。
+
+【可用工具】
+{toolList}
+
+【输出格式】
+严格输出 JSON 数组：step / action / args / desc / risk
+risk 取值 low（查询）medium（修改数据）high（删除·付款·发信）
+
+【规则】
+1. 步骤控制在 2~6 步，不要过度拆分。
+2. 只使用列出的工具，禁止编造。
+3. 不要输出 JSON 以外的内容。
+
+【用户需求】
+{requirement}</code></pre>
+
+<h3>⑥ 对话摘要模板</h3>
+
+<pre><code>请把下面的对话压缩成结构化摘要。
+
+摘要必须保留（如果存在）：
+- 用户身份关键信息
+- 涉及的所有编号、金额、日期
+- 用户核心诉求与已承诺方案
+- 尚未解决的问题
+
+摘要不超过 150 字，要点式，不要客套话。
+
+【已有摘要】
+{previousSummary}
+
+【新增对话】
+{historyText}</code></pre>
+
+<h2 id="a6"><span class="h2-num">A.6</span>术语表</h2>
+
+<table>
+  <thead><tr><th style="width:190px">术语</th><th>解释</th></tr></thead>
+  <tbody>
+    <tr><td><strong>LLM</strong></td><td>Large Language Model，大语言模型。本课程的「模型」默认指它</td></tr>
+    <tr><td><strong>Token</strong></td><td>模型的计费与长度单位。中文约 1 字 ≈ 0.7~1 token。输入输出都计费</td></tr>
+    <tr><td><strong>Prompt</strong></td><td>提示词。一次请求的完整输入，包含消息列表与参数</td></tr>
+    <tr><td><strong>System / User / Assistant Message</strong></td><td>消息的三种角色：规则设定 / 用户输入 / 模型输出</td></tr>
+    <tr><td><strong>Temperature</strong></td><td>采样温度 0~2。越低越确定（抽取、分类用 0），越高越发散（创作可 0.8+）</td></tr>
+    <tr><td><strong>Context Window</strong></td><td>上下文窗口。一次请求能容纳的最大 Token 数（含输入输出）</td></tr>
+    <tr><td><strong>Embedding</strong></td><td>嵌入。把文本转成高维向量的过程；语义相近的文本向量距离也近</td></tr>
+    <tr><td><strong>向量维度</strong></td><td>向量的长度（如 1536）。<strong>必须与模型一致</strong>，且换模型必须重灌</td></tr>
+    <tr><td><strong>余弦相似度</strong></td><td>只比较向量方向、忽略长度的相似度度量。文本检索的标准选择</td></tr>
+    <tr><td><strong>ANN / HNSW / IVF</strong></td><td>近似最近邻及其常用索引结构。用少量召回率损失换取数量级的速度提升</td></tr>
+    <tr><td><strong>Chunk</strong></td><td>文本切分后的片段。RAG 中向量化的基本单位</td></tr>
+    <tr><td><strong>RAG</strong></td><td>检索增强生成。先检索资料再让模型基于资料回答</td></tr>
+    <tr><td><strong>TopK</strong></td><td>检索返回的最相似结果条数</td></tr>
+    <tr><td><strong>Similarity Threshold</strong></td><td>相似度阈值。低于它的检索结果被丢弃，是防幻觉的关键参数</td></tr>
+    <tr><td><strong>Rerank</strong></td><td>重排。对初步召回的结果做二次精排，提升精度</td></tr>
+    <tr><td><strong>Hybrid Search</strong></td><td>混合检索。向量检索 + 关键词检索（BM25）合并结果</td></tr>
+    <tr><td><strong>Tool Calling</strong></td><td>工具调用。模型输出「调用意图」，由你的代码真正执行</td></tr>
+    <tr><td><strong>Function Calling</strong></td><td>工具调用的另一种叫法（模型侧的机制名）</td></tr>
+    <tr><td><strong>MCP</strong></td><td>Model Context Protocol。把工具标准化的协议，支持跨进程跨语言</td></tr>
+    <tr><td><strong>Agent</strong></td><td>智能体。能自主决定多步执行的程序（模型 + 工具 + 循环 + 刹车）</td></tr>
+    <tr><td><strong>ReAct</strong></td><td>Reason + Act。思考→行动→观察的循环范式</td></tr>
+    <tr><td><strong>Planner</strong></td><td>规划器。先出完整步骤清单再执行</td></tr>
+    <tr><td><strong>HITL</strong></td><td>Human-in-the-loop。人工确认环节，高风险操作必做</td></tr>
+    <tr><td><strong>Advisor</strong></td><td>Spring AI 的切面机制，用于日志、记忆、RAG、限流等横切逻辑</td></tr>
+    <tr><td><strong>Observation / Span / Trace</strong></td><td>可观测性概念：一次操作 / 链路中的一个环节 / 一条完整链路</td></tr>
+    <tr><td><strong>LLM-as-a-Judge</strong></td><td>用模型给模型输出打分，用于效果评估</td></tr>
+    <tr><td><strong>Faithfulness（忠实度）</strong></td><td>回答是否有资料支撑的度量，是查幻觉的核心指标</td></tr>
+    <tr><td><strong>幻觉 Hallucination</strong></td><td>模型编造看似合理但错误或不存在的信息</td></tr>
+    <tr><td><strong>提示词注入</strong></td><td>用户通过输入试图覆盖系统指令的攻击方式</td></tr>
+    <tr><td><strong>越权</strong></td><td>访问了当前身份无权访问的数据或功能</td></tr>
+    <tr><td><strong>幂等</strong></td><td>同一个请求执行多次与执行一次效果相同。写操作必须幂等</td></tr>
+    <tr><td><strong>降级 Degradation</strong></td><td>主能力不可用时，退回到一个仍可用的替代方案</td></tr>
+    <tr><td><strong>熔断 Circuit Breaker</strong></td><td>失败率过高时主动拒绝请求，给下游恢复时间</td></tr>
+    <tr><td><strong>脱敏</strong></td><td>日志/数据中隐藏敏感信息（手机号、身份证、密钥）</td></tr>
+  </tbody>
+</table>
+
+<h2 id="a7"><span class="h2-num">A.7</span>学习资源地图</h2>
+
+<table>
+  <thead><tr><th style="width:190px">资源</th><th style="width:290px">地址</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Spring AI 官方文档</strong></td><td><code>https://docs.spring.io/spring-ai/reference/</code></td><td>★ 遇到 API 变化第一时间查这里</td></tr>
+    <tr><td>Spring AI GitHub</td><td><code>https://github.com/spring-projects/spring-ai</code></td><td>源码与示例；<code>spring-ai-examples</code> 目录很值得读</td></tr>
+    <tr><td>Maven Central</td><td><code>https://central.sonatype.com</code></td><td>确认依赖坐标与最新版本号</td></tr>
+    <tr><td>Spring Initializr</td><td><code>https://start.spring.io</code></td><td>生成项目骨架</td></tr>
+    <tr><td>MCP 官方文档</td><td><code>https://modelcontextprotocol.io</code></td><td>协议规范与官方 Server 列表</td></tr>
+    <tr><td>MCP Inspector</td><td><code>@modelcontextprotocol/inspector</code></td><td>调试 MCP Server 的可视化工具</td></tr>
+    <tr><td>pgvector</td><td><code>https://github.com/pgvector/pgvector</code></td><td>索引类型与参数调优参考</td></tr>
+    <tr><td>Milvus 文档</td><td><code>https://milvus.io/docs</code></td><td>索引选型与性能调优</td></tr>
+    <tr><td>Ollama</td><td><code>https://ollama.com/library</code></td><td>本地可用的模型列表（含中文模型）</td></tr>
+    <tr><td>Prompt Engineering Guide</td><td><code>https://www.promptingguide.ai</code></td><td>提示词技巧系统梳理，有中文版</td></tr>
+    <tr><td>Micrometer Tracing</td><td><code>https://docs.micrometer.io/tracing/reference/</code></td><td>链路追踪配置参考</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>遇到 API 冲突时的排查顺序：</strong>
+  ① 查官方文档当前的 API 名称 → ② 在 IDEA 里 <kbd>Ctrl+Alt+B</kbd> 看接口实现 → ③ 去 GitHub 的
+  <code>spring-ai-examples</code> 找可运行示例 → ④ 最后才去搜索引擎。
+  <strong>前三步能解决 90% 的「找不到符号」问题，而且不会看到过时的博客内容。</strong>
+</div>
+
+<h2 id="a8"><span class="h2-num">A.8</span>上线自检清单（打印出来贴在工位）</h2>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h4>🔐 安全</h4>
+    <ul class="chk" style="font-size:13.5px;margin-bottom:0">
+      <li>密钥全部走环境变量，仓库里搜不到 <code>sk-</code></li>
+      <li>身份从登录态取，不接受前端传的 userId</li>
+      <li>多租户检索带 <code>tenantId</code> 过滤</li>
+      <li>高风险操作 100% 人工确认</li>
+      <li>确认接口校验归属与有效期</li>
+      <li>日志脱敏，Prompt 内容不明文记录</li>
+      <li>工具有超时、有返回条数限制</li>
+      <li>写操作幂等</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>🛡️ 稳定性</h4>
+    <ul class="chk" style="font-size:13.5px;margin-bottom:0">
+      <li>所有外部调用都有超时</li>
+      <li>只重试 5xx 与网络超时（4xx 不重试）</li>
+      <li>配了熔断与降级，且降级路径已实测</li>
+      <li>有应急开关能一键关闭 AI 功能</li>
+      <li>连接池上限合理，不超过数据库承载</li>
+      <li>容器化部署用 service 名而非 localhost</li>
+      <li><code>depends_on</code> 用 <code>service_healthy</code></li>
+      <li>优雅停机已开启</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>📊 可观测性</h4>
+    <ul class="chk" style="font-size:13.5px;margin-bottom:0">
+      <li>Trace 链路可在 Zipkin 查到</li>
+      <li>指标端点可访问，标签基数受控</li>
+      <li>每条请求落审计表（含 Token 与成本）</li>
+      <li>响应头带 traceId</li>
+      <li>日志 pattern 包含 <code>%X{traceId}</code></li>
+      <li>生产采样率降到 0.1~0.2</li>
+      <li>有成本看板与告警阈值</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>🎯 效果</h4>
+    <ul class="chk" style="font-size:13.5px;margin-bottom:0">
+      <li>评测集 ≥ 30 条，含知识库外问题</li>
+      <li>评测能一键跑，输出 Markdown 报告</li>
+      <li>指标达标（命中率 ≥ 80%、通过率 ≥ 75%）</li>
+      <li>质量门禁已接入 CI</li>
+      <li>Prompt 外置到文件并纳入版本管理</li>
+      <li>检索阈值经数据调优，不是拍脑袋</li>
+      <li>有真实反馈闭环（点赞/点踩）</li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+
+<div class="goal">
+  <strong>写在最后。</strong>
+  <p>这 11 章的内容，本质上是在回答一个问题：<strong>怎么把一个「能跑通」的 AI Demo，变成「敢上生产」的系统。</strong></p>
+  <p>答案不在某个高深的技术里，而在这些看起来很朴素的工程细节中：
+  身份要从服务端取、检索要有阈值、高风险操作要人工确认、每个 Agent 循环都要有刹车、
+  每次改动都要跑评测、每个功能都要能被观测。</p>
+  <p style="margin-bottom:0">把这份指南里的每一个「验收标准」都真正做到了，你就已经具备企业级 AI 应用开发的实战能力。
+  <strong>剩下的，交给时间和项目去打磨。</strong></p>
+</div>
+
+<div class="navfoot">
+  <a href="index.html"><div class="dir-label">← 返回</div><div class="dir-name">总览 · 学习路线</div></a>
+  <a class="next" href="ch11.html"><div class="dir-label">回到最后一章</div><div class="dir-name">第 11 章 · 综合项目</div></a>
+</div>
+
+<div class="footer">
+  Spring AI 2.0 学习指南 · 配套《Spring AI 框架与企业级智能应用开发实践 V2.0》<br>
+  代码基于 JDK 21 / Spring Boot 3.x / Spring AI 1.0+ 抽象编写，具体小版本 API 以官方文档为准。
+</div>
+
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

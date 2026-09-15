@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 6 章 · 记忆与多模型 | Spring AI 2.0 学习指南</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">AI</span>
+    <span>Spring AI 2.0 学习指南<small>企业级智能应用开发实践</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与环境准备</option>
+    <option value="ch01.html">01 · Spring AI 入门</option>
+    <option value="ch02.html">02 · 提示词与对话</option>
+    <option value="ch03.html">03 · 结构化输出与 Advisors</option>
+    <option value="ch04.html">04 · 嵌入模型与向量数据库</option>
+    <option value="ch05.html">05 · RAG</option>
+    <option value="ch06.html">06 · 记忆与多模型</option>
+    <option value="ch07.html">07 · 工具调用</option>
+    <option value="ch08.html">08 · MCP</option>
+    <option value="ch09.html">09 · 智能体</option>
+    <option value="ch10.html">10 · 可观测性与评估</option>
+    <option value="ch11.html">11 · 综合项目</option>
+    <option value="appendix.html">附录 · 速查手册</option>
+  </select>
+  <a class="tb-link" href="index.html#env">环境准备</a>
+  <a class="tb-link" href="appendix.html">速查</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>Spring AI 入门</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>提示词与对话</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>结构化输出与 Advisors</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>嵌入模型与向量数据库</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>RAG</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>记忆与多模型</span></a>
+    <div class="sb-sub">
+      <a href="#s1">6.1 会话隔离与 conversationId</a>
+      <a href="#s2">6.2 ChatMemory 三种实现</a>
+      <a href="#s3">6.3 上下文窗口与摘要压缩</a>
+      <a href="#s4">6.4 多模型共存与路由</a>
+      <a href="#s5">6.5 降级、重试与熔断</a>
+      <a href="#s6">6.6 完整示例：多轮工单咨询</a>
+      <a href="#s7">6.7 常见坑排错</a>
+      <a href="#s8">6.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>工具调用</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>MCP</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>智能体</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>可观测性与评估</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>综合项目</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>速查手册 / 排错表</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="index.html">总览</a> / 第 6 章</div>
+  <h1><span class="ch-tag">CH 06</span>记忆与多模型</h1>
+  <p class="lead">这一章解决两个「生产环境才会暴露」的问题：<strong>记忆</strong>（多轮对话怎么存、怎么隔离、怎么不爆炸）
+  和 <strong>多模型</strong>（不同任务用不同模型、贵模型挂了怎么办）。这两件事做不好，Demo 没问题，一上生产就出事。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">会话状态管理 + 模型弹性</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 2、5 章</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">多轮工单咨询（隔离 + 路由）</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–5 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">6.1</span>会话隔离：conversationId 的设计是重中之重</h2>
+
+<p>第 2 章我们提到过 conversationId，这一章把它讲透，因为这是<strong>最容易出数据事故</strong>的地方。</p>
+
+<h3>id 的三层含义</h3>
+
+<table>
+  <thead><tr><th style="width:150px">层级</th><th>示例</th><th>作用</th></tr></thead>
+  <tbody>
+    <tr><td><strong>用户</strong> userId</td><td><code>u1001</code></td><td>「这是谁的记忆」——决定数据归属，用于权限校验</td></tr>
+    <tr><td><strong>会话</strong> sessionId</td><td><code>web-20260915-a3f2</code></td><td>同一用户可能有多个并行会话（网页/小程序/客服工单），互不干扰</td></tr>
+    <tr><td><strong>租户</strong> tenantId</td><td><code>t-acme</code></td><td>B 端项目必需，用于物理隔离不同客户的数据</td></tr>
+  </tbody>
+</table>
+
+<pre><code><span class="kw">package</span> com.example.springai.common;
+
+<span class="cm">/**</span>
+<span class="cm"> * 会话 ID 的统一生成规则。</span>
+<span class="cm"> * 全项目必须只有这一个地方生成 conversationId，禁止各处自己拼字符串——</span>
+<span class="cm"> * 一旦规则不统一，就会出现"记忆串味"或"记忆丢失"两类诡异问题。</span>
+<span class="cm"> */</span>
+<span class="kw">public final class ConversationIds {
+
+    <span class="kw">private</span> ConversationIds() {}
+
+    <span class="cm">/**</span>
+<span class="cm">     * 生成会话 ID。用分隔符分隔各层级，便于排查日志时一眼看懂。</span>
+<span class="cm">     * 注意：分隔符不能出现在各段值里，所以对值做一次转义。</span>
+<span class="cm">     */</span>
+    <span class="kw">public static</span> String of(String tenantId, String userId, String sessionId) {
+        <span class="kw">return</span> sanitize(tenantId) + <span class="st">"|"</span> + sanitize(userId) + <span class="st">"|"</span> + sanitize(sessionId);
+    }
+
+    <span class="cm">/** 把可能存在的分隔符替换掉，防止越权访问别人的会话 */</span>
+    <span class="kw">private static</span> String sanitize(String s) {
+        <span class="kw">if</span> (s == <span class="kw">null</span> || s.isBlank()) {
+            <span class="kw">throw new</span> IllegalArgumentException(<span class="st">"会话标识不能为空"</span>);
+        }
+        <span class="kw">return</span> s.replace(<span class="st">"|"</span>, <span class="st">"_"</span>);
+    }
+}</code></pre>
+
+<div class="pit">
+  <strong>分隔符注入攻击（真实案例）：</strong>如果 <code>userId</code> 由前端传入且未校验，
+  攻击者传 <code>userId = "u1001|s1"</code>、<code>sessionId = "x"</code>，
+  拼出来的 id 恰好等于 <code>"...|u1001|s1|x"</code>？<strong>只要分隔符可被控制，就可能构造出别人的 conversationId，从而读到别人的对话历史。</strong>
+  两条防线：① 服务端对 userId 做黑白名单校验（必须是已知用户）；
+  ② 拼接时对分隔符转义（如上）。<strong>永远不要相信前端传来的 userId。</strong>
+</div>
+
+<div class="tip">
+  <strong>sessionId 应该由谁生成？</strong>由<strong>服务端</strong>生成并返回给前端，前端后续携带。
+  典型做法：用户点「新建对话」→ 后端生成 UUID 并写库（记录创建时间、所属用户）→ 返回 sessionId。
+  这样后端能校验「这个 sessionId 是否属于当前用户」，而不是盲信前端的值。
+</div>
+
+<h2 id="s2"><span class="h2-num">6.2</span>ChatMemory 的三种实现：从 Demo 到生产</h2>
+
+<h3>① 内存版（Demo / 单机）</h3>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.chat.memory.MessageWindowChatMemory;
+<span class="kw">import</span> org.springframework.ai.chat.memory.ChatMemory;
+<span class="kw">import</span> org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
+
+<span class="cm">// 最简：只限条数</span>
+ChatMemory memory = MessageWindowChatMemory.builder()
+        .maxMessages(20)
+        .build();
+
+<span class="cm">// 显式指定存储仓库（默认就是内存版）</span>
+ChatMemory memory2 = MessageWindowChatMemory.builder()
+        .chatMemoryRepository(<span class="kw">new</span> InMemoryChatMemoryRepository())
+        .maxMessages(20)
+        .build();</code></pre>
+
+<div class="warn">
+  <strong>内存版的三个致命限制：</strong>
+  ① 应用重启，所有对话历史丢失；
+  ② 多实例部署时，请求被负载均衡打到 B 实例，就读不到 A 实例存的记忆（用户会看到「你怎么又忘了」）；
+  ③ 内存持续增长，长期运行有 OOM 风险。
+  <strong>结论：只能在本地开发用。</strong>
+</div>
+
+<h3>② JDBC 版（生产推荐，最通用）</h3>
+
+<pre><code><span class="cm">&lt;!-- 依赖（pom 里已有） --&gt;</span>
+&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.ai&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-ai-starter-model-chat-memory-repository-jdbc&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+
+<pre><code><span class="cm"># application.yml</span>
+spring:
+  ai:
+    chat:
+      memory:
+        repository:
+          jdbc:
+            <span class="cm"># ★ 自动建表：always=启动时执行建表脚本（开发用）</span>
+            <span class="cm">#   never=不建（生产环境用手工 DDL 更可控）</span>
+            initialize-schema: always
+            <span class="cm"># 表名，默认 spring_ai_chat_memory</span>
+            <span class="cm"># table-name: spring_ai_chat_memory</span>
+            <span class="cm"># 平台，一般不用改</span>
+            <span class="cm"># platform: mysql</span></code></pre>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.chat.memory.JdbcChatMemoryRepository;
+<span class="kw">import</span> org.springframework.ai.chat.memory.MessageWindowChatMemory;
+<span class="kw">import</span> org.springframework.jdbc.core.JdbcTemplate;
+
+<span class="an">@Configuration</span>
+<span class="kw">public class</span> MemoryConfig {
+
+    <span class="cm">/**</span>
+<span class="cm">     * JDBC 版记忆：历史存 MySQL，重启不丢、多实例共享。</span>
+<span class="cm">     * 注意 maxMessages 依然要设——存 1000 条不代表每次都要发 1000 条给模型。</span>
+<span class="cm">     */</span>
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> ChatMemory jdbcChatMemory(JdbcTemplate jdbcTemplate) {
+        <span class="kw">return</span> MessageWindowChatMemory.builder()
+                .chatMemoryRepository(
+                        JdbcChatMemoryRepository.builder()
+                                .jdbcTemplate(jdbcTemplate)
+                                .build())
+                .maxMessages(20)          <span class="cm">// 只把最近 20 条放进 Prompt</span>
+                .build();
+    }
+}</code></pre>
+
+<p>自动建出来的表结构（了解即可，排查问题时会查这张表）：</p>
+
+<pre><code><span class="cm">-- MySQL 下大致长这样</span>
+CREATE TABLE spring_ai_chat_memory (
+    conversation_id VARCHAR(255) NOT NULL,   <span class="cm">-- 我们的 "租户|用户|会话"</span>
+    content         TEXT,                    <span class="cm">-- 消息内容（JSON 格式，含角色）</span>
+    type            VARCHAR(50),             <span class="cm">-- USER / ASSISTANT / SYSTEM</span>
+    timestamp       TIMESTAMP,
+    PRIMARY KEY (conversation_id, timestamp)
+);
+
+<span class="cm">-- 排查"记忆串味"时的常用查询</span>
+SELECT conversation_id, type, LEFT(content, 60) AS preview, timestamp
+FROM spring_ai_chat_memory
+WHERE conversation_id = 'default|u1001|s1'
+ORDER BY timestamp DESC LIMIT 10;</code></pre>
+
+<h3>③ Redis 版（高并发场景）</h3>
+
+<pre><code><span class="cm">&lt;!-- 依赖 --&gt;</span>
+&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.ai&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-ai-starter-model-chat-memory-repository-redis&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.chat.memory.RedisChatMemoryRepository;
+
+<span class="an">@Bean</span>
+<span class="kw">public</span> ChatMemory redisChatMemory(RedisChatMemoryRepository repository) {
+    <span class="cm">// RedisChatMemoryRepository 由 starter 自动装配（读取 spring.data.redis.* 配置）</span>
+    <span class="kw">return</span> MessageWindowChatMemory.builder()
+            .chatMemoryRepository(repository)
+            .maxMessages(20)
+            .build();
+}</code></pre>
+
+<h3>三种实现对比与选型</h3>
+
+<table>
+  <thead><tr><th style="width:130px">实现</th><th style="width:110px">持久化</th><th style="width:120px">多实例共享</th><th>适用场景</th></tr></thead>
+  <tbody>
+    <tr><td>InMemory</td><td>❌</td><td>❌</td><td>本地开发、单元测试</td></tr>
+    <tr><td><strong>JDBC</strong></td><td>✅</td><td>✅</td><td><strong>生产首选</strong>：需要审计、需要长期保存、已有 MySQL</td></tr>
+    <tr><td>Redis</td><td>✅（可配 RDB/AOF）</td><td>✅</td><td>高并发、会话短生命周期、允许偶发丢失</td></tr>
+    <tr><td>Cassandra / Neo4j</td><td>✅</td><td>✅</td><td>已有对应基础设施的团队</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>生产环境的一个常见组合：</strong>Redis 做<strong>热存储</strong>（最近几轮，读写快）+
+  MySQL 做<strong>冷存储</strong>（全量历史，用于审计和离线分析）。
+  Spring AI 只提供一个 ChatMemory 接口，所以你需要自己写一个「双写」的实现类，
+  或者干脆用 JDBC，靠数据库性能顶住——多数企业项目用 JDBC 就够了。
+</div>
+
+<h2 id="s3"><span class="h2-num">6.3</span>上下文窗口控制：别让记忆把成本和延迟拖垮</h2>
+
+<p><strong>核心认知：存下来的历史 ≠ 每次都要发送的历史。</strong>
+存 1000 条是为了审计和回溯，但每次调用只应该发最相关的少量内容。</p>
+
+<h3>策略一：滑动窗口（最简单）</h3>
+
+<pre><code><span class="cm">// maxMessages(20) 就是滑动窗口：永远只保留最近 20 条（约 10 轮对话）</span>
+MessageWindowChatMemory.builder().maxMessages(20).build()
+
+<span class="cm">// 注意：maxMessages 数的是"消息条数"，不是"token 数"。</span>
+<span class="cm">// 20 条短消息可能只有 500 token，20 条长消息可能 20000 token。</span>
+<span class="cm">// 所以更严谨的做法是再加一层 token 控制（见策略三）。</span></code></pre>
+
+<h3>策略二：历史摘要压缩（长对话必备）</h3>
+
+<p>滑动窗口的问题：用户在第 3 轮说的关键信息（比如订单号），到第 25 轮就被滑出去了，模型就"忘了"。
+解决办法是把被滑出去的历史先摘要成一段话，作为系统提示的一部分保留下来。</p>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> ConversationSummaryService {
+
+    <span class="kw">private final</span> ChatClient chatClient;
+
+    <span class="kw">public</span> ConversationSummaryService(ChatClient chatClient) {
+        <span class="kw">this</span>.chatClient = chatClient;
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 把一段对话历史压缩成 100 字以内的要点摘要。</span>
+<span class="cm">     * 触发时机：历史消息超过 N 条时（比如每 10 轮触发一次）。</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> String summarize(String previousSummary, List&lt;Message&gt; recentMessages) {
+
+        String historyText = recentMessages.stream()
+                .map(m -&gt; m.getMessageType() + <span class="st">": "</span> + m.getText())
+                .collect(Collectors.joining(<span class="st">"\n"</span>));
+
+        <span class="kw">return</span> chatClient.prompt()
+                .system(<span class="st">"""
+                        你是对话摘要助手。请把下面的客服对话压缩成结构化摘要。
+
+                        摘要必须保留（如果存在）：
+                        - 用户身份关键信息（姓名、会员等级）
+                        - 涉及的所有订单号、金额、日期
+                        - 用户的核心诉求与已承诺的解决方案
+                        - 尚未解决的问题
+
+                        摘要不超过 150 字，用要点式，不要客套话。
+                        """</span>)
+                .user(<span class="st">"""
+                        已有的历史摘要：
+                        %s
+
+                        需要追加压缩的新对话：
+                        %s
+                        """.formatted(previousSummary == <span class="kw">null</span> ? <span class="st">"（无）"</span> : previousSummary,
+                                      historyText))
+                <span class="cm">// 摘要用便宜的小模型即可，不必用最强模型</span>
+                .options(OpenAiChatOptions.builder().temperature(0.2).build())
+                .call()
+                .content();
+    }
+}</code></pre>
+
+<p>把摘要作为「长期记忆」注入到每次请求：</p>
+
+<pre><code><span class="kw">public</span> String chat(String conversationId, String userMessage) {
+    <span class="cm">// 1) 取出该会话的长期摘要（存 Redis 或数据库，key 用 conversationId）</span>
+    String summary = summaryStore.get(conversationId);
+
+    <span class="cm">// 2) 把摘要作为额外的系统提示拼进去</span>
+    String systemWithMemory = summary == <span class="kw">null</span>
+            ? baseSystemPrompt
+            : baseSystemPrompt + <span class="st">"\n\n【历史对话摘要】\n"</span> + summary;
+
+    <span class="cm">// 3) 正常调用（ChatMemory 提供近期原文，摘要提供远期记忆）</span>
+    <span class="kw">return</span> chatClient.prompt()
+            .system(systemWithMemory)
+            .user(userMessage)
+            .advisors(a -&gt; a.param(ChatMemory.CONVERSATION_ID, conversationId))
+            .call()
+            .content();
+}</code></pre>
+
+<h3>策略三：Token 预算控制（最严谨）</h3>
+
+<pre><code><span class="cm">/**</span>
+<span class="cm"> * 按 token 预算裁剪历史：从最新往前累加，超过预算就停止。</span>
+<span class="cm"> * 这是比 maxMessages 更精确的做法，适合上下文长度受限的模型。</span>
+<span class="cm"> */</span>
+<span class="kw">public</span> List&lt;Message&gt; trimByTokenBudget(List&lt;Message&gt; history, <span class="kw">int</span> budgetTokens) {
+    LinkedList&lt;Message&gt; kept = <span class="kw">new</span> LinkedList&lt;&gt;();
+    <span class="kw">int</span> used = 0;
+
+    <span class="cm">// 从最后一条（最新）往前遍历</span>
+    <span class="kw">for</span> (<span class="kw">int</span> i = history.size() - 1; i &gt;= 0; i--) {
+        Message m = history.get(i);
+        <span class="cm">// 粗略估算：中文 1 字 ≈ 1 token，英文 1 词 ≈ 1.3 token</span>
+        <span class="cm">// 生产环境建议用 jtokkit 做精确计算</span>
+        <span class="kw">int</span> approx = estimateTokens(m.getText());
+        <span class="kw">if</span> (used + approx &gt; budgetTokens) {
+            <span class="kw">break</span>;
+        }
+        kept.addFirst(m);
+        used += approx;
+    }
+    <span class="cm">// 注意：必须保证第一条是"用户消息"，否则某些模型会报错</span>
+    <span class="kw">while</span> (!kept.isEmpty() &amp;&amp; kept.getFirst().getMessageType() != MessageType.USER) {
+        kept.removeFirst();
+    }
+    <span class="kw">return</span> kept;
+}
+
+<span class="kw">private int</span> estimateTokens(String text) {
+    <span class="kw">if</span> (text == <span class="kw">null</span>) <span class="kw">return</span> 0;
+    <span class="kw">int</span> cjk = 0, other = 0;
+    <span class="kw">for</span> (<span class="kw">char</span> c : text.toCharArray()) {
+        <span class="kw">if</span> (c &gt;= 0x4E00 &amp;&amp; c &lt;= 0x9FFF) cjk++; <span class="kw">else</span> other++;
+    }
+    <span class="kw">return</span> cjk + (int) (other / 3.5);
+}</code></pre>
+
+<div class="goal">
+  <strong>三档记忆的完整设计（可以直接用在第 11 章）：</strong>
+  <ul style="margin-bottom:0">
+    <li><strong>短期记忆</strong>：ChatMemory 存最近 20 条原文（<code>MessageWindowChatMemory</code>）</li>
+    <li><strong>中期记忆</strong>：每积累 10 轮，把最早的历史压缩成摘要，覆盖式更新</li>
+    <li><strong>长期记忆</strong>：把「用户偏好、历史工单、已购商品」等结构化事实存数据库，按需检索（本质上就是 RAG）</li>
+  </ul>
+</div>
+
+<h2 id="s4"><span class="h2-num">6.4</span>多模型共存与路由：让合适的模型干合适的活</h2>
+
+<p>为什么需要多模型？三个非常现实的原因：</p>
+
+<ol>
+  <li><strong>成本</strong>：一次简单的意图分类用 GPT-4 级别的模型，等于用出租车送快递。同样 1 万次调用，成本可能差 20 倍。</li>
+  <li><strong>能力</strong>：复杂推理、长文规划必须用强模型；简单的摘要、抽取用小模型就够。</li>
+  <li><strong>可用性</strong>：主模型服务商挂了（每年总会遇到几次），业务不能停。</li>
+</ol>
+
+<h3>第一步：让多个 ChatModel 共存</h3>
+
+<p>两个 starter 同时在 pom 里，Spring Boot 会自动装配出 <code>OpenAiChatModel</code> 和 <code>OllamaChatModel</code>，
+它们都实现了 <code>ChatModel</code> 接口。</p>
+
+<pre><code><span class="an">@Configuration</span>
+<span class="kw">public class</span> MultiModelConfig {
+
+    <span class="cm">/**</span>
+<span class="cm">     * 经济型：本地 Ollama，0 API 成本，适合分类/抽取/摘要。</span>
+<span class="cm">     * 注意 bean 名会成为路由时的 key。</span>
+<span class="cm">     */</span>
+    <span class="an">@Bean</span>(<span class="st">"cheapClient"</span>)
+    <span class="kw">public</span> ChatClient cheapClient(OllamaChatModel ollamaModel) {
+        <span class="kw">return</span> ChatClient.builder(ollamaModel).build();
+    }
+
+    <span class="cm">/** 标准型：DeepSeek，性价比高，适合日常问答、RAG 生成 */</span>
+    <span class="an">@Bean</span>(<span class="st">"standardClient"</span>)
+    <span class="kw">public</span> ChatClient standardClient(OpenAiChatModel openAiModel) {
+        <span class="kw">return</span> ChatClient.builder(openAiModel).build();
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 强力型：另一个厂商的强模型（也可以用同一个 OpenAiChatModel + 不同 model 名）。</span>
+<span class="cm">     * 这里演示用同一个 model 类但覆盖默认 options。</span>
+<span class="cm">     */</span>
+    <span class="an">@Bean</span>(<span class="st">"strongClient"</span>)
+    <span class="kw">public</span> ChatClient strongClient(ChatModel chatModel) {
+        <span class="kw">return</span> ChatClient.builder(chatModel)
+                .defaultOptions(OpenAiChatOptions.builder()
+                        .model(<span class="st">"deepseek-reasoner"</span>)   <span class="cm">// 推理型模型</span>
+                        .temperature(0.3)
+                        .build())
+                .build();
+    }
+}</code></pre>
+
+<h3>第二步：写一个模型路由器</h3>
+
+<pre><code><span class="kw">package</span> com.example.springai.ch06;
+
+<span class="kw">import</span> lombok.extern.slf4j.Slf4j;
+<span class="kw">import</span> org.springframework.ai.chat.client.ChatClient;
+<span class="kw">import</span> org.springframework.stereotype.Component;
+<span class="kw">import</span> java.util.Map;
+
+<span class="cm">/**</span>
+<span class="cm"> * 模型路由器：按任务类型选择合适的 ChatClient。</span>
+<span class="cm"> * 好处：业务代码只依赖 TaskType 枚举，换模型策略只改这一个类。</span>
+<span class="cm"> */</span>
+<span class="an">@Slf4j</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> ModelRouter {
+
+    <span class="kw">public enum</span> TaskType {
+        <span class="cm">/** 意图分类、关键词提取、格式转换——简单、高频、可容忍略低质量 */</span>
+        CLASSIFY,
+        <span class="cm">/** 日常问答、RAG 生成、文本润色——主力场景 */</span>
+        GENERATE,
+        <span class="cm">/** 复杂推理、多步规划、代码生成——低频但要求高 */</span>
+        REASON
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * ★ 关键注入技巧：Map 的 key 是 bean 名，value 是 ChatClient。</span>
+<span class="cm">     * Spring 会把容器里所有 ChatClient 类型 bean 按名字装进这个 Map。</span>
+<span class="cm">     */</span>
+    <span class="kw">private final</span> Map&lt;String, ChatClient&gt; clients;
+
+    <span class="kw">public</span> ModelRouter(Map&lt;String, ChatClient&gt; clients) {
+        <span class="kw">this</span>.clients = clients;
+        log.info(<span class="st">"已加载模型客户端：{}"</span>, clients.keySet());
+    }
+
+    <span class="kw">public</span> ChatClient route(TaskType type) {
+        <span class="kw">return switch</span> (type) {
+            <span class="kw">case</span> CLASSIFY -&gt; getOrDefault(<span class="st">"cheapClient"</span>, <span class="st">"standardClient"</span>);
+            <span class="kw">case</span> GENERATE -&gt; getOrDefault(<span class="st">"standardClient"</span>, <span class="st">"strongClient"</span>);
+            <span class="kw">case</span> REASON   -&gt; getOrDefault(<span class="st">"strongClient"</span>, <span class="st">"standardClient"</span>);
+        };
+    }
+
+    <span class="cm">/** 按优先级找第一个存在的 bean，某个模型没配也不至于启动失败 */</span>
+    <span class="kw">private</span> ChatClient getOrDefault(String... candidates) {
+        <span class="kw">for</span> (String name : candidates) {
+            ChatClient c = clients.get(name);
+            <span class="kw">if</span> (c != <span class="kw">null</span>) <span class="kw">return</span> c;
+        }
+        <span class="cm">// 兜底：取任意一个</span>
+        <span class="kw">return</span> clients.values().iterator().next();
+    }
+}</code></pre>
+
+<h3>第三步：用起来</h3>
+
+<pre><code><span class="an">@Service</span>
+<span class="kw">public class</span> TicketService {
+
+    <span class="kw">private final</span> ModelRouter router;
+
+    <span class="kw">public</span> TicketService(ModelRouter router) {
+        <span class="kw">this</span>.router = router;
+    }
+
+    <span class="cm">/** 分类任务用便宜模型——单次成本可能只有强模型的 1/20 */</span>
+    <span class="kw">public</span> String classify(String userText) {
+        <span class="kw">return</span> router.route(ModelRouter.TaskType.CLASSIFY)
+                .prompt()
+                .system(<span class="st">"把用户描述归类到 [退款/物流/质量/其他]，只输出类别名。"</span>)
+                .user(userText)
+                .options(OpenAiChatOptions.builder().temperature(0.0).build())
+                .call()
+                .content()
+                .trim();
+    }
+
+    <span class="cm">/** 复杂方案生成用强模型 */</span>
+    <span class="kw">public</span> String plan(String userText) {
+        <span class="kw">return</span> router.route(ModelRouter.TaskType.REASON)
+                .prompt()
+                .system(<span class="st">"你是售后方案专家，请给出结构化的处理方案。"</span>)
+                .user(userText)
+                .call()
+                .content();
+    }
+}</code></pre>
+
+<div class="tip">
+  <strong>路由还可以做得更「智能」：</strong>用一个小模型先判断问题复杂度，再决定用哪个模型（叫「模型级联」）。
+  或者更简单的启发式规则：<strong>问题长度 &lt; 30 字 → 便宜模型；包含「为什么/分析/对比/规划」→ 强模型；
+  其余 → 标准模型</strong>。这套规则看起来很土，但在真实业务里能省下大量成本。</div>
+
+<h2 id="s5"><span class="h2-num">6.5</span>降级、重试与熔断：模型服务挂了业务不能挂</h2>
+
+<h3>第一层：Spring AI 内置重试</h3>
+
+<pre><code>spring:
+  ai:
+    retry:
+      <span class="cm"># 最大尝试次数（含首次），3 表示最多重试 2 次</span>
+      max-attempts: 3
+      backoff:
+        initial-interval: 2s       <span class="cm"># 首次等待</span>
+        multiplier: 2              <span class="cm"># 每次翻倍：2s → 4s → 8s</span>
+        max-interval: 10s
+      <span class="cm"># ★ 4xx（401 密钥错、400 参数错）不重试——重试多少次都还是错</span>
+      on-client-errors: false</code></pre>
+
+<div class="warn">
+  <strong><code>on-client-errors: false</code> 是必须的设置。</strong>默认情况下 Spring AI 可能会对 4xx 也重试，
+  结果是「密钥错误」被重试 3 次，白白浪费时间还刷了一堆错误日志。
+  正确做法：<strong>只重试 5xx 和网络超时</strong>，因为它们才是「可能下一次就好了」的临时故障。
+</div>
+
+<h3>第二层：Resilience4j 做熔断与降级</h3>
+
+<pre><code><span class="cm">&lt;!-- 依赖 --&gt;</span>
+&lt;dependency&gt;
+  &lt;groupId&gt;io.github.resilience4j&lt;/groupId&gt;
+  &lt;artifactId&gt;resilience4j-spring-boot3&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  <span class="cm">&lt;!-- 切面支持，Resilience4j 的注解依赖 AOP --&gt;</span>
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-aop&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+
+<pre><code><span class="cm"># yml 配置</span>
+resilience4j:
+  retry:
+    instances:
+      aiChat:
+        max-attempts: 3
+        wait-duration: 1s
+        <span class="cm"># 只对这些异常重试（网络超时 + Spring AI 的可重试异常）</span>
+        retry-exceptions:
+          - org.springframework.web.client.ResourceAccessException
+          - org.springframework.ai.retry.TransientAiException
+  circuitbreaker:
+    instances:
+      aiChat:
+        sliding-window-size: 20              <span class="cm"># 统计最近 20 次调用</span>
+        failure-rate-threshold: 50           <span class="cm"># 失败率超过 50% 就打开熔断</span>
+        wait-duration-in-open-state: 30s     <span class="cm"># 熔断 30 秒后进入半开状态试一次</span>
+        permitted-number-of-calls-in-half-open-state: 3
+  timelimiter:
+    instances:
+      aiChat:
+        timeout-duration: 60s                <span class="cm"># 硬超时，超了直接抛异常触发降级</span></code></pre>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> ResilientChatService {
+
+    <span class="kw">private final</span> ModelRouter router;
+
+    <span class="kw">public</span> ResilientChatService(ModelRouter router) {
+        <span class="kw">this</span>.router = router;
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 带重试 + 熔断 + 降级的问答。</span>
+<span class="cm">     *</span>
+<span class="cm">     * 执行顺序：TimeLimiter 包在最外 → CircuitBreaker → Retry → 真正的调用</span>
+<span class="cm">     */</span>
+    <span class="an">@CircuitBreaker</span>(name = <span class="st">"aiChat"</span>, fallbackMethod = <span class="st">"fallbackReply"</span>)
+    <span class="an">@Retry</span>(name = <span class="st">"aiChat"</span>)
+    <span class="an">@TimeLimiter</span>(name = <span class="st">"aiChat"</span>)
+    <span class="kw">public</span> String ask(String question) {
+        <span class="kw">return</span> router.route(ModelRouter.TaskType.GENERATE)
+                .prompt()
+                .user(question)
+                .call()
+                .content();
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 降级方法。签名必须与被保护方法一致，并多一个异常参数。</span>
+<span class="cm">     * 注意：降级不是"报错给用户"，而是"给用户一个可用的替代结果"。</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> String fallbackReply(String question, Throwable t) {
+        log.warn(<span class="st">"主模型不可用，走降级。原因：{}"</span>, t.toString());
+
+        <span class="cm">// 降级策略 A：改用备用模型（例如本地 Ollama）</span>
+        <span class="kw">try</span> {
+            <span class="kw">return</span> router.route(ModelRouter.TaskType.CLASSIFY)   <span class="cm">// 用便宜模型顶上</span>
+                    .prompt()
+                    .user(question)
+                    .call()
+                    .content();
+        } <span class="kw">catch</span> (Exception ignore) {
+            <span class="cm">// 降级策略 B：全部失败，返回兜底话术，绝不抛 500 给用户</span>
+            <span class="kw">return</span> <span class="st">"抱歉，智能助手暂时繁忙，请稍后重试或联系人工客服（分机 8001）。"</span>;
+        }
+    }
+}</code></pre>
+
+<div class="note">
+  <strong>降级的四种层次（按优先级选）：</strong>
+  ① <strong>换模型</strong>（最强的兜底，用户无感知）；
+  ② <strong>用缓存</strong>（这个问题之前答过，缓存里有直接返回）；
+  ③ <strong>用规则</strong>（FAQ 精确匹配，虽然不智能但至少能答）；
+  ④ <strong>友好话术 + 转人工</strong>（最后退路，坦诚比假装聪明好）。
+</div>
+
+<h2 id="s6"><span class="h2-num">6.6</span>完整示例：多轮工单咨询</h2>
+
+<p>把本章能力全部用上：会话隔离 + JDBC 持久化记忆 + 分类路由 + 降级。</p>
+
+<div class="filetree"><span class="dir">src/main/java/com/example/springai/ch06/</span>
+├── MemoryConfig.java                 <span class="desc"># JDBC ChatMemory 装配</span>
+├── ModelRouter.java                  <span class="desc"># 模型路由（6.4 节）</span>
+├── TicketConsultService.java         <span class="desc"># 核心业务：分类 → 路由 → 多轮回答</span>
+└── TicketConsultController.java      <span class="desc"># HTTP 接口</span></div>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> TicketConsultService {
+
+    <span class="kw">private final</span> ModelRouter router;
+    <span class="kw">private final</span> ConversationSummaryService summaryService;
+    <span class="kw">private final</span> SummaryStore summaryStore;   <span class="cm">// 存摘要，用 Redis 实现，代码略</span>
+
+    <span class="kw">private static final</span> String SYSTEM = <span class="st">"""
+            你是"智汇"公司的工单咨询助手。
+
+            处理流程：
+            1. 先判断用户问题属于 [退款/物流/质量/其他] 中的哪一类。
+            2. 针对该类问题给出明确的处理步骤与时效说明。
+            3. 需要订单号等信息但用户未提供时，主动追问。
+
+            规则：
+            - 不得承诺具体赔付金额，不得编造时效。
+            - 用户情绪激动时，先共情一句再给方案。
+            - 回答不超过 200 字。
+            """</span>;
+
+    <span class="kw">public</span> ConsultResult consult(String tenantId, String userId,
+                                    String sessionId, String message) {
+
+        <span class="cm">// ① 统一生成会话 ID（全项目唯一入口）</span>
+        String conversationId = ConversationIds.of(tenantId, userId, sessionId);
+
+        <span class="cm">// ② 用便宜模型做分类——这类任务不需要强模型</span>
+        String category = router.route(ModelRouter.TaskType.CLASSIFY)
+                .prompt()
+                .system(<span class="st">"把用户描述归类到 [退款/物流/质量/其他]，只输出类别名。"</span>)
+                .user(message)
+                .options(OpenAiChatOptions.builder().temperature(0.0).build())
+                .call()
+                .content().trim();
+        log.info(<span class="st">"会话 {} 分类结果：{}"</span>, conversationId, category);
+
+        <span class="cm">// ③ 取出长期摘要，拼进系统提示</span>
+        String summary = summaryStore.get(conversationId);
+        String system = (summary == <span class="kw">null</span> || summary.isBlank())
+                ? SYSTEM
+                : SYSTEM + <span class="st">"\n\n【历史对话摘要】\n"</span> + summary;
+
+        <span class="cm">// ④ 主模型生成回答，同时带上 ChatMemory（近期原文）</span>
+        String answer;
+        <span class="kw">try</span> {
+            answer = router.route(ModelRouter.TaskType.GENERATE)
+                    .prompt()
+                    .system(system)
+                    .user(message)
+                    .advisors(a -&gt; a.param(ChatMemory.CONVERSATION_ID, conversationId))
+                    .call()
+                    .content();
+        } <span class="kw">catch</span> (Exception e) {
+            log.error(<span class="st">"模型调用失败，走降级"</span>, e);
+            answer = <span class="st">"抱歉，我暂时无法处理，已为您转接人工客服，请稍候。"</span>;
+            category = <span class="st">"人工"</span>;
+        }
+
+        <span class="kw">return new</span> ConsultResult(sessionId, category, answer);
+    }
+
+    <span class="kw">public record</span> ConsultResult(String sessionId, String category, String answer) {}
+}</code></pre>
+
+<h3>验证（重点看第 2、3 条）</h3>
+
+<pre><code><span class="cm"># 第 1 轮：提供订单号</span>
+curl -X POST http://localhost:8080/api/v1/tickets/consult \
+  -H "Content-Type: application/json" \
+  -d '{"tenantId":"t1","userId":"u1001","sessionId":"s1","message":"订单 2024001 一直没发货，怎么回事"}'
+<span class="cm"># 期望：category=物流，回答里包含处理步骤</span>
+
+<span class="cm"># 第 2 轮：不带订单号，测试记忆</span>
+curl -X POST http://localhost:8080/api/v1/tickets/consult \
+  -H "Content-Type: application/json" \
+  -d '{"tenantId":"t1","userId":"u1001","sessionId":"s1","message":"那我这个单还能取消吗"}'
+<span class="cm"># 期望：模型知道"这个单"指 2024001  → 记忆生效</span>
+
+<span class="cm"># 第 3 轮：换个会话，测试隔离</span>
+curl -X POST http://localhost:8080/api/v1/tickets/consult \
+  -H "Content-Type: application/json" \
+  -d '{"tenantId":"t1","userId":"u1001","sessionId":"s2","message":"那我这个单还能取消吗"}'
+<span class="cm"># 期望：模型回答"请提供订单号"  → 隔离生效</span>
+
+<span class="cm"># 验证持久化：重启应用后重放第 2 轮，应该仍然记得</span>
+mvn spring-boot:run   <span class="cm"># Ctrl+C 停止后再启动</span>
+<span class="cm"># 再执行第 2 轮 → 仍然记得 → JDBC 持久化生效</span></code></pre>
+
+<div class="goal">
+  <strong>这三条命令是本章的核心验收动作。</strong>第 3 条如果模型答出了订单号，说明会话隔离失败，
+  立刻去查 <code>spring_ai_chat_memory</code> 表里 <code>conversation_id</code> 的取值——
+  这是最快的定位方法。
+</div>
+
+<h2 id="s7"><span class="h2-num">6.7</span>常见坑排错</h2>
+
+<table>
+  <thead><tr><th style="width:330px">现象</th><th style="width:230px">原因</th><th>解决</th></tr></thead>
+  <tbody>
+    <tr><td>重启后记忆全没了</td><td>用的 InMemory 实现</td><td>换成 JDBC / Redis 版</td></tr>
+    <tr><td>多实例部署时记忆时有时无</td><td>InMemory 不跨实例共享</td><td>换持久化实现；或做会话粘性（不推荐）</td></tr>
+    <tr><td>A 用户看到了 B 用户的对话</td><td>conversationId 用了固定值 / 未传 / 拼接规则不统一</td><td>统一走 <code>ConversationIds.of()</code>；查表核对 conversation_id</td></tr>
+    <tr><td>对话越聊越慢</td><td>maxMessages 太大，或没做摘要压缩</td><td>限条数 + token 预算裁剪 + 摘要压缩三步走</td></tr>
+    <tr><td>JDBC 版启动报「表不存在」</td><td><code>initialize-schema</code> 为 never 且未手工建表</td><td>开发环境设 <code>always</code>，生产环境手工执行 DDL</td></tr>
+    <tr><td>注入 <code>Map&lt;String, ChatClient&gt;</code> 时启动报错</td><td>容器里有多个 ChatClient bean，按类型注入产生歧义</td><td>用 Map 注入（本章做法）；或给每个 bean 明确名字并用 <code>@Qualifier</code></td></tr>
+    <tr><td>Ollama 模型路由不生效</td><td>bean 名与路由里的 key 不匹配</td><td>启动时打印 <code>clients.keySet()</code>（本章代码已打印），核对名字</td></tr>
+    <tr><td>熔断打开了但一直不恢复</td><td>半开状态试调用仍失败</td><td>说明下游真挂了，需要人工介入；检查密钥/配额/网络</td></tr>
+    <tr><td>降级方法没被调用</td><td>签名不匹配（参数或异常类型不对）</td><td>降级方法必须是 public，参数列表一致，最后多一个 Throwable</td></tr>
+    <tr><td>重试 4xx 浪费时间</td><td>没设 <code>on-client-errors: false</code></td><td>加上这个配置；密钥错误应该立即失败并告警</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s8"><span class="h2-num">6.8</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. conversationId 应该包含哪几层信息？为什么不能让前端直接传 userId？</p>
+    <div class="qa-a">
+      <p>通常包含 <strong>租户 | 用户 | 会话</strong> 三层。不能让前端传 userId，因为前端可被伪造——
+      攻击者改成别人的 userId 就能读到别人的对话历史（越权读取）。
+      正确做法是从登录态（JWT/Session）中取，并校验 sessionId 确实属于该用户。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q2. 记忆存 1000 条和每次发送 1000 条有什么区别？工程上怎么平衡？</p>
+    <div class="qa-a">
+      <p><strong>存储</strong>为了审计与回溯，全量保留没问题；<strong>发送</strong>要控制，
+      因为每多一条就多消耗 Token、多增加延迟，且信息过多会稀释模型的注意力。
+      平衡方案：存储全量 + 发送时用滑动窗口（最近 20 条）+ 摘要压缩（远期记忆）+ token 预算裁剪。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q3. 什么任务适合用便宜的小模型？为什么？</p>
+    <div class="qa-a">
+      <p>意图分类、情感判断、关键词提取、格式转换、简单摘要、翻译等<strong>任务边界清晰、输出简短、
+      对推理深度要求低</strong>的场景。这些任务小模型完全够用，而调用量往往占总量的 70% 以上——
+      把它们下放到小模型，是降低成本最有效的手段。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q4. 为什么 <code>on-client-errors</code> 应该设为 false？</p>
+    <div class="qa-a">
+      <p>4xx 是客户端错误（密钥无效、参数非法、模型名不存在），重试一定还是同样的结果，
+      只会浪费时间、消耗配额、污染日志。只有 5xx 和网络超时才是「临时性故障」，
+      才值得重试。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】设计一个「成本感知」的路由规则：统计当日累计 Token 消耗，超过预算后自动降级到便宜模型。请写出核心逻辑。</p>
+    <div class="qa-a">
+      <p>提示：用一个 <code>AtomicLong</code> 或 Redis 计数器记录当日 tokens（第 3 章的 TokenUsageAdvisor 已经在采集）；
+      在 <code>ModelRouter.route()</code> 里读取当前值，若超过阈值（如 500 万 token）则把 <code>GENERATE</code> 也路由到 cheapClient，
+      并打 WARN 日志；零点通过定时任务重置。生产环境还应在 80% 时告警。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能说出 conversationId 的三层结构与生成规则，并解释越权风险。</li>
+    <li>能独立把记忆从内存实现替换成 JDBC 实现，并验证重启不丢。</li>
+    <li>会话隔离验证通过（不同 sessionId 互不可见）。</li>
+    <li>能配置出「分类走小模型、生成走大模型」的路由，并从日志确认路由生效。</li>
+    <li>能解释重试、熔断、降级三者的区别与配合关系，并写出降级方法。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="ch05.html"><div class="dir-label">← 上一章</div><div class="dir-name">第 5 章 · RAG</div></a>
+  <a class="next" href="ch07.html"><div class="dir-label">下一章 →</div><div class="dir-name">第 7 章 · 工具调用</div></a>
+</div>
+
+<div class="footer">Spring AI 2.0 学习指南 · 第 6 章</div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>
+

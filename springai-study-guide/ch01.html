@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章 · Spring AI 入门 | Spring AI 2.0 学习指南</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">AI</span>
+    <span>Spring AI 2.0 学习指南<small>企业级智能应用开发实践</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与环境准备</option>
+    <option value="ch01.html">01 · Spring AI 入门</option>
+    <option value="ch02.html">02 · 提示词与对话</option>
+    <option value="ch03.html">03 · 结构化输出与 Advisors</option>
+    <option value="ch04.html">04 · 嵌入模型与向量数据库</option>
+    <option value="ch05.html">05 · RAG</option>
+    <option value="ch06.html">06 · 记忆与多模型</option>
+    <option value="ch07.html">07 · 工具调用</option>
+    <option value="ch08.html">08 · MCP</option>
+    <option value="ch09.html">09 · 智能体</option>
+    <option value="ch10.html">10 · 可观测性与评估</option>
+    <option value="ch11.html">11 · 综合项目</option>
+    <option value="appendix.html">附录 · 速查手册</option>
+  </select>
+  <a class="tb-link" href="index.html#env">环境准备</a>
+  <a class="tb-link" href="appendix.html">速查</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>Spring AI 入门</span></a>
+    <div class="sb-sub">
+      <a href="#s1">1.1 心智模型：三层抽象</a>
+      <a href="#s2">1.2 创建项目与依赖</a>
+      <a href="#s3">1.3 模型连接配置</a>
+      <a href="#s4">1.4 ChatModel 最底层调用</a>
+      <a href="#s5">1.5 ChatClient 推荐用法</a>
+      <a href="#s6">1.6 流式输出</a>
+      <a href="#s7">1.7 完整 Hello AI 服务</a>
+      <a href="#s8">1.8 运行与验证</a>
+      <a href="#s9">1.9 常见坑排错</a>
+      <a href="#s10">1.10 自测题</a>
+    </div>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>提示词与对话</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>结构化输出与 Advisors</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>嵌入模型与向量数据库</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>RAG</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>记忆与多模型</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>工具调用</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>MCP</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>智能体</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>可观测性与评估</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>综合项目</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>速查手册 / 排错表</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="index.html">总览</a> / 第 1 章</div>
+  <h1><span class="ch-tag">CH 01</span>Spring AI 入门</h1>
+  <p class="lead">这一章只有一个目标：<strong>建立正确的心智模型，并跑通第一个能用的 AI 接口。</strong>用一句话概括本章的核心结论——你以后写的 90% 的代码，都是在跟 <code>ChatClient</code> 打交道，而 <code>ChatModel</code> 才是真正连接大模型的那根线。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">看懂 Spring AI 的分层，跑通闭环</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">已完成 0.4 环境准备</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">Hello AI 服务（含流式）</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">3–4 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">1.1</span>先建立心智模型：Spring AI 的三层抽象</h2>
+
+<p>新手最容易犯的错，是把 Spring AI 当成「一个 HTTP 客户端」。它不是。它是一套<strong>把不同厂商大模型的能力抹平成统一接口</strong>的抽象层。理解下面这张分层图，你后面 10 章都不会迷路。</p>
+
+<table>
+  <thead><tr><th style="width:150px">层次</th><th style="width:230px">代表类型</th><th>它负责什么（一句话）</th><th style="width:110px">你要不要写</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>应用层</strong><br><span class="pill blue">你写的代码</span></td>
+      <td>Controller / Service / Agent / RAG 链路</td>
+      <td>业务逻辑：什么场景、什么提示词、什么工具、怎么组装结果</td>
+      <td>✅ 主要工作</td>
+    </tr>
+    <tr>
+      <td><strong>门面层</strong><br><span class="pill teal">ChatClient</span></td>
+      <td><code>ChatClient</code> / <code>Advisor</code></td>
+      <td>提供流式（fluent）API、默认系统提示、默认 Advisor 链，是官方推荐的入口</td>
+      <td>✅ 天天用</td>
+    </tr>
+    <tr>
+      <td><strong>模型抽象层</strong><br><span class="pill purple">Model</span></td>
+      <td><code>ChatModel</code> / <code>EmbeddingModel</code> / <code>ImageModel</code></td>
+      <td>定义「对话」「向量化」「生图」的能力契约，屏蔽厂商差异</td>
+      <td>🔸 需要精细控制时用</td>
+    </tr>
+    <tr>
+      <td><strong>厂商实现层</strong><br><span class="pill orange">Provider</span></td>
+      <td><code>OpenAiChatModel</code> / <code>OllamaChatModel</code> / <code>AnthropicChatModel</code></td>
+      <td>真正发 HTTP 请求、解析厂商特有协议、映射参数</td>
+      <td>❌ 不写，自动装配</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>四个必记的核心抽象</h3>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h4>① ChatModel —— 连接模型的插座</h4>
+    <p style="font-size:13.5px">接口只定义了「我能接收一个 Prompt，返回一个 ChatResponse」。换厂商时，这个接口名<strong>一个字都不用改</strong>，改的是 yml 配置和依赖坐标。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><span class="pill green">关键方法</span><code>call(Prompt)</code> / <code>stream(Prompt)</code></p>
+  </div>
+  <div class="card">
+    <h4>② ChatClient —— 对开发者友好的门面</h4>
+    <p style="font-size:13.5px">在 ChatModel 之上封装了流式 API、默认系统提示、默认 Advisor、结构化输出等便利能力。<strong>业务代码优先用它。</strong></p>
+    <p style="font-size:13.5px;margin-bottom:0"><span class="pill green">最小用法</span><code>chatClient.prompt().user("...").call().content()</code></p>
+  </div>
+  <div class="card">
+    <h4>③ Prompt —— 一次请求的完整输入</h4>
+    <p style="font-size:13.5px">它<strong>不是字符串</strong>，而是「消息列表 + 模型参数」的组合。第 2 章会讲透消息角色，第 3 章会加 <code>format</code> 占位符约束输出。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><span class="pill green">结构</span><code>Prompt(List&lt;Message&gt;, ChatOptions)</code></p>
+  </div>
+  <div class="card">
+    <h4>④ Advisor —— 横切关注点的插槽</h4>
+    <p style="font-size:13.5px">类似 Spring MVC 的 Interceptor / Servlet Filter。可以在请求前后插入逻辑：打日志、算 Token、加记忆、做 RAG 检索、做内容安全。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><span class="pill green">典型</span><code>MessageChatMemoryAdvisor</code>（第 6 章）、<code>QuestionAnswerAdvisor</code>（第 5 章）</p>
+  </div>
+</div>
+
+<div class="note">
+  <strong>一句话记忆：</strong><code>ChatClient</code> 是<em>你点单的窗口</em>，<code>Prompt</code> 是<em>你写的订单</em>，<code>Advisor</code> 是<em>中间传菜的厨师</em>（可以加料、改单、记账），<code>ChatModel</code> 是<em>后厨的灶</em>，厂商实现是<em>具体哪家的燃气</em>。
+</div>
+
+<h3>完整调用时序（建议对照代码看三遍）</h3>
+
+<div class="filetree">你的 Controller
+  │  chatClient.prompt().user("你好").call()
+  ▼
+ChatClient（门面）—— 组装默认 SystemMessage + 默认 Advisor 链
+  │  构造 Prompt
+  ▼
+AdvisorChain ──▶ Advisor#1（日志）──▶ Advisor#2（记忆/RAG）──▶ …
+  │  最终把 Prompt 交给 ChatModel
+  ▼
+OpenAiChatModel（厂商实现）—— 把 Prompt 翻译成 OpenAI JSON
+  │  HTTPS POST /v1/chat/completions
+  ▼
+大模型服务 ──▶ 返回 JSON
+  │  ChatResponse  ←── 解析、包成统一对象
+  ▼
+逐层回卷：Advisor 逆序后处理 ──▶ ChatClient ──▶ 你的 Controller
+  │  .content() 取出纯文本</div>
+
+<div class="goal">
+  学完这节，你应该能回答：<em>「如果要把 DeepSeek 换成通义千问，我需要改哪几个地方？」</em>
+  答案：改 <strong>依赖坐标</strong>（如果厂商不兼容 OpenAI 协议）、改 <strong>yml 里的 base-url / model / api-key</strong>。
+  业务代码里的 <code>ChatClient</code> 调用一行都不用动。这就是抽象层的价值。
+</div>
+
+<h2 id="s2"><span class="h2-num">1.2</span>创建项目与依赖</h2>
+
+<h3>方式一：IDEA / start.spring.io 生成（推荐新手）</h3>
+
+<ol class="steps">
+  <li>打开 <code>https://start.spring.io</code>，或 IDEA 的 <em>New Project → Spring Initializr</em>。</li>
+  <li>Project 选 <strong>Maven</strong>，Language <strong>Java</strong>，Spring Boot 选当前稳定 <strong>3.x</strong>。</li>
+  <li>Group <code>com.example</code>，Artifact <code>springai-lab</code>，JDK 选 <strong>21</strong>。</li>
+  <li>依赖先只勾 <strong>Spring Web</strong> + <strong>Lombok</strong>。Spring AI 的依赖在 Initializr 里可能选不到最新版，我们<strong>直接手改 pom</strong> 更可控。</li>
+  <li>生成后解压到 <code>D:\work\springai-lab</code>，用 IDEA 打开 <code>pom.xml</code>。</li>
+</ol>
+
+<h3>方式二：直接改 pom（本课程采用）</h3>
+
+<p>只需在 <a href="index.html#env-pom">0.4.7 节的完整 pom</a> 基础上，第 1 章至少要保证下面三个依赖存在：</p>
+
+<pre><code><span class="cm">&lt;!-- Web：提供 HTTP 接口 --&gt;</span>
+&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+<span class="cm">&lt;!-- ★ Spring AI 的核心模型接入：OpenAI 协议及其所有兼容实现 --&gt;</span>
+&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.ai&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-ai-starter-model-openai&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+<span class="cm">&lt;!-- ★ BOM：统一管理所有 spring-ai-* 的版本，缺了它就要逐个写版本号 --&gt;</span>
+&lt;dependencyManagement&gt;
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.ai&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-ai-bom&lt;/artifactId&gt;
+      &lt;version&gt;1.0.3&lt;/version&gt;
+      &lt;type&gt;pom&lt;/type&gt;
+      &lt;scope&gt;import&lt;/scope&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+&lt;/dependencyManagement&gt;</code></pre>
+
+<div class="tip">
+  <strong>为什么一个 starter 就能连 DeepSeek、通义、智谱、Kimi？</strong>
+  因为这些厂商都提供了 <strong>OpenAI 兼容接口</strong>（同样的 URL 路径 <code>/v1/chat/completions</code>、同样的 JSON 结构）。
+  Spring AI 的 OpenAI starter 本质上只是按 OpenAI 协议发请求，所以换个 <code>base-url</code> 就能指到别家。
+  只有当某家<strong>完全不兼容</strong>（比如 Anthropic Claude 的原生协议）时，才需要换成对应的 starter。
+</div>
+
+<h3>验证依赖是否装配成功</h3>
+
+<pre><code><span class="cm"># 命令行验证（在项目根目录）</span>
+mvn -q dependency:tree -Dincludes=org.springframework.ai
+
+<span class="cm"># 期望能看到类似：</span>
+<span class="cm"># org.springframework.ai:spring-ai-starter-model-openai:jar:1.0.3</span>
+<span class="cm"># org.springframework.ai:spring-ai-model:jar:1.0.3</span>
+<span class="cm"># org.springframework.ai:spring-ai-client-chat:jar:1.0.3</span>
+<span class="cm"># org.springframework.ai:spring-ai-openai:jar:1.0.3</span></code></pre>
+
+<div class="pit">
+  <strong>坑：</strong>只加了 <code>spring-ai-bom</code> 却没加具体 starter，启动时不会报错（因为根本没触发自动配置），
+  但你在 Service 里注入 <code>ChatModel</code> 时会得到
+  <code>NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.ai.chat.model.ChatModel'</code>。
+  看到这个异常，先检查是不是漏了 starter，其次检查 <code>api-key</code> 是不是空的——
+  <strong>Spring AI 在密钥为空时可能不注册 ChatModel bean</strong>，这是最隐蔽的一种。
+</div>
+
+<h2 id="s3"><span class="h2-num">1.3</span>模型连接配置（换厂商对照表）</h2>
+
+<p>先写一份第 1 章用的 <code>application.yml</code>：</p>
+
+<pre><code>spring:
+  application:
+    name: springai-lab
+  ai:
+    openai:
+      <span class="cm"># 从环境变量读；冒号后为空表示"没有也要启动"，避免本地没配就起不来</span>
+      api-key: ${OPENAI_API_KEY:}
+      <span class="cm"># ★ 换厂商的核心开关</span>
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.7
+          max-tokens: 2048
+        <span class="cm"># 超时设置：大模型首字延迟经常 2~10 秒，读超时要给足</span>
+        connect-timeout: 30s
+        read-timeout: 120s
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.example.springai: debug
+    <span class="cm"># 打开后能看到发给模型的完整请求体，调提示词时必开</span>
+    org.springframework.ai.chat.client: debug</code></pre>
+
+<h3>常见厂商配置对照表（可直接抄）</h3>
+
+<table>
+  <thead><tr><th style="width:130px">厂商</th><th style="width:300px">base-url</th><th style="width:190px">model 示例</th><th>备注</th></tr></thead>
+  <tbody>
+    <tr><td>DeepSeek</td><td><code>https://api.deepseek.com</code></td><td><code>deepseek-chat</code> / <code>deepseek-reasoner</code></td><td>性价比高，本课程默认；<strong>无 embedding 接口</strong></td></tr>
+    <tr><td>阿里通义</td><td><code>https://dashscope.aliyuncs.com/compatible-mode</code></td><td><code>qwen-plus</code> / <code>qwen-max</code></td><td>有 <code>text-embedding-v3</code>，第 4 章可直接用</td></tr>
+    <tr><td>智谱 AI</td><td><code>https://open.bigmodel.cn/api/paas/v4</code></td><td><code>glm-4-plus</code></td><td>有 <code>embedding-3</code></td></tr>
+    <tr><td>月之暗面</td><td><code>https://api.moonshot.cn</code></td><td><code>moonshot-v1-8k</code></td><td>长上下文有优势</td></tr>
+    <tr><td>OpenAI</td><td><code>https://api.openai.com</code></td><td><code>gpt-4o-mini</code></td><td>需要网络可达；embedding 用 <code>text-embedding-3-small</code></td></tr>
+    <tr><td>Ollama 本地</td><td><code>http://localhost:11434</code>（换 starter）</td><td><code>qwen2.5:7b</code></td><td>需把依赖换成 <code>spring-ai-starter-model-ollama</code></td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>base-url 末尾斜杠问题：</strong>大部分厂商要求<strong>不带</strong> <code>/v1</code>（starter 会自己拼），
+  写了反而变成 <code>/v1/v1/chat/completions</code> 而 404。遇到 404 第一件事就是把 base-url 简化到域名。
+</div>
+
+<h2 id="s4"><span class="h2-num">1.4</span>最底层调用：直接使用 ChatModel</h2>
+
+<p>先看「不加任何糖」的写法，这样你才知道 ChatClient 帮你做了什么。新建 <code>ch01/ChatModelBasics.java</code>：</p>
+
+<pre><code><span class="kw">package</span> com.example.springai.ch01;
+
+<span class="kw">import</span> org.springframework.ai.chat.messages.SystemMessage;
+<span class="kw">import</span> org.springframework.ai.chat.messages.UserMessage;
+<span class="kw">import</span> org.springframework.ai.chat.model.ChatModel;
+<span class="kw">import</span> org.springframework.ai.chat.model.ChatResponse;
+<span class="kw">import</span> org.springframework.ai.chat.prompt.Prompt;
+<span class="kw">import</span> org.springframework.stereotype.Component;
+
+<span class="kw">import</span> java.util.List;
+
+<span class="cm">/**</span>
+<span class="cm"> * 第 1 章 · 最底层的调用方式：只用 ChatModel 接口。</span>
+<span class="cm"> * 目的：看清一次对话请求到底由哪些部分组成。</span>
+<span class="cm"> */</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> ChatModelBasics {
+
+    <span class="cm">// 构造器注入。这个 bean 由 spring-ai-starter-model-openai 自动装配，</span>
+    <span class="cm">// 类型实际是 OpenAiChatModel，但我们只依赖抽象接口，方便日后替换/测试打桩。</span>
+    <span class="kw">private final</span> ChatModel chatModel;
+
+    <span class="kw">public</span> ChatModelBasics(ChatModel chatModel) {
+        <span class="kw">this</span>.chatModel = chatModel;
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 最简单的调用：只传一句用户话。</span>
+<span class="cm">     * 内部会自动包成一个只含 UserMessage 的 Prompt。</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> String simple(String userText) {
+        <span class="cm">// call(String) 是 ChatModel 的便捷方法，等价于 new Prompt(userText)</span>
+        <span class="kw">return</span> chatModel.call(userText);
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 带系统提示 + 用户消息的标准写法。</span>
+<span class="cm">     * 这是理解"消息列表"最直观的例子。</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> String withSystemPrompt(String userText) {
+        <span class="cm">// SystemMessage：设定角色与规则，模型会当作最高优先级的背景指令</span>
+        SystemMessage system = <span class="kw">new</span> SystemMessage(
+                <span class="st">"你是一名严谨的企业知识库助手，回答必须简洁，不确定时明确说不知道，禁止编造。"</span>);
+        <span class="cm">// UserMessage：用户这一轮真正说的话</span>
+        UserMessage user = <span class="kw">new</span> UserMessage(userText);
+
+        <span class="cm">// Prompt 的本质 = 有序的消息列表（+ 可选的模型参数）</span>
+        Prompt prompt = <span class="kw">new</span> Prompt(List.of(system, user));
+
+        <span class="cm">// call 返回的是 ChatResponse，里面不止有文本，还有元数据</span>
+        ChatResponse response = chatModel.call(prompt);
+
+        <span class="cm">// 逐层取值：response -> generation -> output(AssistantMessage) -> text</span>
+        <span class="kw">return</span> response.getResult().getOutput().getText();
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 取出本次调用的元数据：用了哪个模型、消耗多少 Token。</span>
+<span class="cm">     * 第 10 章做成本统计时就用这里的数字。</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> String inspectMetadata(String userText) {
+        ChatResponse response = chatModel.call(<span class="kw">new</span> Prompt(userText));
+
+        String text = response.getResult().getOutput().getText();
+        <span class="cm">// Usage 里含 promptTokens / completionTokens / totalTokens</span>
+        <span class="kw">var</span> usage = response.getMetadata().getUsage();
+        <span class="cm">// 模型名（如 deepseek-chat / gpt-4o-mini）</span>
+        String model = response.getMetadata().getModel();
+
+        <span class="kw">return</span> <span class="st">"""
+                模型：%s
+                输入Token：%s  输出Token：%s  合计：%s
+                回答：%s
+                """</span>.formatted(model,
+                        usage.getPromptTokens(), usage.getCompletionTokens(),
+                        usage.getTotalTokens(), text);
+    }
+}</code></pre>
+
+<div class="note">
+  <strong>重点看这几行的层级：</strong><code>ChatResponse → getResult() → getOutput() → getText()</code>。
+  为什么这么绕？因为未来会有「一次返回多个候选结果」和「多模态输出」的场景，
+  <code>getResults()</code> 是列表、<code>output</code> 是消息对象（可能含图片）。记住这条路径，第 7 章工具调用时你会频繁用到 <code>getOutput().getToolCalls()</code>。
+</div>
+
+<h2 id="s5"><span class="h2-num">1.5</span>推荐用法：ChatClient 门面</h2>
+
+<p>实际项目里几乎不会直接调 ChatModel，而是用 <code>ChatClient</code>。它把「默认系统提示、默认 Advisor、参数覆盖、结构化输出」都收进了一套流式 API 里。</p>
+
+<h3>第一步：把 ChatClient 做成一等公民（配置类）</h3>
+
+<pre><code><span class="kw">package</span> com.example.springai.common;
+
+<span class="kw">import</span> org.springframework.ai.chat.client.ChatClient;
+<span class="kw">import</span> org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+<span class="kw">import</span> org.springframework.context.annotation.Bean;
+<span class="kw">import</span> org.springframework.context.annotation.Configuration;
+
+<span class="cm">/**</span>
+<span class="cm"> * 全局 ChatClient 配置。</span>
+<span class="cm"> * 为什么不直接在 Service 里 new？—— 因为默认系统提示、默认 Advisor 应该全应用统一。</span>
+<span class="cm"> * 注意：容器里已经有一个 ChatClient.Builder（Spring AI 自动装配），</span>
+<span class="cm"> * 我们注入它再 build，比自己 new Builder 更省事。</span>
+<span class="cm"> */</span>
+<span class="an">@Configuration</span>
+<span class="kw">public class</span> ChatClientConfig {
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> ChatClient chatClient(ChatClient.Builder builder) {
+        <span class="kw">return</span> builder
+                <span class="cm">// 全局默认角色设定：所有请求都会自动带上（可在单次调用时覆盖）</span>
+                .defaultSystem(<span class="st">"""
+                        你是"智汇企业助手"，服务于公司内部员工。
+                        规则：
+                        1. 用简体中文回答，语气专业但不啰嗦。
+                        2. 不确定的信息必须说明"我需要更多信息"，禁止编造。
+                        3. 涉及金额、日期、人名时，严格使用原文给出的数据。
+                        """</span>)
+                <span class="cm">// 默认 Advisor：打印每次请求/响应，调试期必开（第 3 章会写自定义的）</span>
+                .defaultAdvisors(<span class="kw">new</span> SimpleLoggerAdvisor())
+                <span class="cm">// 不在这里写 defaultOptions，留给各场景按需覆盖</span>
+                .build();
+    }
+}</code></pre>
+
+<h3>第二步：在 Service 里使用 fluent API</h3>
+
+<pre><code><span class="kw">package</span> com.example.springai.ch01;
+
+<span class="kw">import</span> org.springframework.ai.chat.client.ChatClient;
+<span class="kw">import org.springframework.ai.chat.model.ChatModel;
+<span class="kw">import</span> org.springframework.stereotype.Service;
+<span class="kw">import</span> reactor.core.publisher.Flux;
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> HelloAiService {
+
+    <span class="kw">private final</span> ChatClient chatClient;
+
+    <span class="kw">public</span> HelloAiService(ChatClient chatClient) {
+        <span class="kw">this</span>.chatClient = chatClient;
+    }
+
+    <span class="cm">/** 最小可用：一句话进，一句话出 */</span>
+    <span class="kw">public</span> String ask(String question) {
+        <span class="kw">return</span> chatClient.prompt()      <span class="cm">// ① 开启一次请求构建</span>
+                .user(question)         <span class="cm">// ② 设置用户消息（也可 .system(...) 覆盖默认）</span>
+                .call()                 <span class="cm">// ③ 同步执行：阻塞等待完整结果</span>
+                .content();             <span class="cm">// ④ 取出纯文本内容</span>
+    }
+
+    <span class="cm">/** 流式：一个字一个字往回推，前端体验好，适合聊天框 */</span>
+    <span class="kw">public</span> Flux&lt;String&gt; askStream(String question) {
+        <span class="kw">return</span> chatClient.prompt()
+                .user(question)
+                .stream()               <span class="cm">// ③' 换成 stream()，返回 Flux&lt;String&gt;</span>
+                .content();
+    }
+
+    <span class="cm">/** 想看完整响应对象（含 Token 用量），用 chatResponse() 而不是 content() */</span>
+    <span class="kw">public</span> String askWithUsage(String question) {
+        <span class="kw">var</span> response = chatClient.prompt()
+                .user(question)
+                .call()
+                .chatResponse();        <span class="cm">// ④' 拿到 ChatResponse</span>
+        <span class="kw">var</span> usage = response.getMetadata().getUsage();
+        <span class="kw">return</span> <span class="st">"用量："</span> + usage.getTotalTokens() + <span class="st">" tokens\n"</span>
+                + response.getResult().getOutput().getText();
+    }
+}</code></pre>
+
+<h3>ChatClient fluent API 速查</h3>
+
+<table>
+  <thead><tr><th style="width:250px">写法</th><th>含义</th><th style="width:110px">返回</th></tr></thead>
+  <tbody>
+    <tr><td><code>.prompt()</code></td><td>开始构建一次请求</td><td>ChatClientRequestSpec</td></tr>
+    <tr><td><code>.system("…")</code> / <code>.user("…")</code></td><td>设置对应角色的消息，可传字符串、Resource、模板</td><td>本对象（可链式）</td></tr>
+    <tr><td><code>.options(ChatOptions)</code></td><td>本次请求覆盖模型参数（温度、模型名等）</td><td>本对象</td></tr>
+    <tr><td><code>.advisors(a -&gt; a.param("k","v"))</code></td><td>本次请求附加 Advisor 或传参</td><td>本对象</td></tr>
+    <tr><td><code>.tools(Object…)</code></td><td>第 7 章：注册可调用的工具对象</td><td>本对象</td></tr>
+    <tr><td><code>.call()</code></td><td>同步执行</td><td>CallResponseSpec</td></tr>
+    <tr><td><code>.stream()</code></td><td>流式执行</td><td>StreamResponseSpec</td></tr>
+    <tr><td><code>.content()</code></td><td>取纯文本</td><td>String / Flux&lt;String&gt;</td></tr>
+    <tr><td><code>.chatResponse()</code></td><td>取完整响应（含元数据）</td><td>ChatResponse</td></tr>
+    <tr><td><code>.entity(Class)</code></td><td>第 3 章：直接映射成 Java 对象</td><td>T</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s6"><span class="h2-num">1.6</span>流式输出（SSE）—— 让前端"打字机"效果</h2>
+
+<p>非流式的问题：模型生成 500 字要 8 秒，用户盯着白屏 8 秒，体验极差。流式的价值是把首字延迟从 8 秒降到 0.5 秒。</p>
+
+<pre><code><span class="kw">import</span> org.springframework.http.MediaType;
+<span class="kw">import</span> org.springframework.web.bind.annotation.*;
+<span class="kw">import</span> reactor.core.publisher.Flux;
+
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/v1/chat"</span>)
+<span class="kw">public class</span> ChatController {
+
+    <span class="kw">private final</span> HelloAiService service;
+
+    <span class="kw">public</span> ChatController(HelloAiService service) {
+        <span class="kw">this</span>.service = service;
+    }
+
+    <span class="cm">/** 同步：适合后台任务、脚本调用 */</span>
+    <span class="an">@PostMapping</span>(<span class="st">"/ask"</span>)
+    <span class="kw">public</span> String ask(<span class="an">@RequestBody</span> AskRequest req) {
+        <span class="kw">return</span> service.ask(req.question());
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 流式：produces 必须是 text/event-stream（SSE 协议），</span>
+<span class="cm">     * 前端用 EventSource 或 fetch + ReadableStream 接收。</span>
+<span class="cm">     */</span>
+    <span class="an">@PostMapping</span>(value = <span class="st">"/stream"</span>, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    <span class="kw">public</span> Flux&lt;String&gt; stream(<span class="an">@RequestBody</span> AskRequest req) {
+        <span class="kw">return</span> service.askStream(req.question());
+    }
+
+    <span class="cm">/** 用 record 接收请求体，比 Map 更安全 */</span>
+    <span class="kw">public record</span> AskRequest(String question) {}
+}</code></pre>
+
+<p>前端怎么接（可以直接贴进浏览器控制台验证）：</p>
+
+<pre><code><span class="cm">// 浏览器端：fetch + 流式读取（比 EventSource 更灵活，因为要 POST）</span>
+<span class="kw">const</span> res = <span class="kw">await</span> fetch(<span class="st">'http://localhost:8080/api/v1/chat/stream'</span>, {
+  method: <span class="st">'POST'</span>,
+  headers: { <span class="st">'Content-Type'</span>: <span class="st">'application/json'</span> },
+  body: JSON.stringify({ question: <span class="st">'用三句话介绍 Spring AI'</span> })
+});
+<span class="kw">const</span> reader = res.body.getReader();
+<span class="kw">const</span> decoder = <span class="kw">new</span> TextDecoder();
+<span class="kw">let</span> full = <span class="st">''</span>;
+<span class="kw">while</span> (<span class="kw">true</span>) {
+  <span class="kw">const</span> { done, value } = <span class="kw">await</span> reader.read();
+  <span class="kw">if</span> (done) <span class="kw">break</span>;
+  <span class="cm">// SSE 每行形如 "data:xxx\n\n"，这里做最简解析</span>
+  <span class="kw">const</span> chunk = decoder.decode(value, { stream: <span class="kw">true</span> });
+  chunk.split(<span class="st">'\n'</span>).forEach(line =&gt; {
+    <span class="kw">if</span> (line.startsWith(<span class="st">'data:'</span>)) {
+      full += line.slice(5);
+      document.title = full.slice(-30);   <span class="cm">// 快速验证：看标签页标题在变</span>
+    }
+  });
+}
+console.log(full);</code></pre>
+
+<div class="pit">
+  <strong>流式的三个典型坑：</strong>
+  <ol style="margin-bottom:0">
+    <li><strong>没加 <code>produces</code></strong>：Spring 会按 <code>application/json</code> 返回，前端收到一坨，没有流式效果。</li>
+    <li><strong>中间有网关/反向代理</strong>：Nginx 默认开启缓冲（<code>proxy_buffering on</code>），会把流式结果攒起来一次性下发。需要在 location 里加 <code>proxy_buffering off;</code>。</li>
+    <li><strong>Reactor 线程被阻塞</strong>：在 <code>.stream()</code> 之后又调用了 <code>.block()</code> 或阻塞式 JDBC，会破坏背压。流式链路上所有 IO 都要是响应式的。</li>
+  </ol>
+</div>
+
+<h2 id="s7"><span class="h2-num">1.7</span>完整可运行示例：Hello AI 服务</h2>
+
+<div class="filetree"><span class="dir">src/main/java/com/example/springai/</span>
+├── SpringAiLabApplication.java
+├── <span class="dir">common/</span>
+│   ├── ChatClientConfig.java      <span class="desc"># 全局 ChatClient（1.5 节）</span>
+│   └── GlobalExceptionHandler.java <span class="desc"># 统一异常处理（本节）</span>
+└── <span class="dir">ch01/</span>
+    ├── ChatModelBasics.java       <span class="desc"># 底层调用演示（1.4 节）</span>
+    ├── HelloAiService.java        <span class="desc"># 业务服务（1.5 节）</span>
+    └── ChatController.java        <span class="desc"># HTTP 接口（1.6 节）</span></div>
+
+<p>还差一个统一异常处理——<strong>模型调用是最容易抛异常的地方</strong>（超时、限流、余额不足），不兜住会把 500 堆栈直接暴露给前端：</p>
+
+<pre><code><span class="kw">package</span> com.example.springai.common;
+
+<span class="kw">import</span> org.springframework.http.HttpStatus;
+<span class="kw">import</span> org.springframework.http.ResponseEntity;
+<span class="kw">import</span> org.springframework.web.bind.annotation.ExceptionHandler;
+<span class="kw">import</span> org.springframework.web.bind.annotation.RestControllerAdvice;
+<span class="kw">import org.springframework.web.client.ResourceAccessException;
+<span class="kw">import</span> java.util.Map;
+
+<span class="an">@RestControllerAdvice</span>
+<span class="kw">public class</span> GlobalExceptionHandler {
+
+    <span class="cm">/** 网络层：连不上 / 读超时。99% 是网络或 base-url 写错 */</span>
+    <span class="an">@ExceptionHandler</span>(ResourceAccessException.class)
+    <span class="kw">public</span> ResponseEntity&lt;Map&lt;String, Object&gt;&gt; onNetwork(ResourceAccessException e) {
+        <span class="kw">return</span> ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT)
+                .body(Map.of(<span class="st">"code"</span>, 504,
+                             <span class="st">"message"</span>, <span class="st">"模型服务不可达，请检查网络或 base-url 配置"</span>,
+                             <span class="st">"detail"</span>, e.getMessage()));
+    }
+
+    <span class="cm">/** 业务层：模型返回了错误码（401 密钥错、429 限流、402 余额不足） */</span>
+    <span class="an">@ExceptionHandler</span>(RuntimeException.class)
+    <span class="kw">public</span> ResponseEntity&lt;Map&lt;String, Object&gt;&gt; onRuntime(RuntimeException e) {
+        <span class="cm">// 生产环境应打日志 + 上报，不要把原始堆栈返回给前端</span>
+        <span class="kw">return</span> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of(<span class="st">"code"</span>, 500,
+                             <span class="st">"message"</span>, <span class="st">"AI 服务调用失败："</span> + e.getMessage()));
+    }
+}</code></pre>
+
+<h2 id="s8"><span class="h2-num">1.8</span>运行与验证</h2>
+
+<pre><code><span class="cm"># 1) 起数据库（本章其实还用不到，但保持习惯）</span>
+cd D:/work/springai-lab && docker compose up -d mysql redis pgvector
+
+<span class="cm"># 2) 起应用</span>
+mvn spring-boot:run
+<span class="cm"># 或者 IDEA 里运行 SpringAiLabApplication</span>
+
+<span class="cm"># 3) 同步接口</span>
+curl -X POST http://localhost:8080/api/v1/chat/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"用一句话解释 Spring AI 是什么"}'
+
+<span class="cm"># 期望输出：一段中文回答</span>
+
+<span class="cm"># 4) 流式接口（-N 关闭 curl 缓冲，才能看到逐字输出）</span>
+curl -N -X POST http://localhost:8080/api/v1/chat/stream \
+  -H "Content-Type: application/json" \
+  -d '{"question":"从 1 数到 10，每个数字换一行"}'</code></pre>
+
+<div class="tip">
+  <strong>流式输出看不到逐字效果？</strong>curl 默认会缓冲。加 <code>-N</code>；
+  Windows 的 Git Bash 里有时即使加了 <code>-N</code> 也会缓冲，改用 <code>curl --no-buffer</code>
+  或在 IDEA 的 HTTP Client（<code>.http</code> 文件）里测试，那边对 SSE 支持更好。
+</div>
+
+<h2 id="s9"><span class="h2-num">1.9</span>常见坑排错对照表</h2>
+
+<table>
+  <thead><tr><th style="width:330px">报错 / 现象</th><th style="width:230px">根本原因</th><th>解决</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>No qualifying bean of type 'ChatModel'</code></td>
+      <td>没加 starter，或 api-key 为空导致自动配置没生效</td>
+      <td>确认 pom 里有 <code>spring-ai-starter-model-openai</code>；确认 <code>echo $OPENAI_API_KEY</code> 不为空</td>
+    </tr>
+    <tr>
+      <td><code>401 Unauthorized</code></td>
+      <td>密钥错误、过期，或环境变量没被读到</td>
+      <td>用 <code>curl</code> 直连厂商 API 验证密钥；检查 IDEA 启动配置里是否勾了 <em>Include system environment variables</em></td>
+    </tr>
+    <tr>
+      <td><code>404 Not Found</code></td>
+      <td>base-url 多写了 <code>/v1</code>，或路径重复</td>
+      <td>把 base-url 简化成纯域名，让 starter 自己拼路径</td>
+    </tr>
+    <tr>
+      <td><code>429 Too Many Requests</code></td>
+      <td>触发厂商限流</td>
+      <td>加重试（第 6 章 Resilience4j），或降低并发；课堂环境建议每人独立密钥</td>
+    </tr>
+    <tr>
+      <td><code>SocketTimeoutException: Read timed out</code></td>
+      <td>默认读超时太短，长回答没读完就断了</td>
+      <td>在 yml 里加 <code>read-timeout: 120s</code>；流式接口不受此限</td>
+    </tr>
+    <tr>
+      <td>中文输出乱码 / 问号</td>
+      <td>控制台或 IDE 编码非 UTF-8</td>
+      <td>IDEA → Settings → Editor → File Encodings 全设 UTF-8；启动加 <code>-Dfile.encoding=UTF-8</code></td>
+    </tr>
+    <tr>
+      <td>回答里带着 <code>```json</code> 代码块标记</td>
+      <td>提示词没约束格式</td>
+      <td>第 3 章会系统解决，临时可以先在提示词里加「只输出 JSON，不要任何解释和代码块标记」</td>
+    </tr>
+    <tr>
+      <td>IDEA 里 <code>ChatClient.Builder</code> 注入失败</td>
+      <td>容器里只有一个 Builder 时才能按类型注入；自定义了多个会歧义</td>
+      <td>用 <code>@Qualifier</code> 指定，或直接在方法参数里注入 <code>ChatClient.Builder</code>（Spring AI 会提供默认的）</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="s10"><span class="h2-num">1.10</span>自测题（先自己想，再点开）</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. ChatModel 和 ChatClient 的区别是什么？什么时候必须直接用 ChatModel？</p>
+    <div class="qa-a">
+      <p>ChatModel 是模型能力的<strong>抽象接口</strong>，只提供 <code>call(Prompt)</code> / <code>stream(Prompt)</code>，返回结构化对象；
+      ChatClient 是建立在其上的<strong>门面</strong>，提供流式 API、默认系统提示、默认 Advisor、<code>entity()</code> 结构化输出等便利能力。</p>
+      <p>必须直接用 ChatModel 的场景：需要拿到最原始的 <code>ChatResponse</code> 元数据做精细处理、需要绕过 Advisor 链、
+      或者在写框架/公共组件（比如自定义 Advisor、路由组件）时。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q2. 把 DeepSeek 换成通义千问，需要改哪几处？</p>
+    <div class="qa-a">
+      <p>因为两者都兼容 OpenAI 协议：<strong>只改 yml 三行</strong>——<code>api-key</code>、<code>base-url</code>、<code>chat.options.model</code>。
+      业务代码零改动。若不兼容（如 Anthropic 原生），则还需换 starter 依赖。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q3. 为什么 <code>ChatResponse</code> 取值要写成三层 <code>getResult().getOutput().getText()</code>？</p>
+    <div class="qa-a">
+      <p>因为一次调用可能返回<strong>多个候选结果</strong>（<code>getResults()</code> 是列表），
+      每个结果里的 output 是<strong>消息对象</strong>（可能包含文本、工具调用、多模态内容），
+      所以要先选结果、再取消息、最后取文本。这样设计是为了支持多候选、工具调用和多模态。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q4. 流式接口为什么一定要写 <code>produces = MediaType.TEXT_EVENT_STREAM_VALUE</code>？</p>
+    <div class="qa-a">
+      <p>Spring MVC 需要靠它选择正确的 <code>HttpMessageConverter</code> 并按 SSE 协议（<code>text/event-stream</code>）输出。
+      不写的话会走 JSON 序列化，Flux 会被聚合成一个数组一次性返回，前端就看不到逐字效果了。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】改造本章代码：让 <code>/ask</code> 接口支持前端传入 <code>temperature</code>，并限幅在 0~1 之间。</p>
+    <div class="qa-a">
+      <p>提示：用 <code>OpenAiChatOptions.builder().temperature(t).build()</code>，通过
+      <code>chatClient.prompt().options(options)</code> 覆盖本次请求参数；限幅用 <code>Math.max(0, Math.min(1, t))</code> 或
+      <code>@Min/@Max</code> 注解 + <code>@Validated</code>。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能说出 Spring AI 三层抽象各自的职责，并画出调用时序。</li>
+    <li>能独立把模型从 DeepSeek 切换到通义千问或本地 Ollama，且业务代码不改。</li>
+    <li><code>/ask</code> 与 <code>/stream</code> 两个接口都能通过 curl 验证。</li>
+    <li>能读懂 <code>getMeta.getMetadata().getUsage()</code> 里的 Token 数字。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="index.html"><div class="dir-label">← 返回</div><div class="dir-name">总览与环境准备</div></a>
+  <a class="next" href="ch02.html"><div class="dir-label">下一章 →</div><div class="dir-name">第 2 章 · 提示词与对话</div></a>
+</div>
+
+<div class="footer">Spring AI 2.0 学习指南 · 第 1 章</div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

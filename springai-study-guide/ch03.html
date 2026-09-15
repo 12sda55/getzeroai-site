@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章 · 结构化输出与 Advisors | Spring AI 2.0 学习指南</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">AI</span>
+    <span>Spring AI 2.0 学习指南<small>企业级智能应用开发实践</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与环境准备</option>
+    <option value="ch01.html">01 · Spring AI 入门</option>
+    <option value="ch02.html">02 · 提示词与对话</option>
+    <option value="ch03.html">03 · 结构化输出与 Advisors</option>
+    <option value="ch04.html">04 · 嵌入模型与向量数据库</option>
+    <option value="ch05.html">05 · RAG</option>
+    <option value="ch06.html">06 · 记忆与多模型</option>
+    <option value="ch07.html">07 · 工具调用</option>
+    <option value="ch08.html">08 · MCP</option>
+    <option value="ch09.html">09 · 智能体</option>
+    <option value="ch10.html">10 · 可观测性与评估</option>
+    <option value="ch11.html">11 · 综合项目</option>
+    <option value="appendix.html">附录 · 速查手册</option>
+  </select>
+  <a class="tb-link" href="index.html#env">环境准备</a>
+  <a class="tb-link" href="appendix.html">速查</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>Spring AI 入门</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>提示词与对话</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>结构化输出与 Advisors</span></a>
+    <div class="sb-sub">
+      <a href="#s1">3.1 为什么输出必须是对象</a>
+      <a href="#s2">3.2 entity() 一步到位</a>
+      <a href="#s3">3.3 底层原理与 converter</a>
+      <a href="#s4">3.4 输出约束与校验</a>
+      <a href="#s5">3.5 Advisor 机制详解</a>
+      <a href="#s6">3.6 自定义 Advisor 实战</a>
+      <a href="#s7">3.7 完整示例：订单信息提取</a>
+      <a href="#s8">3.8 常见坑排错</a>
+      <a href="#s9">3.9 自测题</a>
+    </div>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>嵌入模型与向量数据库</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>RAG</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>记忆与多模型</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>工具调用</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>MCP</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>智能体</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>可观测性与评估</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>综合项目</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>速查手册 / 排错表</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="index.html">总览</a> / 第 3 章</div>
+  <h1><span class="ch-tag">CH 03</span>结构化输出与 Advisors</h1>
+  <p class="lead">前面两章模型只会「说人话」，这一章要让它「交作业」。<strong>结构化输出</strong>解决「模型输出能不能被程序稳定消费」，
+  <strong>Advisor</strong> 解决「请求前后的横切逻辑往哪放」。这两件事分别对应企业级应用里最要命的两个问题：<em>接口稳定性</em> 和 <em>代码可维护性</em>。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">输出可编程 + 切面可扩展</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 1、2 章</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">订单信息提取（含校验兜底）</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–5 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">3.1</span>为什么输出必须是对象</h2>
+
+<p>先看一个真实场景。用户输入一段话，你要提取成订单数据：</p>
+
+<pre><code><span class="cm">// 用户输入（一段自由文本，可能来自邮件、聊天记录、OCR 结果）</span>
+<span class="st">"你好，我是张三，订单 2024001 在 3 月 5 日下的单，金额 899 元，</span>
+<span class="st"> 买了一个机械键盘和一个鼠标垫，现在还没发货，麻烦催一下。联系电话 138****8888"</span></code></pre>
+
+<p>如果用纯文本返回，你拿到的是一段字符串，要写正则去抠订单号、抠金额——模型稍微换个说法（「总计 899 元」/「共 899.00 元」），你的正则就废了。这就是<strong>非结构化输出的致命问题</strong>：不可靠。</p>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h4>❌ 纯文本输出的问题</h4>
+    <ul style="font-size:13.5px;margin-bottom:0">
+      <li>字段顺序、措辞可能变化，解析逻辑脆</li>
+      <li>无法用 Java 类型系统约束</li>
+      <li>无法做校验，脏数据直接入库</li>
+      <li>下游要写一堆容错代码</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>✅ 结构化输出的价值</h4>
+    <ul style="font-size:13.5px;margin-bottom:0">
+      <li>模型输出 JSON → 自动映射成 record/POJO</li>
+      <li>字段类型、必填项由 Java 定义</li>
+      <li>可直接接入 JSR-303 校验</li>
+      <li>下游代码干净、可测试</li>
+    </ul>
+  </div>
+</div>
+
+<p>我们的目标类型（用 record，简洁且不可变）：</p>
+
+<pre><code><span class="kw">package</span> com.example.springai.ch03.model;
+
+<span class="kw">import</span> java.math.BigDecimal;
+<span class="kw">import</span> java.time.LocalDate;
+<span class="kw">import</span> java.util.List;
+
+<span class="cm">/**</span>
+<span class="cm"> * 订单信息提取结果。</span>
+<span class="cm"> * 用 record 的好处：字段即构造参数，Jackson 反序列化开箱即用（JDK 17+ / Jackson 2.12+）。</span>
+<span class="cm"> * 注意字段名要和提示词里的 JSON schema 对应，否则映射不上会得到 null。</span>
+<span class="cm"> */</span>
+<span class="kw">public record</span> OrderInfo(
+        String orderNo,              <span class="cm">// 订单号，如 2024001</span>
+        String customerName,         <span class="cm">// 客户姓名</span>
+        BigDecimal amount,           <span class="cm">// 金额。★ 必须用 BigDecimal，绝不能用 double</span>
+        String status,               <span class="cm">// 状态：未发货/已发货/已完成/已取消</span>
+        LocalDate orderDate,         <span class="cm">// 下单日期</span>
+        List&lt;String&gt; items,          <span class="cm">// 商品列表</span>
+        String phone                 <span class="cm">// 联系电话</span>
+) {}</code></pre>
+
+<div class="warn">
+  <strong>金额字段为什么必须用 <code>BigDecimal</code>？</strong>用 <code>double</code> 会产生浮点误差（<code>0.1+0.2=0.30000000000000004</code>），
+  在财务场景是灾难。另外模型有时会返回 <code>"899元"</code> 这种带单位的字符串，映射到 BigDecimal 会失败——
+  解决办法是在字段上写明要求（3.4 节会讲怎么通过 JSON Schema 描述做到），或加一个自定义反序列化器清洗。
+</div>
+
+<h2 id="s2"><span class="h2-num">3.2</span>entity()：一行代码拿到对象</h2>
+
+<p>Spring AI 把这个过程封装得极其简单——把 <code>.content()</code> 换成 <code>.entity()</code>：</p>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.chat.client.ChatClient;
+
+<span class="cm">// 返回单个对象</span>
+OrderInfo order = chatClient.prompt()
+        .user(userText)
+        .call()
+        .entity(OrderInfo.class);      <span class="cm">// ★ 关键就这一个方法</span>
+
+System.out.println(order.orderNo());   <span class="cm">// 2024001</span>
+System.out.println(order.amount());    <span class="cm">// 899</span>
+
+<span class="cm">// 返回集合：泛型需要用 ParameterizedTypeReference 保住类型信息</span>
+List&lt;OrderInfo&gt; orders = chatClient.prompt()
+        .user(<span class="st">"把这段文本里的所有订单都提取出来：\n"</span> + multiOrderText)
+        .call()
+        .entity(<span class="kw">new</span> ParameterizedTypeReference&lt;List&lt;OrderInfo&gt;&gt;() {});
+
+<span class="cm">// 返回 Map（字段不固定时用）</span>
+Map&lt;String, Object&gt; map = chatClient.prompt()
+        .user(userText)
+        .call()
+        .entity(Map.class);</code></pre>
+
+<div class="note">
+  <strong>它背后做了什么？</strong>Spring AI 会自动：① 生成一段 JSON Schema 描述附到提示词末尾；
+  ② 在提示词里加入「必须输出符合此 JSON Schema 的内容，不要输出解释」的指令；
+  ③ 解析模型返回的文本（会容忍 <code>```json</code> 代码块包裹）；
+  ④ 用 Jackson 反序列化并做类型转换。
+  <strong>所以它不是魔法，而是「提示词工程 + 解析」的自动化封装。</strong>理解这一点，你就能在它失败时自己排查。
+</div>
+
+<h3>集合与嵌套结构的写法</h3>
+
+<pre><code><span class="cm">// 嵌套对象（订单里有收货地址）</span>
+<span class="kw">public record</span> OrderDetail(
+        String orderNo,
+        BigDecimal amount,
+        <span class="cm">// 嵌套的 record 同样能被 Jackson 处理；</span>
+        <span class="cm">// 如果模型没识别到地址，这个字段会是 null，调用方必须判空</span>
+        Address shippingAddress,
+        List&lt;OrderItem&gt; items
+) {}
+
+<span class="kw">public record</span> Address(String province, String city, String detail) {}
+<span class="kw">public record</span> OrderItem(String name, <span class="kw">int</span> quantity, BigDecimal price) {}</code></pre>
+
+<h2 id="s3"><span class="h2-num">3.3</span>底层原理：手写一遍 converter，才算真懂</h2>
+
+<p>如果哪天 <code>entity()</code> 不满足需求（比如你要在系统提示里插入 schema、或者要自定义解析逻辑），就得手动用 <code>StructuredOutputConverter</code>。理解它，你的排查能力会上一个台阶。</p>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.converter.BeanOutputConverter;
+<span class="kw">import</span> org.springframework.ai.converter.MapOutputConverter;
+<span class="kw">import</span> org.springframework.ai.converter.ListOutputConverter;
+
+<span class="cm">// ① 创建转换器，泛型就是目标类型</span>
+BeanOutputConverter&lt;OrderInfo&gt; converter = <span class="kw">new</span> BeanOutputConverter&lt;&gt;(OrderInfo.class);
+
+<span class="cm">// ② 取出"格式说明"——这是一段自动生成的 JSON Schema 文本</span>
+String format = converter.getFormat();
+System.out.println(format);
+<span class="cm">// 输出大致如下（这就是 entity() 偷偷帮你加进提示词的东西）：</span>
+<span class="cm">// Your response should be in JSON format.</span>
+<span class="cm">// Do not include any explanations, only provide a JSON object.</span>
+<span class="cm">// The JSON object should conform to the following schema:</span>
+<span class="cm">// {"type":"object","properties":{"orderNo":{"type":"string"}, ... }}</span>
+
+<span class="cm">// ③ 把它作为 {format} 占位符参数写进你的提示词</span>
+String template = <span class="st">"""
+        从下面的文本中提取订单信息。
+
+        文本：
+        {input}
+
+        {format}
+        """</span>;
+
+Prompt prompt = PromptTemplate.builder()
+        .template(template)
+        .build()
+        .create(Map.of(<span class="st">"input"</span>, userText, <span class="st">"format"</span>, converter.getFormat()));
+
+<span class="cm">// ④ 调用模型后，用 converter 解析</span>
+String rawJson = chatModel.call(prompt).getResult().getOutput().getText();
+OrderInfo order = converter.convert(rawJson);   <span class="cm">// 得到对象</span></code></pre>
+
+<h3>三种内置 Converter 对照</h3>
+
+<table>
+  <thead><tr><th style="width:250px">Converter</th><th style="width:180px">产出类型</th><th>适用场景</th></tr></thead>
+  <tbody>
+    <tr><td><code>BeanOutputConverter&lt;T&gt;</code></td><td>单个 record / POJO</td><td>字段固定的业务对象（最常用）</td></tr>
+    <tr><td><code>ListOutputConverter</code></td><td><code>List&lt;String&gt;</code></td><td>让模型给出标签、关键词、建议列表</td></tr>
+    <tr><td><code>MapOutputConverter</code></td><td><code>Map&lt;String,Object&gt;</code></td><td>字段不固定、探索期使用</td></tr>
+  </tbody>
+</table>
+
+<div class="pit">
+  <strong>最隐蔽的坑：模型返回了「思考过程 + JSON」。</strong>
+  当你同时在提示词里要求「请分步推理」和「输出 JSON」时，模型很可能先写一段推理文字，再输出 JSON。
+  而 <code>converter.convert()</code> 从头解析，遇到前面的文字就会抛 <code>JsonParseException</code>。<br>
+  <strong>标准解法</strong>：把「要 JSON 的任务」和「要推理的任务」拆成两次调用
+  （第一次让它分析，第二次让它按 schema 输出结论），或者用 <code>entity()</code> + 明确的「不要输出任何解释」约束。
+  企业项目里推荐<strong>拆成两次调用</strong>——更稳、更可控、也更方便单独评测每一步。
+</div>
+
+<h2 id="s4"><span class="h2-num">3.4</span>输出约束与校验：让脏数据进不来</h2>
+
+<p>结构化输出保证了「形状正确」，但不保证「内容合法」。模型完全可能给你一个金额为 <code>-100</code>、或者状态为「随便什么」的订单。所以必须加校验。</p>
+
+<h3>用 JSON Schema 描述把约束前置到提示词</h3>
+
+<pre><code><span class="cm">// Spring AI 支持在 record 字段上加 @JsonPropertyDescription，</span>
+<span class="cm">// 这些描述会写进生成的 JSON Schema，等于"写给模型看的字段说明书"</span>
+<span class="kw">import</span> com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
+<span class="kw">public record</span> OrderInfo(
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"订单号，纯数字字符串，例如 2024001；找不到则返回 null"</span>)
+    String orderNo,
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"客户姓名；只保留姓名本身，不要带'先生''女士'等称谓"</span>)
+    String customerName,
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"订单总金额，单位元，只输出数字（如 899.00），不要带'元'或'¥'"</span>)
+    BigDecimal amount,
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"订单状态，只能是以下之一：未发货、已发货、已完成、已取消"</span>)
+    String status
+) {}</code></pre>
+
+<div class="tip">
+  <strong>这个技巧能省掉大量调试时间。</strong>模型对「枚举值只能是这几个」「不要带单位」这类信息，
+  写在字段描述里的效果远好于写在系统提示的一大段话里——因为 schema 是紧贴着字段的，模型注意力更集中。
+</div>
+
+<h3>用 JSR-303 做业务校验</h3>
+
+<pre><code><span class="kw">import</span> jakarta.validation.constraints.*;
+<span class="kw">import</span> jakarta.validation.ConstraintViolation;
+<span class="kw">import</span> jakarta.validation.Validator;
+
+<span class="kw">public record</span> OrderInfo(
+    <span class="an">@NotBlank</span>(message = <span class="st">"订单号不能为空"</span>) String orderNo,
+    <span class="an">@Min</span>(value = 0, message = <span class="st">"金额不能为负"</span>) BigDecimal amount,
+    <span class="an">@Pattern</span>(regexp = <span class="st">"^(未发货|已发货|已完成|已取消)$"</span>, message = <span class="st">"状态非法"</span>) String status
+) {}</code></pre>
+
+<pre><code><span class="kw">import</span> org.springframework.stereotype.Service;
+<span class="kw">import</span> java.util.stream.Collectors;
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> OrderExtractionService {
+
+    <span class="kw">private final</span> ChatClient chatClient;
+    <span class="kw">private final</span> Validator validator;   <span class="cm">// Spring Boot 自动装配</span>
+
+    <span class="kw">private static final</span> String TEMPLATE = <span class="st">"""
+            从下面的文本中提取订单信息。
+
+            规则：
+            1. 找不到的字段返回 null，禁止猜测。
+            2. 金额只输出数字，不带单位和符号。
+            3. 只输出 JSON，不要任何解释文字，不要用代码块包裹。
+
+            文本：
+            {input}
+
+            {format}
+            """</span>;
+
+    <span class="kw">public</span> OrderInfo extract(String input) {
+        OrderInfo order = chatClient.prompt()
+                .user(u -&gt; u.text(TEMPLATE).param(<span class="st">"input"</span>, input))
+                .options(OpenAiChatOptions.builder()
+                        .temperature(0.0)      <span class="cm">// ★ 抽取类任务温度设为 0，追求确定性</span>
+                        .build())
+                .call()
+                .entity(OrderInfo.class);
+
+        <span class="cm">// 业务校验：不合格直接抛，由全局异常处理器翻译成 400</span>
+        var violations = validator.validate(order);
+        <span class="kw">if</span> (!violations.isEmpty()) {
+            String msg = violations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.joining(<span class="st">"；"</span>));
+            <span class="kw">throw new</span> IllegalArgumentException(<span class="st">"提取结果校验失败："</span> + msg);
+        }
+        <span class="kw">return</span> order;
+    }
+}</code></pre>
+
+<h3>校验失败怎么办：重试 with 错误反馈</h3>
+
+<pre><code><span class="cm">/**</span>
+<span class="cm"> * 带自动重试的提取：把校验失败的原因回传给模型，让它自己修正。</span>
+<span class="cm"> * 这是生产环境的标准做法——重试 1~2 次能解决绝大部分格式问题。</span>
+<span class="cm"> */</span>
+<span class="kw">public</span> OrderInfo extractWithRetry(String input, <span class="kw">int</span> maxAttempts) {
+    String lastError = <span class="kw">null</span>;
+
+    <span class="kw">for</span> (<span class="kw">int</span> attempt = 1; attempt &lt;= maxAttempts; attempt++) {
+        String userText = TEMPLATE.replace(<span class="st">"{input}"</span>, input);
+        <span class="kw">if</span> (lastError != <span class="kw">null</span>) {
+            <span class="cm">// ★ 关键：把上次的错误当成新指令喂回去</span>
+            userText += <span class="st">"\n\n注意：上一次的输出存在问题（"</span> + lastError
+                      + <span class="st">"），请修正后重新输出。"</span>;
+        }
+        <span class="kw">try</span> {
+            OrderInfo order = chatClient.prompt()
+                    .user(userText)
+                    .options(OpenAiChatOptions.builder().temperature(0.0).build())
+                    .call()
+                    .entity(OrderInfo.class);
+
+            var violations = validator.validate(order);
+            <span class="kw">if</span> (violations.isEmpty()) {
+                <span class="kw">return</span> order;                    <span class="cm">// 成功</span>
+            }
+            lastError = violations.iterator().next().getMessage();
+        } <span class="kw">catch</span> (Exception e) {
+            <span class="cm">// 解析失败（返回的不是合法 JSON），同样记为错误重试</span>
+            lastError = <span class="st">"返回内容不是合法 JSON："</span> + e.getMessage();
+        }
+        log.warn(<span class="st">"第 {} 次提取失败：{}"</span>, attempt, lastError);
+    }
+    <span class="cm">// 全部失败：返回 null 或抛业务异常，让上游决定降级策略（如转人工）</span>
+    <span class="kw">throw new</span> IllegalStateException(<span class="st">"订单信息提取失败，已重试 "</span> + maxAttempts + <span class="st">" 次"</span>);
+}</code></pre>
+
+<div class="goal">
+  <strong>记住这条工程原则：</strong>凡是让模型输出结构化数据的场景，都必须有
+  「<strong>Schema 约束 → 反序列化 → 业务校验 → 失败重试 → 最终降级</strong>」这五层防线。
+  只有第一层（提示词里写「请输出 JSON」）就上线的项目，迟早会在生产环境炸掉。
+</div>
+
+<h2 id="s5"><span class="h2-num">3.5</span>Advisor 机制：把横切逻辑从业务里抽出来</h2>
+
+<p>假设现在有 30 个 AI 接口，你希望每个接口都：打印请求日志、统计 Token 消耗、做敏感词过滤、失败自动重试。
+如果写在每个 Service 里，就是 30 份复制粘贴——这正是 Spring AOP 要解决的问题，而 Spring AI 给出的答案是 <code>Advisor</code>。</p>
+
+<table>
+  <thead><tr><th style="width:180px">对比项</th><th>Spring MVC</th><th>Spring AI</th></tr></thead>
+  <tbody>
+    <tr><td>切面接口</td><td><code>HandlerInterceptor</code> / <code>Filter</code></td><td><code>CallAdvisor</code> / <code>StreamAdvisor</code></td></tr>
+    <tr><td>顺序控制</td><td><code>Ordered</code> 接口</td><td><code>getOrder()</code>，值小的在外层（先执行）</td></tr>
+    <tr><td>链式调用</td><td><code>chain.doFilter()</code></td><td><code>chain.nextCall(request)</code></td></tr>
+    <tr><td>能否改写请求</td><td>能（包装 request）</td><td>能（改写 Prompt / 注入消息）</td></tr>
+    <tr><td>能否改写响应</td><td>能（包装 response）</td><td>能（改写 ChatClientResponse）</td></tr>
+  </tbody>
+</table>
+
+<h3>Advisor 的执行模型</h3>
+
+<div class="filetree">请求 ──▶ Advisor(A) 前置
+             └──▶ Advisor(B) 前置
+                        └──▶ Advisor(C) 前置
+                                   └──▶ ChatModel ──▶ 模型
+                        ◀── Advisor(C) 后置
+             ◀── Advisor(B) 后置
+请求 ◀── Advisor(A) 后置
+
+getOrder() 越小 → 越靠外层 → <b>前置先执行、后置最后执行</b>（像洋葱一样）</div>
+
+<div class="warn">
+  <strong>顺序陷阱：</strong>如果你希望「先做内容安全过滤，再做 RAG 检索」，
+  那么<strong>安全 Advisor 的 order 必须小于 RAG Advisor 的 order</strong>。
+  很多人凭直觉以为 order 小是「后执行」，结果顺序全反了。
+  记忆口诀：<strong>order 小 = 离用户近 = 先看到用户输入</strong>。
+</div>
+
+<h3>内置 Advisor 一览（课程会逐步用到）</h3>
+
+<table>
+  <thead><tr><th style="width:300px">Advisor</th><th>作用</th><th style="width:90px">章节</th></tr></thead>
+  <tbody>
+    <tr><td><code>SimpleLoggerAdvisor</code></td><td>打印请求/响应，调试用</td><td>1</td></tr>
+    <tr><td><code>MessageChatMemoryAdvisor</code></td><td>以多条消息形式注入对话历史</td><td>2 / 6</td></tr>
+    <tr><td><code>PromptChatMemoryAdvisor</code></td><td>以单段文本形式注入历史（省 Token）</td><td>6</td></tr>
+    <tr><td><code>QuestionAnswerAdvisor</code></td><td>自动做向量检索并拼进提示词，RAG 最简方案</td><td>5</td></tr>
+    <tr><td><code>RetrievalAugmentationAdvisor</code></td><td>模块化 RAG：可插查询改写、多路检索、重排</td><td>5</td></tr>
+    <tr><td><code>StructuredOutputValidationAdvisor</code></td><td>结构化输出失败自动重试校验</td><td>3</td></tr>
+    <tr><td><code>SafeGuardAdvisor</code></td><td>简单的敏感词拦截</td><td>3</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s6"><span class="h2-num">3.6</span>自定义 Advisor 实战：Token 统计 + 内容安全</h2>
+
+<p>我们一次写两个，覆盖「后置读取元数据」和「前置拦截改写」两类典型需求。</p>
+
+<h3>① Token 用量与耗时统计 Advisor</h3>
+
+<pre><code><span class="kw">package</span> com.example.springai.common.advisor;
+
+<span class="kw">import</span> io.micrometer.core.instrument.MeterRegistry;
+<span class="kw">import</span> lombok.extern.slf4j.Slf4j;
+<span class="kw">import</span> org.springframework.ai.chat.client.ChatClientRequest;
+<span class="kw">import</span> org.springframework.ai.chat.client.ChatClientResponse;
+<span class="kw">import</span> org.springframework.ai.chat.client.advisor.api.CallAdvisor;
+<span class="kw">import</span> org.springframework.ai.chat.client.advisor.api.CallAdvisorChain;
+
+<span class="cm">/**</span>
+<span class="cm"> * 统计每次模型调用的输入/输出 Token 与耗时。</span>
+<span class="cm"> * 同时把指标写进 Micrometer，第 10 章可在 Prometheus/Grafana 里看趋势。</span>
+<span class="cm"> */</span>
+<span class="an">@Slf4j</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> TokenUsageAdvisor <span class="kw">implements</span> CallAdvisor {
+
+    <span class="kw">private final</span> MeterRegistry meterRegistry;
+
+    <span class="kw">public</span> TokenUsageAdvisor(MeterRegistry meterRegistry) {
+        <span class="kw">this</span>.meterRegistry = meterRegistry;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> ChatClientResponse adviseCall(ChatClientRequest request,
+                                          CallAdvisorChain chain) {
+        <span class="kw">long</span> start = System.currentTimeMillis();
+
+        <span class="cm">// ★ 前置逻辑：在调用模型之前</span>
+        <span class="cm">// ...（这里可以改写 request、记录开始时间、打日志）</span>
+
+        <span class="cm">// ★ 交给链上的下一个 Advisor / 最终交给模型</span>
+        ChatClientResponse response = chain.nextCall(request);
+
+        <span class="cm">// ★ 后置逻辑：拿到响应之后</span>
+        <span class="kw">long</span> cost = System.currentTimeMillis() - start;
+        <span class="kw">var</span> usage = response.chatResponse() == <span class="kw">null</span> ? <span class="kw">null</span>
+                : response.chatResponse().getMetadata().getUsage();
+
+        <span class="kw">if</span> (usage != <span class="kw">null</span>) {
+            log.info(<span class="st">"[AI用量] 耗时={}ms 输入={} 输出={} 合计={}"</span>,
+                    cost, usage.getPromptTokens(),
+                    usage.getCompletionTokens(), usage.getTotalTokens());
+
+            <span class="cm">// 埋点：第 10 章用 Grafana 画"每日 Token 成本"曲线</span>
+            meterRegistry.counter(<span class="st">"ai.tokens.prompt"</span>)
+                    .increment(usage.getPromptTokens());
+            meterRegistry.counter(<span class="st">"ai.tokens.completion"</span>)
+                    .increment(usage.getCompletionTokens());
+        }
+        meterRegistry.timer(<span class="st">"ai.call.duration"</span>).record(cost, java.util.concurrent.TimeUnit.MILLISECONDS);
+
+        <span class="kw">return</span> response;
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 顺序：设成最小，尽量包在最外层，这样能统计到包含其他 Advisor 在内的总耗时。</span>
+<span class="cm">     */</span>
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> getOrder() {
+        <span class="kw">return</span> 0;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> String getName() {
+        <span class="kw">return</span> <span class="st">"TokenUsageAdvisor"</span>;
+    }
+}</code></pre>
+
+<h3>② 内容安全 Advisor（前置拦截 + 改写）</h3>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> SafeGuardAdvisor <span class="kw">implements</span> CallAdvisor {
+
+    <span class="cm">/** 简化版敏感词表；生产环境应放数据库或接入内容安全服务 */</span>
+    <span class="kw">private static final</span> List&lt;String&gt; BLOCKED = List.of(
+            <span class="st">"身份证号"</span>, <span class="st">"银行卡密码"</span>, <span class="st">"内部机密"</span>);
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> ChatClientResponse adviseCall(ChatClientRequest request,
+                                          CallAdvisorChain chain) {
+
+        <span class="cm">// 取出本次请求的用户文本。Prompt 里最后一条通常是当前用户消息</span>
+        String userText = extractUserText(request);
+
+        <span class="kw">for</span> (String word : BLOCKED) {
+            <span class="kw">if</span> (userText.contains(word)) {
+                log.warn(<span class="st">"命中敏感词：{}，已拦截"</span>, word);
+                <span class="cm">// ★ 关键：直接返回构造好的响应，不再调用 chain.nextCall()，</span>
+                <span class="cm">//   这样请求根本不会打到模型，既省钱又安全</span>
+                <span class="kw">return</span> blockedResponse(request, <span class="st">"抱歉，您的请求包含不允许的内容。"</span>);
+            }
+        }
+        <span class="kw">return</span> chain.nextCall(request);
+    }
+
+    <span class="kw">private</span> String extractUserText(ChatClientRequest request) {
+        <span class="kw">return</span> request.prompt().getInstructions().stream()
+                .filter(m -&gt; m.getMessageType() == MessageType.USER)
+                .map(m -&gt; m.getText() == <span class="kw">null</span> ? <span class="st">""</span> : m.getText())
+                .reduce(<span class="st">""</span>, (a, b) -&gt; a + <span class="st">"\n"</span> + b);
+    }
+
+    <span class="kw">private</span> ChatClientResponse blockedResponse(ChatClientRequest request, String msg) {
+        <span class="cm">// 构造一个"假的"模型响应，字段结构与真实响应一致</span>
+        AssistantMessage message = <span class="kw">new</span> AssistantMessage(msg);
+        ChatResponse chatResponse = <span class="kw">new</span> ChatResponse(
+                List.of(<span class="kw">new</span> Generation(message)));
+        <span class="kw">return</span> ChatClientResponse.builder()
+                .chatResponse(chatResponse)
+                .context(request.context())
+                .build();
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> getOrder() {
+        <span class="cm">// ★ 必须比其他 Advisor 小，保证最先检查用户输入</span>
+        <span class="kw">return</span> Ordered.HIGHEST_PRECEDENCE;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> String getName() { <span class="kw">return</span> <span class="st">"SafeGuardAdvisor"</span>; }
+}</code></pre>
+
+<h3>③ 挂载 Advisor</h3>
+
+<pre><code><span class="cm">// 全局挂载：所有请求都生效</span>
+ChatClient chatClient = ChatClient.builder(chatModel)
+        .defaultAdvisors(safeGuardAdvisor, tokenUsageAdvisor)
+        .build();
+
+<span class="cm">// 单次请求挂载：只对这次生效（临时调试很方便）</span>
+chatClient.prompt()
+        .user(<span class="st">"..."</span>)
+        .advisors(<span class="kw">new</span> SimpleLoggerAdvisor())
+        .call()
+        .content();
+
+<span class="cm">// 通过上下文给 Advisor 传参（Advisor 里用 request.context().get("key") 取）</span>
+chatClient.prompt()
+        .user(<span class="st">"..."</span>)
+        .advisors(a -&gt; a.param(<span class="st">"tenantId"</span>, <span class="st">"t001"</span>))
+        .call()
+        .content();</code></pre>
+
+<div class="pit">
+  <strong>Advisor 里绝对不能做的事：</strong>
+  <ol style="margin-bottom:0">
+    <li><strong>不要吞异常。</strong>Advisor 里 <code>catch</code> 了却返回 <code>null</code>，会让上层拿到空指针，排查成本极高；要么包装成业务异常抛出，要么返回明确的错误响应。</li>
+    <li><strong>不要在 Advisor 里做重 IO。</strong>Advisor 是每个请求都过的路径，一次同步数据库查询就会拖慢所有接口。要 IO 就加缓存。</li>
+    <li><strong>不要依赖可变共享状态。</strong>Advisor 是单例，请用局部变量或 ThreadLocal（并记得清理），否则并发下会串数据。</li>
+  </ol>
+</div>
+
+<h2 id="s7"><span class="h2-num">3.7</span>完整示例：订单信息提取服务</h2>
+
+<p>把本章能力组装成完整可运行的服务：结构化输出 + 校验 + 重试 + Advisor 治理。</p>
+
+<div class="filetree"><span class="dir">src/main/java/com/example/springai/ch03/</span>
+├── <span class="dir">model/</span>
+│   ├── OrderInfo.java              <span class="desc"># record，含 @JsonPropertyDescription 与校验注解</span>
+│   └── ExtractResult.java          <span class="desc"># 包装结果：成功数据 + 置信度 + 重试次数</span>
+├── OrderExtractionService.java     <span class="desc"># 核心：提取 + 校验 + 重试</span>
+└── OrderExtractionController.java  <span class="desc"># POST /api/v1/orders/extract</span></div>
+
+<pre><code><span class="kw">package</span> com.example.springai.ch03.model;
+
+<span class="kw">import</span> com.fasterxml.jackson.annotation.JsonPropertyDescription;
+<span class="kw">import</span> jakarta.validation.constraints.*;
+<span class="kw">import</span> java.math.BigDecimal;
+<span class="kw">import</span> java.time.LocalDate;
+<span class="kw">import</span> java.util.List;
+
+<span class="kw">public record</span> OrderInfo(
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"订单号，纯数字字符串，例如 2024001；找不到则返回 null"</span>)
+    String orderNo,
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"客户姓名，不含称谓"</span>)
+    String customerName,
+
+    <span class="an">@NotNull</span>(message = <span class="st">"金额缺失"</span>)
+    <span class="an">@DecimalMin</span>(value = <span class="st">"0"</span>, message = <span class="st">"金额不能为负"</span>)
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"订单总金额，只输出数字如 899.00，不带单位"</span>)
+    BigDecimal amount,
+
+    <span class="an">@Pattern</span>(regexp = <span class="st">"^(未发货|已发货|已完成|已取消)$"</span>,
+             message = <span class="st">"状态必须是：未发货/已发货/已完成/已取消"</span>)
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"订单状态，四选一"</span>)
+    String status,
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"下单日期，格式 yyyy-MM-dd；无法确定则 null"</span>)
+    LocalDate orderDate,
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"商品名称列表；没有则返回空数组 []"</span>)
+    List&lt;String&gt; items,
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"联系电话原文，保持原样不做脱敏"</span>)
+    String phone
+) {}</code></pre>
+
+<pre><code><span class="kw">package</span> com.example.springai.ch03;
+
+<span class="cm">/** 提取结果包装：让上游知道"这是几次尝试拿到的、可靠性如何" */</span>
+<span class="kw">public record</span> ExtractResult(OrderInfo data, <span class="kw">int</span> attempts, <span class="kw">boolean</span> success, String message) {}</code></pre>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> OrderExtractionService {
+
+    <span class="kw">private final</span> ChatClient chatClient;
+    <span class="kw">private final</span> Validator validator;
+
+    <span class="kw">public</span> OrderExtractionService(ChatClient chatClient, Validator validator) {
+        <span class="kw">this</span>.chatClient = chatClient;
+        <span class="kw">this</span>.validator = validator;
+    }
+
+    <span class="kw">private static final</span> String TEMPLATE = <span class="st">"""
+            你是一名订单信息抽取助手。请从下面的文本中提取订单结构。
+
+            抽取规则：
+            1. 找不到的字段返回 null（列表返回 []），严禁编造或推测。
+            2. 金额只输出数字，不带"元""¥"等符号。
+            3. 状态只能从四个值里选，无法判断时返回 null。
+            4. 只输出 JSON 对象本身，不要解释、不要代码块标记。
+
+            待抽取文本：
+            {input}
+
+            {format}
+            """</span>;
+
+    <span class="kw">public</span> ExtractResult extract(String input) {
+        <span class="kw">final int</span> MAX = 3;
+        String lastError = <span class="kw">null</span>;
+
+        <span class="kw">for</span> (<span class="kw">int</span> attempt = 1; attempt &lt;= MAX; attempt++) {
+            String userText = TEMPLATE
+                    .replace(<span class="st">"{input}"</span>, input)
+                    .replace(<span class="st">"{format}"</span>, <span class="st">""</span>);  <span class="cm">// format 由 entity() 自动注入</span>
+
+            <span class="kw">if</span> (lastError != <span class="kw">null</span>) {
+                userText += <span class="st">"\n\n【重要】上次输出有问题："</span> + lastError + <span class="st">"，请修正。"</span>;
+            }
+
+            <span class="kw">try</span> {
+                OrderInfo order = chatClient.prompt()
+                        .user(userText)
+                        <span class="cm">// 抽取类任务：温度必须为 0，追求可复现</span>
+                        .options(OpenAiChatOptions.builder().temperature(0.0).build())
+                        .call()
+                        .entity(OrderInfo.class);
+
+                <span class="kw">var</span> violations = validator.validate(order);
+                <span class="kw">if</span> (violations.isEmpty()) {
+                    <span class="kw">return new</span> ExtractResult(order, attempt, <span class="kw">true</span>, <span class="st">"OK"</span>);
+                }
+                lastError = violations.stream()
+                        .map(ConstraintViolation::getMessage)
+                        .collect(Collectors.joining(<span class="st">"；"</span>));
+
+            } <span class="kw">catch</span> (Exception e) {
+                <span class="cm">// 常见：模型输出了非 JSON（含解释文字 / 代码块包裹）</span>
+                lastError = <span class="st">"输出不是合法 JSON（"</span> + e.getClass().getSimpleName() + <span class="st">"）"</span>;
+                log.warn(<span class="st">"第 {} 次提取失败：{}"</span>, attempt, lastError);
+            }
+        }
+        <span class="cm">// 三次都失败：不抛异常，返回失败标记，让上游走人工/降级流程</span>
+        <span class="kw">return new</span> ExtractResult(<span class="kw">null</span>, MAX, <span class="kw">false</span>,
+                <span class="st">"自动提取失败，请转人工处理。最后错误："</span> + lastError);
+    }
+}</code></pre>
+
+<pre><code><span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/v1/orders"</span>)
+<span class="kw">public class</span> OrderExtractionController {
+
+    <span class="kw">private final</span> OrderExtractionService service;
+
+    <span class="kw">public</span> OrderExtractionController(OrderExtractionService service) {
+        <span class="kw">this</span>.service = service;
+    }
+
+    <span class="an">@PostMapping</span>(<span class="st">"/extract"</span>)
+    <span class="kw">public</span> ExtractResult extract(<span class="an">@RequestBody</span> Map&lt;String, String&gt; body) {
+        <span class="kw">return</span> service.extract(body.get(<span class="st">"text"</span>));
+    }
+}</code></pre>
+
+<h3>验证</h3>
+
+<pre><code>curl -X POST http://localhost:8080/api/v1/orders/extract \
+  -H "Content-Type: application/json" \
+  -d '{"text":"你好，我是张三，订单 2024001 在 3 月 5 日下的单，金额 899 元，买了一个机械键盘和一个鼠标垫，现在还没发货，联系电话 13800008888"}'
+
+<span class="cm"># 期望输出（字段名与 record 完全一致）：</span>
+<span class="cm"># {"data":{"orderNo":"2024001","customerName":"张三","amount":899.00,</span>
+<span class="cm">#          "status":"未发货","orderDate":"2024-03-05",</span>
+<span class="cm">#          "items":["机械键盘","鼠标垫"],"phone":"13800008888"},</span>
+<span class="cm">#  "attempts":1,"success":true,"message":"OK"}</span>
+
+<span class="cm"># 故意给一段信息不全的文本，验证"不编造"规则</span>
+curl -X POST http://localhost:8080/api/v1/orders/extract \
+  -H "Content-Type: application/json" \
+  -d '{"text":"帮我看看那个订单发货了没有"}'
+
+<span class="cm"># 期望：orderNo/amount 为 null，success=false（因为 amount 有 @NotNull），</span>
+<span class="cm">#       最终返回"请转人工处理" —— 这正是一个"不瞎编"的正确表现</span></code></pre>
+
+<h2 id="s8"><span class="h2-num">3.8</span>常见坑排错</h2>
+
+<table>
+  <thead><tr><th style="width:340px">现象</th><th style="width:220px">原因</th><th>解决</th></tr></thead>
+  <tbody>
+    <tr><td><code>JsonParseException: Unexpected character '`'</code></td><td>模型用 ```json 代码块包裹了输出</td><td>提示词里明确「不要代码块标记」；或先做一次字符串清洗：剥掉首尾的 ``` </td></tr>
+    <tr><td><code>JsonParseException: Unrecognized token '好的'</code></td><td>模型在 JSON 前写了客套话/推理过程</td><td>提示词加「只输出 JSON」；把推理与输出拆成两次调用</td></tr>
+    <tr><td>对象字段全是 null</td><td>字段名与 JSON key 不一致（大小写/下划线）</td><td>用 <code>@JsonProperty("order_no")</code> 显式映射；或统一命名风格</td></tr>
+    <tr><td>金额映射失败 <code>Cannot deserialize value of type BigDecimal from String "899元"</code></td><td>模型带上了单位</td><td>字段描述里写「只输出数字不带单位」；或在 record 里定义紧凑构造器做清洗</td></tr>
+    <tr><td>日期解析失败</td><td>模型返回 <code>2024/3/5</code> 或「3月5日」</td><td>字段描述里写死格式 <code>yyyy-MM-dd</code>；或改用 String 接收后自己解析</td></tr>
+    <tr><td><code>entity()</code> 偶尔成功偶尔失败</td><td>temperature 太高，输出不稳定</td><td>抽取类任务 temperature 设 0；并加重试</td></tr>
+    <tr><td>自定义 Advisor 没生效</td><td>没注册进 <code>defaultAdvisors</code>，或 order 冲突</td><td>检查是否被 Spring 扫描到；打印 <code>getName()</code> 确认；检查 order 值</td></tr>
+    <tr><td>敏感词拦截后返回 500</td><td>构造的 ChatResponse 结构不完整</td><td>确保 <code>getResult()</code> 非空；必要时改成抛业务异常，由全局处理器返回 400</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s9"><span class="h2-num">3.9</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. <code>.entity(OrderInfo.class)</code> 背后到底做了什么？</p>
+    <div class="qa-a">
+      <p>四步：① 用 <code>BeanOutputConverter</code> 反射生成 JSON Schema；② 把 schema + 「必须输出符合此 schema 的 JSON」指令追加到提示词；
+      ③ 调用模型后取出文本，清洗（容忍代码块包裹）；④ 用 Jackson 反序列化成目标类型。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q2. 为什么抽取类任务的 temperature 要设成 0？</p>
+    <div class="qa-a">
+      <p>temperature 控制采样随机性。抽取任务要求「同一输入稳定产出同一结果」，随机性越低越好。
+      设 0 时模型倾向于选概率最高的 token，输出更确定、更可复现，也更容易通过回归测试。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q3. Advisor 的 order 值是 0 和 100，哪个先执行前置逻辑？</p>
+    <div class="qa-a">
+      <p><strong>0 先执行</strong>。order 小的在外层，前置逻辑先跑、后置逻辑最后跑。
+      所以「内容安全」这类要先看到用户输入的 Advisor，应该用很小的 order（甚至 <code>Ordered.HIGHEST_PRECEDENCE</code>）。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q4. 结构化输出已经有 schema 约束了，为什么还要 jаkarta validation 校验？</p>
+    <div class="qa-a">
+      <p>Schema 只约束<strong>形状</strong>（字段有没有、类型对不对），不约束<strong>业务语义</strong>。
+      模型完全可能给出格式合法但业务荒谬的数据（金额为负、状态值为「已发货啦」）。
+      Schema 是第一道防线，JSR-303 是第二道，重试是第三道，降级是第四道。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】写一个 Advisor：每次调用后把「用户问题 + 模型回答 + Token 数」写入一张 MySQL 审计表。要求不能拖慢主流程。</p>
+    <div class="qa-a">
+      <p>提示：Advisor 里把记录扔进一个 <code>BlockingQueue</code> 或 Spring 的 <code>ApplicationEventPublisher</code>，
+      由独立的消费线程/监听器批量写库；<strong>绝对不要在 Advisor 里同步执行 insert</strong>。
+      这是「审计与可观测性」最常用的异步化模式。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能说清 <code>entity()</code> 的四个内部步骤，并能手写 converter 版本等价实现。</li>
+    <li>订单提取接口在正常输入下返回完整的 <code>OrderInfo</code>，在信息不足时不编造。</li>
+    <li>能解释为什么金额用 <code>BigDecimal</code>、为什么温度设 0。</li>
+    <li>自定义的 Token 统计 Advisor 能在日志里打印出准确的 Token 数。</li>
+    <li>能画出 Advisor 的洋葱模型并说明 order 的语义。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="ch02.html"><div class="dir-label">← 上一章</div><div class="dir-name">第 2 章 · 提示词与对话</div></a>
+  <a class="next" href="ch04.html"><div class="dir-label">下一章 →</div><div class="dir-name">第 4 章 · 嵌入模型与向量数据库</div></a>
+</div>
+
+<div class="footer">Spring AI 2.0 学习指南 · 第 3 章</div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>
+

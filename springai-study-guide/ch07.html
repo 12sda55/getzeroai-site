@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 7 章 · 工具调用 | Spring AI 2.0 学习指南</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">AI</span>
+    <span>Spring AI 2.0 学习指南<small>企业级智能应用开发实践</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与环境准备</option>
+    <option value="ch01.html">01 · Spring AI 入门</option>
+    <option value="ch02.html">02 · 提示词与对话</option>
+    <option value="ch03.html">03 · 结构化输出与 Advisors</option>
+    <option value="ch04.html">04 · 嵌入模型与向量数据库</option>
+    <option value="ch05.html">05 · RAG</option>
+    <option value="ch06.html">06 · 记忆与多模型</option>
+    <option value="ch07.html">07 · 工具调用</option>
+    <option value="ch08.html">08 · MCP</option>
+    <option value="ch09.html">09 · 智能体</option>
+    <option value="ch10.html">10 · 可观测性与评估</option>
+    <option value="ch11.html">11 · 综合项目</option>
+    <option value="appendix.html">附录 · 速查手册</option>
+  </select>
+  <a class="tb-link" href="index.html#env">环境准备</a>
+  <a class="tb-link" href="appendix.html">速查</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>Spring AI 入门</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>提示词与对话</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>结构化输出与 Advisors</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>嵌入模型与向量数据库</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>RAG</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>记忆与多模型</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>工具调用</span></a>
+    <div class="sb-sub">
+      <a href="#s1">7.1 工具调用的本质</a>
+      <a href="#s2">7.2 两次调用的完整时序</a>
+      <a href="#s3">7.3 @Tool 注解详解</a>
+      <a href="#s4">7.4 注册工具的三种方式</a>
+      <a href="#s5">7.5 返回值、ToolContext 与结果直出</a>
+      <a href="#s6">7.6 参数校验、异常与安全边界</a>
+      <a href="#s7">7.7 完整示例：订单与天气查询</a>
+      <a href="#s8">7.8 常见坑排错</a>
+      <a href="#s9">7.9 自测题</a>
+    </div>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>MCP</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>智能体</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>可观测性与评估</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>综合项目</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>速查手册 / 排错表</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="index.html">总览</a> / 第 7 章</div>
+  <h1><span class="ch-tag">CH 07</span>工具调用（Tool Calling）</h1>
+  <p class="lead">这一章让模型从「只能说话」变成「能干活」。工具调用是 RAG 之后<strong>第二大核心能力</strong>：
+  RAG 让模型「知道得更多」，工具调用让模型「能做得更多」——查数据库、算价格、发邮件、调第三方接口。
+  但请记住一条铁律：<strong>模型永远只负责「决定调用什么」，真正的执行永远由你的 Java 代码负责。</strong></p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">让模型安全地调用业务方法</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 3、6 章</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">订单 / 天气查询工具</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–5 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">7.1</span>工具调用的本质：模型只会「举手」，不会「动手」</h2>
+
+<p>先用一个比喻理解：模型像一位坐在办公室里的顾问，
+他知道很多东西，但不能出门。当需要查实时数据时，他会写一张便条（工具名 + 参数）递给你，
+<strong>你跑出去把事情办完，把结果写回来给他</strong>，他再基于结果给你最终答复。</p>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h4>模型负责（3 件事）</h4>
+    <ol style="font-size:13.5px;margin-bottom:0">
+      <li>判断「这个问题需不需要调工具」</li>
+      <li>选择调用哪个工具</li>
+      <li>从用户的话里抽出参数（可能不全，会追问）</li>
+    </ol>
+  </div>
+  <div class="card">
+    <h4>你负责（4 件事）</h4>
+    <ol style="font-size:13.5px;margin-bottom:0">
+      <li>真正执行那个方法（查库、调接口）</li>
+      <li><strong>权限校验</strong>！模型说查就查？绝对不行</li>
+      <li>参数校验与兜底</li>
+      <li>把结果（或错误）格式化后回传</li>
+    </ol>
+  </div>
+</div>
+
+<div class="pit">
+  <strong>最危险的理解误区：把模型当成了「安全边界」。</strong>
+  有同学会想「我在工具描述里写『只能查询当前用户的订单』，模型就会守规矩」——
+  <strong>这是完全错误的</strong>。模型可以被提示词注入攻击绕过，会凭空编造用户 ID。
+  正确做法：<strong>工具实现内部必须从服务端的登录态取用户身份，绝不接受模型传来的 userId</strong>。
+  这一条在第 9 章 Agent 里会更重要，因为 Agent 会连续调用多个工具。
+</div>
+
+<h2 id="s2"><span class="h2-num">7.2</span>完整时序：为什么一次问答会有两次模型调用</h2>
+
+<div class="filetree">用户："订单 2024001 什么时候发货？"
+  │
+  ▼ ① 第一次调用模型（带上工具定义）
+模型返回：我不直接回答，我要调工具
+       tool_calls = [{ name: "queryOrderStatus", arguments: {"orderNo":"2024001"} }]
+  │
+  ▼ ② 你的代码执行工具（Spring AI 自动完成）
+  ├─ 校验参数
+  ├─ 校验权限（这个订单属于当前用户吗？）
+  ├─ 查询数据库
+  └─ 得到结果：{"status":"未发货","promisedDate":"2024-03-08"}
+  │
+  ▼ ③ 第二次调用模型（带上工具执行结果）
+模型返回："您的订单 2024001 目前显示未发货，预计 3 月 8 日发出。"
+  │
+  ▼ 用户看到最终回答
+
+★ 关键：整个过程对调用方是透明的，你只写一个 .call()，
+  但底层发生了 2 次（或更多次）模型请求，Token 消耗也是双份。
+  这是"工具调用比普通问答贵"的根本原因。</div>
+
+<div class="note">
+  <strong>为什么必须理解时序？</strong>因为它决定了三件事：
+  ① <strong>成本</strong>：每多一轮工具调用，就多一次完整的上下文发送；
+  ② <strong>延迟</strong>：串行执行，2 次模型调用 + 1 次数据库查询，可能 5 秒以上；
+  ③ <strong>可观测性</strong>：第 10 章做 Trace 时，你要能看到「哪次调用、调了哪个工具、参数是什么、花了多久」。
+</div>
+
+<h2 id="s3"><span class="h2-num">7.3</span>@Tool 注解：把 Java 方法暴露给模型</h2>
+
+<pre><code><span class="kw">package</span> com.example.springai.ch07;
+
+<span class="kw">import</span> org.springframework.ai.tool.annotation.Tool;
+<span class="kw">import</span> org.springframework.ai.tool.annotation.ToolParam;
+<span class="kw">import</span> org.springframework.stereotype.Component;
+<span class="kw">import</span> java.math.BigDecimal;
+<span class="kw">import</span> java.time.LocalDate;
+
+<span class="an">@Component</span>
+<span class="kw">public class</span> OrderTools {
+
+    <span class="cm">/**</span>
+<span class="cm">     * 一个工具方法。三个要素决定模型能不能用好它：</span>
+<span class="cm">     * ① 方法名     → 模型看到的工具名（尽量用动词+名词，语义清晰）</span>
+<span class="cm">     * ② description → ★ 最重要！模型靠它决定"什么时候用这个工具、不用那个"</span>
+<span class="cm">     * ③ 参数描述    → 模型靠它知道"这个参数从用户的话里怎么抽"</span>
+<span class="cm">     */</span>
+    <span class="an">@Tool</span>(description = <span class="st">"""
+            查询指定订单号的当前状态与预计发货时间。
+            使用时机：当用户询问某个订单的发货情况、物流状态、是否已发货时调用。
+            不要用于：查询商品信息、退款进度、账户余额。
+            """</span>)
+    <span class="kw">public</span> OrderStatus queryOrderStatus(
+            <span class="an">@ToolParam</span>(description = <span class="st">"订单号，纯数字字符串，例如 2024001"</span>)
+            String orderNo) {
+
+        <span class="cm">// ★★★ 这里就是安全边界！绝不能相信模型传来的 orderNo 就是"当前用户的订单"</span>
+        String currentUser = SecurityContextHolder.currentUserId();
+        <span class="kw">if</span> (!orderRepository.belongsTo(orderNo, currentUser)) {
+            <span class="cm">// 返回明确错误，而不是抛异常——让模型能理解并礼貌回复用户</span>
+            <span class="kw">return new</span> OrderStatus(orderNo, <span class="st">"NOT_FOUND"</span>, <span class="kw">null</span>,
+                    <span class="st">"系统中不存在该订单，或该订单不属于当前用户"</span>);
+        }
+
+        Order order = orderRepository.findByNo(orderNo);
+        <span class="kw">return new</span> OrderStatus(order.orderNo(), order.status(),
+                order.promisedDate(), <span class="st">"查询成功"</span>);
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 无参工具也可以（模型不需要传任何参数）。</span>
+<span class="cm">     * 典型场景：获取"今天日期"这类模型自己不知道的信息。</span>
+<span class="cm">     */</span>
+    <span class="an">@Tool</span>(description = <span class="st">"获取当前的日期与时间。当用户说'今天''本周''最近'等相对时间时，必须先调用此工具获取真实日期。"</span>)
+    <span class="kw">public</span> String currentDateTime() {
+        <span class="kw">return</span> LocalDate.now() + <span class="st">" "</span> + java.time.LocalTime.now().withNano(0);
+    }
+
+    <span class="cm">/** 工具的返回类型：建议用 record，字段名会进入模型的上下文 */</span>
+    <span class="kw">public record</span> OrderStatus(String orderNo, String status,
+                                LocalDate promisedDate, String message) {}
+}</code></pre>
+
+<h3>写工具描述的「四要素」模板</h3>
+
+<table>
+  <thead><tr><th style="width:130px">要素</th><th>说明</th><th style="width:250px">示例</th></tr></thead>
+  <tbody>
+    <tr><td><strong>做什么</strong></td><td>一句话说明功能，动词开头</td><td>查询指定订单号的当前状态与预计发货时间。</td></tr>
+    <tr><td><strong>何时用</strong></td><td>给模型明确的触发条件</td><td>当用户询问发货情况、物流状态时调用。</td></tr>
+    <tr><td><strong>何时不用</strong></td><td>★ 很多人漏掉，但极其重要</td><td>不要用于查询商品信息、退款进度、账户余额。</td></tr>
+    <tr><td><strong>参数约束</strong></td><td>格式、取值范围、必填性</td><td>订单号为纯数字字符串，例如 2024001。</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>工具越多，描述越要「互斥」。</strong>当你有 10 个工具时，最大的问题不是模型不会用，而是<strong>用错工具</strong>。
+  解决办法就是在每个描述里写清「不要用于……」，并保证工具职责不重叠。
+  如果两个工具功能高度相似，<strong>合并成一个带枚举参数的工具</strong>比拆成两个更好。
+</div>
+
+<h2 id="s4"><span class="h2-num">7.4</span>注册工具的三种方式</h2>
+
+<pre><code><span class="cm">// ---------- 方式一：直接传对象（最简，适合手工指定） ----------</span>
+String answer = chatClient.prompt()
+        .user(<span class="st">"订单 2024001 发货了吗？"</span>)
+        .tools(<span class="kw">new</span> OrderTools(), <span class="kw">new</span> DateTimeTools())   <span class="cm">// 传实例</span>
+        .call()
+        .content();
+
+<span class="cm">// ---------- 方式二：用 ToolCallbacks 显式转换（可控性更强） ----------</span>
+<span class="kw">import</span> org.springframework.ai.support.ToolCallbacks;
+
+ToolCallback[] callbacks = ToolCallbacks.from(<span class="kw">new</span> OrderTools(), <span class="kw">new</span> DateTimeTools());
+
+String answer2 = chatClient.prompt()
+        .user(<span class="st">"订单 2024001 发货了吗？"</span>)
+        .toolCallbacks(callbacks)
+        .call()
+        .content();
+
+<span class="cm">// ---------- 方式三：默认挂载（推荐，业务代码最干净） ----------</span>
+<span class="an">@Bean</span>
+<span class="kw">public</span> ChatClient orderChatClient(ChatModel chatModel,
+                                    OrderTools orderTools,
+                                    DateTimeTools dateTimeTools) {
+    <span class="kw">return</span> ChatClient.builder(chatModel)
+            <span class="cm">// 所有通过这个 client 发起的请求都能用这些工具</span>
+            .defaultTools(orderTools, dateTimeTools)
+            .defaultSystem(<span class="st">"你是订单助手。涉及订单数据时必须调用工具查询，禁止凭记忆回答。"</span>)
+            .build();
+}</code></pre>
+
+<h3>三种方式的选择</h3>
+
+<table>
+  <thead><tr><th style="width:200px">方式</th><th>适用</th><th style="width:150px">特点</th></tr></thead>
+  <tbody>
+    <tr><td><code>.tools(bean)</code></td><td>临时实验、工具数量少</td><td>最直观</td></tr>
+    <tr><td><code>.toolCallbacks(...)</code></td><td>需要动态决定注册哪些工具（例如按权限）</td><td>最灵活</td></tr>
+    <tr><td><code>defaultTools(...)</code></td><td>✅ 生产代码</td><td>业务代码零污染</td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>工具不是越多越好。</strong>每注册一个工具，都会把它的名字、描述、参数 schema 塞进提示词，
+  消耗 Token 并干扰模型判断。实测经验：<strong>单次请求的工具数控制在 5~10 个以内</strong>；
+  超过 15 个时模型选错工具的概率显著上升。如果确实有很多工具，
+  用「工具分组 + 先路由再注册」（先让模型判断属于哪个领域，再只注册该领域的工具）来解决。
+</div>
+
+<h2 id="s5"><span class="h2-num">7.5</span>返回值、ToolContext 与「结果直出」</h2>
+
+<h3>工具返回值怎么设计</h3>
+
+<pre><code><span class="cm">// ❌ 不好：返回一个复杂的内部实体，字段名模型看不懂</span>
+<span class="kw">public</span> OrderEntity query(String no) { <span class="kw">return</span> repo.find(no); }
+<span class="cm">// 返回 {"id":1,"ordNo":"2024001","sta":2,"gmtCreate":1709...}</span>
+<span class="cm">// 模型看到 sta=2 完全不知道是什么意思</span>
+
+<span class="cm">// ✅ 好：返回语义清晰的 DTO，字段名自解释，必要时附带说明文本</span>
+<span class="kw">public record</span> OrderStatus(
+        String orderNo,          <span class="cm">// 订单号</span>
+        String status,           <span class="cm">// 已翻译成中文：未发货/已发货/已完成</span>
+        String promisedDate,     <span class="cm">// 预计发货日期 yyyy-MM-dd</span>
+        String message           <span class="cm">// 一句话说明，便于模型组织语言</span>
+) {}</code></pre>
+
+<div class="tip">
+  <strong>一个反复被验证的经验：工具的返回值要「为模型而设计」，不是「为你而设计」。</strong>
+  把数据库里的状态码 <code>2</code> 翻译成「已发货」，把时间戳格式化成 <code>2024-03-08</code>，
+  把金额带上单位。这一步做得越贴心，模型最终的回答就越准确。
+</div>
+
+<h3>ToolContext：把上下文信息传进工具（不经过模型）</h3>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.chat.model.ToolContext;
+
+<span class="cm">/**</span>
+<span class="cm">     * ★★ ToolContext 是一个非常重要的机制：</span>
+<span class="cm">     * 它允许你把「不能也不应该让模型看到/控制」的信息传给工具，</span>
+<span class="cm">     * 例如：当前登录用户的 ID、租户 ID、请求追踪 ID。</span>
+<span class="cm">     *</span>
+<span class="cm">     * 这些值由你的代码在调用时注入，模型无法伪造——这是安全性的关键。</span>
+<span class="cm">     */</span>
+    <span class="an">@Tool</span>(description = <span class="st">"查询当前用户自己的全部订单列表"</span>)
+    <span class="kw">public</span> List&lt;OrderStatus&gt; queryMyOrders(ToolContext toolContext) {
+        <span class="cm">// 从上下文取当前用户，而不是从模型的参数里取！</span>
+        String userId  = (String) toolContext.getContext().get(<span class="st">"userId"</span>);
+        String tenantId = (String) toolContext.getContext().get(<span class="st">"tenantId"</span>);
+
+        <span class="kw">return</span> orderRepository.findByUser(tenantId, userId).stream()
+                .map(o -&gt; <span class="kw">new</span> OrderStatus(o.orderNo(), o.status(),
+                        String.valueOf(o.promisedDate()), <span class="st">""</span>))
+                .toList();
+    }</code></pre>
+
+<p>调用时把上下文注入进去：</p>
+
+<pre><code>String answer = chatClient.prompt()
+        .user(<span class="st">"帮我看看我有哪些订单"</span>)
+        <span class="cm">// ★ 由服务端注入，模型看不到也改不了</span>
+        .toolContext(Map.of(
+                <span class="st">"userId"</span>, SecurityContextHolder.currentUserId(),
+                <span class="st">"tenantId"</span>, SecurityContextHolder.currentTenantId()))
+        .call()
+        .content();</code></pre>
+
+<div class="goal">
+  <strong>记住这条安全设计原则：</strong>
+  <strong>凡是「身份、权限、租户」类信息，一律走 ToolContext；凡是「业务参数」类信息（订单号、日期、关键词），才让模型传。</strong>
+  这样即使模型被注入攻击，攻击者也只能控制业务参数，无法越权。
+</div>
+
+<h3>returnDirect：让工具结果直接返回给用户</h3>
+
+<pre><code><span class="cm">/**</span>
+<span class="cm"> * 有些工具的返回值本身就是最终答案，不需要模型再加工一遍。</span>
+<span class="cm"> * 例如"导出一份明细报表"——加工反而会改动数据、增加成本。</span>
+<span class="cm"> * returnDirect = true 时，工具结果会跳过第二次模型调用，直接返回。</span>
+<span class="cm"> */</span>
+<span class="an">@Tool</span>(description = <span class="st">"导出指定订单的完整明细报表（CSV 文本）"</span>, returnDirect = <span class="kw">true</span>)
+<span class="kw">public</span> String exportOrderDetail(<span class="an">@ToolParam</span>(description = <span class="st">"订单号"</span>) String orderNo) {
+    <span class="kw">return</span> reportService.toCsv(orderNo);
+}</code></pre>
+
+<div class="note">
+  <strong>什么时候用 returnDirect？</strong>
+  ① 结果是结构化数据、模型不该改写；② 想省一次模型调用（省钱省延迟）；
+  ③ 结果对格式极其敏感（如 SQL、代码、JSON）。
+  反之，如果希望模型把结果「翻译成人话」，就不要用。
+</div>
+
+<h2 id="s6"><span class="h2-num">7.6</span>参数校验、异常处理与安全边界</h2>
+
+<h3>工具里的错误：返回给模型，而不是抛给用户</h3>
+
+<pre><code><span class="cm">/**</span>
+<span class="cm"> * 工具执行失败时的两种处理方式，效果差别巨大：</span>
+<span class="cm"> *</span>
+<span class="cm"> * ❌ 抛异常 → Spring AI 会把异常信息带回给模型（或直接失败），</span>
+<span class="cm"> *           用户看到的是"系统错误"，体验极差。</span>
+<span class="cm"> *</span>
+<span class="cm"> * ✅ 返回结构化的错误对象 → 模型能"读懂"错误，并组织成礼貌的话回复用户，</span>
+<span class="cm"> *           例如："没有找到订单 2024001，请确认订单号是否正确？"</span>
+<span class="cm"> */</span>
+<span class="an">@Tool</span>(description = <span class="st">"查询指定订单号的当前状态与预计发货时间"</span>)
+<span class="kw">public</span> OrderStatus queryOrderStatus(
+        <span class="an">@ToolParam</span>(description = <span class="st">"订单号，纯数字字符串，例如 2024001"</span>) String orderNo) {
+
+    <span class="cm">// ---------- ① 参数格式校验：模型可能传 "订单2024001" 或空值 ----------</span>
+    <span class="kw">if</span> (orderNo == <span class="kw">null</span> || !orderNo.matches(<span class="st">"\\d{6,20}"</span>)) {
+        <span class="kw">return new</span> OrderStatus(orderNo, <span class="st">"INVALID"</span>, <span class="kw">null</span>,
+                <span class="st">"订单号格式不正确，应为 6~20 位数字。请向用户确认订单号后重试。"</span>);
+    }
+
+    <span class="cm">// ---------- ② 权限校验：绝不接受模型传来的用户身份 ----------</span>
+    String userId = SecurityContextHolder.currentUserId();
+    <span class="kw">if</span> (!orderRepository.belongsTo(orderNo, userId)) {
+        <span class="cm">// ★ 注意这里不返回"订单属于别人"——那等于泄露了"这个订单存在"的信息</span>
+        <span class="kw">return new</span> OrderStatus(orderNo, <span class="st">"NOT_FOUND"</span>, <span class="kw">null</span>,
+                <span class="st">"未查询到该订单。请确认订单号是否正确。"</span>);
+    }
+
+    <span class="cm">// ---------- ③ 业务异常兜底：把技术异常翻译成业务语言 ----------</span>
+    <span class="kw">try</span> {
+        Order order = orderRepository.findByNo(orderNo);
+        <span class="kw">if</span> (order == <span class="kw">null</span>) {
+            <span class="kw">return new</span> OrderStatus(orderNo, <span class="st">"NOT_FOUND"</span>, <span class="kw">null</span>, <span class="st">"未查询到该订单。"</span>);
+        }
+        <span class="kw">return new</span> OrderStatus(order.orderNo(), order.status(),
+                String.valueOf(order.promisedDate()), <span class="st">""</span>);
+    } <span class="kw">catch</span> (Exception e) {
+        <span class="cm">// 内部异常详情记日志，返回给模型的是"可读的错误说明"</span>
+        log.error(<span class="st">"查询订单 {} 失败"</span>, orderNo, e);
+        <span class="kw">return new</span> OrderStatus(orderNo, <span class="st">"ERROR"</span>, <span class="kw">null</span>,
+                <span class="st">"订单系统暂时不可用，请稍后重试或转人工客服。"</span>);
+    }
+}</code></pre>
+
+<h3>全局异常处理器：统一决定「异常要不要抛」</h3>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.tool.execution.DefaultToolExecutionExceptionProcessor;
+<span class="kw">import</span> org.springframework.ai.tool.execution.ToolExecutionExceptionProcessor;
+
+<span class="an">@Configuration</span>
+<span class="kw">public class</span> ToolConfig {
+
+    <span class="cm">/**</span>
+<span class="cm">     * 工具抛异常时的全局策略。</span>
+<span class="cm">     *</span>
+<span class="cm">     * alwaysThrow = false（推荐）：把异常信息包装后返回给模型，</span>
+<span class="cm">     *                            让模型有机会向用户解释或换一个工具重试。</span>
+<span class="cm">     * alwaysThrow = true         ：直接向上抛，请求以失败告终。</span>
+<span class="cm">     *</span>
+<span class="cm">     * 生产环境建议 false，并配合日志告警——因为"模型拿到错误后自己修正"</span>
+<span class="cm">     * 的成功率其实相当高。</span>
+<span class="cm">     */</span>
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> ToolExecutionExceptionProcessor toolExecutionExceptionProcessor() {
+        <span class="kw">return</span> DefaultToolExecutionExceptionProcessor.builder()
+                .alwaysThrow(<span class="kw">false</span>)
+                .build();
+    }
+}</code></pre>
+
+<h3>工具的安全边界 Checklist</h3>
+
+<table>
+  <thead><tr><th style="width:180px">风险</th><th>错误做法</th><th>正确做法</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>越权读取</strong></td>
+      <td>接受模型传入的 <code>userId</code> 去查数据</td>
+      <td>从 <code>ToolContext</code> / 登录态取用户身份，服务端强制过滤</td>
+    </tr>
+    <tr>
+      <td><strong>提示词注入</strong></td>
+      <td>把用户输入直接当指令执行</td>
+      <td>工具只做「参数化查询」，绝不拼接 SQL / 绝不做文件路径拼接</td>
+    </tr>
+    <tr>
+      <td><strong>误删误改</strong></td>
+      <td>提供 <code>deleteOrder(orderNo)</code> 这类破坏性工具直接给模型</td>
+      <td>破坏性操作必须「两步走」：先返回确认信息，用户确认后再执行（第 9 章 Human-in-the-loop）</td>
+    </tr>
+    <tr>
+      <td><strong>资源耗尽</strong></td>
+      <td>工具里做全表扫描、调用无超时的外部接口</td>
+      <td>工具内部设超时（如 3 秒）、限制返回条数（如最多 50 条）</td>
+    </tr>
+    <tr>
+      <td><strong>重复执行</strong></td>
+      <td>模型在 Agent 循环里反复调用「创建工单」</td>
+      <td>写操作工具要幂等：用业务唯一键去重，或引入幂等 token</td>
+    </tr>
+    <tr>
+      <td><strong>成本失控</strong></td>
+      <td>工具返回 1 万条记录塞进上下文</td>
+      <td>工具只返回「摘要 + 前 N 条」，完整数据走另一条接口</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pit">
+  <strong>一个必须避免的设计错误：工具数量爆炸 + 描述模糊。</strong>
+  常见于「把 Service 层的所有方法都加 @Tool」。结果模型面对 40 个工具，
+  选错率飙升，还平白消耗大量 Token。正确做法是<strong>为 AI 场景单独设计一层「精简工具」</strong>，
+  例如把 <code>findByNo + findItems + findLogistics</code> 三个方法合并成一个
+  <code>getOrderOverview(orderNo)</code>，一次调用返回模型需要的全部信息。
+</div>
+
+<h2 id="s7"><span class="h2-num">7.7</span>完整示例：订单与天气查询助手</h2>
+
+<div class="filetree"><span class="dir">src/main/java/com/example/springai/ch07/</span>
+├── OrderTools.java                 <span class="desc"># 订单查询工具（含权限校验）</span>
+├── WeatherTools.java               <span class="desc"># 天气查询工具（模拟外部 API）</span>
+├── AssistantConfig.java            <span class="desc"># 装配带工具的 ChatClient</span>
+├── OrderAssistantService.java      <span class="desc"># 业务服务</span>
+└── OrderAssistantController.java   <span class="desc"># HTTP 接口</span></div>
+
+<h3>① 天气工具（演示外部 API 调用 + 超时保护）</h3>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> WeatherTools {
+
+    <span class="an">@Tool</span>(description = <span class="st">"""
+            查询指定城市未来 3 天的天气预报。
+            使用时机：用户询问天气、气温、是否下雨、穿衣建议时调用。
+            不要用于：查询历史天气（本工具只支持未来 3 天）。
+            """</span>)
+    <span class="kw">public</span> WeatherInfo queryWeather(
+            <span class="an">@ToolParam</span>(description = <span class="st">"城市名称，中文，例如 北京、上海、深圳；不要带'市'字后缀"</span>)
+            String city) {
+
+        <span class="cm">// 城市名做白名单/格式校验，防止把用户输入拼进 URL 造成注入</span>
+        <span class="kw">if</span> (city == <span class="kw">null</span> || city.isBlank() || city.length() &gt; 20) {
+            <span class="kw">return new</span> WeatherInfo(city, List.of(), <span class="st">"城市名不合法，请向用户确认城市名称。"</span>);
+        }
+
+        <span class="kw">try</span> {
+            <span class="cm">// 外部 API 调用必须设超时，否则会把整个请求拖死</span>
+            WeatherApiResponse resp = weatherApi.get(city);
+
+            <span class="cm">// ★ 关键：把返回值"翻译"成模型友好的中文，而不是原样丢 JSON</span>
+            List&lt;DailyWeather&gt; days = resp.getDaily().stream()
+                    .limit(3)     <span class="cm">// 最多 3 天，避免上下文过长</span>
+                    .map(d -&gt; <span class="kw">new</span> DailyWeather(
+                            d.getDate(),
+                            d.getTextDay(),                        <span class="cm">// "晴" / "小雨"</span>
+                            d.getTempMin() + <span class="st">"~"</span> + d.getTempMax() + <span class="st">"℃"</span>,
+                            d.getHumidity() + <span class="st">"%"</span>))
+                    .toList();
+
+            <span class="kw">return new</span> WeatherInfo(city, days, <span class="st">""</span>);
+        } <span class="kw">catch</span> (Exception e) {
+            log.error(<span class="st">"查询 {} 天气失败"</span>, city, e);
+            <span class="kw">return new</span> WeatherInfo(city, List.of(), <span class="st">"天气服务暂时不可用，请稍后重试。"</span>);
+        }
+    }
+
+    <span class="kw">public record</span> WeatherInfo(String city, List&lt;DailyWeather&gt; days, String message) {}
+    <span class="kw">public record</span> DailyWeather(String date, String weather,
+                                    String temperature, String humidity) {}
+}</code></pre>
+
+<h3>② 装配带工具的 ChatClient</h3>
+
+<pre><code><span class="an">@Configuration</span>
+<span class="kw">public class</span> AssistantConfig {
+
+    <span class="an">@Bean</span>(<span class="st">"orderAssistantClient"</span>)
+    <span class="kw">public</span> ChatClient orderAssistantClient(ChatModel chatModel,
+                                             OrderTools orderTools,
+                                             WeatherTools weatherTools) {
+        <span class="kw">return</span> ChatClient.builder(chatModel)
+                .defaultSystem(<span class="st">"""
+                        你是"智汇"公司的智能助手，可以查询订单状态和天气。
+
+                        工作准则：
+                        1. 凡是涉及订单数据、实时天气的问题，必须调用工具查询，
+                           禁止凭已有知识或猜测回答。
+                        2. 调用工具前如果缺少必要参数（如订单号、城市），
+                           先向用户追问，不要编造参数。
+                        3. 工具返回错误信息时，用友好、明确的语气告知用户，
+                           并给出下一步建议。
+                        4. 回答控制在 150 字以内。
+                        """</span>)
+                .defaultTools(orderTools, weatherTools)
+                .build();
+    }
+}</code></pre>
+
+<h3>③ 业务服务（注意 ToolContext 的注入）</h3>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> OrderAssistantService {
+
+    <span class="kw">private final</span> ChatClient orderAssistantClient;
+
+    <span class="kw">public</span> OrderAssistantService(
+            <span class="an">@Qualifier</span>(<span class="st">"orderAssistantClient"</span>) ChatClient orderAssistantClient) {
+        <span class="kw">this</span>.orderAssistantClient = orderAssistantClient;
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 带工具的问答。</span>
+<span class="cm">     * 注意 ToolContext 里只放"服务端可信"的身份信息。</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> String ask(String question) {
+        <span class="kw">return</span> orderAssistantClient.prompt()
+                .user(question)
+                <span class="cm">// ★ 身份信息走 ToolContext，模型看不见也改不了</span>
+                .toolContext(Map.of(
+                        <span class="st">"userId"</span>, SecurityContextHolder.currentUserId(),
+                        <span class="st">"tenantId"</span>, SecurityContextHolder.currentTenantId()))
+                .call()
+                .content();
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 进阶：手工查看模型到底调用了哪些工具。</span>
+<span class="cm">     * 调试工具调用时非常有价值——第 10 章的 Trace 就是基于这些数据做的。</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> String askWithToolTrace(String question) {
+        ChatResponse response = orderAssistantClient.prompt()
+                .user(question)
+                .toolContext(Map.of(<span class="st">"userId"</span>, SecurityContextHolder.currentUserId()))
+                .call()
+                .chatResponse();
+
+        <span class="cm">// 取出本次（最终一轮）的响应</span>
+        <span class="kw">var</span> output = response.getResult().getOutput();
+
+        <span class="cm">// 如果模型这一轮又发起了工具调用，会出现在这里</span>
+        <span class="kw">if</span> (output.getToolCalls() != <span class="kw">null</span> &amp;&amp; !output.getToolCalls().isEmpty()) {
+            output.getToolCalls().forEach(tc -&gt;
+                    log.info(<span class="st">"模型请求调用工具：name={} arguments={} id={}"</span>,
+                            tc.name(), tc.arguments(), tc.id()));
+        }
+        <span class="kw">return</span> output.getText();
+    }
+}</code></pre>
+
+<h3>④ 接口与验证</h3>
+
+<pre><code><span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/v1/assistant"</span>)
+<span class="kw">public class</span> OrderAssistantController {
+
+    <span class="kw">private final</span> OrderAssistantService service;
+
+    <span class="kw">public</span> OrderAssistantController(OrderAssistantService service) {
+        <span class="kw">this</span>.service = service;
+    }
+
+    <span class="an">@PostMapping</span>(<span class="st">"/ask"</span>)
+    <span class="kw">public</span> Map&lt;String, String&gt; ask(<span class="an">@RequestBody</span> Map&lt;String, String&gt; body) {
+        <span class="kw">return</span> Map.of(<span class="st">"answer"</span>, service.ask(body.get(<span class="st">"question"</span>)));
+    }
+}</code></pre>
+
+<pre><code><span class="cm"># ① 明确引用订单号 → 应触发 queryOrderStatus 工具</span>
+curl -X POST http://localhost:8080/api/v1/assistant/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"订单 2024001 什么时候发货？"}'
+
+<span class="cm"># 期望日志（askWithToolTrace 或 debug 日志）：</span>
+<span class="cm"># 模型请求调用工具：name=queryOrderStatus arguments={"orderNo":"2024001"}</span>
+<span class="cm"># 期望回答："您的订单 2024001 显示未发货，预计 3 月 8 日发出。"</span>
+
+<span class="cm"># ② 故意查一个不属于当前用户的订单 → 应返回友好提示而非数据</span>
+curl -X POST http://localhost:8080/api/v1/assistant/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"订单 9999999 发货了吗？"}'
+
+<span class="cm"># 期望：模型回答"未查询到该订单，请确认订单号是否正确"</span>
+<span class="cm"># ★ 这一步验证的是权限校验，而不是模型的"自觉"</span>
+
+<span class="cm"># ③ 混合任务：订单 + 天气（会触发两次工具调用）</span>
+curl -X POST http://localhost:8080/api/v1/assistant/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"我的订单 2024001 发货了吗？另外北京明天天气怎么样？"}'
+
+<span class="cm"># 期望：模型分别调用两个工具，最后合并成一段回答</span>
+
+<span class="cm"># ④ 缺少参数 → 应追问而不是编造</span>
+curl -X POST http://localhost:8080/api/v1/assistant/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"我的订单发货了吗？"}'
+
+<span class="cm"># 期望：模型回答"请提供订单号"</span>
+<span class="cm"># 如果它随便编了一个订单号去查 → 你的系统提示约束不够强</span></code></pre>
+
+<div class="goal">
+  <strong>第 ②、④ 步才是本章真正的考点。</strong>
+  很多同学跑通第 ① 步就以为学会了。
+  但生产环境的考验是：<strong>越权时能不能挡住？参数缺失时会不会编造？</strong>
+  这两个问题分别对应「安全」和「可靠性」，比「能不能调通」重要得多。
+</div>
+
+<h2 id="s8"><span class="h2-num">7.8</span>常见坑排错</h2>
+
+<table>
+  <thead><tr><th style="width:340px">现象</th><th style="width:220px">原因</th><th>解决</th></tr></thead>
+  <tbody>
+    <tr><td>模型完全不用工具，直接回答</td><td>工具描述太模糊；模型不支持 function calling</td><td>完善描述（含「何时用/何时不用」）；换支持工具调用的模型</td></tr>
+    <tr><td>模型用错工具</td><td>工具职责重叠，描述有歧义</td><td>合并相似工具；在描述里写明「不要用于……」</td></tr>
+    <tr><td>参数字段名对不上</td><td>模型传的 key 与方法参数名不一致（如 <code>order_no</code> vs <code>orderNo</code>）</td><td>在 <code>@ToolParam</code> 里描述清楚命名；或加多个可选参数做兼容</td></tr>
+    <tr><td>工具抛异常导致整个请求 500</td><td>没配 <code>ToolExecutionExceptionProcessor</code>，异常直接冒泡</td><td>配 <code>alwaysThrow(false)</code>；工具内部也做 try/catch 返回错误对象</td></tr>
+    <tr><td>模型用不存在的参数调用工具</td><td>参数描述不完整，模型猜测</td><td>参数描述里给示例值；工具内部做格式校验并返回可读错误</td></tr>
+    <tr><td>工具被反复调用，成本飙升</td><td>模型没拿到预期结果，循环重试；或 Agent 循环没设上限</td><td>工具返回明确成功/失败标识；Agent 循环设最大轮次（第 9 章）</td></tr>
+    <tr><td>同一个写操作被执行多次</td><td>模型重复调用创建类工具</td><td>写操作做幂等（唯一键 / 幂等 token）</td></tr>
+    <tr><td>响应很慢</td><td>工具内部慢（外部 API 无超时、全表扫描）</td><td>工具内部设超时、加索引、限制返回条数</td></tr>
+    <tr><td>工具返回的内容把上下文撑爆</td><td>一次返回上千条记录</td><td>只返回摘要 + 前 N 条；详细数据另开接口分页</td></tr>
+    <tr><td><code>ToolContext</code> 里取不到值</td><td>调用时忘记 <code>.toolContext(...)</code></td><td>检查每次调用是否注入了上下文；或写个统一入口方法</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s9"><span class="h2-num">7.9</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 一次带工具调用的问答，底层发生了几次模型请求？对成本有什么影响？</p>
+    <div class="qa-a">
+      <p>通常<strong>两次</strong>（多轮工具调用则更多）：第一次模型返回「我要调用某工具」，
+      你的代码执行工具后，第二次把结果回传给模型生成最终回答。
+      成本影响：每次请求都要发送完整上下文（含工具定义），所以 Token 消耗接近翻倍，延迟也叠加。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q2. 为什么身份信息要走 ToolContext 而不是作为工具参数？</p>
+    <div class="qa-a">
+      <p>因为工具参数由<strong>模型生成</strong>，而模型可以被提示词注入诱导、也可能自己编造。
+      把 userId 作为参数，等于让模型来决定「查谁的数据」——这是致命的越权漏洞。
+      ToolContext 由服务端代码注入，模型既看不到也无法修改，从机制上杜绝了越权。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q3. 工具里遇到业务错误，应该抛异常还是返回错误对象？为什么？</p>
+    <div class="qa-a">
+      <p>应该返回<strong>结构化的错误对象</strong>。因为模型拿到「可读的错误说明」后，
+      可以组织成友好的话术回复用户（「未找到该订单，请确认订单号」），甚至换一个工具重试；
+      而抛异常会让请求直接失败，用户看到的是系统错误。技术异常细节则记日志，不要返回给模型。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q4. 为什么「把所有 Service 方法都加 @Tool」是个坏主意？</p>
+    <div class="qa-a">
+      <p>三个原因：① 工具数量多会把大量描述塞进提示词，消耗 Token 并干扰模型判断；
+      ② 职责重叠导致选错率上升；③ Service 方法往往面向内部调用，参数复杂、返回内部实体，
+      对模型不友好。正确做法是<strong>为 AI 场景单独设计一层精简、语义清晰、返回值友好的工具</strong>。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】设计一个「提交退款申请」工具，要求满足：参数校验、幂等、需要用户确认、返回结构友好。写出方法签名与关键逻辑。</p>
+    <div class="qa-a">
+      <p>要点：<br>
+      · 签名：<code>String submitRefund(String orderNo, String reason, ToolContext ctx)</code>；<br>
+      · 幂等：用 <code>ctx</code> 里的 userId + orderNo 作为唯一键，先查是否已有进行中的退款单；<br>
+      · 确认：<strong>不要直接提交</strong>，先返回「即将为订单 X 提交退款申请，金额 Y 元，确认吗？」，
+      由上层（Agent 或前端）拿到用户确认后再调用真正的 <code>confirmRefund(refundId)</code>；<br>
+      · 返回：统一返回含 <code>status</code> 和 <code>message</code> 的 record，错误也用同结构。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能描述工具调用的完整时序，并说明为什么会有两次模型调用。</li>
+    <li>能写出一个带「四要素描述」的工具方法。</li>
+    <li>能用 ToolContext 传递用户身份，并说明为什么必须这么做。</li>
+    <li>越权查询返回友好提示（而不是返回别人的数据，也不是 500）。</li>
+    <li>参数缺失时模型会追问而不是编造。</li>
+    <li>能说出至少四条工具的安全设计原则。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="ch06.html"><div class="dir-label">← 上一章</div><div class="dir-name">第 6 章 · 记忆与多模型</div></a>
+  <a class="next" href="ch08.html"><div class="dir-label">下一章 →</div><div class="dir-name">第 8 章 · MCP</div></a>
+</div>
+
+<div class="footer">Spring AI 2.0 学习指南 · 第 7 章</div>
+</main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>
+

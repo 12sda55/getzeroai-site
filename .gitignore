@@ -1,0 +1,67 @@
+# ============================================================
+#  .gitignore · Spring AI 学习指南
+# ============================================================
+
+# ---------- 工作区元数据（本地记忆/缓存，不提交）----------
+.workbuddy/
+
+# ---------- 密钥与环境变量（★ 绝不提交，提交即泄露）----------
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*credentials*.json
+application-local.yml
+application-prod.yml
+application-secret.yml
+
+# ---------- Java / Maven ----------
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.ear
+
+# ---------- IDE ----------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+
+# ---------- 日志与临时文件 ----------
+logs/
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# ---------- 运行时数据（Docker 卷、上传的知识库文档）----------
+data/
+uploads/
+volumes/
+
+# ---------- 依赖与缓存 ----------
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mvn/timing.properties
+
+# ---------- 操作系统文件 ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ---------- 构建产物 ----------
+dist/
+build/
+out/
