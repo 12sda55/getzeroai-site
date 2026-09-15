@@ -215,7 +215,7 @@
 &lt;parent&gt;
   &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
   &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
-  &lt;version&gt;3.5.6&lt;/version&gt;
+  &lt;version&gt;4.1.1&lt;/version&gt;
 &lt;/parent&gt;
 
 &lt;dependencies&gt;
@@ -244,7 +244,7 @@
     &lt;dependency&gt;
       &lt;groupId&gt;org.springframework.ai&lt;/groupId&gt;
       &lt;artifactId&gt;spring-ai-bom&lt;/artifactId&gt;
-      &lt;version&gt;1.0.3&lt;/version&gt;
+      &lt;version&gt;2.0.1&lt;/version&gt;
       &lt;type&gt;pom&lt;/type&gt;
       &lt;scope&gt;import&lt;/scope&gt;
     &lt;/dependency&gt;
@@ -253,22 +253,36 @@
 
 <h3>② stdio 模式：只需一个配置文件 + 一个工具类</h3>
 
-<pre><code><span class="cm"># src/main/resources/application.yml（stdio 模式）</span>
+<pre><code><span class="cm"># src/main/resources/application.yml（本地联调用 stdio）</span>
 spring:
   main:
-    <span class="cm"># ★ stdio 模式下必须关闭 Web 容器，否则会因端口冲突或控制台输出污染协议流而失败</span>
+    <span class="cm"># ★ stdio 模式下必须关闭 Web 容器，否则启动日志会污染协议流（stdout 就是通信通道）</span>
     web-application-type: none
   ai:
     mcp:
       server:
         name: order-mcp-server        <span class="cm"># 服务名，客户端会看到</span>
         version: 1.0.0
-        <span class="cm"># 协议：STDIO 是默认；远程部署时改为 STREAMABLE</span>
-        protocol: STDIO
+        <span class="cm"># ★ 2.0 变更：显式打开 stdio。Streamable HTTP 已成为默认传输，</span>
+        <span class="cm">#    所以本地用 stdio 时必须显式声明，否则 server 不会走标准输入输出。</span>
+        stdio: <span class="kw">true</span>
         <span class="cm"># 执行类型：SYNC（同步）/ ASYNC（异步，返回 Mono/Flux）</span>
         type: SYNC
         <span class="cm"># 是否把工具变更通知给客户端</span>
         tool-change-notification: <span class="kw">true</span></code></pre>
+
+<div class="note">
+  <strong>2.0 把默认传输换成了 Streamable HTTP。</strong>官方说明是「Streamable HTTP is now the default,
+  replacing the deprecated SSE transport」，STDIO 保留给本地进程式集成。<br>
+  所以在 2.0 里：
+  <ul style="margin-bottom:0">
+    <li><strong>本地联调</strong>：显式设 <code>spring.ai.mcp.server.stdio=true</code>（如上）。</li>
+    <li><strong>远程部署（推荐形态）</strong>：换成 <code>spring-ai-starter-mcp-server-webmvc</code>，
+    用 <code>spring.ai.mcp.server.protocol=STREAMABLE</code>；也有 <code>STATELESS</code> 变体，
+    适合放在反向代理后面做水平扩展（代价是失去 MCP 的双向通信能力）。</li>
+    <li><strong>SSE</strong>：已被标记为 deprecated，新项目不要再选它。</li>
+  </ul>
+</div>
 
 <pre><code><span class="cm">// McpOrderServerApplication.java</span>
 <span class="an">@SpringBootApplication</span>
@@ -282,13 +296,22 @@ spring:
 <span class="an">@Component</span>
 <span class="kw">public class</span> OrderMcpTools {
 
-    <span class="an">@Tool</span>(description = <span class="st">"""
+    <span class="cm">/**</span>
+<span class="cm">     * ★ 2.0 变更：服务端暴露 MCP 能力要用 @McpTool / @McpToolParam，</span>
+<span class="cm">     *   而不是给本地工具用的 @Tool / @ToolParam。两者语义不同：</span>
+<span class="cm">     *   @Tool     = 让本应用的模型调用（第 7 章）</span>
+<span class="cm">     *   @McpTool  = 通过 MCP 协议暴露给外部客户端</span>
+<span class="cm">     *   包路径（2.0 起 MCP 注解已并入 Spring AI 本体）：</span>
+<span class="cm">     *     org.springframework.ai.mcp.annotation.McpTool</span>
+<span class="cm">     *     org.springframework.ai.mcp.annotation.McpToolParam</span>
+<span class="cm">     */</span>
+    <span class="an">@McpTool</span>(description = <span class="st">"""
             查询指定订单号的当前状态与预计发货时间。
             当用户询问发货情况、物流状态时调用。
             不要用于查询退款进度或账户余额。
             """</span>)
     <span class="kw">public</span> OrderStatus queryOrderStatus(
-            <span class="an">@ToolParam</span>(description = <span class="st">"订单号，纯数字字符串，例如 2024001"</span>)
+            <span class="an">@McpToolParam</span>(description = <span class="st">"订单号，纯数字字符串，例如 2024001"</span>)
             String orderNo) {
         <span class="cm">// 这里可以是真实数据库查询。教学演示用模拟数据。</span>
         <span class="kw">return switch</span> (orderNo) {
@@ -298,9 +321,9 @@ spring:
         };
     }
 
-    <span class="an">@Tool</span>(description = <span class="st">"列出某个客户最近 5 笔订单的订单号与状态"</span>)
+    <span class="an">@McpTool</span>(description = <span class="st">"列出某个客户最近 5 笔订单的订单号与状态"</span>)
     <span class="kw">public</span> List&lt;OrderStatus&gt; listRecentOrders(
-            <span class="an">@ToolParam</span>(description = <span class="st">"客户姓名"</span>) String customerName) {
+            <span class="an">@McpToolParam</span>(description = <span class="st">"客户姓名"</span>) String customerName) {
         <span class="kw">return</span> List.of(
                 <span class="kw">new</span> OrderStatus(<span class="st">"2024001"</span>, <span class="st">"未发货"</span>, <span class="st">"2024-03-08"</span>),
                 <span class="kw">new</span> OrderStatus(<span class="st">"2023129"</span>, <span class="st">"已完成"</span>, <span class="st">"-"</span>));
@@ -309,23 +332,45 @@ spring:
     <span class="kw">public record</span> OrderStatus(String orderNo, String status, String promisedDate) {}
 }</code></pre>
 
-<h3>③ 关键一步：把工具注册成 MCP Server 的能力</h3>
+<h3>③ 关键一步：让 Server 发现你的工具</h3>
 
-<pre><code><span class="cm">/**</span>
-<span class="cm"> * MCP Server 需要知道"我要暴露哪些工具"。</span>
-<span class="cm"> * 提供 ToolCallbackProvider bean，Spring AI 会自动把它注册到 MCP Server 上。</span>
-<span class="cm"> */</span>
-<span class="an">@Configuration</span>
+<p><strong>2.0 起这一步变得很简单：不用写任何配置类。</strong>
+只要工具类是个 Spring bean 且方法上标了 <code>@McpTool</code>，
+MCP Server 的自动配置会通过<strong>注解扫描</strong>把它自动注册出去：</p>
+
+<pre><code><span class="an">@Component</span>          <span class="cm">// ★ 必须是 Spring bean，否则扫描不到</span>
+<span class="kw">public class</span> OrderMcpTools {
+
+    <span class="an">@McpTool</span>(description = <span class="st">"查询指定订单号的当前状态与预计发货时间"</span>)
+    <span class="kw">public</span> OrderStatus queryOrderStatus(
+            <span class="an">@McpToolParam</span>(description = <span class="st">"订单号，例如 2024001"</span>) String orderNo) {
+        <span class="cm">// …… 业务逻辑</span>
+    }
+}
+<span class="cm">// 就这样，不需要 @Configuration，不需要 ToolCallbackProvider。</span></code></pre>
+
+<p>注解扫描的包范围可以配置（默认扫应用主类所在包及其子包）。<strong>如果你确实需要程序化注册</strong>
+（例如工具来自第三方对象、或要按环境动态决定暴露哪些），再退回到 Provider 写法：</p>
+
+<pre><code><span class="an">@Configuration</span>
 <span class="kw">public class</span> McpServerConfig {
 
     <span class="an">@Bean</span>
     <span class="kw">public</span> ToolCallbackProvider orderToolsProvider(OrderMcpTools orderMcpTools) {
-        <span class="cm">// 把任意 Spring bean 里的 @Tool 方法收集成 MCP 工具</span>
+        <span class="cm">// 把 bean 里的 @Tool 方法收集成工具（注意：这里是本地 @Tool 语义，</span>
+        <span class="cm">// 适用于"用代码手工装配 MCP Server"的场景）</span>
         <span class="kw">return</span> MethodToolCallbackProvider.builder()
-                .toolObjects(orderMcpTools)     <span class="cm">// 可传多个工具对象</span>
+                .toolObjects(orderMcpTools)
                 .build();
     }
 }</code></pre>
+
+<div class="tip">
+  <strong>2.0 还给了「控制暴露面」的开关。</strong>MCP Server 现在支持过滤哪些工具对外可见——
+  用一个 <code>McpToolFilter</code> bean 按服务标识、工具名或描述筛选。
+  这在多租户或分级授权的场景里很关键：<strong>不要把内部管理类工具无意中暴露给所有客户端。</strong>
+  另外还有 <code>spring.ai.mcp.server.expose-mcp-client-tools</code> 控制是否把本应用作为客户端拿到的工具再对外暴露。
+</div>
 
 <div class="pit">
   <strong>stdio 模式的三个致命坑：</strong>
@@ -384,7 +429,7 @@ spring:
   }
 }</code></pre>
 
-<pre><code><span class="cm"># application.yml —— 告诉 Spring AI 去哪读这份配置</span>
+<pre><code><span class="cm"># ★ 2.0 推荐写法：直接在 yml 里声明每个 stdio 连接，不再需要外部 JSON 文件</span>
 spring:
   ai:
     mcp:
@@ -392,16 +437,41 @@ spring:
         enabled: <span class="kw">true</span>
         name: springai-lab
         version: 1.0.0
-        <span class="cm"># ★ 关键：一次性初始化所有 Server 连接（不等第一个请求）</span>
+        <span class="cm"># 一次性初始化所有 Server 连接（不等第一个请求才连）</span>
         initialized: <span class="kw">true</span>
-        <span class="cm"># ★ 关键：自动把 MCP 工具注册成 ToolCallback，后面可以直接给模型用</span>
+        <span class="cm"># 把 MCP 工具包装成 ToolCallback（但要显式传给 ChatClient，见 8.6 节）</span>
         toolcallback:
           enabled: <span class="kw">true</span>
         stdio:
-          <span class="cm"># 指向上面的配置文件</span>
-          servers-configuration: classpath:mcp-servers.json
+          connections:
+            <span class="cm"># ---- 我们自己的订单 MCP Server ----</span>
+            order-server:
+              command: java
+              args:
+                - -jar
+                - D:/work/springai-lab/mcp-order-server/target/mcp-order-server-1.0.0.jar
+            <span class="cm"># ---- 官方文件系统 Server（Node 实现） ----</span>
+            filesystem:
+              command: npx
+              args:
+                - -y
+                - <span class="st">"@modelcontextprotocol/server-filesystem"</span>
+                - D:/work/data          <span class="cm"># ★ 授权目录白名单</span>
           <span class="cm"># 单次调用超时</span>
           request-timeout: 60s</code></pre>
+
+<div class="warn">
+  <strong>2.0 的配置写法变了两处，抄旧代码会不生效：</strong>
+  <ul style="margin-bottom:0">
+    <li>从「外部 JSON 文件 + <code>servers-configuration</code>」改为
+    <strong>yml 里的 <code>stdio.connections.&lt;名字&gt;.command/args</code></strong>。
+    上面的 <code>mcp-servers.json</code> 仍可作为备选方案保留，但以 <code>connections</code> 为准。</li>
+    <li>远程 Server 用 <code>url</code> + <code>type</code>（<code>STREAMABLE</code> / <code>STATELESS</code>）声明，
+    通过 <code>headers</code> 带鉴权信息。</li>
+  </ul>
+  <strong>排查口诀</strong>：连不上就先看配置键是否被识别——用 IDEA 展开
+  <code>spring.ai.mcp.client</code> 看当前版本支持哪些键，比翻文档快。
+</div>
 
 <div class="warn">
   <strong>配置键名在各版本间有微调。</strong>如果启动时报 <code>mcp-servers.json</code> 找不到或连接没建立，
@@ -471,13 +541,19 @@ Spring AI 会把所有 MCP Server 提供的工具<strong>自动包装成 <code>T
 <span class="kw">public class</span> McpChatClientConfig {
 
     <span class="cm">/**</span>
-<span class="cm">     * ★ 关键 bean：Spring AI 会把所有 MCP Server 的工具汇总成这个 Provider。</span>
-<span class="cm">     * 它是"MCP 世界"和"Spring AI 工具世界"之间的桥梁。</span>
+<span class="cm">     * ★ 关键 bean：Spring AI 会把所有 MCP Server 的工具汇总成这个 Provider，</span>
+<span class="cm">     *   它是"MCP 世界"和"Spring AI 工具世界"之间的桥梁。</span>
+<span class="cm">     *</span>
+<span class="cm">     * ★★ 2.0 最容易踩的坑：MCP 工具【不会】自动注册到 ChatClient 上。</span>
+<span class="cm">     *    框架刻意这么设计——避免一个应用无意间把上百个外部工具全塞给模型。</span>
+<span class="cm">     *    你必须显式地把它传给 .defaultTools(...) 或 .tools(...)，就像下面这样。</span>
 <span class="cm">     */</span>
     <span class="an">@Bean</span>(<span class="st">"mcpAssistantClient"</span>)
     <span class="kw">public</span> ChatClient mcpAssistantClient(
             ChatModel chatModel,
-            ToolCallbackProvider mcpToolCallbackProvider) {     <span class="cm">// 自动装配</span>
+            <span class="cm">// ★ 2.0 的具体类型是 SyncMcpToolCallbackProvider</span>
+            <span class="cm">//   （异步客户端则注入 AsyncMcpToolCallbackProvider）</span>
+            SyncMcpToolCallbackProvider mcpToolCallbackProvider) {   <span class="cm">// 自动装配</span>
 
         <span class="cm">// 取出全部 MCP 工具（本质是 ToolCallback[]，与第 7 章完全同类型）</span>
         ToolCallback[] mcpTools = mcpToolCallbackProvider.getToolCallbacks();

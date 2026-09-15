@@ -90,6 +90,24 @@
 
 <p>第 2 章我们提到过 conversationId，这一章把它讲透，因为这是<strong>最容易出数据事故</strong>的地方。</p>
 
+<div class="warn">
+  <strong>2.0 把 conversationId 从「有默认值」改成了「必填」。</strong>这是本章最重要的变更，先看清单：
+  <ul style="margin-bottom:0">
+    <li><strong><code>ChatMemory.DEFAULT_CONVERSATION_ID</code> 常量被删除</strong>
+    （原值是 <code>"default"</code>）。1.x 时代忘记传 id 会<em>静默</em>退化到这个默认值，
+    导致所有用户的对话混在一起；2.0 不再给这个退路。</li>
+    <li><strong>每次调用必须通过
+    <code>.advisors(a -&gt; a.param(ChatMemory.CONVERSATION_ID, id))</code> 显式提供</strong>，
+    缺失或传 null 会<strong>立刻抛 <code>IllegalArgumentException</code></strong>——从隐蔽的数据事故，变成了启动/请求期就能发现的显式错误。</li>
+    <li><strong>builder 上的 <code>.conversationId(String)</code> 方法被删除</strong>——
+    会话 id 不能再在构建 Advisor 时"绑死"，必须在调用时传。
+    这在多用户并发场景下其实是更正确的设计。</li>
+    <li><code>PromptChatMemoryAdvisor</code> <strong>整个类被移除</strong>，
+    统一使用 <code>MessageChatMemoryAdvisor</code>。</li>
+  </ul>
+  所以本章后面所有示例都遵循一条纪律：<strong>用 <code>ConversationIds.of()</code> 生成 id，每次调用显式传参。</strong>
+</div>
+
 <h3>id 的三层含义</h3>
 
 <table>
@@ -218,14 +236,30 @@ spring:
 
 <p>自动建出来的表结构（了解即可，排查问题时会查这张表）：</p>
 
-<pre><code><span class="cm">-- MySQL 下大致长这样</span>
+<pre><code><span class="cm">-- MySQL 下大致长这样（★ 注意 2.0 新增的 sequence_id 列）</span>
 CREATE TABLE spring_ai_chat_memory (
     conversation_id VARCHAR(255) NOT NULL,   <span class="cm">-- 我们的 "租户|用户|会话"</span>
     content         TEXT,                    <span class="cm">-- 消息内容（JSON 格式，含角色）</span>
     type            VARCHAR(50),             <span class="cm">-- USER / ASSISTANT / SYSTEM</span>
-    timestamp       TIMESTAMP,
-    PRIMARY KEY (conversation_id, timestamp)
+    <span class="cm">-- ★★ 2.0 新增：用序列号而非时间戳决定消息顺序</span>
+    sequence_id     BIGINT       NOT NULL,
+    timestamp       TIMESTAMP,               <span class="cm">-- 保留，现在只存"创建时间"语义</span>
+    KEY idx_conv_seq (conversation_id, sequence_id)
 );
+
+<span class="cm">-- 为什么加这一列？因为 MySQL 的 TIMESTAMP 精度只到秒，</span>
+<span class="cm">-- 同一秒内产生的多条消息（工具调用场景很常见）排序是不确定的，</span>
+<span class="cm">-- 会导致"回忆起的对话顺序错乱"。sequence_id 从根上解决了这个问题。</span>
+
+<span class="cm">-- 如果你是从 1.x 升级上来的旧库，需要回填数据：</span>
+<span class="cm">-- ALTER TABLE spring_ai_chat_memory ADD COLUMN sequence_id BIGINT;</span>
+<span class="cm">-- UPDATE spring_ai_chat_memory t JOIN (</span>
+<span class="cm">--     SELECT conversation_id, timestamp,</span>
+<span class="cm">--            ROW_NUMBER() OVER (PARTITION BY conversation_id ORDER BY timestamp) - 1 AS seq</span>
+<span class="cm">--     FROM spring_ai_chat_memory</span>
+<span class="cm">-- ) o ON t.conversation_id = o.conversation_id AND t.timestamp = o.timestamp</span>
+<span class="cm">-- SET t.sequence_id = o.seq;</span>
+<span class="cm">-- ALTER TABLE spring_ai_chat_memory MODIFY sequence_id BIGINT NOT NULL;</span>
 
 <span class="cm">-- 排查"记忆串味"时的常用查询</span>
 SELECT conversation_id, type, LEFT(content, 60) AS preview, timestamp
@@ -269,6 +303,19 @@ ORDER BY timestamp DESC LIMIT 10;</code></pre>
   MySQL 做<strong>冷存储</strong>（全量历史，用于审计和离线分析）。
   Spring AI 只提供一个 ChatMemory 接口，所以你需要自己写一个「双写」的实现类，
   或者干脆用 JDBC，靠数据库性能顶住——多数企业项目用 JDBC 就够了。
+</div>
+
+<div class="tip">
+  <strong>2.0 的另一个选择：<code>spring-ai-session</code>（社区项目）。</strong>
+  内置的 <code>ChatMemory</code> 有一个设计上的局限：多数仓库实现<strong>不支持存储 tool-call 与 tool-response 消息</strong>，
+  所以 2.0 默认把记忆 Advisor 放在工具循环<em>之外</em>（见 3.5 节的顺序说明），
+  循环中间的完整工具转录<strong>不会进记忆</strong>。<br>
+  <code>spring-ai-session</code> 用事件溯源（event-sourced）的方式重做了这件事：
+  支持<strong>全部消息类型</strong>（含工具调用），可以安全地放在循环内部；
+  并且提供可插拔的、按轮次感知的<strong>上下文压缩策略</strong>（包含 LLM 摘要），
+  上下文窗口满了会自动压缩。<br>
+  官方计划在 <strong>2.1</strong> 用它替换内置 Memory。如果你的项目需要"完整对话审计"
+  或长会话自动压缩，现在就可以评估它。
 </div>
 
 <h2 id="s3"><span class="h2-num">6.3</span>上下文窗口控制：别让记忆把成本和延迟拖垮</h2>

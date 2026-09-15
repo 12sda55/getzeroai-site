@@ -347,10 +347,23 @@ String reply = chatClient.prompt()
         .content();</code></pre>
 
 <div class="pit">
-  <strong>最常见的翻车：忘了传 <code>conversationId</code>。</strong>
-  <code>MessageChatMemoryAdvisor</code> 在没有 conversationId 时会用一个默认值（如 <code>"default"</code>），
-  结果是<strong>所有用户的对话混在一起</strong>——张三问的问题，李四看到了答案。
-  这是严重的数据泄露级别事故。第 6 章会把会话隔离讲透，本章只要记住：<strong>只要用了 ChatMemory，就必须传 conversationId</strong>。
+  <strong>最常见的翻车：忘了传 <code>conversationId</code>。2.0 里这个错误会直接暴露出来。</strong>
+  1.x 时代，<code>MessageChatMemoryAdvisor</code> 在没有 conversationId 时会退化到一个默认值
+  （<code>ChatMemory.DEFAULT_CONVERSATION_ID</code>，值为 <code>"default"</code>），
+  结果是<strong>所有用户的对话混在一起</strong>——张三问的问题，李四看到了答案。<br>
+  <strong>2.0 做了一个正确的收紧</strong>：<code>ChatMemory.DEFAULT_CONVERSATION_ID</code> 常量被删除，
+  <code>.conversationId(String)</code> 这个 builder 方法也被删除，
+  <strong>conversationId 变成每次调用必须提供的参数，缺失或传 null 会立刻抛 <code>IllegalArgumentException</code></strong>。<br>
+  虽然它把「忘记传」从隐蔽的数据事故变成了显式的启动期错误，值得庆幸；
+  但请记住这条纪律：<strong>只要用了 ChatMemory，就必须传 conversationId</strong>。第 6 章会把会话隔离讲透。
+</div>
+
+<div class="note">
+  <strong>2.0 删除了 <code>PromptChatMemoryAdvisor</code>。</strong>
+  它原来用于「把历史拼成一段文本塞进系统提示」以省 Token，现在官方建议统一用
+  <code>MessageChatMemoryAdvisor</code>。如果你需要控制 Token，正确做法是
+  <strong>限制窗口条数 + 做历史摘要压缩</strong>（第 6 章 6.3 节），
+  而不是换成一个信息有损的 Advisor。
 </div>
 
 <table>
@@ -358,7 +371,7 @@ String reply = chatClient.prompt()
   <tbody>
     <tr><td><code>MessageWindowChatMemory</code></td><td>内存中滑动窗口，只保留最近 N 条</td><td>单机 demo</td></tr>
     <tr><td><code>MessageChatMemoryAdvisor</code></td><td>把历史作为<strong>多条消息</strong>塞进 Prompt（保真度高，Token 消耗大）</td><td>推荐</td></tr>
-    <tr><td><code>PromptChatMemoryAdvisor</code></td><td>把历史<strong>拼成一段文本</strong>塞进系统提示（省 Token，信息有损）</td><td>长对话</td></tr>
+    <tr><td>JDBC / Redis 持久化仓库</td><td>历史存数据库，支持重启不丢、分布式共享</td><td>生产环境（第 6 章）</td></tr>
     <tr><td>JDBC / Redis 持久化仓库</td><td>历史存数据库，支持重启不丢、分布式共享</td><td>生产环境（第 6 章）</td></tr>
   </tbody>
 </table>

@@ -278,11 +278,48 @@ List&lt;PlanStep&gt; highRisk = plan.stream()
 <h2 id="s4"><span class="h2-num">9.4</span>自己实现一个 Agent 循环（本章核心）</h2>
 
 <div class="note">
-  <strong>必要前提：关闭 Spring AI 的「自动工具执行」。</strong>
-  默认情况下，<code>ChatModel.call()</code> 发现模型要调工具时，会<strong>自动执行工具并继续循环</strong>，
-  直到模型不再请求工具才返回——整个过程对你透明。
-  这对第 7 章很方便，但做 Agent 时<strong>我们必须自己控制循环</strong>（要记录每一步、要限步数、要人工确认、要并行），
-  所以要把这个自动行为关掉：<code>internalToolExecutionEnabled(false)</code>。
+  <strong>必要前提：关掉 2.0 自动注册的 <code>ToolCallingAdvisor</code>。</strong>
+  在第 7 章我们说过，2.0 的 <code>ChatClient</code> 会<strong>自动注册一个 <code>ToolCallingAdvisor</code></strong>，
+  由它接管工具调用循环：发请求 → 执行工具 → 追加结果 → 再发请求 → 直到模型不再要工具。<br>
+  这对第 7 章很方便，但做 Agent 时<strong>我们必须把循环拿回自己手里</strong>
+  （要记录每一步、要限步数、要人工确认、要并行执行、要在迭代之间做审批）。<br><br>
+  <strong>2.0 的正确做法</strong>（1.x 的 <code>internalToolExecutionEnabled(false)</code> 已被删除，别再用了）：
+</div>
+
+<pre><code><span class="cm">// ① 单次调用关掉自动注册（推荐，粒度最细）</span>
+chatClient.prompt()
+        .user(question)
+        .options(chatOptions)
+        .advisors(AdvisorParams.toolCallingAdvisorAutoRegister(<span class="kw">false</span>))   <span class="cm">// ★ 关键</span>
+        .call()
+        .chatClientResponse();
+
+<span class="cm">// ② 全局关闭（所有请求都自己驱动循环）</span>
+<span class="cm">//    配置：spring.ai.chat.client.tool-calling.enabled=false</span>
+<span class="cm">//    适合整个应用就是一套自研 Agent 框架的场景</span>
+
+<span class="cm">// ③ 直接调 ChatModel（不给它任何执行机会）</span>
+<span class="cm">//    2.0 里 ChatModel 已经不再自动执行工具了——</span>
+<span class="cm">//    你传工具进去，它只把工具定义发给模型并把响应还给你，</span>
+<span class="cm">//    响应里的 tool_calls 需要你自己用 ToolCallingManager 执行。</span>
+ChatResponse response = chatModel.call(<span class="kw">new</span> Prompt(messages, chatOptions));
+<span class="kw">if</span> (response.hasToolCalls()) { <span class="cm">/* 自己执行 */</span> }</code></pre>
+
+<div class="warn">
+  <strong>自己驱动循环是有代价的，要清楚你放弃了什么：</strong>
+  用 <code>AdvisorParams.toolCallingAdvisorAutoRegister(false)</code> 时，
+  你仍然在 ChatClient 链上，<strong>可观测性和其他 Advisor 依然生效</strong>；
+  但如果绕过 ChatClient 直接调 <code>ChatModel</code>，就会<strong>连 Micrometer 观测、
+  Advisor 组合、单 ToolAdvisor 约束一起丢掉</strong>。<br>
+  <strong>本节的实现方式走第 ① 条路线</strong>——保住可观测性，这也是 2.0 官方推荐的姿态。
+</div>
+
+<div class="tip">
+  <strong>先想想：你真的需要自己写循环吗？</strong>
+  2.0 提供了四个钩子（<code>doInitializeLoop</code> / <code>doBeforeCall</code> / <code>doAfterCall</code> / <code>doFinalizeLoop</code>），
+  绝大多数「我要在工具执行前后插逻辑」的需求，<strong>继承 <code>ToolCallingAdvisor</code> 重写钩子就够了</strong>，
+  不必推翻整个循环。典型适用场景：审批门、预算控制、把每次迭代事件推到侧通道。<br>
+  9.4 末尾会给出这个更轻量的做法；下面的手写循环则适合你确实需要完全掌控流程时。
 </div>
 
 <h3>① 定义执行轨迹（可观测性的基础）</h3>
@@ -319,11 +356,12 @@ List&lt;PlanStep&gt; highRisk = plan.stream()
 <pre><code><span class="kw">package</span> com.example.springai.agent;
 
 <span class="kw">import</span> lombok.extern.slf4j.Slf4j;
+<span class="kw">import</span> org.springframework.ai.chat.client.ChatClient;
+<span class="kw">import</span> org.springframework.ai.chat.client.ChatClientResponse;
+<span class="kw">import</span> org.springframework.ai.chat.client.advisor.api.AdvisorParams;
 <span class="kw">import</span> org.springframework.ai.chat.messages.*;
-<span class="kw">import</span> org.springframework.ai.chat.model.ChatModel;
 <span class="kw">import</span> org.springframework.ai.chat.model.ChatResponse;
 <span class="kw">import</span> org.springframework.ai.chat.model.ToolContext;
-<span class="kw">import</span> org.springframework.ai.chat.prompt.Prompt;
 <span class="kw">import</span> org.springframework.ai.model.tool.ToolCallingChatOptions;
 <span class="kw">import</span> org.springframework.ai.tool.ToolCallback;
 <span class="kw">import</span> org.springframework.stereotype.Component;
@@ -343,10 +381,16 @@ List&lt;PlanStep&gt; highRisk = plan.stream()
     <span class="cm">/** ★ 刹车片 3：总耗时上限 */</span>
     <span class="kw">private static final long</span> MAX_MILLIS = 120_000;
 
-    <span class="kw">private final</span> ChatModel chatModel;
+    <span class="cm">/**</span>
+<span class="cm">     * ★ 2.0 要点：注入的是 ChatClient 而不是 ChatModel。</span>
+<span class="cm">     * 直接调 ChatModel 也能跑（2.0 起它不再自动执行工具），但会丢掉</span>
+<span class="cm">     * Micrometer 观测、Advisor 组合与单 ToolAdvisor 约束，代价太大。</span>
+<span class="cm">     * 用 ChatClient + AdvisorParams 关掉自动循环，才是 2.0 的推荐姿态。</span>
+<span class="cm">     */</span>
+    <span class="kw">private final</span> ChatClient chatClient;
 
-    <span class="kw">public</span> SimpleAgent(ChatModel chatModel) {
-        <span class="kw">this</span>.chatModel = chatModel;
+    <span class="kw">public</span> SimpleAgent(ChatClient chatClient) {
+        <span class="kw">this</span>.chatClient = chatClient;
     }
 
     <span class="cm">/**</span>
@@ -380,12 +424,10 @@ List&lt;PlanStep&gt; highRisk = plan.stream()
         messages.add(<span class="kw">new</span> SystemMessage(systemPrompt));
         messages.add(<span class="kw">new</span> UserMessage(userTask));
 
-        <span class="cm">// ---------- ③ 构建 Options：注册工具 + 关闭自动执行 ----------</span>
-        ToolCallingChatOptions options = ToolCallingChatOptions.builder()
-                .toolCallbacks(Arrays.asList(toolCallbacks))
-                <span class="cm">// ★★★ 这一行是自定义 Agent 循环的前提：把循环控制权拿回自己手里</span>
-                .internalToolExecutionEnabled(<span class="kw">false</span>)
-                .build();
+        <span class="cm">// ---------- ③ 准备工具列表 ----------</span>
+        <span class="cm">// 注意：2.0 已删除 internalToolExecutionEnabled()，这里不再需要它。</span>
+        <span class="cm">// 关闭自动循环靠下面调用处的 AdvisorParams.toolCallingAdvisorAutoRegister(false)。</span>
+        List&lt;ToolCallback&gt; toolList = Arrays.asList(toolCallbacks);
 
         String finalAnswer = <span class="kw">null</span>;
         <span class="kw">boolean</span> success = <span class="kw">false</span>;
@@ -408,7 +450,18 @@ List&lt;PlanStep&gt; highRisk = plan.stream()
                     traceId, step, messages.size());
 
             <span class="cm">// ---------- 第 1 步：把全部历史 + 工具定义发给模型 ----------</span>
-            ChatResponse response = chatModel.call(<span class="kw">new</span> Prompt(messages, options));
+            <span class="cm">// ★ AdvisorParams.toolCallingAdvisorAutoRegister(false)：</span>
+            <span class="cm">//   关掉自动注册的 ToolCallingAdvisor，循环由我们自己驱动。</span>
+            <span class="cm">//   区别在于：请求仍然走完整的 Advisor 链，观测与其它 Advisor 都还在。</span>
+            ChatClientResponse clientResponse = chatClient.prompt()
+                    .messages(messages)
+                    .options(ToolCallingChatOptions.builder().toolCallbacks(toolList))
+                    .toolContext(toolContext)
+                    .advisors(AdvisorParams.toolCallingAdvisorAutoRegister(<span class="kw">false</span>))
+                    .call()
+                    .chatClientResponse();
+
+            ChatResponse response = clientResponse.chatResponse();
 
             <span class="cm">// 累计 Token（用于预算控制）</span>
             <span class="kw">var</span> usage = response.getMetadata().getUsage();
@@ -514,11 +567,156 @@ List&lt;PlanStep&gt; highRisk = plan.stream()
   <strong>把这段代码读懂，Agent 你就掌握了 70%。请特别关注这五处设计：</strong>
   <ol style="margin-bottom:0">
     <li><strong>三块刹车片</strong>（步数 / Token / 耗时）——没有它们，Agent 是能烧掉你一个月预算的机器。</li>
-    <li><strong><code>internalToolExecutionEnabled(false)</code></strong>——不关掉它，你就没法自己控制循环。</li>
+    <li><strong><code>AdvisorParams.toolCallingAdvisorAutoRegister(false)</code></strong>——2.0 关闭自动工具循环的开关
+    （1.x 的 <code>internalToolExecutionEnabled(false)</code> 已被删除）。
+    <strong>注意区别</strong>：走这条路你仍保有完整的 Advisor 链与可观测性，
+    而直接调 <code>ChatModel</code> 会丢掉它们。</li>
     <li><strong>工具白名单校验</strong>——模型可能编造工具名，必须挡住。</li>
     <li><strong>工具异常不终止 Agent</strong>——把错误当「观察结果」返回给模型，让它自己修正。这是 Agent 自愈能力的来源。</li>
     <li><strong>每一步都记 Trace</strong>——Agent 是黑盒，Trace 是你唯一的抓手。</li>
   </ol>
+</div>
+
+<h3>④ 2.0 的两件新武器：让 Agent 少写代码</h3>
+
+<p>上面那个循环展示了「完全掌控」的写法。但 2.0 其实给了两个更省事的工具，
+<strong>在动手写循环之前，先判断你的需求属于哪一类</strong>：</p>
+
+<table>
+  <thead><tr><th style="width:230px">你的需求</th><th>推荐做法</th><th style="width:110px">代码量</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>只想在工具执行前后插逻辑<br>（审批门、预算控制、推事件到侧通道）</td>
+      <td>继承 <code>ToolCallingAdvisor</code>，重写四个钩子</td>
+      <td>少</td>
+    </tr>
+    <tr>
+      <td>想让模型在每次调工具前<br>先"说出它的推理"</td>
+      <td><code>AugmentedToolCallbackProvider</code> + <code>AgentThinking</code></td>
+      <td>很少</td>
+    </tr>
+    <tr>
+      <td>需要挂起等人工确认、并行执行<br>逐工具计时、完全自定义流程</td>
+      <td>上面这种手写循环</td>
+      <td>多</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>武器一：<code>AugmentedToolCallbackProvider</code> + <code>AgentThinking</code>（结构化思考）</h4>
+
+<p>这是 2.0 里我认为最优雅的一个设计。它<strong>在不改动工具实现的前提下</strong>，
+给工具的输入 schema 动态"追加"字段，让模型在每次调用工具时<strong>顺便把推理过程填进来</strong>：</p>
+
+<pre><code><span class="cm">/**</span>
+<span class="cm"> * 一个"增强参数"类型：模型会在调用任何工具时一并填写它。</span>
+<span class="cm"> * 注意它并不是你工具方法真正的参数——你的工具方法完全不用改。</span>
+<span class="cm"> */</span>
+<span class="kw">public record</span> AgentThinking(
+
+    <span class="an">@ToolParam</span>(description = <span class="st">"你为什么要调用这个工具（一句话，说明推理）"</span>, required = <span class="kw">true</span>)
+    String innerThought,
+
+    <span class="an">@ToolParam</span>(description = <span class="st">"你对这次判断的把握程度：low / medium / high"</span>, required = <span class="kw">false</span>)
+    String confidence
+) {}</code></pre>
+
+<pre><code><span class="cm">// 用增强 Provider 包一层原有的工具对象</span>
+AugmentedToolCallbackProvider&lt;AgentThinking&gt; provider =
+        AugmentedToolCallbackProvider.&lt;AgentThinking&gt;builder()
+                .toolObject(<span class="kw">new</span> OrderAgentTools())     <span class="cm">// 原有工具，一行都不用改</span>
+                .argumentType(AgentThinking.class)     <span class="cm">// 要追加的 schema 类型</span>
+                <span class="cm">// ★ 每次模型调工具时，这里都会收到它的推理内容</span>
+                .argumentConsumer(event -&gt; {
+                    AgentThinking thinking = event.arguments();
+                    log.info(<span class="st">"[Agent思考] 工具={} 理由={} 把握={}"</span>,
+                            event.toolDefinition().name(),
+                            thinking.innerThought(),
+                            thinking.confidence());
+
+                    <span class="cm">// 这里就是你的黄金位置：</span>
+                    <span class="cm">// · 把推理写进 Trace，Agent 不再是黑盒</span>
+                    <span class="cm">// · 把握程度为 low 时，转人工 or 增加校验</span>
+                    <span class="cm">// · 把推理展示给用户，提升可解释性与信任感</span>
+                })
+                <span class="cm">// 默认 true：增强字段在处理完后会被移除，原工具只会拿到它自己的参数</span>
+                .removeExtraArgumentsAfterProcessing(<span class="kw">true</span>)
+                .build();
+
+<span class="cm">// 用法和普通工具完全一致</span>
+ChatClient chatClient = ChatClient.builder(chatModel)
+        .defaultTools(provider)
+        .build();</code></pre>
+
+<div class="tip">
+  <strong>为什么这个设计值得单独讲？</strong>
+  在 1.x 里想让模型"说出推理"，你得在提示词里求它「请先说明你的思路」，
+  然后<strong>用正则从回复文本里把那段话抠出来</strong>——脆弱且不可靠。<br>
+  2.0 的做法是把它变成<strong>结构化字段</strong>：模型必须按 schema 填 <code>innerThought</code>，
+  你的代码拿到的是类型安全的对象。<strong>这就是「把提示词工程变成类型系统」的典型例子</strong>——
+  和第 3 章的结构化输出是同一种思路。
+</div>
+
+<h4>武器二：<code>ToolCallingAdvisor</code> 的四个钩子</h4>
+
+<p>如果你的需求是「在循环的特定位置插一段逻辑」，<strong>继承比重写更划算</strong>：</p>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> BudgetGuardedToolCallingAdvisor <span class="kw">extends</span> ToolCallingAdvisor {
+
+    <span class="kw">private static final int</span> MAX_ITERATIONS = 6;
+    <span class="kw">private int</span> iteration;
+
+    <span class="cm">/** ① 循环开始前执行一次：可以准备状态、校验预算 */</span>
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> doInitializeLoop(ToolCallingAdvisorContext context) {
+        iteration = 0;
+        log.info(<span class="st">"Agent 循环开始，工具数={}"</span>, context.toolCallbacks().size());
+    }
+
+    <span class="cm">/** ② 每次迭代之前：这里最适合做"审批门"和"预算闸" */</span>
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> doBeforeCall(ToolCallingAdvisorContext context) {
+        iteration++;
+        <span class="kw">if</span> (iteration &gt; MAX_ITERATIONS) {
+            <span class="cm">// 抛业务异常终止循环，比让模型自己停下来可靠得多</span>
+            <span class="kw">throw new</span> IllegalStateException(<span class="st">"超过最大迭代次数 "</span> + MAX_ITERATIONS);
+        }
+    }
+
+    <span class="cm">/** ③ 每次迭代之后：观察本轮模型说了什么、调了什么 */</span>
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> doAfterCall(ToolCallingAdvisorContext context) {
+        log.debug(<span class="st">"第 {} 轮结束"</span>, iteration);
+    }
+
+    <span class="cm">/** ④ 循环结束后执行一次：汇总、上报、落库 */</span>
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> doFinalizeLoop(ToolCallingAdvisorContext context) {
+        log.info(<span class="st">"Agent 循环结束，共 {} 轮"</span>, iteration);
+    }
+}</code></pre>
+
+<div class="warn">
+  <strong>四个钩子的名字可能会随小版本微调</strong>（2.0 的文档里同时出现过
+  <code>doInitializeLoop</code> / <code>doBeforeCall</code> / <code>doAfterCall</code> / <code>doFinalizeLoop</code>
+  及其 Stream 变体 <code>doInitializeLoopStream</code> 等）。<strong>写的时候以 IDE 的
+  <kbd>Ctrl+O</kbd>（Override 提示）为准</strong>，不要照抄我这边的字符串。
+  <br>另外要注册自己的 Advisor 时，记住 2.0 的约束：
+  <strong>链中只能有一个 <code>ToolAdvisor</code></strong>，
+  提供了自定义的，自动注册的那一个就会被抑制。
+</div>
+
+<div class="goal">
+  <strong>选型建议（给你一个明确的态度）：</strong>
+  <ul style="margin-bottom:0">
+    <li>需求是「插逻辑」→ <strong>继承 <code>ToolCallingAdvisor</code> 重写钩子</strong>，别写循环。</li>
+    <li>需求是「看到模型的推理」→ <strong><code>AgentThinking</code></strong>，这是最省事的方案。</li>
+    <li>需求是「挂起等人工确认 / 并行执行 / 逐工具计时」→ 才写下面这种手写循环。</li>
+    <li>如果是「流程固定、步骤可枚举」的完全确定性场景 → <strong>根本不要用 Agent</strong>，
+    直接写 if-else 更快更便宜（9.1 节强调过）。</li>
+  </ul>
 </div>
 
 <h2 id="s5"><span class="h2-num">9.5</span>工具编排与并行执行</h2>
@@ -994,8 +1192,10 @@ curl -X POST http://localhost:8080/api/v1/agent/confirm/8f3a...
 <table>
   <thead><tr><th style="width:330px">现象</th><th style="width:230px">原因</th><th>解决</th></tr></thead>
   <tbody>
-    <tr><td>模型永远只调一次工具就结束</td><td>没关 <code>internalToolExecutionEnabled</code>，或提示词没说明"可以多步"</td><td>设 <code>false</code>；在提示词里写明「这是一个多步任务，你可以连续调用工具直到完成」</td></tr>
-    <tr><td>工具被重复执行两次</td><td>框架内部自动执行了一次，你的循环又执行了一次</td><td>确认 <code>internalToolExecutionEnabled(false)</code> 生效</td></tr>
+    <tr><td>模型永远只调一次工具就结束</td><td>没关自动注册的 <code>ToolCallingAdvisor</code>，或提示词没说明"可以多步"</td><td>调用时加 <code>.advisors(AdvisorParams.toolCallingAdvisorAutoRegister(false))</code>；并在提示词里写明「这是一个多步任务，你可以连续调用工具直到完成」</td></tr>
+    <tr><td>工具被重复执行两次</td><td>自动注册的 <code>ToolCallingAdvisor</code> 执行了一次，你的循环又执行了一次</td><td>确认 <code>AdvisorParams.toolCallingAdvisorAutoRegister(false)</code> 生效。★ 注意：不要试图用 <code>internalToolExecutionEnabled(false)</code>——该 API 在 2.0 已删除</td></tr>
+    <tr><td>报 <code>Chain already contains a ToolAdvisor</code></td><td>自己又注册了一个 <code>ToolCallingAdvisor</code></td><td>2.0 强制链中只有一个工具 Advisor。删掉自己的注册；要定制就提供 <code>ToolCallingAdvisor.Builder&lt;?&gt;</code> bean</td></tr>
+    <tr><td>Agent 跑到一半被 <code>ToolCallLimitExceededException</code> 中断</td><td>2.0 默认限制单工具 40 次 / 合计 150 次</td><td>正常情况说明模型在打转，应先查工具返回是否可读；确需放宽再调 <code>spring.ai.tools.limits.*</code></td></tr>
     <tr><td><code>ToolResponseMessage</code> 构造报错</td><td>ToolCall 的 id 与 response 的 id 不匹配</td><td>必须用 <code>tc.id()</code> 原样回传，不能自己生成</td></tr>
     <tr><td>Agent 卡在第 N 步不动</td><td>工具返回了空或异常，模型无法判断下一步</td><td>工具必须返回明确的状态标识；异常信息要可读</td></tr>
     <tr><td>并行执行时数据错乱</td><td>steps 列表被多线程并发写</td><td>用线程安全集合，或加同步（9.5 节代码已用 <code>synchronized</code>）</td></tr>
@@ -1018,11 +1218,19 @@ curl -X POST http://localhost:8080/api/v1/agent/confirm/8f3a...
 
 <div class="card">
   <div class="qa">
-    <p class="qa-q">Q1. 为什么实现自定义 Agent 循环时必须设置 <code>internalToolExecutionEnabled(false)</code>？</p>
+    <p class="qa-q">Q1. 在 Spring AI 2.0 里，怎么把工具调用循环的控制权拿回来？1.x 的 <code>internalToolExecutionEnabled(false)</code> 还能用吗？</p>
     <div class="qa-a">
-      <p>因为 Spring AI 默认会<strong>自动执行工具并自动循环</strong>直到模型不再请求工具。
-      这对单次工具调用很方便，但你无法介入中间过程——不能记录每一步、不能限步数、不能做人工确认、不能并行。
-      关掉它之后，工具调用的结果会原样返回，由你的循环代码决定"执行什么、什么时候停"。</p>
+      <p><strong>不能用了</strong>——<code>internalToolExecutionEnabled()</code> 方法连同
+      <code>spring.ai.*.chat.internal-tool-execution-enabled</code> 属性在 2.0 中已被彻底移除，
+      各 ChatModel 内部的工具执行循环也不复存在。</p>
+      <p>2.0 的正确做法是：<strong>调用时加
+      <code>.advisors(AdvisorParams.toolCallingAdvisorAutoRegister(false))</code></strong>，
+      关掉自动注册的 <code>ToolCallingAdvisor</code>；
+      或者全局设 <code>spring.ai.chat.client.tool-calling.enabled=false</code>。</p>
+      <p><strong>关键区别</strong>：走这条路你<strong>仍然在完整的 Advisor 链上</strong>——
+      Micrometer 观测、记忆、日志、安全 Advisor 全都还在，只是「执行工具」这一步换成了你的代码。
+      而如果绕过 ChatClient 直接调 <code>ChatModel</code>，虽然工具也不会被自动执行，
+      但会把观测能力和 Advisor 组合一并丢掉。<strong>所以推荐前者。</strong></p>
     </div>
   </div>
   <div class="qa">

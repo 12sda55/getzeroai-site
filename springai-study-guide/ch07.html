@@ -51,9 +51,10 @@
     <a class="sb-link" href="ch07.html"><span class="num">7</span><span>工具调用</span></a>
     <div class="sb-sub">
       <a href="#s1">7.1 工具调用的本质</a>
-      <a href="#s2">7.2 两次调用的完整时序</a>
+      <a href="#s2">7.2 完整时序与 2.0 的循环上移</a>
       <a href="#s3">7.3 @Tool 注解详解</a>
-      <a href="#s4">7.4 注册工具的三种方式</a>
+      <a href="#s4">7.4 注册工具的六种方式</a>
+      <a href="#tool-search">　· 渐进式工具披露</a>
       <a href="#s5">7.5 返回值、ToolContext 与结果直出</a>
       <a href="#s6">7.6 参数校验、异常与安全边界</a>
       <a href="#s7">7.7 完整示例：订单与天气查询</a>
@@ -126,18 +127,20 @@
 
 <div class="filetree">用户："订单 2024001 什么时候发货？"
   │
-  ▼ ① 第一次调用模型（带上工具定义）
+  ▼ ① ToolCallingAdvisor 把请求 + 全部工具定义发给模型
 模型返回：我不直接回答，我要调工具
        tool_calls = [{ name: "queryOrderStatus", arguments: {"orderNo":"2024001"} }]
   │
-  ▼ ② 你的代码执行工具（Spring AI 自动完成）
+  ▼ ② Advisor 把工具调用交给 ToolCallingManager 执行
   ├─ 校验参数
   ├─ 校验权限（这个订单属于当前用户吗？）
   ├─ 查询数据库
   └─ 得到结果：{"status":"未发货","promisedDate":"2024-03-08"}
   │
-  ▼ ③ 第二次调用模型（带上工具执行结果）
+  ▼ ③ 把结果追加进对话历史，重新调用模型
 模型返回："您的订单 2024001 目前显示未发货，预计 3 月 8 日发出。"
+  │
+  ▼ ④ 模型不再请求工具 → 循环结束，返回给调用方
   │
   ▼ 用户看到最终回答
 
@@ -146,10 +149,21 @@
   这是"工具调用比普通问答贵"的根本原因。</div>
 
 <div class="note">
-  <strong>为什么必须理解时序？</strong>因为它决定了三件事：
-  ① <strong>成本</strong>：每多一轮工具调用，就多一次完整的上下文发送；
-  ② <strong>延迟</strong>：串行执行，2 次模型调用 + 1 次数据库查询，可能 5 秒以上；
-  ③ <strong>可观测性</strong>：第 10 章做 Trace 时，你要能看到「哪次调用、调了哪个工具、参数是什么、花了多久」。
+  <strong>2.0 把上面这个循环「搬」到了哪里？</strong>
+  在 Spring AI 1.x，这个 while 循环是<strong>写死在每个 ChatModel 实现内部的</strong>——OpenAI 一套、Anthropic 一套，
+  你既看不到中间过程，也没法在循环里插入逻辑。<br>
+  <strong>2.0 把它提升成了 Advisor 链里的一等公民 <code>ToolCallingAdvisor</code></strong>：
+  它是个「递归 Advisor」，每迭代一次就重新进入下游 Advisor 链一次。
+  这意味着你现在可以：观察每一次迭代、在迭代之间做审批、替换整个执行策略、把工具调用和记忆/日志/评估组合起来。<br>
+  这个变化是 2.0 做 Agent 应用的地基，第 9 章会围绕它展开。
+</div>
+
+<div class="warn">
+  <strong>2.0 的这一行代码已经编译不过了：</strong><code>.internalToolExecutionEnabled(false)</code>。
+  该方法连同 <code>spring.ai.*.chat.internal-tool-execution-enabled</code> 属性在 2.0 中<strong>已被彻底移除</strong>，
+  各 ChatModel 内部的工具执行循环也不再存在。<br>
+  想自己控制循环，改用 <code>AdvisorParams.toolCallingAdvisorAutoRegister(false)</code>（单次调用）
+  或 <code>spring.ai.chat.client.tool-calling.enabled=false</code>（全局）——详见 9.4 节。
 </div>
 
 <h2 id="s3"><span class="h2-num">7.3</span>@Tool 注解：把 Java 方法暴露给模型</h2>
@@ -268,11 +282,145 @@ String answer2 = chatClient.prompt()
   </tbody>
 </table>
 
+<div class="note">
+  <strong>2.0 的行为变化，写业务代码前必须知道三条：</strong>
+  <ol style="margin-bottom:0">
+    <li><strong>ChatClient 会自动注册 <code>ToolCallingAdvisor</code></strong>，位置固定在
+    <code>Ordered.HIGHEST_PRECEDENCE + 300</code>。<strong>你不需要（也不应该）自己再注册一个</strong>——
+    2.0 强制链中只能有一个工具 Advisor，重复注册会直接报错。
+    想换掉它，就提供一个自己的 <code>ToolCallingAdvisor.Builder&lt;?&gt;</code> bean。</li>
+    <li><strong>每次调用的 <code>.tools()</code> 是追加，不是替换</strong>：它会把工具加到
+    <code>defaultTools</code> 之上，而不是覆盖。</li>
+    <li><strong><code>toolNames()</code> 被删除了</strong>。1.x 那套「注册一个裸 <code>Function</code> bean，
+    再用名字解析」的机制（<code>SpringBeanToolCallbackResolver</code>）在 2.0 中已完全移除，
+    工具必须作为<strong>显式的 <code>ToolCallback</code></strong> 注册。见下面的「方式四」。</li>
+  </ol>
+</div>
+
 <div class="warn">
   <strong>工具不是越多越好。</strong>每注册一个工具，都会把它的名字、描述、参数 schema 塞进提示词，
   消耗 Token 并干扰模型判断。实测经验：<strong>单次请求的工具数控制在 5~10 个以内</strong>；
-  超过 15 个时模型选错工具的概率显著上升。如果确实有很多工具，
-  用「工具分组 + 先路由再注册」（先让模型判断属于哪个领域，再只注册该领域的工具）来解决。
+  超过 15 个时模型选错工具的概率显著上升。<br>
+  <strong>2.0 给了这个问题的官方解法</strong>（见 7.4.1 的「方式五」）：
+  接了很多 MCP Server、工具上百个时，打开 <code>ToolSearchToolCallingAdvisor</code> 做<strong>渐进式工具披露</strong>，
+  官方实测能省 <strong>34%~64%</strong> 的 Token 且准确率没有可测量的下降。
+</div>
+
+<h3>方式四（2.0 新增重点）：函数式工具用 FunctionToolCallback</h3>
+
+<p>如果你要暴露的不是一个带 <code>@Tool</code> 的 POJO 方法，而是一个现成的 <code>Function</code>、lambda 或方法引用，
+2.0 用 <code>FunctionToolCallback</code>。<strong>这是 1.x 里 <code>FunctionCallback</code> + <code>toolNames()</code> 的替代品</strong>：</p>
+
+<pre><code><span class="cm">// ❌ 1.x 的写法（2.0 已删除，编译不过）</span>
+<span class="cm">// @Bean @Description("Get the weather in location")</span>
+<span class="cm">// Function currentWeather() { return weatherService::getWeather; }</span>
+<span class="cm">// chatClient.prompt().toolNames("currentWeather");   ← toolNames 没了</span>
+
+<span class="cm">// ✅ 2.0：注册成显式的 ToolCallback bean</span>
+<span class="an">@Configuration</span>(proxyBeanMethods = <span class="kw">false</span>)
+<span class="kw">class</span> WeatherToolsConfig {
+
+    <span class="an">@Bean</span>
+    ToolCallback currentWeather(WeatherService weatherService) {
+        <span class="kw">return</span> FunctionToolCallback.builder(<span class="st">"currentWeather"</span>, weatherService::getWeather)
+                .description(<span class="st">"查询指定城市的当前天气"</span>)
+                <span class="cm">// ★ inputType 决定生成的 JSON Schema，必须给，否则模型不知道该传什么</span>
+                .inputType(WeatherRequest.class)
+                .build();
+    }
+}
+
+<span class="cm">// 注入后按名字使用（不再靠字符串解析）</span>
+<span class="an">@Autowired</span> ToolCallback currentWeather;
+
+chatClient.prompt()
+        .user(<span class="st">"北京现在天气怎么样？"</span>)
+        .tools(currentWeather)      <span class="cm">// 直接传工具对象</span>
+        .call()
+        .content();</code></pre>
+
+<p>三种定义风格最终都产出 <code>ToolCallback</code>，走同一条循环，<strong>可以随意混用</strong>：</p>
+
+<table>
+  <thead><tr><th style="width:200px">风格</th><th>写法</th><th>适用</th></tr></thead>
+  <tbody>
+    <tr><td><code>@Tool</code> 声明式</td><td>在方法上加注解，<code>.tools(new MyTools())</code></td><td>✅ 大多数情况，最省事</td></tr>
+    <tr><td><code>MethodToolCallback</code></td><td><code>MethodToolCallback.builder().toolDefinition(...).toolMethod(...).toolObject(...)</code></td><td>方法源码不受你控制、需运行时动态构建工具</td></tr>
+    <tr><td><code>FunctionToolCallback</code></td><td><code>FunctionToolCallback.builder(name, fn).inputType(...)</code></td><td>暴露现成的 Function / lambda / 方法引用</td></tr>
+  </tbody>
+</table>
+
+<h3 id="tool-search">方式五：工具太多时，打开渐进式工具披露</h3>
+
+<p>这是 2.0 最实用的新能力之一。<strong>原理</strong>：不再把全部工具定义一次性塞给模型，
+而是给模型一个内置的 <code>toolSearchTool</code>，让它用自然语言先"检索"出相关工具，
+再只把这几个工具的定义发过去。</p>
+
+<pre><code><span class="cm">&lt;!-- 加一个 starter 即可，不需要改任何 Java 代码 --&gt;</span>
+&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.ai&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-ai-starter-tool-search-advisor&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+
+<pre><code><span class="cm"># 打开开关</span>
+spring:
+  ai:
+    chat:
+      client:
+        tool-search-advisor:
+          enabled: true
+          <span class="cm"># 索引类型：</span>
+          <span class="cm">#   regex  —— 默认，零额外依赖，按关键词匹配</span>
+          <span class="cm">#   lucene —— 需要 org.apache.lucene:lucene-core，检索质量更好</span>
+          <span class="cm">#   vector —— 需要 classpath 上有 VectorStore，语义检索最准</span>
+          tool-index-type: regex</code></pre>
+
+<div class="tip">
+  <strong>什么时候开它？</strong>
+  <ul style="margin-bottom:0">
+    <li><strong>工具数 &lt; 15</strong>：不要开。多一层检索反而增加延迟和不确定性。</li>
+    <li><strong>工具数 15~50</strong>：可以试，用评测集对比开了之后准确率有没有下降。</li>
+    <li><strong>工具数 &gt; 50，或接了很多 MCP Server</strong>：✅ 强烈建议开。
+    官方给的场景是「一个会话聚合成百上千个 MCP 工具定义」，不开的话每次请求光工具描述就要吃掉
+    10~21K token。<strong>这不是优化，而是能不能用的问题。</strong></li>
+  </ul>
+</div>
+
+<h3>方式六：给工具调用加上次数上限（防失控）</h3>
+
+<p>2.0 的 <code>DefaultToolCallingManager</code> 内置了调用次数保护，<strong>默认就已生效</strong>：
+单个工具每轮最多 40 次，所有工具合计最多 150 次。超过会抛 <code>ToolCallLimitExceededException</code>。</p>
+
+<pre><code><span class="cm"># 用配置调整</span>
+spring:
+  ai:
+    tools:
+      limits:
+        max-calls-per-tool-default: 40     <span class="cm"># -1 表示不限制</span>
+        max-total-tool-calls: 150
+        on-limit-exceeded: THROW           <span class="cm"># 或 RETURN_ERROR_RESPONSE（把错误当结果回给模型）</span></code></pre>
+
+<pre><code><span class="cm">// 或者编程式精细控制</span>
+ToolCallingManager manager = ToolCallingManager.builder()
+        .maxCallsPerTool(40)
+        .maxCallsPerTool(<span class="st">"search"</span>, 10)              <span class="cm">// 给某个工具单独设更小的上限</span>
+        .excludeToolFromLimit(<span class="st">"getCurrentDateTime"</span>) <span class="cm">// 这个工具不限制</span>
+        .maxTotalToolCalls(150)
+        .build();
+
+<span class="cm">// 装到自己的 ToolCallingAdvisor 上（会替换掉自动注册的那个）</span>
+<span class="an">@Bean</span>
+ToolCallingAdvisor.Builder&lt;?&gt; toolCallingAdvisorBuilder() {
+    <span class="kw">return</span> ToolCallingAdvisor.builder()
+            .toolCallingManager(manager)
+            .advisorOrder(Ordered.HIGHEST_PRECEDENCE + 300);
+}</code></pre>
+
+<div class="goal">
+  <strong>这条保护在 1.x 里是没有的。</strong>1.x 时代一个失控的 Agent 可以在一轮里把同一个工具调用几百次，
+  你只能靠自己写循环上限来兜。<strong>2.0 把「刹车片」做成了框架默认能力</strong>——
+  但请注意：它的计数范围是「当前这一轮对话」（从最后一条 user 消息往后算），
+  跨请求的总量控制仍然要你自己做（第 9 章会讲）。
 </div>
 
 <h2 id="s5"><span class="h2-num">7.5</span>返回值、ToolContext 与「结果直出」</h2>
@@ -406,29 +554,54 @@ String answer2 = chatClient.prompt()
 
 <h3>全局异常处理器：统一决定「异常要不要抛」</h3>
 
-<pre><code><span class="kw">import</span> org.springframework.ai.tool.execution.DefaultToolExecutionExceptionProcessor;
+<div class="note">
+  <strong>2.0 把默认行为改对了，大多数项目不需要再写任何配置。</strong>
+  <code>DefaultToolExecutionExceptionProcessor</code> 现在的默认行为是：<br>
+  · <strong>任意 <code>RuntimeException</code></strong> → 把异常消息包装后<strong>发回给模型</strong>，
+  让模型有机会向用户解释、换参数重试或换一个工具；<br>
+  · <strong>受检异常（checked exception）和 <code>Error</code></strong> → 始终向上抛出，不会被吞掉。<br>
+  这个划分是有意设计的：能自愈的错误交给模型，程序性错误绝不能藏起来。
+</div>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.tool.execution.ToolExecutionException;
 <span class="kw">import</span> org.springframework.ai.tool.execution.ToolExecutionExceptionProcessor;
 
+<span class="cm">/**</span>
+<span class="cm"> * 只有当默认策略不满足需求时，才需要自定义。</span>
+<span class="cm"> * 它是一个函数式接口，只有一个方法，所以可以直接写成 lambda。</span>
+<span class="cm"> */</span>
 <span class="an">@Configuration</span>
 <span class="kw">public class</span> ToolConfig {
 
-    <span class="cm">/**</span>
-<span class="cm">     * 工具抛异常时的全局策略。</span>
-<span class="cm">     *</span>
-<span class="cm">     * alwaysThrow = false（推荐）：把异常信息包装后返回给模型，</span>
-<span class="cm">     *                            让模型有机会向用户解释或换一个工具重试。</span>
-<span class="cm">     * alwaysThrow = true         ：直接向上抛，请求以失败告终。</span>
-<span class="cm">     *</span>
-<span class="cm">     * 生产环境建议 false，并配合日志告警——因为"模型拿到错误后自己修正"</span>
-<span class="cm">     * 的成功率其实相当高。</span>
-<span class="cm">     */</span>
     <span class="an">@Bean</span>
     <span class="kw">public</span> ToolExecutionExceptionProcessor toolExecutionExceptionProcessor() {
-        <span class="kw">return</span> DefaultToolExecutionExceptionProcessor.builder()
-                .alwaysThrow(<span class="kw">false</span>)
-                .build();
+        <span class="kw">return</span> exception -&gt; {
+            <span class="cm">// exception 里带着原始异常、工具定义等信息</span>
+            log.error(<span class="st">"工具执行失败：工具={} 原因={}"</span>,
+                    exception.getToolDefinition().name(), exception.getMessage());
+
+            <span class="cm">// ★ 返回值会作为"工具执行结果"回给模型。</span>
+            <span class="cm">//   所以这里的话术是"写给模型看的"，要清楚、可行动，不要甩堆栈。</span>
+            <span class="kw">return</span> <span class="st">"工具执行失败："</span> + exception.getMessage()
+                    + <span class="st">"。请向用户说明该功能暂时不可用，不要重复调用此工具。"</span>;
+        };
     }
 }</code></pre>
+
+<div class="warn">
+  <strong>如果你想要「任何工具异常都直接失败」，用配置项即可：</strong>
+  <code>spring.ai.tools.throw-exception-on-error=true</code>（默认 <code>false</code>）。
+  什么时候该设成 true？<strong>当工具的错误信息里可能含敏感内容时</strong>——
+  因为默认行为会把异常消息发给模型，而模型可能把它复述给用户。
+  例如数据库连接串、内部服务地址这类信息绝不能通过这条路泄露出去。
+</div>
+
+<div class="pit">
+  <strong>自定义 <code>ToolCallback</code> 时的注意事项：</strong>
+  如果你是自己实现 <code>ToolCallback</code> 而不是用 <code>@Tool</code> 注解，
+  执行失败时应该抛 <code>ToolExecutionException</code>——这是处理器期望的异常类型。
+  抛别的异常会绕过你的自定义逻辑。
+</div>
 
 <h3>工具的安全边界 Checklist</h3>
 
@@ -675,7 +848,11 @@ curl -X POST http://localhost:8080/api/v1/assistant/ask \
     <tr><td>模型完全不用工具，直接回答</td><td>工具描述太模糊；模型不支持 function calling</td><td>完善描述（含「何时用/何时不用」）；换支持工具调用的模型</td></tr>
     <tr><td>模型用错工具</td><td>工具职责重叠，描述有歧义</td><td>合并相似工具；在描述里写明「不要用于……」</td></tr>
     <tr><td>参数字段名对不上</td><td>模型传的 key 与方法参数名不一致（如 <code>order_no</code> vs <code>orderNo</code>）</td><td>在 <code>@ToolParam</code> 里描述清楚命名；或加多个可选参数做兼容</td></tr>
-    <tr><td>工具抛异常导致整个请求 500</td><td>没配 <code>ToolExecutionExceptionProcessor</code>，异常直接冒泡</td><td>配 <code>alwaysThrow(false)</code>；工具内部也做 try/catch 返回错误对象</td></tr>
+    <tr><td>工具抛异常导致整个请求 500</td><td>没配 <code>ToolExecutionExceptionProcessor</code>，异常直接冒泡</td><td>2.0 默认行为：<code>RuntimeException</code> 的错误消息会回给模型；受检异常和 <code>Error</code> 始终重抛。可用 <code>spring.ai.tools.throw-exception-on-error=true</code> 改成全部抛出</td></tr>
+    <tr><td><strong>报「Chain already contains a ToolAdvisor」</strong></td><td>自己注册了 <code>ToolCallingAdvisor</code>，而 2.0 已自动注册一个</td><td>删掉自己的注册；要定制就提供 <code>ToolCallingAdvisor.Builder&lt;?&gt;</code> bean 替换自动配置的</td></tr>
+    <tr><td><strong><code>internalToolExecutionEnabled</code> 编译不过</strong></td><td>该 API 与属性在 2.0 已移除</td><td>改用 <code>AdvisorParams.toolCallingAdvisorAutoRegister(false)</code> 或全局属性 <code>spring.ai.chat.client.tool-calling.enabled=false</code></td></tr>
+    <tr><td><strong><code>toolNames(…)</code> 编译不过</strong></td><td>按名字解析工具的能力已删除</td><td>改用 <code>FunctionToolCallback.builder(name, fn).inputType(...)</code> 注册显式 <code>ToolCallback</code> bean</td></tr>
+    <tr><td>模型请求了不存在的工具</td><td>2.0 默认关闭了「解析回退」</td><td>确认工具是通过 <code>.tools()</code>/<code>.defaultTools()</code>/<code>toolCallbacks()</code> 显式附加的。不要为此打开 <code>spring.ai.tools.resolution.fallback.enabled</code>（会放大越权风险）</td></tr>
     <tr><td>模型用不存在的参数调用工具</td><td>参数描述不完整，模型猜测</td><td>参数描述里给示例值；工具内部做格式校验并返回可读错误</td></tr>
     <tr><td>工具被反复调用，成本飙升</td><td>模型没拿到预期结果，循环重试；或 Agent 循环没设上限</td><td>工具返回明确成功/失败标识；Agent 循环设最大轮次（第 9 章）</td></tr>
     <tr><td>同一个写操作被执行多次</td><td>模型重复调用创建类工具</td><td>写操作做幂等（唯一键 / 幂等 token）</td></tr>

@@ -182,6 +182,59 @@ Map&lt;String, Object&gt; map = chatClient.prompt()
   <strong>所以它不是魔法，而是「提示词工程 + 解析」的自动化封装。</strong>理解这一点，你就能在它失败时自己排查。
 </div>
 
+<h3 id="self-correct"><span class="pill purple">2.0 重点</span>让它自己纠错：validateSchema()</h3>
+
+<p>即使有 schema 约束，模型仍然可能返回不符合要求的 JSON——少字段、类型不对、套了 Markdown 代码块。
+<strong>2.0 之前你只能自己写重试逻辑</strong>（本章 3.4 节后面那种写法）；<strong>2.0 把它内置了</strong>：</p>
+
+<pre><code><span class="cm">// 1.x 的老写法（仍可用）</span>
+OrderInfo order = chatClient.prompt().user(text).call().entity(OrderInfo.class);
+
+<span class="cm">// ★ 2.0：给 entity() 传第二个参数，两个开关可以组合</span>
+OrderInfo order2 = chatClient.prompt()
+        .user(text)
+        .call()
+        .entity(OrderInfo.class, spec -&gt; spec
+                <span class="cm">// ① 解析前按 schema 校验；失败时把<b>具体错误</b>回喂给模型并自动重试（默认最多 3 次）</span>
+                .validateSchema()
+                <span class="cm">// ② 把 schema 作为 API 级约束发给厂商（原生结构化输出），而不是靠提示词里写</span>
+                .useProviderStructuredOutput()
+        );</code></pre>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h4>这两个开关分别在解决什么</h4>
+    <p style="font-size:13.5px;margin-bottom:0">
+      <strong><code>validateSchema()</code></strong> —— 解决「模型偶尔返回不合法 JSON」。
+      由 <code>StructuredOutputValidationAdvisor</code> 支撑，校验失败会带着错误信息重试，
+      <strong>默认最多 3 次</strong>。<br><br>
+      <strong><code>useProviderStructuredOutput()</code></strong> —— 解决「靠提示词约束不够硬」。
+      它让支持该能力的厂商（OpenAI、Google GenAI 等）在 <em>API 层</em>强制 schema，
+      比在提示词里写「请输出 JSON」可靠得多。
+    </p>
+  </div>
+  <div class="card">
+    <h4>使用建议</h4>
+    <ul style="font-size:13.5px;margin-bottom:0">
+      <li><strong>两个都打开</strong>是最稳的：前者兜底重试，后者从源头提高一次成功率。</li>
+      <li>厂商不支持原生结构化输出时，<code>useProviderStructuredOutput()</code> 会自动降级回提示词方式，<strong>不会报错</strong>。</li>
+      <li>注意它<strong>不是免费</strong>：重试意味着多一次模型调用，成本与延迟都会上升。
+      对成本敏感的高频接口，先测一次成功率达到多少再决定是否需要重试。</li>
+      <li>开了它之后，本章 3.4 节那个「手写重试」的示例就<strong>不再是必需的</strong>了——
+      但请仍读一遍，理解它内部在做什么，出问题时才知道去哪看。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="warn">
+  <strong>2.0 相关变更：<code>BeanOutputConverter.postProcessSchema(JsonNode)</code> 扩展点被移除了。</strong>
+  如果你之前靠它自定义生成的 JSON Schema，需要改用自定义
+  <code>StructuredOutputConverter</code> 实现——2.0 允许自定义转换器参与原生结构化输出流水线。
+  另外 schema 生成已委托给 <code>JsonSchemaGenerator</code>，
+  生成的 schema 现在会带 OpenAPI 风格的 <code>format</code> 提示（如 <code>int32</code>、<code>date-time</code>），
+  Kotlin 的可空字段也不再被错误地放进 <code>required</code>。
+</div>
+
 <h3>集合与嵌套结构的写法</h3>
 
 <pre><code><span class="cm">// 嵌套对象（订单里有收货地址）</span>
@@ -415,6 +468,17 @@ OrderInfo order = converter.convert(rawJson);   <span class="cm">// 得到对象
 getOrder() 越小 → 越靠外层 → <b>前置先执行、后置最后执行</b>（像洋葱一样）</div>
 
 <div class="warn">
+  <strong>2.0 改了默认顺序常量，涉及工具调用的项目务必留意。</strong>
+  <code>Advisor.DEFAULT_CHAT_MEMORY_PRECEDENCE_ORDER</code> 从
+  <code>HIGHEST_PRECEDENCE + 1000</code> 调整为 <code>HIGHEST_PRECEDENCE + 200</code>，
+  而 2.0 新增的 <code>ToolCallingAdvisor</code> 默认在 <code>HIGHEST_PRECEDENCE + 300</code>。<br>
+  <strong>这意味着默认情况下「记忆 Advisor 在工具调用循环之外」</strong>：循环前加载一次历史，
+  循环结束后只持久化最终的 user / assistant 消息，<strong>看不到中间的 tool-call 与 tool-response 消息</strong>。<br>
+  需要完整工具转录（做审计用）时，把 memory advisor 的 order 设到
+  <code>HIGHEST_PRECEDENCE + 400</code> 之上，让它落到循环内部。第 6 章会展开。
+</div>
+
+<div class="warn">
   <strong>顺序陷阱：</strong>如果你希望「先做内容安全过滤，再做 RAG 检索」，
   那么<strong>安全 Advisor 的 order 必须小于 RAG Advisor 的 order</strong>。
   很多人凭直觉以为 order 小是「后执行」，结果顺序全反了。
@@ -428,7 +492,9 @@ getOrder() 越小 → 越靠外层 → <b>前置先执行、后置最后执行</
   <tbody>
     <tr><td><code>SimpleLoggerAdvisor</code></td><td>打印请求/响应，调试用</td><td>1</td></tr>
     <tr><td><code>MessageChatMemoryAdvisor</code></td><td>以多条消息形式注入对话历史</td><td>2 / 6</td></tr>
-    <tr><td><code>PromptChatMemoryAdvisor</code></td><td>以单段文本形式注入历史（省 Token）</td><td>6</td></tr>
+    <tr><td><code>ToolCallingAdvisor</code></td><td><strong>2.0 新增</strong>：接管工具调用循环，ChatClient 自动注册</td><td>7 / 9</td></tr>
+    <tr><td><code>ToolSearchToolCallingAdvisor</code></td><td><strong>2.0 新增</strong>：渐进式工具披露，工具多时省 34%~64% token</td><td>7</td></tr>
+    <tr><td><code>StructuredOutputValidationAdvisor</code></td><td>结构化输出校验失败自动重试（可自动注册）</td><td>3</td></tr>
     <tr><td><code>QuestionAnswerAdvisor</code></td><td>自动做向量检索并拼进提示词，RAG 最简方案</td><td>5</td></tr>
     <tr><td><code>RetrievalAugmentationAdvisor</code></td><td>模块化 RAG：可插查询改写、多路检索、重排</td><td>5</td></tr>
     <tr><td><code>StructuredOutputValidationAdvisor</code></td><td>结构化输出失败自动重试校验</td><td>3</td></tr>

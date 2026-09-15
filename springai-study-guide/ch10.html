@@ -212,7 +212,33 @@ curl -X POST http://localhost:8080/api/v1/knowledge/ask \
 <span class="cm">#      └─ spring.ai.chat.client               ← ChatClient 层</span>
 <span class="cm">#           └─ spring.ai.chat                  ← 模型调用（含 model、token 数）</span>
 <span class="cm">#   或者（带工具时）：</span>
-<span class="cm">#      └─ spring.ai.tool.<工具名>              ← 工具执行</span></code></pre>
+<span class="cm">#      └─ ToolCallingAdvisor 循环</span>
+<span class="cm">#           ├─ execute_tool queryOrderStatus   ← ★ 2.0 的 span 名变了</span>
+<span class="cm">#           └─ execute_tool searchPolicy</span></code></pre>
+
+<div class="note">
+  <strong>2.0 把工具调用的观测信息改了一批，做看板和告警时要跟着改：</strong>
+  <table style="margin-bottom:0">
+    <thead><tr><th style="width:230px">项</th><th>1.x</th><th>2.0</th></tr></thead>
+    <tbody>
+      <tr><td>工具执行 span 名</td><td><code>tool_call &lt;工具名&gt;</code></td><td><strong><code>execute_tool &lt;工具名&gt;</code></strong></td></tr>
+      <tr><td><code>gen_ai.operation.name</code> 取值</td><td><code>framework</code></td><td><strong><code>execute_tool</code></strong></td></tr>
+      <tr><td>新增属性</td><td>—</td><td><code>spring.ai.tool.type</code>、<code>spring.ai.tool.call.id</code></td></tr>
+    </tbody>
+  </table>
+  <strong>为什么这个改动值得注意：</strong>如果你在 Grafana 里按 span 名过滤告警，
+  升级后规则会静默失效——工具失败不再触发通知，而你不会收到任何报错。
+  <strong>升级 2.0 后请回归一遍所有基于 span 名的告警规则。</strong>
+</div>
+
+<div class="tip">
+  <strong>2.0 还统一了缓存相关的 Token 指标。</strong>
+  <code>Usage</code> 接口新增了 <code>getCacheReadInputTokens()</code> 与
+  <code>getCacheWriteInputTokens()</code>（无数据时返回 <code>null</code>）。
+  启用 prompt caching 的厂商（Anthropic、Bedrock 双向，OpenAI / Google 只读）会填充它。
+  <strong>做成本核算时别漏了这两项</strong>——命中缓存的那部分输入 Token 计费规则和普通输入不同，
+  忽略它会让你的成本模型算不准。
+</div>
 
 <div class="goal">
   <strong>能在 Zipkin 里看到「一次请求 → 检索 → 模型调用 → 工具调用」的完整链路，

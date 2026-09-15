@@ -74,7 +74,7 @@ python -m http.server 8000
 
 ## 技术栈
 
-- JDK 21 · Spring Boot 3.x · Spring AI 2.0 · Maven
+- JDK 21（Spring AI 2.0 的硬性底线是 Java 17）· **Spring Boot 4.1.x** · **Spring AI 2.0.1** · Maven 3.6.3+
 - MySQL 8 · Redis 7 · PostgreSQL 16 + pgvector · Milvus
 - Docker / Docker Compose · Micrometer · OpenTelemetry · Zipkin
 - 兼容 OpenAI 协议的模型服务（DeepSeek / 通义千问 / 智谱…）· Ollama 本地模型 · MCP Server
@@ -83,12 +83,16 @@ python -m http.server 8000
 
 ## 说明
 
-- 代码以 **Spring AI 1.0 GA 稳定 API** 为基准编写（2.0 沿用同一套抽象）。
-  个别配置键在小版本间有调整，文中已标注「以官方文档 / IDE 补全为准」。
+- 全部代码以 **Spring AI 2.0.1**（2.0.0 GA：2026-06-12 / 2.0.1：2026-08-21）为基准编写，
+  底座为 **Spring Boot 4.1.x + Spring Framework 7.0**。
+- ⚠️ **Spring AI 2.0 是一次架构级重构，与 Spring Boot 3.x 不兼容**，不能混用。
+  从 1.x 迁移的重点变化：工具调用循环上移为 `ToolCallingAdvisor`、
+  `internalToolExecutionEnabled` 被删除、记忆的 `conversationId` 变为必填、
+  配置移除了 `.options` 段、`PromptChatMemoryAdvisor` 被移除。
 - 学习过程中遇到 API 名称不一致时，建议依次查：
-  ① [Spring AI 官方文档](https://docs.spring.io/spring-ai/reference/) →
-  ② IDE 中 `Ctrl+Alt+B` 看接口实现 →
-  ③ [spring-ai-examples](https://github.com/spring-projects/spring-ai)。
+  ① [2.0 升级说明](https://docs.spring.io/spring-ai/reference/2.0/upgrade-notes.html)（列全了破坏性变更）→
+  ② [Spring AI 官方文档](https://docs.spring.io/spring-ai/reference/) →
+  ③ IDE 中 `Ctrl+Alt+B` 看接口实现。
 
 ---
 
