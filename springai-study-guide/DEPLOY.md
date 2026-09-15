@@ -55,13 +55,44 @@ git push -u origin main
 #    https://<你的用户名>.github.io/springai-guide/
 ```
 
-### Gitee Pages（国内访问更快）
+### Gitee（国内访问更快）
 
-```bash
-# 同样 push 到 Gitee 仓库，然后在网页端
-# 服务 → Gitee Pages → 选择分支 → 启动
-# 注意：Gitee Pages 需要实名认证后才能开启，且每次更新需手动点击"更新"
-```
+本指南**已经推送到了 Gitee**：`https://gitee.com/gygkkkk/springai-guide`
+
+站点位于仓库的 `springai-study-guide/` 子目录，开启 Pages 时**必须指定这个子目录**，
+否则访问根路径会 404。
+
+#### 开启 Gitee Pages 的步骤
+
+> ⚠️ 实测：Gitee 的 Pages **没有开放 API**（调用 `POST /repos/{owner}/{repo}/pages` 返回
+> `405 Not Allowed`），只能通过网页端手动开启。
+
+1. 打开仓库 → 顶部菜单 **服务** → **Gitee Pages**
+2. 部署分支选 `main`
+3. **部署目录填 `springai-study-guide`**（★ 关键，不填就指向仓库根目录）
+4. 勾选「强制使用 HTTPS」（可选）
+5. 点击 **启动**，等待构建完成
+
+访问地址形如：`https://gygkkkk.gitee.io/springai-guide`
+
+**两个已知限制**（提前有心理预期）：
+
+- **需要实名认证**。Gitee 目前要求完成实名认证才能使用 Pages 服务，未认证的账号在
+  「服务」菜单里看不到 Gitee Pages 入口。
+- **每次更新需手动点「更新」**。推送代码后 Pages 不会自动重新部署，
+  要在 Gitee Pages 页面手动点一次「更新」。
+
+#### ⚠️ 直接分享 raw 链接是不行的
+
+Gitee 的 raw 地址（`https://gitee.com/<用户>/<仓库>/raw/main/<路径>`）返回的
+`Content-Type` 是 **`text/plain`**，浏览器会把 HTML 当纯文本显示，**不会渲染成网页**。
+
+所以「让学生直接看到网页」只有两条路：
+① 开启 Gitee Pages（如上）；
+② 部署到对象存储或自建 Nginx（见本文档其他方案）。
+
+只分享仓库地址给学生是**可以**的——他们能浏览代码、下载文件、clone 到本地用
+`python -m http.server` 打开，只是看不到在线渲染的网站。
 
 > **国内访问速度提示**：GitHub Pages 在部分网络环境下较慢。
 > 面向国内学生，优先选 **Gitee Pages** 或下面的对象存储方案。
