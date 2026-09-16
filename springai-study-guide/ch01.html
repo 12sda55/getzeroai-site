@@ -193,9 +193,12 @@ OpenAiChatModel（厂商实现）—— 把 Prompt 翻译成 OpenAI JSON
 <p>只需在 <a href="index.html#env-pom">0.4.7 节的完整 pom</a> 基础上，第 1 章至少要保证下面三个依赖存在：</p>
 
 <pre><code><span class="cm">&lt;!-- Web：提供 HTTP 接口 --&gt;</span>
+<span class="cm">&lt;!-- ★ 注意是 starter-**webmvc**，不是 3.x 教程里的 starter-web：--&gt;</span>
+<span class="cm">&lt;!--   Spring Boot 4 已废弃旧名。写成旧名不会报错，但迟早被移除，--&gt;</span>
+<span class="cm">&lt;!--   详见 index.html 0.4.7 节的完整说明。--&gt;</span>
 &lt;dependency&gt;
   &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-  &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+  &lt;artifactId&gt;spring-boot-starter-webmvc&lt;/artifactId&gt;
 &lt;/dependency&gt;
 
 <span class="cm">&lt;!-- ★ Spring AI 的核心模型接入：OpenAI 协议及其所有兼容实现 --&gt;</span>
