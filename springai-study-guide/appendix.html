@@ -276,6 +276,45 @@
   </ul>
 </div>
 
+<div class="warn">
+  <strong>常见困惑：为什么 start.spring.io 里选不到 Spring Boot 3.x？</strong>
+  <p style="margin-bottom:8px">
+    Spring Initializr <strong>只列出仍在 OSS 支持期内</strong>的版本线。3.5.x 已于 <strong>2026-06-30
+    停止 OSS 支持</strong>，所以被移出了下拉列表。
+  </p>
+  <p style="margin-bottom:8px">
+    实测官方 <code>start.spring.io</code> 当前提供的选项<strong>只有 4.x</strong>：
+    <code>4.2.0 (M1/SNAPSHOT)</code>、<code>4.1.2 (SNAPSHOT)</code>、
+    <strong><code>4.1.1</code>（默认）</strong>、<code>4.0.9 (SNAPSHOT)</code>、<code>4.0.8</code>。
+    Java 可选 17 / 21 / 25 / 26。
+  </p>
+  <p style="margin-bottom:0">
+    网上写着「Project 选 Maven，Language Java，Spring Boot 选当前稳定 3.x」的教程，
+    都写于 4.x 发布之前，<strong>已经过时</strong>。照做的话 Spring AI 2.0 根本用不了
+    （2.0 基于 Spring Framework 7.0 与 Jakarta EE 11，与 Boot 3.x 不兼容）。
+    <strong>选 4.1.1。</strong>
+  </p>
+</div>
+
+<div class="note">
+  <strong>Spring Boot 版本支持时间线（官方支持页，2026-09 核对）：</strong>
+  <table style="margin-top:8px">
+    <thead><tr><th>分支</th><th>首次发布</th><th>OSS 支持结束</th><th>Java 范围</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td><code>4.2.x</code></td><td>2026-11（计划）</td><td>2027-12</td><td>—</td><td>未发布</td></tr>
+      <tr><td><code>4.1.x</code></td><td>2026-06</td><td>2027-07</td><td>17 ~ 26</td><td><strong>✅ 当前推荐</strong></td></tr>
+      <tr><td><code>4.0.x</code></td><td>2025-11</td><td>2026-12</td><td>17 ~ 25</td><td>维护中（快到期）</td></tr>
+      <tr><td><code>3.5.x</code></td><td>2025-05</td><td><strong>2026-06（已 EOL）</strong></td><td>17 ~ 25</td><td>❌ 已停止 OSS</td></tr>
+      <tr><td><code>3.4.x</code></td><td>2024-11</td><td>2025-12（已 EOL）</td><td>17 ~ 24</td><td>❌ 已停止 OSS</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:10px;margin-bottom:0">
+    规律：<strong>每个小版本约有 12 个月 OSS 支持</strong>，Spring Boot 没有「LTS」概念
+    （这点和 Java 不同，容易误解）。所以「当前稳定版」是<b>会变</b>的——请以
+    <code>spring.io/projects/spring-boot</code> 的支持页为准，不要照抄教程里的版本号。
+  </p>
+</div>
+
 <h2 id="a1"><span class="h2-num">A.1</span>命令速查</h2>
 
 <h3>Docker / 基础设施</h3>
@@ -932,7 +971,7 @@ risk 取值 low（查询）medium（修改数据）high（删除·付款·发信
 
 <div class="footer">
   Spring AI 2.0 学习指南 · 配套《Spring AI 框架与企业级智能应用开发实践 V2.0》<br>
-  代码基于 JDK 21 / Spring Boot 4.x / Spring AI 1.0+ 抽象编写，具体小版本 API 以官方文档为准。
+  代码基于 JDK 21 / Spring Boot 4.1.1 / Spring AI 2.0.1 编写，具体小版本 API 以官方文档为准。
 </div>
 
 </main>
