@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>页面不存在 · Spring AI 2.0 学习指南</title>
+<!--
+  说明：本页刻意把样式内联。
+  因为 404 页会出现在任意路径层级（如 /foo/bar），
+  用相对路径 assets/style.css 会解析成 /foo/assets/style.css 从而再次 404。
+  内联样式可以保证在任何层级都正常显示。
+-->
+<style>
+  :root{
+    --bg:#f7f8fa; --panel:#ffffff; --text:#1f2430; --muted:#6b7280;
+    --line:#e5e7eb; --accent:#2563eb; --accent-soft:#eff6ff; --warnbg:#fff7ed; --warnline:#fdba74;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:64px 20px}
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:36px 32px; box-shadow:0 1px 3px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.04);
+  }
+  .code-badge{
+    display:inline-block; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13px; font-weight:600; letter-spacing:.04em;
+    background:var(--accent-soft); color:var(--accent);
+    border:1px solid #bfdbfe; border-radius:999px; padding:3px 12px; margin-bottom:14px;
+  }
+  h1{font-size:26px; margin:0 0 10px; letter-spacing:-.01em}
+  .lead{color:var(--muted); margin:0 0 26px; font-size:15px}
+  h2{font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0 0 12px; font-weight:600}
+  .links{display:grid; gap:8px; margin:0 0 26px}
+  .links a{
+    display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);
+    border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:14.5px;
+    transition:background .15s, border-color .15s, transform .15s;
+  }
+  .links a:hover{background:var(--accent-soft); border-color:#bfdbfe; transform:translateX(2px)}
+  .links .n{
+    flex:0 0 26px; height:26px; display:grid; place-items:center; border-radius:7px;
+    background:var(--accent-soft); color:var(--accent); font-size:12.5px; font-weight:700;
+  }
+  .hint{
+    background:var(--warnbg); border:1px solid var(--warnline); border-radius:10px;
+    padding:12px 16px; font-size:14px; color:#7c2d12; margin-top:4px;
+  }
+  .hint strong{color:#9a3412}
+  .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px}
+  .btn{
+    display:inline-block; text-decoration:none; font-size:14.5px; font-weight:600;
+    padding:10px 20px; border-radius:10px; border:1px solid var(--accent);
+    background:var(--accent); color:#fff;
+  }
+  .btn.ghost{background:#fff; color:var(--accent)}
+  .btn:hover{opacity:.9}
+  footer{text-align:center; color:var(--muted); font-size:13px; margin-top:28px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <span class="code-badge">404 · NOT FOUND</span>
+    <h1>这个页面不存在</h1>
+    <p class="lead">
+      你访问的地址在《Spring AI 2.0 学习指南》里找不到。多半是链接打错了一个字符，
+      或者这个章节还没发布。
+    </p>
+
+    <h2>从这些入口继续</h2>
+    <div class="links">
+      <a href="/index.html"><span class="n">0</span><span>总览 · 11 章学习路线 · 环境准备</span></a>
+      <a href="/ch01.html"><span class="n">1</span><span>Spring AI 入门</span></a>
+      <a href="/ch03.html"><span class="n">3</span><span>结构化输出与 Advisors</span></a>
+      <a href="/ch05.html"><span class="n">5</span><span>RAG 检索增强生成</span></a>
+      <a href="/ch07.html"><span class="n">7</span><span>工具调用</span></a>
+      <a href="/ch09.html"><span class="n">9</span><span>智能体（Agent）</span></a>
+      <a href="/appendix.html"><span class="n">A</span><span>速查手册 · 排错表 · 术语表</span></a>
+    </div>
+
+    <div class="hint">
+      <strong>提示：</strong>章节地址是 <code>ch01.html</code> ~ <code>ch11.html</code>，
+      注意是<strong>两位数字</strong>（<code>ch1.html</code> 会 404）。
+    </div>
+
+    <div class="btns">
+      <a class="btn" href="/index.html">回到首页</a>
+      <a class="btn ghost" href="/index.html#env">环境准备</a>
+    </div>
+  </div>
+  <footer>Spring AI 2.0 学习指南 · 企业级智能应用开发实践</footer>
+</div>
+</body>
+</html>

@@ -65,3 +65,7 @@ $RECYCLE.BIN/
 dist/
 build/
 out/
+
+# ---------- 部署压缩包（派生文件，不入库）----------
+getzeroai-site.zip
+*.zip
