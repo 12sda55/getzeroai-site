@@ -31,13 +31,13 @@
 | 静态网站托管 | ✅ | 默认首页 `index.html`，错误页 `404.html` |
 | 上传站点 | ✅ | **16 个文件**，HTML/CSS/JS 的 `Content-Type` 均正确 |
 | 内容校验 | ✅ | 16 个对象字节数与本机完全一致 |
-| **绑定自定义域名** | ⏳ **待完成** | 卡在域名归属验证（见下） |
-| **配置 CNAME 解析** | ⏳ 待完成 | 需手动加记录 |
+| **绑定自定义域名** | ✅ **已完成** | `getzeroai.xyz` + `www.getzeroai.xyz`，状态均 Enabled |
+| **配置 CNAME 解析** | ⏳ **待完成** | 需手动加记录（见下） |
 | **HTTPS 证书** | ⏳ 待完成 | 需申请免费证书并托管 |
 
 ### ⚠️ 一个必须知道的前提：域名与 Bucket 不在同一个阿里云账号下
 
-绑定自定义域名时报：
+绑定自定义域名时曾报：
 
 ```
 403  NeedVerifyDomainOwnership
@@ -46,19 +46,59 @@
 说明 `getzeroai.xyz` 与存放站点的 OSS Bucket **分属两个不同的阿里云账号**
 （若同账号，OSS 允许直接绑定、无需任何验证）。
 
-解决方式是走 **TXT 归属验证**，需要先加下面两条 TXT 记录：
+**已通过 TXT 归属验证解决**。当时添加的两条 TXT 记录，**现在可以删除了**：
+
+| 主机记录 | 记录类型 | 记录值 |
+|---|---|---|
+| `_dnsauth` | TXT | `1ad4197f384559d0e36163fae1c7aeb3` |
+| `_dnsauth.www` | TXT | `389893778371f3baa0b6e4bb234b996a` |
+
+> 跨账号意味着：**域名相关的所有解析操作，都要在域名所属的那个账号的控制台里做。**
+
+---
+
+## 三、下一步：配置 CNAME 解析（需要手动）
+
+`getzeroai.xyz` 与 `www.getzeroai.xyz` 已绑定到 OSS，但**自定义域名尚未生效**——
+还需要 CNAME 记录把域名指向 OSS 的访问域名。
+
+在**域名所属账号**的 **云解析 DNS** → `getzeroai.xyz` → **解析设置** → 添加记录：
 
 | 主机记录 | 记录类型 | 记录值 | 说明 |
 |---|---|---|---|
-| `_dnsauth` | TXT | `1ad4197f384559d0e36163fae1c7aeb3` | 验证裸域名 `getzeroai.xyz` |
-| `_dnsauth.www` | TXT | `389893778371f3baa0b6e4bb234b996a` | 验证 `www.getzeroai.xyz` |
+| `www` | `CNAME` | `getzeroai-study-guide.oss-cn-hongkong.aliyuncs.com` | 主站，**必加** |
+| `@` | `CNAME` | `getzeroai-study-guide.oss-cn-hongkong.aliyuncs.com` | 裸域名，可选（见下） |
 
-> 令牌有效期至 **2026-09-19**。验证通过后，**这两条 TXT 记录可以删掉**，不影响后续使用。
->
-> 如果只打算用 `www` 子域名，**只需加第二条**。
+> **记录值是 `<Bucket名>.<外网访问域名>`**，不要只写 `oss-cn-hongkong.aliyuncs.com`（会少一层）。
 
-**添加位置**：域名所属阿里云账号 → **云解析 DNS** → `getzeroai.xyz` → **解析设置** → 添加记录。
-主机记录只填前缀部分（`_dnsauth` 或 `_dnsauth.www`），不要带域名后缀。
+**关于裸域名 `@` 加 CNAME**：阿里云官方文档提示，根域名上配置 CNAME 与必需的
+SOA/NS 记录存在协议冲突（RFC 1034 §3.6.2），**部分运营商的 DNS 可能解析失败**。
+实践中阿里云云解析通常允许添加且能正常工作；若控制台拒绝或解析不稳定，
+就只保留 `www`，裸域名改用**显性 URL 转发**指向 `https://www.getzeroai.xyz`。
+
+> **务必先完成域名绑定，再加 CNAME 记录**——顺序反了会访问到错误内容。
+> 以后若解除绑定，记得同步删除这条 CNAME。
+
+生效通常几分钟到几小时（取决于 TTL）。验证：
+
+```bash
+nslookup -type=CNAME www.getzeroai.xyz 223.5.5.5
+curl -sI https://www.getzeroai.xyz | head -1
+```
+
+---
+
+## 四、最后一步：配置 HTTPS 证书
+
+OSS 绑定域名后默认**只有 HTTP**。要上 HTTPS：
+
+1. 阿里云 → **数字证书管理服务** → 申请**免费证书**（DV 单域名，免费）
+2. 签发后下载 **Nginx 格式**（得到 `.pem` + `.key`）
+3. OSS → Bucket → **域名管理** → 目标域名 → **证书托管** → 上传证书
+4. 之后用 `https://www.getzeroai.xyz` 访问
+
+> 免费证书有效期 **3 个月，到期需重新签发并替换**，建议设日历提醒。
+> 也可以在 OSS 域名管理里直接选择「阿里云 SSL 证书」自动关联。
 
 ---
 
