@@ -1,11 +1,19 @@
 # 自定义域名上线指南 · getzeroai.xyz
 
-站点是**纯静态**（HTML/CSS/JS，无后端），绑自有域名没有技术门槛。
-本文按「当前实际状态」给出最短路径。
+> ## 🎉 站点已上线
+>
+> | | |
+> |---|---|
+> | 访问地址 | **http://www.getzeroai.xyz** ／ **http://getzeroai.xyz** |
+> | 存储位置 | 阿里云 OSS `getzeroai-study-guide` @ **中国香港**（免备案） |
+> | 验证结果 | 全站 **18/18** 项通过（含自定义 404 页）；`Content-Disposition` 已消失，HTML 正常渲染 |
+> | 待办 | **配置 HTTPS 证书**（当前仅 HTTP） |
+>
+> 更新站点内容：重新上传覆盖即可，**不需要重启任何服务**。
 
 ---
 
-## 一、当前状态（2026-09-16 12:25 复核）
+## 一、当前状态（2026-09-16 12:36 复核）
 
 | 检查项 | 结果 | 说明 |
 |---|---|---|
@@ -13,15 +21,16 @@
 | 实名认证 | ✅ **已通过** | 原 `client hold` 状态已解除 |
 | 域名状态位 | ✅ 正常 | `server transfer prohibited` + `add period`，均为注册后保护位，不影响解析 |
 | **全球解析** | ✅ **已生效** | `.xyz` 注册局（x/y/z.nic.xyz）与阿里云 NS 均返回 `NOERROR` |
+| **CNAME 解析** | ✅ **已生效** | `www` 与 `@` 均指向 `getzeroai-study-guide.oss-cn-hongkong.aliyuncs.com` |
 | DNS 服务器 | 阿里云云解析 | `dns31.hichina.com` / `dns32.hichina.com` |
 
 > 从实名解锁到 DNS 委派生效约 **1.5 小时**（12:00 解除 → 12:23 生效），比官方说的 1~2 个工作日快得多。
 
 ---
 
-## 二、实际部署记录（已完成的部分）
+## 二、实际部署记录
 
-托管方案最终采用 **阿里云 OSS 中国香港 + 自定义域名**（免备案）。已执行：
+托管方案最终采用 **阿里云 OSS 中国香港 + 自定义域名**（免备案）。全部执行完毕：
 
 | 步骤 | 状态 | 值 / 结果 |
 |---|---|---|
@@ -31,9 +40,11 @@
 | 静态网站托管 | ✅ | 默认首页 `index.html`，错误页 `404.html` |
 | 上传站点 | ✅ | **16 个文件**，HTML/CSS/JS 的 `Content-Type` 均正确 |
 | 内容校验 | ✅ | 16 个对象字节数与本机完全一致 |
-| **绑定自定义域名** | ✅ **已完成** | `getzeroai.xyz` + `www.getzeroai.xyz`，状态均 Enabled |
-| **配置 CNAME 解析** | ⏳ **待完成** | 需手动加记录（见下） |
-| **HTTPS 证书** | ⏳ 待完成 | 需申请免费证书并托管 |
+| 域名归属验证 | ✅ | 跨账号，走 TXT 验证通过 |
+| 绑定自定义域名 | ✅ | `getzeroai.xyz` + `www.getzeroai.xyz`，状态均 Enabled |
+| **配置 CNAME 解析** | ✅ | `www` 与 `@` 均生效 |
+| **全站可达性验证** | ✅ | **18/18 通过**，含自定义 404 页 |
+| **HTTPS 证书** | ⏳ **待完成** | 当前仅 HTTP（见第五节） |
 
 ### ⚠️ 一个必须知道的前提：域名与 Bucket 不在同一个阿里云账号下
 
@@ -57,17 +68,15 @@
 
 ---
 
-## 三、下一步：配置 CNAME 解析（需要手动）
+## 三、CNAME 解析配置（已完成，存档备查）
 
-`getzeroai.xyz` 与 `www.getzeroai.xyz` 已绑定到 OSS，但**自定义域名尚未生效**——
-还需要 CNAME 记录把域名指向 OSS 的访问域名。
+`getzeroai.xyz` 与 `www.getzeroai.xyz` 已绑定到 OSS，并已配置 CNAME 记录。
+实际使用的记录如下：
 
-在**域名所属账号**的 **云解析 DNS** → `getzeroai.xyz` → **解析设置** → 添加记录：
-
-| 主机记录 | 记录类型 | 记录值 | 说明 |
+| 主机记录 | 记录类型 | 记录值 | 状态 |
 |---|---|---|---|
-| `www` | `CNAME` | `getzeroai-study-guide.oss-cn-hongkong.aliyuncs.com` | 主站，**必加** |
-| `@` | `CNAME` | `getzeroai-study-guide.oss-cn-hongkong.aliyuncs.com` | 裸域名，可选（见下） |
+| `www` | `CNAME` | `getzeroai-study-guide.oss-cn-hongkong.aliyuncs.com` | ✅ 已生效 |
+| `@` | `CNAME` | `getzeroai-study-guide.oss-cn-hongkong.aliyuncs.com` | ✅ 已生效 |
 
 > **记录值是 `<Bucket名>.<外网访问域名>`**，不要只写 `oss-cn-hongkong.aliyuncs.com`（会少一层）。
 
