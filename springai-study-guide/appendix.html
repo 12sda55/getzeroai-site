@@ -171,7 +171,9 @@
     <tr>
       <td><strong>conversationId</strong></td>
       <td>有默认值（<code>ChatMemory.DEFAULT_CONVERSATION_ID</code> = <code>"default"</code>），忘了传会静默混用</td>
-      <td><strong>必填</strong>。<code>.param(ChatMemory.CONVERSATION_ID, id)</code> 缺失或传 null <strong>立刻抛 <code>IllegalArgumentException</code></strong>；该常量已删除</td>
+      <td><strong>必填</strong>。每次调用必须显式传 <code>.param(ChatMemory.CONVERSATION_ID, id)</code>，缺失或传 <code>null</code> <strong>立刻抛 <code>IllegalArgumentException</code></strong>。
+      <br><strong>注意区分两个东西</strong>：参数键常量 <code>CONVERSATION_ID</code> <strong>仍然存在、必须使用</strong>；
+      被删除的是<strong>默认值常量</strong> <code>DEFAULT_CONVERSATION_ID</code>（2.0 不再提供「不传就用 default」这条退路，正是为了避免多用户静默串话）</td>
     </tr>
     <tr>
       <td>Advisor builder</td><td><code>.conversationId("x")</code></td><td>该方法<strong>已删除</strong>，改为每次调用传参</td></tr>
@@ -320,7 +322,7 @@
 <h3>Docker / 基础设施</h3>
 
 <pre><code><span class="cm"># ---------- 启动与停止 ----------</span>
-cd D:/work/springai-lab
+cd D:/springai-lab
 docker compose up -d                      <span class="cm"># 后台启动全部服务</span>
 docker compose up -d mysql redis pgvector zipkin   <span class="cm"># 只启动核心四个</span>
 docker compose ps                          <span class="cm"># 查看状态（等 STATUS 变 healthy）</span>
@@ -973,7 +975,7 @@ risk 取值 low（查询）medium（修改数据）high（删除·付款·发信
 <div class="footer">
   Spring AI 2.0 学习指南 · 配套《Spring AI 框架与企业级智能应用开发实践 V2.0》<br>
   代码基于 JDK 21 / Spring Boot 4.1.1 / Spring AI 2.0.1 编写，具体小版本 API 以官方文档为准。
-  <span class="ver">内容版本 2026-09-16 17:00</span>
+  <span class="ver">内容版本 2026-09-16 17:30</span>
 </div>
 
 </main>

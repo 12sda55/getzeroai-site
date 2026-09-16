@@ -197,7 +197,7 @@ OpenAiChatModel（厂商实现）—— 把 Prompt 翻译成 OpenAI JSON
   <li>依赖勾 <strong>Spring Web</strong>、<strong>Lombok</strong>，以及 AI 分组里的 <strong>OpenAI</strong>。
   注意：勾「Spring Web」生成出来的坐标是 <code>spring-boot-starter-webmvc</code>
   —— Boot 4 已把 <code>spring-boot-starter-web</code> 改名（旧名废弃）。</li>
-  <li>生成后解压到 <code>D:\wx\springai\springai-lab</code>，用 IDEA 打开 <code>pom.xml</code>。</li>
+  <li>生成后解压到工作根目录 <code>D:\springai-lab</code>（见 <a href="index.html#env">0.4 节</a>的目录约定；放别处也行，后续命令里的路径按实际替换），用 IDEA 打开 <code>pom.xml</code>。</li>
 </ol>
 
 <div class="note">
@@ -635,7 +635,7 @@ console.log(full);</code></pre>
 <h2 id="s8"><span class="h2-num">1.8</span>运行与验证</h2>
 
 <pre><code><span class="cm"># 1) 起数据库（本章其实还用不到，但保持习惯）</span>
-cd D:/work/springai-lab && docker compose up -d mysql redis pgvector
+cd D:/springai-lab && docker compose up -d mysql redis pgvector
 
 <span class="cm"># 2) 起应用</span>
 mvn spring-boot:run
@@ -766,7 +766,7 @@ curl -N -X POST http://localhost:8080/api/v1/chat/stream \
   <a class="next" href="ch02.html"><div class="dir-label">下一章 →</div><div class="dir-name">第 2 章 · 提示词与对话</div></a>
 </div>
 
-<div class="footer">Spring AI 2.0 学习指南 · 第 1 章 · <span class="ver">内容版本 2026-09-16 17:00</span></div>
+<div class="footer">Spring AI 2.0 学习指南 · 第 1 章 · <span class="ver">内容版本 2026-09-16 17:30</span></div>
 </main>
 </div>
 <script src="assets/app.js"></script>

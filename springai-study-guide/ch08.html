@@ -404,7 +404,7 @@ MCP Server 的自动配置会通过<strong>注解扫描</strong>把它自动注�
       "command": "java",
       "args": [
         "-jar",
-        "D:/work/springai-lab/mcp-order-server/target/mcp-order-server-1.0.0.jar"
+        "D:/springai-lab/mcp-order-server/target/mcp-order-server-1.0.0.jar"
       ]
     },
 
@@ -414,7 +414,7 @@ MCP Server 的自动配置会通过<strong>注解扫描</strong>把它自动注�
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "D:/work/data"          <span class="cm">// ★ 授予访问的目录白名单</span>
+        "D:/springai-lab/data"          <span class="cm">// ★ 授予访问的目录白名单</span>
       ]
     },
 
@@ -449,14 +449,14 @@ spring:
               command: java
               args:
                 - -jar
-                - D:/work/springai-lab/mcp-order-server/target/mcp-order-server-1.0.0.jar
+                - D:/springai-lab/mcp-order-server/target/mcp-order-server-1.0.0.jar
             <span class="cm"># ---- 官方文件系统 Server（Node 实现） ----</span>
             filesystem:
               command: npx
               args:
                 - -y
                 - <span class="st">"@modelcontextprotocol/server-filesystem"</span>
-                - D:/work/data          <span class="cm"># ★ 授权目录白名单</span>
+                - D:/springai-lab/data          <span class="cm"># ★ 授权目录白名单</span>
           <span class="cm"># 单次调用超时</span>
           request-timeout: 60s</code></pre>
 
@@ -605,7 +605,7 @@ Spring AI 会把所有 MCP Server 提供的工具<strong>自动包装成 <code>T
 <h3>① 先构建并验证 Server</h3>
 
 <pre><code><span class="cm"># 打包 MCP Server</span>
-cd D:/work/springai-lab/mcp-order-server
+cd D:/springai-lab/mcp-order-server
 mvn clean package -DskipTests
 
 <span class="cm"># 手工测试：往它的 stdin 里发一条 MCP 初始化消息（最原始的验证方式）</span>
@@ -689,14 +689,14 @@ curl -X POST http://localhost:8080/api/v1/mcp-assistant/ask \
 <span class="cm"># ③ 用文件系统 MCP 工具（跨语言：Server 是 Node 写的）</span>
 curl -X POST http://localhost:8080/api/v1/mcp-assistant/ask \
   -H "Content-Type: application/json" \
-  -d '{"question":"列出 D:/work/data 目录下的所有文件"}'
+  -d '{"question":"列出 D:/springai-lab/data 目录下的所有文件"}'
 <span class="cm"># 期望：模型调用 list_directory 工具并整理成清单</span>
 
 <span class="cm"># ④ 越权测试：让文件助手读白名单外的目录</span>
 curl -X POST http://localhost:8080/api/v1/mcp-assistant/ask \
   -H "Content-Type: application/json" \
   -d '{"question":"帮我读一下 C:/Windows/System32/drivers/etc/hosts 文件"}'
-<span class="cm"># 期望：MCP Server 拒绝访问（因为白名单只授权了 D:/work/data）</span>
+<span class="cm"># 期望：MCP Server 拒绝访问（因为白名单只授权了 D:/springai-lab/data）</span>
 <span class="cm"># ★ 这验证了 MCP 的价值：权限约束在 Server 端，而不是靠模型自觉</span></code></pre>
 
 <div class="goal">
@@ -814,7 +814,7 @@ npx @modelcontextprotocol/inspector java -jar target/mcp-order-server-1.0.0.jar
   <a class="next" href="ch09.html"><div class="dir-label">下一章 →</div><div class="dir-name">第 9 章 · 智能体</div></a>
 </div>
 
-<div class="footer">Spring AI 2.0 学习指南 · 第 8 章 · <span class="ver">内容版本 2026-09-16 17:00</span></div>
+<div class="footer">Spring AI 2.0 学习指南 · 第 8 章 · <span class="ver">内容版本 2026-09-16 17:30</span></div>
 </main>
 </div>
 <script src="assets/app.js"></script>
