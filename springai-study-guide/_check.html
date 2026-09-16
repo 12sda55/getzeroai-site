@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>连通性测试 · Spring AI 2.0 学习指南</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:#f7f8fa;color:#1f2430;line-height:1.7;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:40px 20px 80px}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:32px;box-shadow:0 1px 3px rgba(16,24,40,.04)}
+  .ok{display:inline-block;background:#eaf3de;color:#3b6d11;border:1px solid #c0dd97;border-radius:999px;padding:5px 16px;font-weight:500;font-size:14px}
+  h1{font-size:24px;margin:16px 0 8px}
+  .sub{color:#6b7280;margin:0 0 26px}
+  table{width:100%;border-collapse:collapse;margin:20px 0}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #e5e7eb;font-size:14.5px;vertical-align:top}
+  th{width:180px;color:#6b7280;font-weight:500}
+  code{background:#f3f4f6;padding:1px 6px;border-radius:4px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px}
+  .big{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:19px;font-weight:600;color:#185fa5}
+  .hint{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px 18px;font-size:14.5px;margin-top:22px}
+  .hint b{color:#185fa5}
+  ol{padding-left:22px}
+  li{margin:6px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <span class="ok">✅ 连通正常</span>
+    <h1>如果你看到这一页，说明你的网络能正常访问本站</h1>
+    <p class="sub">
+      这是一个<strong>全新的网址</strong>，此前从未存在过 —— 所以任何浏览器缓存、
+      代理缓存都不可能命中它。能打开，就证明你访问的确实是我们的服务器。
+    </p>
+
+    <table>
+      <tr><th>服务器端版本戳</th><td class="big">2026-09-16 16:52</td></tr>
+      <tr><th>你当前访问的网址</th><td><code id="cur">（读取中…）</code></td></tr>
+      <tr><th>你浏览器的当前时间</th><td><code id="now">（读取中…）</code></td></tr>
+      <tr><th>页面加载来源</th><td><code>阿里云 OSS · oss-cn-hongkong · 免备案</code></td></tr>
+    </table>
+
+    <div class="hint">
+      <b>接下来请做一件事：</b>
+      <ol>
+        <li>回到首页 <code>http://www.getzeroai.xyz/</code></li>
+        <li><b>拉到页面最底部</b>，看有没有一行浅灰色小标签：
+          <br><code>内容版本 2026-09-16 17:00</code></li>
+        <li>把结果告诉我</li>
+      </ol>
+    </div>
+
+    <div class="hint" style="background:#fff7ed;border-color:#fdba74">
+      <b style="color:#9a3412">如果首页底部「没有」那行版本标签，同时本页又能正常打开</b>
+      <p style="margin:8px 0 0">
+        说明你的浏览器或网络<strong>缓存了首页的旧副本</strong>。请按顺序试：
+      </p>
+      <ol style="margin-bottom:0">
+        <li>按 <code>Ctrl + Shift + R</code> 强制刷新首页（不是普通刷新）</li>
+        <li>用<strong>无痕窗口</strong>打开首页</li>
+        <li>用<strong>手机流量</strong>（关掉 Wi-Fi）打开首页</li>
+      </ol>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('cur').textContent = location.href;
+  document.getElementById('now').textContent = new Date().toLocaleString('zh-CN', { hour12: false });
+</script>
+</body>
+</html>

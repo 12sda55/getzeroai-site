@@ -671,10 +671,10 @@ logging:
     <tr><td>模型不使用工具</td><td>7</td><td>描述太模糊 / 模型不支持 function calling / 工具太多（&gt;15）</td></tr>
     <tr><td>模型用错工具</td><td>7</td><td>工具职责重叠，合并或在描述里写「不要用于……」</td></tr>
     <tr><td>工具异常导致 500</td><td>7</td><td>配 <code>DefaultToolExecutionExceptionProcessor.alwaysThrow(false)</code></td></tr>
-    <tr><td>工具被重复执行</td><td>7/9</td><td>Agent 循环里没关 <code>internalToolExecutionEnabled</code>；或写操作未幂等</td></tr>
+    <tr><td>工具被重复执行</td><td>7/9</td><td>自动注册的 <code>ToolCallingAdvisor</code> 执行了一次、你的循环又执行一次 → 设 <code>AdvisorParams.toolCallingAdvisorAutoRegister(false)</code>；或写操作未幂等</td></tr>
     <tr><td>MCP 客户端「无法解析消息」</td><td>8</td><td>Server stdout 被日志污染：设 <code>web-application-type: none</code>，禁止 <code>System.out</code></td></tr>
     <tr><td>MCP 工具列表为空</td><td>8</td><td>缺 <code>ToolCallbackProvider</code> bean，或 <code>toolcallback.enabled=false</code></td></tr>
-    <tr><td>Agent 只调一次工具就结束</td><td>9</td><td>没关自动工具执行；或提示词没说明可多步</td></tr>
+    <tr><td>Agent 只调一次工具就结束</td><td>9</td><td>没关掉自动工具调用；或提示词没说明可多步</td></tr>
     <tr><td>Agent 死循环</td><td>9</td><td>没设最大步数；加重复调用检测</td></tr>
     <tr><td>Agent 卡住不动</td><td>9</td><td>工具返回空或异常，模型无法判断下一步；返回要带明确状态</td></tr>
     <tr><td>确认接口「编号不存在」</td><td>9</td><td>待确认操作存在内存里，重启丢了 → 持久化</td></tr>
@@ -715,7 +715,8 @@ logging:
     <tr><td><code>ToolExecutionExceptionProcessor</code></td><td><code>DefaultToolExecutionExceptionProcessor.builder().alwaysThrow(false)</code></td><td>7</td></tr>
     <tr><td><code>MethodToolCallbackProvider</code></td><td><code>builder().toolObjects(bean).build()</code></td><td>8</td></tr>
     <tr><td><code>McpSyncClient</code></td><td><code>listTools()</code> / <code>callTool(CallToolRequest)</code> / <code>getServerInfo()</code></td><td>8</td></tr>
-    <tr><td><code>ToolCallingChatOptions</code></td><td><code>builder().toolCallbacks(...).internalToolExecutionEnabled(false)</code></td><td>9</td></tr>
+    <tr><td><code>ToolCallingChatOptions</code></td><td><code>builder().toolCallbacks(...)</code>。<strong>注意</strong>：<code>internalToolExecutionEnabled()</code> 已在 2.0 删除，关闭自动调用改用 <code>AdvisorParams.toolCallingAdvisorAutoRegister(false)</code></td><td>9</td></tr>
+    <tr><td><code>AdvisorParams</code></td><td><code>AdvisorParams.toolCallingAdvisorAutoRegister(false)</code>（自定义 Agent 循环时用）</td><td>9</td></tr>
     <tr><td><code>ObservationRegistry</code></td><td><code>Observation.createNotStarted(name, registry).observe(...)</code></td><td>10</td></tr>
     <tr><td><code>MeterRegistry</code></td><td><code>counter(...)</code> / <code>timer(...)</code> / <code>summary(...)</code></td><td>10</td></tr>
     <tr><td><code>RelevancyEvaluator</code></td><td><code>builder().chatClientBuilder(...).build()</code>；<code>evaluate(request)</code></td><td>10</td></tr>
@@ -972,7 +973,7 @@ risk 取值 low（查询）medium（修改数据）high（删除·付款·发信
 <div class="footer">
   Spring AI 2.0 学习指南 · 配套《Spring AI 框架与企业级智能应用开发实践 V2.0》<br>
   代码基于 JDK 21 / Spring Boot 4.1.1 / Spring AI 2.0.1 编写，具体小版本 API 以官方文档为准。
-  <span class="ver">内容版本 2026-09-16 15:30</span>
+  <span class="ver">内容版本 2026-09-16 17:00</span>
 </div>
 
 </main>

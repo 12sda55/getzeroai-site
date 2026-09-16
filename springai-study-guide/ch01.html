@@ -180,13 +180,40 @@ OpenAiChatModel（厂商实现）—— 把 Prompt 翻译成 OpenAI JSON
 
 <h3>方式一：IDEA / start.spring.io 生成（推荐新手）</h3>
 
+<div class="warn">
+  <strong>⚠️ 动手前先看这条：Spring Boot 版本不要照抄教程。</strong>
+  网上大量资料写着「选当前稳定 <code>3.x</code>」—— 那是 <strong>Spring Boot 4 发布之前</strong>的写法，
+  <strong>已经过时</strong>。Spring Boot <strong>没有 LTS 概念</strong>，每个小版本只有约 12 个月 OSS 支持期：
+  <code>3.5.x</code> 已于 <strong>2026-06-30 停止 OSS 支持</strong>，并被移出了 Initializr。
+  实测官方 <code>start.spring.io</code> 现在<strong>只提供 4.x</strong>
+  （<code>4.1.1</code> 为默认，另有 4.0.8 及若干 SNAPSHOT），<strong>下拉列表里根本没有 3.x</strong>。
+  <strong>选 4.1.1。</strong>
+</div>
+
 <ol class="steps">
   <li>打开 <code>https://start.spring.io</code>，或 IDEA 的 <em>New Project → Spring Initializr</em>。</li>
-  <li>Project 选 <strong>Maven</strong>，Language <strong>Java</strong>，Spring Boot 选当前稳定 <strong>3.x</strong>。</li>
-  <li>Group <code>com.example</code>，Artifact <code>springai-lab</code>，JDK 选 <strong>21</strong>。</li>
-  <li>依赖先只勾 <strong>Spring Web</strong> + <strong>Lombok</strong>。Spring AI 的依赖在 Initializr 里可能选不到最新版，我们<strong>直接手改 pom</strong> 更可控。</li>
-  <li>生成后解压到 <code>D:\work\springai-lab</code>，用 IDEA 打开 <code>pom.xml</code>。</li>
+  <li>Project 选 <strong>Maven</strong>，Language <strong>Java</strong>，Spring Boot 选 <strong>4.1.1</strong>（当前默认版）。</li>
+  <li>Group <code>com.example</code>，Artifact <code>springai-lab</code>，JDK 选 <strong>21</strong>（最低 17）。</li>
+  <li>依赖勾 <strong>Spring Web</strong>、<strong>Lombok</strong>，以及 AI 分组里的 <strong>OpenAI</strong>。
+  注意：勾「Spring Web」生成出来的坐标是 <code>spring-boot-starter-webmvc</code>
+  —— Boot 4 已把 <code>spring-boot-starter-web</code> 改名（旧名废弃）。</li>
+  <li>生成后解压到 <code>D:\wx\springai\springai-lab</code>，用 IDEA 打开 <code>pom.xml</code>。</li>
 </ol>
+
+<div class="note">
+  <strong>顺便纠正一个流传的说法：「Spring AI 的依赖在 Initializr 里选不到最新版，所以要手改 pom」—— 这不成立。</strong>
+  <p style="margin:8px 0 0">
+    实测 Initializr 有一个完整的 <strong>AI 分组，共 50 项依赖</strong>：OpenAI / Anthropic / DeepSeek /
+    Ollama / Mistral / Google GenAI / MCP Client &amp; Server / pgvector / Milvus / Qdrant /
+    Redis / JDBC 记忆库……该有的都有。而且<strong>生成出来的项目会自动带上
+    <code>spring-ai.version = 2.0.1</code></strong>，本身就是最新版。
+  </p>
+  <p style="margin:8px 0 0">
+    真正需要<strong>手改 pom</strong> 的场景是：课程后面章节要用到的<strong>其他 Spring AI 模块</strong>
+    （向量库、记忆库、MCP Server 等），按需追加即可 —— 这才是下面「方式二」的用途，
+    <strong>而不是因为 Initializr 版本旧</strong>。
+  </p>
+</div>
 
 <h3>方式二：直接改 pom（本课程采用）</h3>
 
@@ -284,7 +311,7 @@ logging:
   <tbody>
     <tr><td>DeepSeek</td><td><code>https://api.deepseek.com</code></td><td><code>deepseek-chat</code> / <code>deepseek-reasoner</code></td><td>性价比高，本课程默认；<strong>无 embedding 接口</strong></td></tr>
     <tr><td>阿里通义</td><td><code>https://dashscope.aliyuncs.com/compatible-mode</code></td><td><code>qwen-plus</code> / <code>qwen-max</code></td><td>有 <code>text-embedding-v3</code>，第 4 章可直接用</td></tr>
-    <tr><td>智谱 AI</td><td><code>https://open.bigmodel.cn/api/paas/v4</code></td><td><code>glm-4-plus</code></td><td>有 <code>embedding-3</code></td></tr>
+    <tr><td>智谱 AI</td><td><code>https://open.bigmodel.cn/api/paas/v4</code></td><td><code>glm-4-plus</code></td><td>有 <code>embedding-3</code>。<strong>注意</strong>：智谱的专用 Starter 已移出 Spring AI 主仓库，但<strong>走 OpenAI 兼容协议仍然可用</strong>——就用 <code>spring-ai-starter-model-openai</code>，只改 <code>base-url</code></td></tr>
     <tr><td>月之暗面</td><td><code>https://api.moonshot.cn</code></td><td><code>moonshot-v1-8k</code></td><td>长上下文有优势</td></tr>
     <tr><td>OpenAI</td><td><code>https://api.openai.com</code></td><td><code>gpt-4o-mini</code></td><td>需要网络可达；embedding 用 <code>text-embedding-3-small</code></td></tr>
     <tr><td>Ollama 本地</td><td><code>http://localhost:11434</code>（换 starter）</td><td><code>qwen2.5:7b</code></td><td>需把依赖换成 <code>spring-ai-starter-model-ollama</code></td></tr>
@@ -739,7 +766,7 @@ curl -N -X POST http://localhost:8080/api/v1/chat/stream \
   <a class="next" href="ch02.html"><div class="dir-label">下一章 →</div><div class="dir-name">第 2 章 · 提示词与对话</div></a>
 </div>
 
-<div class="footer">Spring AI 2.0 学习指南 · 第 1 章 · <span class="ver">内容版本 2026-09-16 15:30</span></div>
+<div class="footer">Spring AI 2.0 学习指南 · 第 1 章 · <span class="ver">内容版本 2026-09-16 17:00</span></div>
 </main>
 </div>
 <script src="assets/app.js"></script>
