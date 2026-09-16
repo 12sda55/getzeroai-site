@@ -243,9 +243,51 @@ OSS 绑定域名后默认只有 HTTP。要上 HTTPS：
 ```bash
 cd D:/wx/springai/springai-study-guide
 ossutil cp -r . oss://getzeroai-study-guide/ --update --exclude "*.md"
+# 用本仓库的脚本更省事（自动设 Content-Type 与 Cache-Control）：
+# python oss.py upload getzeroai-study-guide D:/wx/springai/springai-study-guide
 ```
 
-> OSS 无自动缓存，但如果后续挂了 CDN，记得**刷新 CDN 缓存**才能立刻看到新内容。
+> ### ⚠️ 必须给对象设置 `Cache-Control`，否则会出现「明明更新了却看不到」
+>
+> **OSS 默认不给对象设置 `Cache-Control`**，响应头里只有 `ETag` 和 `Last-Modified`。
+> 浏览器遇到这种响应会启用**启发式缓存**，可能长时间不回源 —— 于是新版本传上去了，
+> 用户却一直看到旧的。
+>
+> 上传时带上 `Cache-Control: no-cache`：
+>
+> ```bash
+> ossutil cp -r . oss://getzeroai-study-guide/ --update \
+>   --exclude "*.md" --meta "Cache-Control:no-cache"
+> ```
+>
+> 配 `no-cache` 后浏览器每次都发条件请求：内容变了才重下，没变返回 **304**（开销极小）。
+> 本站文件少，全站 `no-cache` 最省心；若资源变多，可改为给静态资源文件名加内容哈希。
+> **但不要把 HTML 设成长缓存。**
+
+### 8. 排查「更新了但看不到」
+
+**用内容指纹判断，别靠肉眼**：
+
+```bash
+# 本地与线上各算 md5，用时间戳 + no-cache 请求头穿透缓存
+curl -s -H "Cache-Control: no-cache" \
+  -o /tmp/live.html "http://www.getzeroai.xyz/index.html?t=$(date +%s)"
+md5sum /tmp/live.html
+md5sum D:/wx/springai/springai-study-guide/index.html
+```
+
+判读：
+
+| 情况 | 结论 |
+|---|---|
+| md5 一致，但仍看到旧内容 | **客户端/中间层缓存**，不是部署问题 → 强制刷新（`Ctrl+F5`）或清缓存 |
+| md5 不一致 | 确实没传上去 → 重新执行上传，检查是否传错了 Bucket 或层级 |
+
+> **本站有两个可访问地址**，排查时要分清看的是哪个：
+> - `http://www.getzeroai.xyz` —— 正式地址（OSS），**以此为准**
+> - 各平台的临时沙箱预览地址 —— 需单独重新部署才会更新
+>
+> 如果后续挂了 CDN，还要额外**刷新 CDN 缓存**。
 
 ---
 
