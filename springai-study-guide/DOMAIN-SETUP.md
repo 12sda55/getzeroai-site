@@ -5,35 +5,60 @@
 
 ---
 
-## 一、当前状态（2026-09-16 复核）
+## 一、当前状态（2026-09-16 12:25 复核）
 
 | 检查项 | 结果 | 说明 |
 |---|---|---|
 | 域名注册 | ✅ 已注册 | 注册商：阿里云（万网）；2026-09-16 注册，2027-09-16 到期 |
-| 实名认证 | ✅ **已通过** | 原 `client hold` 状态**已解除** |
-| 域名状态位 | ✅ 正常 | 现为 `server transfer prohibited` + `add period`，均为注册后保护位，不影响解析 |
+| 实名认证 | ✅ **已通过** | 原 `client hold` 状态已解除 |
+| 域名状态位 | ✅ 正常 | `server transfer prohibited` + `add period`，均为注册后保护位，不影响解析 |
+| **全球解析** | ✅ **已生效** | `.xyz` 注册局（x/y/z.nic.xyz）与阿里云 NS 均返回 `NOERROR` |
 | DNS 服务器 | 阿里云云解析 | `dns31.hichina.com` / `dns32.hichina.com` |
-| **全球解析** | ⏳ **尚未生效** | 注册局（.xyz）还没把域名写进 zone 文件 |
 
-### 关于「尚未生效」——这是正常现象，不用处理
+> 从实名解锁到 DNS 委派生效约 **1.5 小时**（12:00 解除 → 12:23 生效），比官方说的 1~2 个工作日快得多。
 
-解除 `clientHold` 后，注册局需要把域名重新写入 .xyz 的 zone 文件，全球递归 DNS 才能查到。
-**实测三台 .xyz 注册局服务器（x/y/z.nic.xyz）目前都返回 NXDOMAIN**，说明委派还没下发。
+---
 
-- 通常 **几小时内**生效，阿里云官方说法是 **1~2 个工作日**
-- 这个等待**不影响你做准备工作**——下面的配置都可以提前做好，DNS 一生效站点就自动可访问
+## 二、实际部署记录（已完成的部分）
 
-复核命令（等一会儿再跑，看到不再 NXDOMAIN 就说明好了）：
+托管方案最终采用 **阿里云 OSS 中国香港 + 自定义域名**（免备案）。已执行：
 
-```bash
-curl -s "https://rdap.centralnic.com/xyz/domain/getzeroai.xyz" \
-  | python -c "import sys,json; d=json.load(sys.stdin); print(d.get('status'))"
+| 步骤 | 状态 | 值 / 结果 |
+|---|---|---|
+| 开通 OSS 服务 | ✅ | 新账号必须先手动开通，否则 API 报 `UserDisable` |
+| 创建 Bucket | ✅ | **`getzeroai-study-guide`** @ **`oss-cn-hongkong`** |
+| 读写权限 | ✅ | `public-read`（公共读） |
+| 静态网站托管 | ✅ | 默认首页 `index.html`，错误页 `404.html` |
+| 上传站点 | ✅ | **16 个文件**，HTML/CSS/JS 的 `Content-Type` 均正确 |
+| 内容校验 | ✅ | 16 个对象字节数与本机完全一致 |
+| **绑定自定义域名** | ⏳ **待完成** | 卡在域名归属验证（见下） |
+| **配置 CNAME 解析** | ⏳ 待完成 | 需手动加记录 |
+| **HTTPS 证书** | ⏳ 待完成 | 需申请免费证书并托管 |
 
-# NS 能查到就说明委派成功
-nslookup -type=NS getzeroai.xyz 223.5.5.5
+### ⚠️ 一个必须知道的前提：域名与 Bucket 不在同一个阿里云账号下
+
+绑定自定义域名时报：
+
+```
+403  NeedVerifyDomainOwnership
 ```
 
-> 另外：新注册域名 60 天内禁止转出注册商（`clientTransferProhibited`），ICANN 标准规则，不影响使用。
+说明 `getzeroai.xyz` 与存放站点的 OSS Bucket **分属两个不同的阿里云账号**
+（若同账号，OSS 允许直接绑定、无需任何验证）。
+
+解决方式是走 **TXT 归属验证**，需要先加下面两条 TXT 记录：
+
+| 主机记录 | 记录类型 | 记录值 | 说明 |
+|---|---|---|---|
+| `_dnsauth` | TXT | `1ad4197f384559d0e36163fae1c7aeb3` | 验证裸域名 `getzeroai.xyz` |
+| `_dnsauth.www` | TXT | `389893778371f3baa0b6e4bb234b996a` | 验证 `www.getzeroai.xyz` |
+
+> 令牌有效期至 **2026-09-19**。验证通过后，**这两条 TXT 记录可以删掉**，不影响后续使用。
+>
+> 如果只打算用 `www` 子域名，**只需加第二条**。
+
+**添加位置**：域名所属阿里云账号 → **云解析 DNS** → `getzeroai.xyz` → **解析设置** → 添加记录。
+主机记录只填前缀部分（`_dnsauth` 或 `_dnsauth.www`），不要带域名后缀。
 
 ---
 
@@ -76,7 +101,7 @@ nslookup -type=NS getzeroai.xyz 223.5.5.5
 
 | 配置项 | 值 | 原因 |
 |---|---|---|
-| Bucket 名称 | 如 `getzeroai-guide` | 名称全网唯一，会出现在默认域名里 |
+| Bucket 名称 | `getzeroai-study-guide` | 名称**全网唯一**（不是按账号隔离），通用名极易撞名 |
 | **地域** | **中国香港** | ★ 关键：香港节点才能**免备案**绑自定义域名 |
 | 存储类型 | 标准存储 | 网站要低延迟读取 |
 | **读写权限** | **公共读** | ★ 静态网站必须公共读，否则访客 403 |
@@ -108,7 +133,7 @@ ossutil config
 
 # 上传（--update 只传有变化的文件，重复执行很安全）
 cd D:/wx/springai/springai-study-guide
-ossutil cp -r . oss://getzeroai-guide/ --update
+ossutil cp -r . oss://getzeroai-study-guide/ --update
 ```
 
 > 注意：`DEPLOY.md`、`DOMAIN-SETUP.md` 这类说明文档**不必上传**（访客不需要看），
@@ -157,7 +182,7 @@ OSS 绑定域名后默认只有 HTTP。要上 HTTPS：
 
 ```bash
 cd D:/wx/springai/springai-study-guide
-ossutil cp -r . oss://getzeroai-guide/ --update --exclude "*.md"
+ossutil cp -r . oss://getzeroai-study-guide/ --update --exclude "*.md"
 ```
 
 > OSS 无自动缓存，但如果后续挂了 CDN，记得**刷新 CDN 缓存**才能立刻看到新内容。
