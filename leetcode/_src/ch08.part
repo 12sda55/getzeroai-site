@@ -1,0 +1,517 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 08</div>
+  <h1><span class="ch-tag">专题 08</span>递归与回溯：枚举所有可能</h1>
+  <p class="lead">回溯（Backtracking）听起来吓人，其实就一句话：<strong>递归 + 撤销选择</strong>。
+  它用来解决一类最朴素也最常见的问题——「把所有满足条件的组合/排列/子集都找出来」。
+  本章先告诉你回溯背后那棵「决策树」长什么样，再给你一个四件套模板，最后用 4 道题（含困难题 N 皇后）把它练到能默写。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握回溯四件套模板</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 07 递归 · 树遍历</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 题（含 N 皇后完整代码）</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">6–8 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">8.1</span>回溯 = 递归 + 撤销选择</h2>
+
+<p>回溯解决的是「<strong>枚举所有可能</strong>」的问题。比如「从 1,2,3 里选 2 个数有哪些组合」「把 abc 全排列」。
+暴力枚举的本质，是在一棵<strong>决策树</strong>上做深度优先搜索（DFS）：每个节点代表「当前已经做了哪些选择」，往下走一步就是「再做一个选择」。</p>
+
+<p>关键就在「<strong>撤销</strong>」二字。DFS 走到一个分支、收集完结果后，要<strong>退回上一层，把刚才的选择取消</strong>，才能去试另一条分支。
+就像走迷宫：走进死胡同，得沿原路退回来，才能走另一条岔路。这个「退回来」的动作，就是回溯里那句 <code>path.remove(...)</code>。</p>
+
+<pre><code class="nohl">从 [1,2,3] 选 2 个（组合）的决策树：
+
+            path=[]
+        /      |      \
+    选1        选2      选3
+   path=[1]  path=[2]  path=[3]
+    /  \       |          
+  选2  选3     选3         (选3后再选>3的，无路)
+[1,2][1,3]   [2,3]
+    ↑ 三个叶子就是答案：[1,2][1,3][2,3]
+
+注意：选完 [1,2] 后，必须「撤销 2」回到 [1]，
+再「撤销 1」回到 []，才能去试选 2 那条分支。
+</code></pre>
+
+<p>把「做选择 → 递归 → 撤销选择」三步套在 DFS 上，这就是回溯的全部秘密。
+后面所有题，骨架都一样，变的只是「什么时候算一个答案」「怎么避免重复」。</p>
+
+<h3>把决策树和代码逐行对上</h3>
+
+<p>拿「从 [1,2,3] 选 2 个」再走一遍，把树的每一步对应到回溯代码的执行流，你就能彻底看清「撤销」发生在哪：</p>
+
+<pre><code class="nohl">回溯代码（组合 k=2）的执行轨迹：
+
+backtrack(path=[], start=1)
+  for i=1: path=[1]
+    backtrack(path=[1], start=2)
+      for i=2: path=[1,2] → 长度==k → 收 [1,2]；回到本层
+        path.remove → path=[1]          ← 【撤销】2，退回选 2 之前
+      for i=3: path=[1,3] → 收 [1,3]
+        path.remove → path=[1]          ← 【撤销】3
+    （i 循环结束）path.remove → path=[]  ← 【撤销】1，退回起点
+  for i=2: path=[2]
+    backtrack(path=[2], start=3)
+      for i=3: path=[2,3] → 收 [2,3]
+        path.remove → path=[2]
+    path.remove → path=[]
+  for i=3: path=[3]
+    backtrack(path=[3], start=4) → i 从 4 起，啥也不选，直接返回
+    path.remove → path=[]
+收集到 [1,2][1,3][2,3] ✓
+</code></pre>
+
+<p>注意那三处 <code>path.remove</code>：<strong>每一层递归返回前，都必须把刚加进去的元素撤销</strong>，
+否则上层循环再 <code>path.add</code> 时，path 里还残留着下层的选择，答案就串味了。
+「撤销」和「做选择」严格对称，是回溯能正确枚举的核心纪律。</p>
+
+<div class="tip">
+  <strong>一句话记住：</strong>回溯 = 在一棵决策树上 DFS，<strong>进入节点时做选择，离开节点时撤销选择</strong>。
+  没有撤销，就只剩一条路，枚举不出全部可能。调试回溯时，在 <code>path.add</code> 和 <code>path.remove</code> 各打一行日志，
+  看 path 的「长出来」和「缩回去」是否对称，能秒定位绝大多数 bug。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">8.2</span>回溯通用模板：决策树</h2>
+
+<p>把上面的思想落成代码，所有回溯题都是这四件套：</p>
+
+<table>
+  <thead><tr><th style="width:130px">四件套</th><th>是什么</th></tr></thead>
+  <tbody>
+    <tr><td><strong>path</strong></td><td>当前路径（已经做的选择），通常是一个 <code>List</code></td></tr>
+    <tr><td><strong>res</strong></td><td>结果集，收集所有合法的 path</td></tr>
+    <tr><td><strong>递归参数</strong></td><td>控制「下一步能选哪些」：如 <code>start</code>（从哪开始选）、<code>used</code>（用过没）</td></tr>
+    <tr><td><strong>撤销</strong></td><td>递归返回后，把刚加进 path 的元素移除，恢复原状</td></tr>
+  </tr>
+</tbody>
+</table>
+
+<pre><code>void backtrack(路径 path, 选择列表, 结果集 res) {
+    if (满足结束条件) {        // 比如 path 长度够了
+        res.add(拷贝(path));   // 注意：加的是拷贝，不是引用
+        return;
+    }
+    for (每个可选选择) {
+        path.add(选择);        // ① 做选择
+        backtrack(path, ...);  // ② 递归进下一层
+        path.remove(最后);     // ③ 撤销选择（回溯的灵魂）
+    }
+}
+</code></pre>
+
+<p>逐行注意点：</p>
+
+<ul>
+  <li><strong>结束条件：</strong>告诉递归「什么时候这个 path 算一个完整答案」。组合是 path 长度等于 k，子集是每个节点都收，全排列是 path 长度等于 n。</li>
+  <li><strong>加拷贝：</strong><code>res.add(new ArrayList&lt;&gt;(path))</code>。如果不拷贝，后面撤销 path 时，res 里存的同一个对象也被改空，最后全变空列表。这是新手第一坑。</li>
+  <li><strong>撤销必须对称：</strong>加了什么就移除什么，顺序无所谓（移除最后一个即可），但绝不能漏。</li>
+  <li><strong>选择列表怎么缩：</strong>用 <code>start</code> 参数保证「不回头选」，用 <code>used</code> 数组标记「已用过」，避免重复——这两招后面分别讲。</li>
+</ul>
+
+<div class="warn">
+  <strong>最致命的错：</strong><code>res.add(path)</code> 没拷贝。Java 里 <code>path</code> 是引用，你加进去的是「同一个列表对象」，
+  后面 <code>path.remove</code> 把它清空，res 里所有元素都跟着空。务必写成 <code>res.add(new ArrayList&lt;&gt;(path))</code>。
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">8.3</span>组合（中等，力扣 77）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：start 参数防重复</span></p>
+
+<p><strong>题意：</strong>从 1 到 n 里选 k 个数，返回<strong>所有组合</strong>（不考虑顺序，[1,2] 和 [2,1] 算同一个，只留 [1,2]）。
+例：<code>n=4, k=2</code> → <code>[1,2][1,3][1,4][2,3][2,4][3,4]</code>。</p>
+
+<h3>思路推导</h3>
+
+<p>用决策树想：第一个数可以选 1~n，选了之后第二个数只能从「比它大的」里选，这样自然不会重复（不会出现 [2,1]）。
+怎么在代码里表达「只能选更大的」？加一个 <code>start</code> 参数：<strong>本层只从 start 到 n 枚举，递归时传 start+1</strong>。
+因为下一层从 i+1 开始，永远不会回头选更小的，所以 [1,2] 和 [2,1] 不会被都生成。</p>
+
+<pre><code class="nohl">n=4,k=2 的决策树（start 控制不回头）：
+        []
+   1     2     3     4
+  2 3 4  3 4   4      (4后再无更大)
+ [12][13][14][23][24][34]  ✓ 六个，无重复
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        backtrack(n, k, 1, path, res);   // start 从 1 开始
+        return res;
+    }
+
+    private void backtrack(int n, int k, int start, List<Integer> path, List<List<Integer>> res) {
+        if (path.size() == k) {                    // 选满 k 个，收答案
+            res.add(new ArrayList<>(path));        // 拷贝！
+            return;
+        }
+        for (int i = start; i <= n; i++) {          // 只从 start 往后，防重复
+            path.add(i);                           // 做选择
+            backtrack(n, k, i + 1, path, res);     // 下一层从 i+1 起
+            path.remove(path.size() - 1);          // 撤销
+        }
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(C(n,k) × k)：共 C(n,k) 个组合，每个拷贝 path 花 O(k)。空间 O(k) 递归栈 + 结果集。
+为什么 <code>i+1</code> 而非 <code>start</code>？传 <code>start</code> 会重复选同一位置导致无限递归；传 <code>i+1</code> 才保证「不回头」。</p>
+
+<div class="tip">
+  <strong>引入剪枝：</strong>上面 for 循环到 n，但有时后面根本选不够 k 个。比如 n=4,k=2，已选了 [1]，
+  下一层当前位置 i，若从 i 到 n 剩下的数不足 k−path.size() 个，就没必要继续。<strong>剪枝优化见 8.7</strong>。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>组合总和 III（力扣 216，中等）</strong>——与本题共用「start 防重复 + 回溯四件套」技巧；差异在多加了「k 个数之和必须等于 n」的约束，需要带一个当前和参数并做求和剪枝（提示：递归里维护 sum，sum &gt; n 时直接 return，到叶子再判断 sum == n）。</li>
+    <li><strong>组合总和（力扣 39，中等）</strong>——与本题共用「回溯枚举组合」技巧；差异在候选数字可<strong>重复使用</strong>，且数组元素不限定 1~n（提示：递归传 i 而不是 i+1，允许同一数字再被选；用 sum &gt; target 剪枝）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">8.4</span>子集（中等，力扣 78）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：每个节点都收集</span></p>
+
+<p><strong>题意：</strong>给定数组（无重复元素），返回<strong>所有子集</strong>。例：<code>[1,2,3]</code> → 8 个：<code>[], [1], [2], [3], [1,2], [1,3], [2,3], [1,2,3]</code>。</p>
+
+<h3>思路推导</h3>
+
+<p>子集和组合的区别在哪？组合只要「长度恰好 k 的」；子集要<strong>所有长度</strong>的，包括空集。
+所以决策树里<strong>每一个节点都是一个合法答案</strong>，不能只在叶子收，要「每往下走一步就收一次」。</p>
+
+<p>仍用 <code>start</code> 防重复（同组合一样，元素不重复使用）。区别仅在结束条件：子集<strong>没有「必须选满」的硬要求</strong>，
+递归自然会在 for 走完时停下；而「收集答案」放在<strong>递归函数最开头</strong>，每进入一层就先把当前 path 收进去。</p>
+
+<pre><code class="nohl">[1,2,3] 子集决策树（每个节点都收）：
+        []            ← 收 []
+     /  |  \
+   1    2    3       ← 收 [1][2][3]
+  / \   |
+ 2   3  3            ← 收 [1,2][1,3][2,3]
+ |
+3                ← 收 [1,2,3]
+共 8 个 = 2^3 ✓
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        backtrack(nums, 0, path, res);
+        return res;
+    }
+
+    private void backtrack(int[] nums, int start, List<Integer> path, List<List<Integer>> res) {
+        res.add(new ArrayList<>(path));          // ① 每个节点都收集（含空集）
+        for (int i = start; i < nums.length; i++) {
+            path.add(nums[i]);                   // 做选择
+            backtrack(nums, i + 1, path, res);   // 不回头
+            path.remove(path.size() - 1);        // 撤销
+        }
+        // 没有「长度等于 k」的硬性结束，for 走完自然回退
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(2ⁿ × n)：共 2ⁿ 个子集，每个拷贝 O(n)。空间 O(n) 递归栈。
+为什么子集是「每个节点收集」而组合是「叶子收集」？因为子集允许任意长度，<strong>路径本身就是答案</strong>；
+组合只认长度恰到好处的那条，所以只在 path.size()==k 时收。两题骨架几乎一模一样，差的就是这一句放哪。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>子集题若数组<strong>有重复元素</strong>（力扣 90 子集 II），要先排序，再在同层跳过「和上个相同的值」（<code>if (i>start && nums[i]==nums[i-1]) continue;</code>），
+  否则会生成重复子集。本题数组无重复，不用这步。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>子集 II（力扣 90，中等）</strong>——与本题共用「每个节点都收集 + start 不回头」技巧；差异在数组<strong>有重复元素</strong>，需要先排序再在同层跳过相同值，否则会生成重复子集（提示：排序后写 <code>if (i &gt; start &amp;&amp; nums[i] == nums[i-1]) continue;</code> 跳过同层重复）。</li>
+    <li><strong>子集的异或和（力扣 1863，简单）</strong>——与本题共用「枚举所有子集」框架；差异在不需要返回子集本身，而是求所有子集的异或和的总和（提示：可直接用回溯枚举子集对每个子集算 XOR 累加；或更简单——每个元素在 2^(n-1) 个子集中出现，可直接数学求和）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">8.5</span>全排列（中等，力扣 46）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：used 数组防重用</span></p>
+
+<p><strong>题意：</strong>给定数组（无重复），返回<strong>所有全排列</strong>（顺序不同算不同）。例：<code>[1,2,3]</code> → 6 个排列。</p>
+
+<h3>思路推导</h3>
+
+<p>排列和组合/子集最大的不同：<strong>每个数必须用且仅用一次，但顺序任意</strong>。
+组合用 <code>start</code> 保证「不回头」来避免重复；但排列里 [1,2,3] 和 [2,1,3] 都是合法答案，不能「不回头」。
+那怎么避免「同一个数用两次」？用 <strong><code>used</code> 布尔数组</strong>标记哪些数已被选入当前 path，for 循环里跳过已用的。</p>
+
+<pre><code class="nohl">[1,2,3] 全排列（used 挡住重复用）：
+第一层可选 1/2/3（都未用）
+选1 → used[1]=true → 第二层可选 2/3
+  选2 → 第三层只能选 3 → [1,2,3]
+  选3 → 第三层只能选 2 → [1,3,2]
+选2 → ... → [2,1,3][2,3,1]
+选3 → ... → [3,1,2][3,2,1]
+共 6 = 3! ✓
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        boolean[] used = new boolean[nums.length];   // 标记用过没
+        backtrack(nums, used, path, res);
+        return res;
+    }
+
+    private void backtrack(int[] nums, boolean[] used, List<Integer> path, List<List<Integer>> res) {
+        if (path.size() == nums.length) {            // 选满 n 个，一个排列完成
+            res.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i]) continue;                   // 用过的跳过，防重复用
+            used[i] = true;                           // 标记用过
+            path.add(nums[i]);
+            backtrack(nums, used, path, res);
+            path.remove(path.size() - 1);            // 撤销选择
+            used[i] = false;                          // 撤销标记（对称的！）
+        }
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n! × n)：共 n! 个排列，每个拷贝 O(n)。空间 O(n) 递归栈 + used 数组。
+为什么组合用 <code>start</code>、排列用 <code>used</code>？组合/子集要「不回头」去重，排列要「每个都能放任意位置但不能重复用」——
+本质区别是<strong>要不要保留顺序自由</strong>。背住这个对照，三题就不会混。</p>
+
+<div class="tip">
+  <strong>关键点：</strong><code>used[i] = false</code> 这行极易漏，它和 <code>used[i] = true</code> 必须成对。
+  漏了的话，上一层回溯后该数仍被标记用过，后续分支就永远选不到它，答案残缺。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>全排列 II（力扣 47，中等）</strong>——与本题共用「used 数组防重用」技巧；差异在数组<strong>有重复元素</strong>，要在同层跳过已用过的相同值，否则产生重复排列（提示：先排序，for 里加 <code>if (i &gt; 0 &amp;&amp; nums[i] == nums[i-1] &amp;&amp; !used[i-1]) continue;</code> 跳过同层重复）。</li>
+    <li><strong>下一个排列（力扣 31，中等）</strong>——与本题共用「对排列做原地变换」的思维；差异在不是枚举所有排列，而是求「字典序下一个排列」，是纯思维题（提示：从右往左找第一对 nums[i] &lt; nums[i+1]，再找右侧比它大的最小数交换，最后把右侧反转）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">8.6</span>N 皇后（困难，力扣 51）</h2>
+
+<p><span class="pill purple">困难</span> <span class="pill">核心：回溯模板的完整形态</span></p>
+
+<p><strong>题意：</strong>在 n×n 棋盘上放 n 个皇后，使<strong>任意两个不互相攻击</strong>（不在同一行、同一列、同一对角线）。返回所有摆法。
+例：<code>n=4</code> 有 2 种解。</p>
+
+<h3>思路推导</h3>
+
+<p>N 皇后是回溯模板的「完整形态」——组合/子集/排列的技巧它全用上：</p>
+
+<ul>
+  <li>一行一行放皇后（<strong>每行必放一个</strong>，天然保证不同行）；</li>
+  <li><code>row</code> 参数相当于「当前层」，递归到 row==n 说明 n 行都放完，收一个解；</li>
+  <li>每一层 for 循环枚举<strong>这一行的每一列</strong>，用 <code>isValid</code> 检查「同列 / 左上方对角线 / 右上方对角线」有没有冲突；</li>
+  <li>放的格子标记 <code>'Q'</code>，递归返回后改回 <code>'.'</code>——这就是「撤销选择」。</li>
+</ul>
+
+<p>对角线判断的直觉：对于已放的行 r'（r' &lt; row），若它放在列 c'，那么要挡住当前 (row, col)，需满足
+<code>col == c'</code>（同列），或 <code>row - r' == col - c'</code>（左上↘方向，行差=列差），或 <code>row - r' == c' - col</code>（右上↙方向）。
+把后两个合并成 <code>abs(row - r') == abs(col - c')</code> 即「同一对角线」。</p>
+
+<h3>参考代码（完整可提交）</h3>
+
+<pre><code>class Solution {
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> res = new ArrayList<>();
+        char[][] board = new char[n][n];
+        for (int i = 0; i < n; i++)                 // 棋盘初始化为 '.'
+            for (int j = 0; j < n; j++) board[i][j] = '.';
+        backtrack(board, 0, n, res);               // 从第 0 行开始
+        return res;
+    }
+
+    // 在第 row 行尝试放皇后
+    private void backtrack(char[][] board, int row, int n, List<List<String>> res) {
+        if (row == n) {                            // 0..n-1 都放完 → 一个解
+            res.add(construct(board));
+            return;
+        }
+        for (int col = 0; col < n; col++) {        // 枚举这一行的每一列
+            if (isValid(board, row, col, n)) {
+                board[row][col] = 'Q';            // 做选择
+                backtrack(board, row + 1, n, res); // 下一行
+                board[row][col] = '.';            // 撤销选择
+            }
+        }
+    }
+
+    // 检查 (row, col) 能不能放：同列 / 左上方 / 右上方 有无皇后
+    private boolean isValid(char[][] board, int row, int col, int n) {
+        for (int i = 0; i < row; i++)             // 同列（只查上方，下方还没放）
+            if (board[i][col] == 'Q') return false;
+        for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--)
+            if (board[i][j] == 'Q') return false; // 左上方对角线 ↖
+        for (int i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++)
+            if (board[i][j] == 'Q') return false; // 右上方对角线 ↗
+        return true;
+    }
+
+    // 把 char 矩阵转成 List<String> 方便输出
+    private List<String> construct(char[][] board) {
+        List<String> list = new ArrayList<>();
+        for (char[] r : board) list.add(new String(r));
+        return list;
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间最坏 O(n!)（每行排除已占列，类似排列），实际因对角线剪枝远小于此。空间 O(n²) 棋盘 + O(n) 递归栈。
+为什么只查「上方」的冲突？因为下方还没放皇后，只需保证和<strong>已放的行</strong>不冲突即可——这正体现回溯「逐步决策」的特点。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>把「行差绝对值 == 列差绝对值」当作同对角线判断，比分别写两条循环简洁。
+  另外 <code>isValid</code> 只向上查，千万别 horizontal 查（每行只放一个，不可能同行冲突）。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>N 皇后 II（力扣 52，困难）</strong>——与本题共用「逐行放置 + isValid 冲突检查」框架；差异在只要求<strong>解的个数</strong>而不需要具体摆法，把收集 List 改成计数即可（提示：去掉 construct 和 res.add，命中 row==n 时 count++ 即可，其余 isValid / 撤销逻辑一字不变）。</li>
+    <li><strong>解数独（力扣 37，困难）</strong>——与本题共用「回溯 + 放置 + 撤销」的完整框架；差异在棋盘是 9×9 且要填数字 1~9，冲突检查变为行/列/宫三方（提示：用双重 for 找空格，对每个空格试 1~9，isValid 同时查行、列、3×3 宫；找到一个完整解即可直接返回）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">8.7</span>剪枝：回溯的效率生命线</h2>
+
+<p>回溯慢的根因是「枚举了太多注定失败的分支」。剪枝（Pruning）就是<strong>在还没走到死胡同之前，提前判断「这条路不可能出答案」，直接不进去</strong>，把整棵子树砍掉。</p>
+
+<h3>组合剪枝公式的直观推导</h3>
+
+<p>回到组合（8.3）：<code>n=4, k=2</code>，已选 <code>path=[1]</code>，接下来 for 从 i=2 到 4。
+但注意：<strong>还需要再选 k − path.size() = 1 个数</strong>。从位置 i 往后（含 i）还剩多少个数可挑？
+是 <code>n − i + 1</code> 个。要让「剩下的数」够选，必须满足：</p>
+
+<pre><code class="nohl">剩下的可选数  ≥  还需要选的个数
+n − i + 1     ≥  k − path.size()
+移项得：i  ≤  n − (k − path.size()) + 1
+</code></pre>
+
+<p>这就是剪枝上界。例：n=4, k=2，path=[1]（已选 1 个），还需 1 个：
+<code>i ≤ 4 − (2−1) + 1 = 4</code>，所以 i 到 4 都行（[1,4] 合法）。
+但若 path=[]、k=3、n=4：<code>i ≤ 4 − (3−0) + 1 = 2</code>，第一层只枚举到 2——
+因为选了 3 之后只剩 [4] 一个数，凑不够 3 个，整条分支砍掉，省掉大量递归。</p>
+
+<p>把 for 循环的上界从 <code>i <= n</code> 改成 <code>i <= n - (k - path.size()) + 1</code>：</p>
+
+<pre><code>// 组合剪枝版（仅改 for 上界）
+for (int i = start; i <= n - (k - path.size()) + 1; i++) {
+    path.add(i);
+    backtrack(n, k, i + 1, path, res);
+    path.remove(path.size() - 1);
+}
+</code></pre>
+
+<h3>其他常见剪枝</h3>
+
+<ul>
+  <li><strong>子集 II 同层去重：</strong><code>if (i > start && nums[i] == nums[i-1]) continue;</code> 跳过同层相同值，避免重复子集；</li>
+  <li><strong>求和类（如组合总和）：</strong>若要求和等于 target，当前和已 &gt; target 直接 return（前提是数组非负）；</li>
+  <li><strong>N 皇后：</strong><code>isValid</code> 本身就是在「放之前」剪掉冲突列，是最直接的剪枝。</li>
+</ul>
+
+<h3>一个具体例子：求和剪枝（组合总和类）</h3>
+
+<p>假设题目变成「从 [2,3,6,7] 里选数（可重复），凑出和为 7 的所有组合」。递归到某一层 path=[2,2]、当前和 = 4，
+接下来要选的数若再取 6，和变成 10 已经超过 7——<strong>这条分支整棵子树都不可能等于 7</strong>，直接 <code>return</code> 剪掉，
+不用再往下深搜。代码骨架：</p>
+
+<pre><code>void backtrack(int[] nums, int target, int start, int sum, List<Integer> path, List<List<Integer>> res) {
+    if (sum == target) { res.add(new ArrayList<>(path)); return; } // 凑齐，收
+    if (sum > target) return;                                      // 超了，剪枝（数组非负才成立）
+    for (int i = start; i < nums.length; i++) {
+        path.add(nums[i]);
+        backtrack(nums, target, i, sum + nums[i], path, res); // 可重复就传 i 不传 i+1
+        path.remove(path.size() - 1);
+    }
+}
+</code></pre>
+
+<p>这里 <code>if (sum > target) return;</code> 就是最朴素的剪枝：它把「和已超目标」的所有后续选择一次性砍光。
+对比「不剪枝、硬搜到选满再判断」，在数组稍大时差距是数量级的——这也是为什么剪枝叫「回溯的效率生命线」。</p>
+
+<div class="tip">
+  <strong>剪枝的前提意识：</strong>求和类剪枝「当前和 &gt; target 就停」<strong>只在数组元素非负时成立</strong>。
+  如果有负数，和可能先超后回落，不能提前停，得另想办法（如限制选择总数）。别无脑套。
+</div>
+
+<div class="warn">
+  <strong>剪枝的代价意识：</strong>剪枝不降低「最坏复杂度」的理论阶（组合仍是指数级），但能砍掉大量实际分支，
+  力扣上常是「不剪枝 TLE、剪枝过」的分水岭。先写对（不剪枝也能过的小数据），再剪枝提速，别一上来就纠结上界。
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">8.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.（动手题）组合、子集、全排列三题，<code>for</code> 循环的「防重复手段」分别是什么？一句话概括。</p>
+  <div class="qa-a">
+    <p>组合 / 子集用 <code>start</code> 参数（<code>i</code> 从 start 起、递归传 i+1），保证「不回头选」，去的是顺序重复；
+    全排列用 <code>used</code> 布尔数组跳过已选元素，允许任意顺序但不允许同一元素用两次。三题骨架相同，差在「怎么缩选择列表」。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 为什么 <code>res.add(path)</code> 不拷贝，最后会得到一堆空列表？</p>
+  <div class="qa-a">
+    <p>因为 path 是引用，res 里存的「同一个对象」和回溯过程里的 path 是同一个。后续 <code>path.remove</code> 撤销选择时，
+    把那个对象也清空了，于是 res 中所有元素都指向同一个被清空的列表。必须 <code>res.add(new ArrayList&lt;&gt;(path))</code> 拷贝一份快照。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.（动手题）组合剪枝上界 <code>i <= n - (k - path.size()) + 1</code>，用 n=5, k=3, path=[1] 算一下，第一层该枚举到几？</p>
+  <div class="qa-a">
+    <p>已选 1 个，还需 2 个。上界 = 5 − (3 − 1) + 1 = 3。所以当前层 i 从 2 枚举到 3（start=2）：
+    选 2 后还能选 [3,4,5] 凑 3 个；选 3 后还能选 [4,5] 凑 3 个；选 4 后只剩 [5] 一个不够，被剪掉。
+    上界 3 正把「4、5」这两条注定凑不齐的分支砍了。</p>
+  </div>
+</div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「看到『枚举所有组合/排列/子集』，我脑中浮现什么？」</em>
+  答案：一棵决策树 + 四件套模板（path / res / 递归参数 / 撤销），用 start 或 used 防重复，
+  必要时用剪枝上界提前砍分支。能脱稿写出组合、子集、全排列，并独立提交 N 皇后，
+  从树到回溯这条「递归主线」就打通了，可进 <a href="ch09.html">专题 09 · 动态规划（入门）</a>。
+</div>

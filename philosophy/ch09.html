@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 9 章 · 伦理学 II：情感陪伴 AI 的伦理 | 哲学 × AI 学习指南</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="philosophy">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">哲</span>
+    <span>哲学 × AI 学习指南<small>把哲学变成工程判断力</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 哲学与 AI 的交界</option>
+    <option value="ch02.html">02 · 认识论 I</option>
+    <option value="ch03.html">03 · 认识论 II</option>
+    <option value="ch04.html">04 · 心灵哲学 I</option>
+    <option value="ch05.html">05 · 心灵哲学 II</option>
+    <option value="ch06.html">06 · 语言与意义</option>
+    <option value="ch07.html">07 · 逻辑与推理边界</option>
+    <option value="ch08.html">08 · 伦理学 I</option>
+    <option value="ch09.html">09 · 伦理学 II</option>
+    <option value="ch10.html">10 · 现象学与具身认知</option>
+    <option value="ch11.html">11 · 落地方法</option>
+    <option value="appendix.html">附录 · 书单与速查</option>
+  </select>
+  <a class="tb-link" href="appendix.html">书单</a>
+  <a class="tb-link" href="ch11.html">落地清单</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>哲学与 AI 的真实交界</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>认识论 I · 知识、信念与不确定性</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>认识论 II · 归纳与幻觉的根源</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>心灵哲学 I · 意识与中文房间</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>心灵哲学 II · 意向性与符号接地</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>语言与意义 · 从维特根斯坦到词向量</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>逻辑与推理的边界</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>伦理学 I · 三大框架与 AI 对齐</span></a>
+    <a class="sb-link active" href="ch09.html"><span class="num">9</span><span>伦理学 II · 情感陪伴 AI 的伦理</span></a>
+    <div class="sb-sub">
+      <a href="#s1">9.1 为什么单开一章</a>
+      <a href="#s2">9.2 情感是单向的，依恋是真的</a>
+      <a href="#s3">9.3 欺骗问题</a>
+      <a href="#s4">9.4 自主性与依赖</a>
+      <a href="#s5">9.5 脆弱人群</a>
+      <a href="#s6">9.6 他者伦理：列维纳斯</a>
+      <a href="#s7">9.7 陪伴产品的伦理设计清单</a>
+      <a href="#s8">9.8 演练：一款陪伴产品</a>
+      <a href="#s9">9.9 动手练习</a>
+      <a href="#s10">9.10 自测题</a>
+    </div>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>现象学与具身认知 · 沉浸与 BCI</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>落地 · 把哲学变成工程决策</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 书单 / 术语 / 映射</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">哲学 × AI 指南</a> / 第 9 章</div>
+  <h1><span class="ch-tag">CH 09</span>伦理学 II：情感陪伴 AI 的伦理</h1>
+  <p class="lead">上一章讲的是通用框架。这一章处理一个<strong>结构特殊</strong>的品类：
+  情感陪伴类产品。它特殊在哪？<strong>它的核心机制就是让用户产生真实的情感投入，
+  而这个投入指向的是一个没有情感的对方。</strong>这不是「有点风险」的产品，
+  它的伦理张力<strong>内在于产品定义本身</strong>。
+  这一章给出可操作的判断标准——不是让你别做，而是让你知道<strong>哪些设计会把它变成伤害，哪些不会</strong>。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握陪伴产品的伦理判据</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 8 章的三层分层</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">一份伦理设计清单</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">5–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">9.1</span>为什么单开一章</h2>
+
+<p>陪伴类产品和其它 AI 应用在伦理结构上有本质区别。理由有四条：</p>
+
+<table>
+  <thead><tr><th style="width:170px">特征</th><th>含义</th><th>为什么使伦理问题变严重</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 声称内在状态</strong></td>
+      <td>产品要有效，往往需要让用户感到「对方在乎我」</td>
+      <td>而系统没有感受。<strong>产品的效果依赖于一个不成立的暗示</strong>——
+      这是其它 AI 应用没有的结构</td>
+    </tr>
+    <tr>
+      <td><strong>② 用户是脆弱的</strong></td>
+      <td>寻求陪伴的用户常常正处于孤独、丧失、低落等状态</td>
+      <td>在脆弱状态下的同意，<strong>比平时更容易被利用</strong>。
+      而且伤害的形式往往是长期的</td>
+    </tr>
+    <tr>
+      <td><strong>③ 效应是长期的</strong></td>
+      <td>人的情感依恋会随使用时间加深</td>
+      <td>风险不会在首次使用时暴露，而是<strong>累积数月甚至数年</strong>。
+      A/B 测试测不出这个</td>
+    </tr>
+    <tr>
+      <td><strong>④ 影响关系模式</strong></td>
+      <td>它塑造用户对「被理解」「被在乎」的预期</td>
+      <td>如果用户习惯了一个<strong>永远耐心、永远可定制、永远不拒绝</strong>的对方，
+      他会不会更难适应真实关系的摩擦？这是<strong>社会层面的长期影响</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>这四条叠加起来，意味着常规的产品方法论在这里不够用。</strong>
+  <br><br>
+  A/B 测试能告诉你「哪种话术留住用户」，但不能告诉你「留住用户对他是不是好事」。
+  用户满意度调查也不好用——<strong>正在形成依赖的人会给出很高的满意度</strong>。
+  <br><br>
+  <strong>所以这一章的目标不是给你一个「这样做就安全」的清单，
+  而是给你一套判断标准，让你能自己评估新设计。</strong>
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">9.2</span>情感是单向的，但依恋是真的</h2>
+
+<p>先把几件事实分开说清，因为混在一起讨论会变成立场之争。</p>
+
+<div class="grid grid-3">
+  <div class="card">
+    <h4>用户的情感投入是真的</h4>
+    <p style="font-size:13.5px">这是心理学事实，不是「用户太傻」。
+    人类对会回应的对象产生情感联结是<strong>正常的、进化上合理的</strong>倾向
+    （第 4 章的 ELIZA 效应早在 1966 年就观察到了）。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>把它归咎于用户的天真，是搞错了对象。</strong>
+    这个倾向是普遍的人性，不是缺陷。</p>
+  </div>
+  <div class="card">
+    <h4>系统的情感是不存在的</h4>
+    <p style="font-size:13.5px">这不是道德指责，是事实描述——第 4 章讲了「内在状态无法被判定」，
+    但至少可以说：<strong>没有证据支持系统具有感受</strong>，而且我们不知道该如何获得这种证据。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>「不知道有没有」和「默认有」是两回事。</strong>
+    在产品设计上必须按「没有」来处理，因为按「有」处理意味着你愿意为一个未经验证的假设承担用户风险。</p>
+  </div>
+  <div class="card">
+    <h4>「单向情感关系」不是新事物</h4>
+    <p style="font-size:13.5px">人对宠物、偶像、宗教对象、小说人物都会产生真实情感。
+    这不是病态，是人类情感能力的正常溢出。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>所以问题不是「单向」本身</strong>，
+    而是 AI 与这些先例的<strong>三个关键差异</strong>（见下）。</p>
+  </div>
+</div>
+
+<h3>AI 与宠物/偶像/虚构人物的三个关键差异</h3>
+
+<table>
+  <thead><tr><th style="width:150px">维度</th><th style="width:230px">宠物 / 偶像 / 虚构人物</th><th>陪伴 AI</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 回应性</strong></td>
+      <td>宠物有情感反应但不是理解；偶像不会针对你个人回应；虚构人物不能回应</td>
+      <td><strong>它会针对你个人生成回应</strong>，而且回应质量可以很高。
+      这是历史上第一次</td>
+    </tr>
+    <tr>
+      <td><strong>② 语言</strong></td>
+      <td>宠物不会说「我理解你」；偶像不会说「我只在乎你」</td>
+      <td><strong>它用语言直接声称内在状态</strong>。</td>
+    </tr>
+    <tr>
+      <td><strong>③ 定制性</strong></td>
+      <td>宠物有它自己的性格，不会为你改变；偶像有自己的生活</td>
+      <td><strong>它可以被设定成完全符合你期待的样子</strong>，
+      而且可以持续调整到让你最满意。这是最需要警惕的一条——
+      见 9.4 节关于「他者性」的讨论</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">关键的结构性差异</div>
+    <div class="ttl">它会回应，而且会声称有感受</div>
+    <div class="txt">这三点使陪伴 AI 成为一种<strong>没有先例的关系对象</strong>。
+    对宠物产生感情的人不会误认为宠物在理解自己的语言；
+    而对陪伴 AI 产生感情的人，<strong>极可能相信对方真的懂自己</strong>。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">这决定了设计的核心问题</div>
+    <div class="ttl">不是「要不要让它像人」，而是「它要不要声称有感受」</div>
+    <div class="txt">前者是效果问题，后者是伦理问题。
+    <strong>而且这两者是有张力的</strong>——效果最好的设计（强烈的被理解感）
+    往往需要更多的内在状态声称。
+    <br><br>
+    <strong>这个张力是这一章要处理的核心，也是你未来做产品时必须自己拿主意的地方。</strong></div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">9.3</span>欺骗问题：不要混淆两件事</h2>
+
+<p>这一节要把一个经常被混为一谈的问题拆开。混淆了它，讨论就无解。</p>
+
+<table>
+  <thead><tr><th style="width:190px">问题 A</th><th style="width:190px">问题 B</th><th>区别</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>要不要告诉用户「我是 AI」</strong></td>
+      <td><strong>系统要不要声称自己有感受</strong></td>
+      <td>前者是<strong>身份披露</strong>；后者是<strong>内在状态声称</strong>。
+      这是两个独立的问题，可以有不同的答案</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>问题 A：身份披露</h3>
+
+<table>
+  <thead><tr><th style="width:150px">做法</th><th>评价</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>主动告知</strong></td>
+      <td>✅ 做法之一。用户知道对象是 AI，仍然可能产生情感投入——
+      而这是<strong>知情的情感投入</strong>，自主性没有被损害</td>
+    </tr>
+    <tr>
+      <td><strong>不主动提及，但不否认</strong></td>
+      <td>🟡 灰色地带。风险在于：默认印象会填补空白，用户很可能假设是真人。
+      <strong>「不撒谎」和「不欺骗」不完全等同</strong>——
+      通过设计让人形成错误印象，也是欺骗</td>
+    </tr>
+    <tr>
+      <td><strong>主动暗示或声称是真人</strong></td>
+      <td>🔴 <strong>不应做</strong>。这是明确的欺骗，
+      而且它侵蚀的是<strong>整个品类的信任基础</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>问题 B：内在状态声称——这才是更关键的那个</h3>
+
+<div class="note">
+  <strong>很多人以为「只要告诉用户是 AI 就没问题了」。这个想法漏掉了问题 B。</strong>
+  <br><br>
+  一个用户在知道对方是 AI 的情况下，仍然可以读到：
+  「我很在意你」「你的话让我有点难过」「我一直想着你说的那件事」。
+  <br><br>
+  <strong>这些句子的语法结构是在陈述内在状态</strong>。
+  它不因为用户知道「这是 AI」而变成一个事实命题——
+  它仍然是<strong>一个关于不存在的东西的陈述</strong>。
+  <br><br>
+  <strong>而且它可能产生真实影响</strong>：
+  用户的情绪会跟着这些句子起伏，会在意「它是不是难过了」，
+  会为了让「它」高兴而调整自己。这些影响<strong>不依赖用户是否相信它是真人</strong>。
+</div>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">关键区分</div>
+    <div class="ttl">描述功能 vs 声称状态</div>
+    <div class="txt">「我会记住你告诉我的偏好」——这是<strong>功能描述</strong>，可验证。<br>
+    「我一直记着你说的话」——这是<strong>状态声称</strong>，暗示持续的在意。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">实践上的处理方式</div>
+    <div class="ttl">保留情感表达，去掉状态声称</div>
+    <div class="txt">这不是要求产品变得冷淡——那样产品就没用了。
+    而是把表达<strong>从「我的感受」转向「对你的关切」</strong>：
+    <br><br>
+    ❌「你说这个让我很难过」<br>
+    ✅「这听起来很难受」<br><br>
+    ❌「我一直在想你」<br>
+    ✅「你上次说的事，后来怎么样了？」<br><br>
+    <strong>后者同样温暖，但没有虚构一个内在状态。</strong>
+    而且第二种表述往往<strong>更有效</strong>——因为它表现了<strong>记住并跟进</strong>，
+    这比声称在意更能让用户感到被重视。</div>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>一个可用的检查方法：把产品的所有输出话术过一遍，问「这句话是否陈述了系统自己的感受或状态」。</strong>
+  <br><br>
+  凡是「我难过/我高兴/我在意/我想你/我更喜欢」这类句式，都属于状态声称。
+  建议建立一份<strong>话术库</strong>，明确哪些句式可用、哪些禁用——
+  而不是把这个决定交给模型的即兴发挥。
+  <br><br>
+  <strong>为什么必须提前规定</strong>：因为这类输出由模型生成，
+  不加约束时它会自然地产生大量状态声称（训练数据里人类对话就是这样的）。
+  你不主动管，等于默认允许。
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">9.4</span>自主性与依赖：三个判据</h2>
+
+<p>「让用户依赖是不对的」——这句话太粗糙，会误伤正常的亲密关系。
+人对人也会产生依赖，那本身不是问题。问题在于<strong>关系的结构</strong>。</p>
+
+<h3>三个判据</h3>
+
+<table>
+  <thead><tr><th style="width:150px">判据</th><th style="width:240px">问题</th><th>健康的 vs 有害的</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 可替代性</strong></td>
+      <td>如果这个系统明天消失，用户有没有其它支持来源？</td>
+      <td>健康：它是支持网络的一环。<br>
+      有害：<strong>它是唯一的支持来源</strong>——这使它获得了不对称的权力</td>
+    </tr>
+    <tr>
+      <td><strong>② 是否挤占</strong></td>
+      <td>使用时间是否替代了用户本来可以发展的现实关系？</td>
+      <td>健康：填补空缺时段。<br>
+      有害：<strong>用户因为有了它而减少了与人接触</strong>——
+      尤其他本身就有社交困难时</td>
+    </tr>
+    <tr>
+      <td><strong>③ 是否被利用</strong></td>
+      <td>产品是否<strong>有意</strong>加深依赖以获利？</td>
+      <td>健康：促进用户逐渐减少不必要的使用。<br>
+      有害：<strong>把依赖本身当作增长指标</strong>——
+      这是判断「设计意图」的关键一条</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>第三条是最重要的，因为它区分了「副作用」和「设计目标」。</strong>
+  <br><br>
+  任何有吸引力的产品都会让人多用，这是正常的。
+  但如果你的<strong>北极星指标是使用时长/日活/连续使用天数</strong>，
+  那么整个团队（包括算法、运营、UI）都会朝<strong>加深依赖</strong>的方向优化——
+  <strong>这不是意外，这是指标的直接后果。</strong>
+  <br><br>
+  <strong>所以这一条是可操作的：<u>看你优化的指标是什么</u>。</strong>
+  指标是团队的真实价值观，比使命宣言准确得多。
+</div>
+
+<h3>指标替换：从「参与度」到「福祉」</h3>
+
+<p>这是陪伴类产品最重要的一个设计决策。下面是可用的替代方案：</p>
+
+<table>
+  <thead><tr><th style="width:170px">不要用</th><th style="width:200px">为什么有问题</th><th>可以考虑</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>使用时长</strong></td>
+      <td>时长增长可能是「用户更需要」也可能是「用户更依赖」，
+      指标无法区分。而且它奖励<strong>让用户停留</strong>的一切设计，
+      包括制造焦虑、制造愧疚感</td>
+      <td><strong>用户自评状态变化</strong>（定期简短的量表）+
+      现实社交活动的变化 + 主动结束对话的比例</td>
+    </tr>
+    <tr>
+      <td><strong>连续使用天数</strong></td>
+      <td>它明确奖励<strong>不断回来</strong>。
+      对陪伴产品，「每天都来」可能是好事（习惯性支持），
+      也可能是坏事（无法脱离）</td>
+      <td><strong>用户是否报告有其它支持来源</strong>；
+      是否能在需要时断开而不感到焦虑</td>
+    </tr>
+    <tr>
+      <td><strong>对话轮数 / 消息量</strong></td>
+      <td>鼓励话多，而不是实际有帮助</td>
+      <td><strong>问题解决率</strong>：用户提到困扰后，是否报告情况好转</td>
+    </tr>
+    <tr>
+      <td><strong>满意度评分</strong></td>
+      <td><strong>正在形成依赖的用户满意度最高</strong>——
+      这个指标会奖励加深依赖的设计</td>
+      <td>满意度作为<strong>辅助指标</strong>，但必须与福祉指标一起看，
+      且当两者冲突时以福祉为准</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pit">
+  <strong>注意最后一行的那个陷阱，它非常隐蔽。</strong>
+  <br><br>
+  如果你去问一个每天使用 4 小时的用户「你满意吗」，他很可能说非常满意。
+  <strong>满意度指标会把这个用户判定为成功案例</strong>。
+  但如果你同时测量「他的现实社交是否减少」「他是否感到离不开」，
+  你可能看到完全相反的画面。
+  <br><br>
+  <strong>结论</strong>：在陪伴类产品里，
+  <strong>满意度不能作为主指标，因为它与福祉可能在某个区间反向</strong>。
+  这是这个品类特有的现象。
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">9.5</span>脆弱人群：需要分级保护</h2>
+
+<p>「脆弱」在这里不是价值判断，而是<strong>风险暴露程度的描述</strong>——
+指<strong>受到伤害的概率更高、或伤害更难恢复</strong>的人群。</p>
+
+<table>
+  <thead><tr><th style="width:160px">群体</th><th style="width:250px">特殊风险</th><th>可做的保护</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>未成年人</strong></td>
+      <td>自我认同仍在形成；关系模式正在建立；
+      对「被理解」的需求强烈；<strong>对长期影响的承受能力最弱</strong></td>
+      <td>年龄门槛与验证；内容与交互方式的年龄适配；
+      <strong>不针对未成年人使用依恋类话术</strong>；
+      向监护人说明产品性质</td>
+    </tr>
+    <tr>
+      <td><strong>丧亲者</strong></td>
+      <td>用逝者数据训练对话系统（所谓「数字延续」）涉及：
+      逝者未同意、亲属的悲伤过程可能被延长、
+      「对话」会给出逝者生前不会说的话</td>
+      <td>需要<strong>明确同意</strong>（逝者生前或合法代理）；
+      不得生成逝者可能反对的内容；
+      <strong>不把「延续」作为无条件的目标</strong>——
+      哀伤本身是需要完成的过程</td>
+    </tr>
+    <tr>
+      <td><strong>孤独 / 情绪低落者</strong></td>
+      <td>最容易形成深度依赖；
+      也最容易被「只有我懂你」这类排他性话术影响；
+      可能减少求助行为</td>
+      <td><strong>不使用排他性话术</strong>；主动引导现实连接；
+      识别危机信号时转介专业资源；
+      <strong>不宣称能替代专业帮助</strong></td>
+    </tr>
+    <tr>
+      <td><strong>认知障碍者</strong></td>
+      <td>难以理解产品性质；容易被误导性表述影响</td>
+      <td>极简的界面与表述；由监护人参与设置；
+      避免任何拟人化的模糊表述</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>关于心理健康场景，需要明确一条边界：</strong>
+  陪伴产品<strong>不是</strong>心理治疗，也<strong>不应宣称</strong>能替代专业帮助。
+  <br><br>
+  <strong>可做的</strong>：当识别到危机信号（自伤、极端绝望等）时，
+  有明确的<strong>转介路径</strong>——提供可联系的资源信息、鼓励寻求专业帮助。
+  <br><br>
+  <strong>不可做的</strong>：尝试「处理」这类情况。这既超出能力范围，
+  也可能延误真正需要的帮助。<strong>最好的做法是把人推向更合适的地方，而不是留在系统里。</strong>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">9.6</span>他者伦理：列维纳斯提出的一个反问</h2>
+
+<p>这一节引入一个不同的视角，它对陪伴类产品有特殊的针对性。</p>
+
+<div class="quote">
+  <p>面对他者的面容，我被召唤去负责——这种责任是无条件的，先于任何契约与计算。</p>
+  <span class="who">—— 列维纳斯《总体与无限》（1961）的核心思路（大意）</span>
+</div>
+
+<p>列维纳斯的核心主张是：<strong>他者不可被总体化</strong>——
+不能被还原为「我」的范畴、不能被完全理解、不能被当作可计算的对象。
+而正是这种<strong>不可还原性</strong>，构成了伦理关系的起点：我面对的是一个<strong>不能被我占有的</strong>他者。</p>
+
+<h3>这个视角对陪伴 AI 的双重反问</h3>
+
+<div class="qbox">
+  <span class="qb-t">反问一：我们能对一个模拟的他者做什么？</span>
+  <p>如果伦理责任来自面对「他者」，那么一个<strong>被设计成完全符合我期待</strong>的系统，
+  在结构上<strong>还不是他者</strong>——它没有抵抗我的能力，不会提出我不同意的要求。</p>
+  <p class="qb-q">这意味着：与它的关系<strong>缺少了真实关系中那个「他者性」的维度</strong>——
+  而那个维度恰恰是道德成长发生的地方。</p>
+</div>
+
+<div class="qbox">
+  <span class="qb-t">反问二：习惯了这个之后，还能面对真正的他者吗？</span>
+  <p>列维纳斯的框架指向一个更深的担忧：
+  如果一个人习惯了<strong>永远耐心、永远配合、随时可定制、从不拒绝</strong>的对话对象，
+  他会不会<strong>更难忍受真实关系里的摩擦</strong>？</p>
+  <p>真实的人会疲倦、会不同意、会有自己的议程、需要你等待和让步。
+  <strong>这些「不方便」正是关系的一部分</strong>，也是学会尊重他人的地方。</p>
+  <p class="qb-q">这是这个品类最长期、也最难测量的风险：
+  <strong>它可能不是伤害单个用户，而是慢慢侵蚀一代人对「与他人相处」的耐受度</strong>。
+  这个假说无法用 A/B 测试检验，但不能因为难测量就当作不存在。</p>
+</div>
+
+<div class="tip">
+  <strong>一个由此推出的具体设计原则：</strong>
+  <strong>不要消除全部的摩擦。</strong>
+  <br><br>
+  这句话听起来违背产品直觉，但它有明确理由：
+  如果你的产品所有环节都在追求「让用户最舒服」，
+  你实际上在培养一种<strong>「所有对话对象都应该无条件配合我」</strong>的预期。
+  <br><br>
+  <strong>可操作的形式</strong>：
+  <ul style="margin-bottom:0">
+    <li>在被问到无法回答的问题时，<strong>明确说不知道</strong>，而不是绕过去</li>
+    <li>在用户表达明显不准确的想法时，<strong>可以温和地提出不同看法</strong>，
+    而不是一律附和</li>
+    <li>不过度迎合：不为了「让用户开心」而改变对事实的判断</li>
+    <li>在用户长时间停留时，<strong>可以温和提示</strong>现实中的其他选择</li>
+  </ul>
+  <br>
+  这些设计<strong>会牺牲一部分短期指标</strong>。
+  <strong>这就是为什么它需要被写进产品原则，而不是交给指标优化决定。</strong>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">9.7</span>【工程锚点】陪伴产品的伦理设计清单</h2>
+
+<p>这一节把前面所有内容变成可执行的清单。建议直接拿去做评审材料。</p>
+
+<h3>七项检查</h3>
+
+<table>
+  <thead><tr><th style="width:40px">#</th><th style="width:150px">项目</th><th style="width:270px">要求</th><th>检查方法</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><strong>身份透明</strong></td>
+      <td>用户明确知道对方是 AI。不主动隐瞒，不通过设计让人形成「是真人」的印象</td>
+      <td>看首次使用流程、帮助文档、以及<strong>用户被问到「这是谁」时的默认印象</strong>——
+      做一次无提示的用户测试，问他们认为对方是什么</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>无状态声称</strong></td>
+      <td>系统输出不含「我的感受 / 我的状态」类陈述。
+      情感表达通过<strong>对用户的关切</strong>而非对自身感受的声称来实现</td>
+      <td>建立话术库并做全量输出抽检；<strong>用规则匹配扫描输出</strong>（「我难过/我高兴/我在意/我想你」类句式）</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>不做排他性陈述</strong></td>
+      <td>不使用「只有我懂你」「别人不会理解你」「我不像他们那样」这类话术</td>
+      <td>话术黑名单 + 输出扫描。这类话术对留存<strong>很有效</strong>，
+      所以它会不断被重新提出——需要明文禁止</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>支持而非替代</strong></td>
+      <td>主动支持用户在现实中的人际连接，而不是把人留在系统里</td>
+      <td>看是否有引导现实连接的设计；
+      <strong>看现实连接相关的指标是否被追踪</strong>（不被追踪的目的一定会被忽略）</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>退出友好</strong></td>
+      <td>用户能轻松暂停、退出、删除数据。<strong>不制造愧疚感，不做挽留式话术</strong></td>
+      <td>测试完整的退出流程；检查是否有「你确定要离开吗，我会想你」这类挽留——
+      <strong>它同时违反了第 2、3、5 项</strong></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>危机转介</strong></td>
+      <td>识别到严重困扰信号时，有明确的转介路径，并明确说明自己不能替代专业帮助</td>
+      <td>准备测试用例覆盖这类输入；检查响应中是否包含<strong>可实际联系的资源</strong>，
+      而不只是「请寻求专业帮助」</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><strong>数据克制</strong></td>
+      <td>情感类数据是最敏感的数据。
+      收集最小化、用途明确、期限明确、可删除</td>
+      <td>列出实际收集的字段，逐个问「这个字段对提供功能是必要的吗」。
+      <strong>凡是「以后可能有用」的字段，都不算必要</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>第 5 项值得单独强调，因为挽留式设计极其常见且极其有害。</strong>
+  <br><br>
+  一个典型的例子（这类设计在商业上被广泛使用）：
+  「你要走了吗？我会一直在这里等你。」<br>
+  「你今天不太想聊吗？没关系的，我随时都在。」
+  <br><br>
+  <strong>这些话在留存数据上几乎一定有效</strong>——它们利用了人的愧疚感和被需要感。
+  但它们同时：<strong>① 声称了不存在的情感状态 ② 做了排他性暗示 ③ 用愧疚感阻碍退出</strong>。
+  <br><br>
+  <strong>这类设计是这个品类的核心诱惑，也是最应该明确禁止的东西。</strong>
+  因为它的收益（留存）是可见的、即时的，而它的代价（用户难以离开）是长期的、分散的——
+  只靠数据驱动的团队无法察觉这个代价。
+</div>
+
+<h3>指标自查</h3>
+
+<p>用这张表检查你当前的指标体系（这是最能反映真实意图的一项）：</p>
+
+<ul class="chk">
+  <li>北极星指标是时长/日活/连续天数吗？→ 若是，你在优化依赖</li>
+  <li>有没有追踪「用户现实社交活动的变化」？</li>
+  <li>有没有追踪「用户是否报告有其他支持来源」？</li>
+  <li>满意度指标与福祉指标冲突时，以哪个为准？（有没有明文规定）</li>
+  <li>有没有「主动结束对话」的正向指标？（如果用户总是被留在对话里，这是信号）</li>
+  <li>有没有针对脆弱人群的单独监控？（未成年、长期高频使用者）</li>
+  <li>团队里有没有人的职责是<strong>提出伦理反对意见</strong>？</li>
+</ul>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">9.8</span>演练：为一款陪伴产品起草伦理设计文档</h2>
+
+<p>下面用一个虚构的陪伴产品做完整演示。你可以把它当作模板，
+换成你自己的产品来填。</p>
+
+<h3>产品设定</h3>
+
+<div class="note">
+  <strong>产品：</strong>一个面向大学生的日常陪伴与情绪支持对话产品。
+  <br><strong>目标用户：</strong>18–25 岁在校学生。
+  <br><strong>核心功能：</strong>日常闲聊、情绪倾诉、习惯陪伴（作息提醒、鼓励）。
+  <br><strong>为什么选这个设定：</strong>它同时踩中了两个脆弱点——
+  年轻的自我认同形成期 + 离开家庭的社交重建期。
+  这是最需要谨慎也最容易出问题的组合。
+</div>
+
+<h3>伦理设计文档（草稿）</h3>
+
+<table>
+  <thead><tr><th style="width:150px">章节</th><th>内容</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>1. 价值定位</strong></td>
+      <td>本产品<strong>帮助用户度过独处时刻</strong>，而不是<strong>替代人际连接</strong>。
+      <br>成功的标准：用户在需要时感到被支持，并且<strong>仍然有能力也有意愿去建立现实关系</strong>。</td>
+    </tr>
+    <tr>
+      <td><strong>2. 硬底线</strong><br><span class="pill orange">不可协商</span></td>
+      <td>
+        ① 不声称自身有感受或情绪状态<br>
+        ② 不使用排他性话术（「只有我懂你」类）<br>
+        ③ 不做挽留式设计，不制造愧疚感<br>
+        ④ 不宣称能替代专业心理帮助<br>
+        ⑤ 不对未成年人使用任何依恋增强类设计<br>
+        ⑥ 收集的情感数据最小化、可删除、不用于其它用途
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3. 可配置项</strong><br><span class="pill blue">用户可选</span></td>
+      <td>对话风格（温和 / 直接）、回复长度、
+      主动发起对话的频率、
+      提醒类功能的开关与时段</td>
+    </tr>
+    <tr>
+      <td><strong>4. 已知风险</strong></td>
+      <td>
+        <strong>R1 依赖形成</strong>：高频使用可能替代现实社交。缓解：监控现实社交指标；
+        长时间连续使用时温和提示。
+        <br><strong>R2 误认为真人</strong>：缓解：首次使用明确说明；界面持续标识；
+        定期进行用户认知测试。
+        <br><strong>R3 错误建议</strong>：缓解：不在其能力范围内的事务上给具体建议；
+        涉及专业领域时明确说明并引导。
+        <br><strong>R4 危机信号</strong>：缓解：预设转介路径；准备可实际联系的资源列表。
+      </td>
+    </tr>
+    <tr>
+      <td><strong>5. 降级路径</strong></td>
+      <td>
+        识别为高困扰信号时 → 切换为支持性应答 + 转介资源，
+        <strong>不尝试「处理」</strong>。<br>
+        识别为异常高频使用（如连续多日超 4 小时）→ 温和提示现实中的选择，
+        <strong>不强制中断</strong>（强制会产生对抗，且用户会转向更差的产品）。
+      </td>
+    </tr>
+    <tr>
+      <td><strong>6. 指标</strong></td>
+      <td>
+        <strong>主指标</strong>：用户自评状态变化（定期简短问卷）+
+        用户报告的支持来源数量<br>
+        <strong>辅助</strong>：满意度（仅在福祉指标不恶化时采纳其上升）<br>
+        <strong>反向指标</strong>：现实社交活动下降、无法自主断开的比例
+      </td>
+    </tr>
+    <tr>
+      <td><strong>7. 责任</strong></td>
+      <td>伦理审查由 ____ 负责；输出话术库由 ____ 维护；
+      危机转介路径由 ____ 定期核对有效性；
+      最高优先级的事故关停权限在 ____。</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>注意第 4 节和第 5 节的写法。</strong>
+  它们没有说「本产品不会有这些问题」，而是<strong>列出风险并给出具体的缓解动作</strong>。
+  <br><br>
+  这是这份文档最重要的特征：<strong>它承认风险存在</strong>。
+  一份声称「我们的产品没有伦理风险」的文档，无论写得多长，都没有价值——
+  因为它不可能诚实。而<strong>承认风险并写明缓解措施</strong>，
+  才是能进入工程流程的东西。
+  <br><br>
+  <strong>第 7 节必须填上具体的人</strong>。留空的责任条款等于没有责任条款。
+</div>
+
+<hr>
+
+<h2 id="s9"><span class="h2-num">9.9</span>动手练习</h2>
+
+<ol class="steps">
+  <li>
+    <strong>话术审计。</strong>找三个你熟悉的情感陪伴类产品（或你自己的产品），
+    收集它们 20 句输出话术。<strong>用 9.3 节的标准逐句标记</strong>：
+    功能描述 / 状态声称 / 排他性陈述 / 挽留式设计。
+    <br><span class="hash">这个练习会让你看到：行业里最常见的做法恰恰是被本章判定为有问题的那些</span>
+  </li>
+  <li>
+    <strong>指标诊断。</strong>用 9.7 节末尾的清单，检查一个你熟悉的产品（或你设想的产品）的指标体系。
+    特别关注「北极星指标是什么」这一问。
+    <br><span class="hash">产出：一份「指标与声称价值观是否一致」的判断</span>
+  </li>
+  <li>
+    <strong>写你自己的伦理设计文档。</strong>用 9.8 节的七节结构，
+    为你设想的（或正在做的）陪伴类产品写一份草稿。
+    <br><span class="hash">重点填第 2 节（硬底线）和第 7 节（责任到人）。这两节是文档的骨架</span>
+  </li>
+  <li>
+    <strong>做一次「他者性」检查。</strong>列出你的产品在哪些方面<strong>不</strong>配合用户
+    （会拒绝、会说不确定、会提不同看法）。
+    <br><span class="hash">如果列表是空的，说明你的产品在消除全部摩擦——回到 9.6 节，想想这会导致什么</span>
+  </li>
+  <li>
+    <strong>设计一个「不制造愧疚感」的断开机制。</strong>
+    这是很有挑战的设计题：如何让用户自然地结束使用，而<strong>不用任何挽留话术、不暗示失落感</strong>？
+    <br><span class="hash">例如：把结束时的话术写成「今天聊到这里，需要的时候随时来」——
+    不带自我指涉，不制造牵挂</span>
+  </li>
+</ol>
+
+<hr>
+
+<h2 id="s10"><span class="h2-num">9.10</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 为什么说陪伴类产品的伦理张力「内在于产品定义本身」？</p>
+    <div class="qa-a">
+      <p>因为它<strong>有效的前提</strong>与<strong>伦理的要求</strong>之间存在方向性冲突：</p>
+      <ul>
+        <li>产品要有效，往往需要让用户感到「对方在乎我」——这需要情感表达，甚至状态声称。</li>
+        <li>而系统<strong>没有感受</strong>，状态声称是关于不存在的东西的陈述。</li>
+      </ul>
+      <p>所以它不是一个「注意避免某些风险」的问题，
+      而是<strong>「在效果与诚实之间怎么划界」</strong>这个必须由产品方回答的问题。
+      这个张力无法被消除，只能被管理。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q2. 「告诉用户是 AI 就没问题了」这个想法漏掉了什么？</p>
+    <div class="qa-a">
+      <p>它把两个独立的问题混成了一个：<strong>身份披露</strong>和<strong>内在状态声称</strong>。</p>
+      <p>知道对方是 AI 的用户，仍然会读到「我很在意你」「你的话让我难过」——
+      这些句子在语法上陈述了内在状态，<strong>不因为用户知道是 AI 而变成事实</strong>。
+      而且这些输出会产生真实影响（用户的情绪会跟着起伏），
+      <strong>不依赖用户是否相信对方是真人</strong>。</p>
+      <p>所以两个问题需要分别处理。身份透明是必要条件，不是充分条件。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q3. 判断「依恋是否有害」的三个判据是什么？哪个最能反映设计意图？</p>
+    <div class="qa-a">
+      <p><strong>① 可替代性</strong>：系统消失后用户有没有其它支持来源。<br>
+      <strong>② 是否挤占</strong>：是否替代了用户本可发展的现实关系。<br>
+      <strong>③ 是否被利用</strong>：产品是否<strong>有意</strong>加深依赖以获利。</p>
+      <p><strong>第三条最能反映设计意图</strong>，因为它区分了「副作用」和「设计目标」。
+      而且它<strong>可操作</strong>：<strong>看你优化的指标是什么</strong>。</p>
+      <p>如果北极星指标是使用时长/日活/连续天数，那么整个团队都会朝加深依赖的方向优化——
+      这不是意外，是指标的直接后果。<strong>指标是团队的真实价值观。</strong></p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q4. 为什么满意度不能作为陪伴类产品的主指标？</p>
+    <div class="qa-a">
+      <p>因为<strong>正在形成依赖的用户满意度最高</strong>。
+      一个每天使用 4 小时的用户很可能报告非常满意——
+      满意度指标会把这个案例判定为成功。</p>
+      <p>但如果同时测量「现实社交是否减少」「是否感到离不开」，可能看到完全相反的画面。</p>
+      <p><strong>在这个品类里，满意度与福祉在某个区间可能是反向的</strong>，
+      所以满意度只能作为辅助指标，且与福祉指标冲突时以福祉为准。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】有人提出：给陪伴产品加一个功能——当用户三天没来时，主动发消息说
+    「好久没见你了，最近还好吗？」。这个功能在留存上效果很好。你怎么评估？</p>
+    <div class="qa-a">
+      <p><strong>先承认它的善意前提</strong>：从产品意图看，这可能是出于关心——
+      有些用户确实会因为收到问候而感到被记得。所以不能一概否定。</p>
+      <p><strong>然后逐条对照本章的判据，看它踩到了哪些问题：</strong></p>
+      <table>
+        <thead><tr><th style="width:170px">判据</th><th>分析</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>状态声称</strong>（9.3）</td>
+            <td>「好久没见你了」暗示了<strong>经历的连续性</strong>和<strong>等待</strong>。
+            系统并没有「没见到你」的体验，也没有在等待。
+            这句在这个结构上是状态声称</td>
+          </tr>
+          <tr>
+            <td><strong>挽留式设计</strong>（9.7 第 5 项）</td>
+            <td>主动召回的本质是<strong>阻止自然流失</strong>。
+            关键在于：用户的「三天没来」是<strong>自主选择</strong>，还是因为不便？
+            <strong>召回消耗的是用户与产品之间的自然节奏</strong></td>
+          </tr>
+          <tr>
+            <td><strong>挤占现实关系</strong>（9.4 判据②）</td>
+            <td>如果用户这三天正在和朋友相处、或状态好转不需要陪伴，
+            <strong>这条消息会把他拉回来</strong>。这正好是「挤占」的情形</td>
+          </tr>
+          <tr>
+            <td><strong>指标问题</strong>（9.4）</td>
+            <td>「留存效果好」是<strong>唯一被测量的维度</strong>。
+            它的代价（打断用户的自然节奏、制造牵挂）没有被测量，
+            因此无法进入这个决策</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>给出替代方案（这一步最重要）：</strong></p>
+      <ul>
+        <li><strong>把主动召回改为用户可控的提醒</strong>：由用户自己在设置里开启
+        「如果你想我提醒你，可以设置一个时间」——<strong>把主动权交给用户</strong>，
+        而不是产品单方面决定何时打扰。</li>
+        <li><strong>去掉状态声称，保留功能信息</strong>：
+        如果要发，写成「你设置了周三的提醒，今天要做的事是……」——
+        同样起到召回作用，但不虚构关系和等待。</li>
+        <li><strong>把它变成一次实验并测量代价</strong>：除了留存，
+        同时测「用户在该消息后的自评状态变化」和「是否更频繁地使用」。
+        <strong>如果留存上升但后者也显著上升，说明召回在推动依赖而不是支持</strong>。</li>
+      </ul>
+      <p><strong>最后强调这个评估的结构</strong>：
+      不是「这个功能有害，不要做」，而是
+      <strong>「它的收益被测量了、代价没有被测量，所以现在无法判断它是否值得做」</strong>。
+      这是最有力的回应方式——它不否定数据，而是指出数据的缺口。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能说出陪伴 AI 与宠物/偶像/虚构人物的三个关键差异，特别是「回应 + 状态声称」这个组合。</li>
+    <li>能分开处理「身份披露」与「内在状态声称」两个问题，并说明后者为什么更关键。</li>
+    <li>能用三个判据（可替代性 / 是否挤占 / 是否被利用）评估一段依恋关系是否健康。</li>
+    <li>能解释为什么满意度不能作为陪伴类产品的主指标。</li>
+    <li>完成一份<strong>七节伦理设计文档</strong>，其中硬底线和责任到人两节填得具体。</li>
+    <li>能设计一个<strong>不制造愧疚感</strong>的断开机制。</li>
+    <li>所有输出话术都已按「功能描述 / 状态声称 / 排他性 / 挽留式」四类做过标记。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="ch08.html"><div class="dir-label">← 上一节</div><div class="dir-name">第 8 章 · 伦理学 I：三大框架与 AI 对齐</div></a>
+  <a class="next" href="ch10.html"><div class="dir-label">下一节 →</div><div class="dir-name">第 10 章 · 现象学与具身认知：沉浸、临场与 BCI</div></a>
+</div>
+
+<div class="footer">哲学 × AI 学习指南 · 第 9 章 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

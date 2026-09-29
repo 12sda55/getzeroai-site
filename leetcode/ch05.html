@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 05 · 链表 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link active" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <div class="sb-sub">
+      <a href="#s1">5.1 链表题考的是指针操作，不是算法</a>
+      <a href="#s2">5.2 虚拟头节点：链表第一技巧</a>
+      <a href="#s3">5.3 移除链表元素（简单）</a>
+      <a href="#s4">5.4 反转链表（简单）</a>
+      <a href="#s5">5.5 合并两个有序链表（简单）</a>
+      <a href="#s6">5.6 环形链表 I / II（简单 / 中等）</a>
+      <a href="#s7">5.7 删除链表的倒数第 N 个结点（中等）</a>
+      <a href="#s8">5.8 本专题常见坑</a>
+      <a href="#s9">5.9 自测题</a>
+    </div>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 05</div>
+  <h1><span class="ch-tag">专题 05</span>链表：指针操作的艺术</h1>
+  <p class="lead">链表题几乎不考「聪明算法」，考的是<strong>你能不能把指针挪对、不断链、不丢引用</strong>。
+  很多同学数组、哈希都刷得不错，一碰到链表就 WA 一堆——不是不会想，是「脑里的图」和「手里的代码」对不上。
+  这一章先把链表的物理结构讲透，再给你一个吃遍大半链表题的万能技巧（虚拟头节点），最后用 6 道经典题把套路练熟。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握指针操作的边界处理</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">Java 基础 · 专题 01 数组</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">6 道 Hot 题 + dummy 套路</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">5.1</span>链表题考的是指针操作，不是算法</h2>
+
+<p>先说一个反直觉的事实：链表专题里几乎没有「需要灵光一现」的算法，难的都在<strong>细心</strong>上。
+为什么？因为链表的本质就是「一串靠指针串起来的节点」，它没有任何随机访问能力——
+你想访问第 5 个节点，唯一的办法是从头走 5 步。这种结构决定了链表的题，难点永远是：</p>
+
+<ul>
+  <li><strong>断链</strong>：改指针的时候，把下一步要用的引用弄丢了；</li>
+  <li><strong>丢引用</strong>：没保存好下一个节点的位置，接不回去了；</li>
+  <li><strong>边界</strong>：头节点要删、空链表、只有一个节点，这些「特殊情形」最容易漏。</li>
+</ul>
+
+<h3>链表和数组，差在哪</h3>
+
+<p>数组在内存里是<strong>一整块连续空间</strong>，每个元素紧挨着，CPU 知道第 i 个在哪（首地址 + i × 元素大小），所以按下标访问是 O(1)。
+链表反过来，节点<strong>散落在内存各处</strong>，每个节点自己记着「下一个节点在哪」。</p>
+
+<pre><code class="nohl">数组（连续内存，下标访问 O(1)）：
+  ┌───┬───┬───┬───┬───┐
+  │ 3 │ 7 │ 1 │ 9 │ 2 │      地址 1000,1004,1008,1012,1016
+  └───┴───┴───┴───┴───┘
+  缺点：中间插入/删除，后面元素要整体搬家（O(n)）。
+
+链表（节点散落，靠指针串）：
+  3 ──▶ 7 ──▶ 1 ──▶ 9 ──▶ 2 ──▶ null
+  │       │       │       │
+  ▼       ▼       ▼       ▼
+addrA   addrB   addrC   addrD
+  优点：删掉 1，只要让 7.next 指向 9，零搬家（O(1)）。
+
+  代价：想找第 4 个？从 3 开始一步步 next，没有捷径。
+        而且每个节点额外多存一个指针，占内存。
+</code></pre>
+
+<p>这一对比就清楚了：<strong>数组擅长「按位置找」，链表擅长「中途插拔」</strong>。
+链表的题，本质都是「怎么安全地改指针，既不丢后面的链，又能把新链接上」。</p>
+
+<div class="tip">
+  <strong>一个记忆法：</strong>链表里你手里永远只有<strong>当前节点</strong>。要动它，先想清楚三件事——
+  ① 它的下一个是谁（<code>cur.next</code>）；② 改完之后还能不能找到下一个（别断链）；
+  ③ 如果它就是头节点，改完头指向哪（这正是 5.2 要解决的）。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">5.2</span>虚拟头节点：链表第一技巧</h2>
+
+<p>链表题里最烦的一种情况：<strong>头节点也可能被删除或改变</strong>。
+比如要删掉所有值为 1 的节点，万一第一个节点就是 1，你「没有前一个节点」可以改它的 <code>next</code>，
+只能特殊处理 <code>head = head.next</code>。每个边界都写 if，代码又丑又容易漏。</p>
+
+<p>解法非常优雅：在真正的头节点前面，<strong>凭空造一个「虚拟头节点」（dummy）</strong>，让它指向真正的头。
+这样「真正的头」就降级成了「dummy 的下一个」，所有节点都有了「前一个」，处理完全统一。</p>
+
+<pre><code class="nohl">原链表：       1 ──▶ 2 ──▶ 3 ──▶ null
+要删头节点 1？  没「前一个」可改，得特殊处理。
+
+加 dummy 后：
+  dummy ──▶ 1 ──▶ 2 ──▶ 3 ──▶ null
+    ▲
+  哨兵：它不存真实数据，只负责「统一边界」
+  所有删除都变成：改「前一个节点」的 next
+  遍历从 dummy 出发，最后返回 dummy.next 就是新头
+</code></pre>
+
+<p>记住 dummy 的三条纪律，本章后面几乎每题都用：</p>
+
+<ul>
+  <li><strong>dummy 的 next 指向原 head</strong>（或构造时直接 <code>new ListNode(-1, head)</code>）；</li>
+  <li><strong>用一个工作指针 <code>cur</code> 从 dummy 开始往后走</strong>，别直接动 dummy；</li>
+  <li><strong>返回的是 <code>dummy.next</code>，不是 head</strong>——因为头可能已经被换掉了。</li>
+</ul>
+
+<div class="warn">
+  <strong>新手最常犯的错：</strong>写完了返回 <code>head</code> 而不是 <code>dummy.next</code>。
+  当题目可能删掉头节点时，<code>head</code> 早就不指向新链表的头了。统一用 <code>dummy.next</code> 收尾，省去所有边界 if。
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">5.3</span>移除链表元素（简单，力扣 203）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：dummy 统一删除边界</span></p>
+
+<p><strong>题意：</strong>给你一个链表和一个值 <code>val</code>，删掉所有值等于 <code>val</code> 的节点，返回新链表头。
+例：<code>1→2→6→3→4→5→6</code>，<code>val=6</code> → <code>1→2→3→4→5</code>。
+注意 6 可能出现在中间，也可能出现在头（第一个就是 6）。</p>
+
+<h3>思路推导</h3>
+
+<p>最笨的想法：从头走到尾，遇到等于 val 的删掉。但删节点要改「它的前一个」的 next，
+而头节点没有前一个——这就是 5.2 说的边界麻烦。</p>
+
+<p>所以直接上 dummy：造一个哨兵指向 head，让 <code>cur</code> 从 dummy 出发。
+关键判断是<strong>看 <code>cur.next</code>（而不是 <code>cur</code> 本身）</strong>：</p>
+
+<ul>
+  <li>如果 <code>cur.next.val == val</code>：要删的就是 <code>cur.next</code>，直接 <code>cur.next = cur.next.next</code>，把中间那个「跳过去」；
+  <li>否则：<code>cur</code> 往前走一步 <code>cur = cur.next</code>。</li>
+</ul>
+
+<p>为什么看 <code>cur.next</code> 而不是 <code>cur</code>？因为我们删节点靠的是「前一个节点的 next」，
+<code>cur</code> 就扮演「前一个」的角色。这样头节点被删时，是 dummy 的 next 被改，完全不用特判。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> ListNode removeElements(ListNode head, <span class="kw">int</span> val) {
+        ListNode dummy = <span class="kw">new</span> ListNode(-1, head); <span class="cm">// 哨兵指向真正的头</span>
+        ListNode cur = dummy;                       <span class="cm">// cur 扮演「前一个」</span>
+        <span class="kw">while</span> (cur.next != <span class="kw">null</span>) {                  <span class="cm">// 只要还有「下一个」就检查</span>
+            <span class="kw">if</span> (cur.next.val == val) {
+                cur.next = cur.next.next;          <span class="cm">// 跳过要删的节点（断链重接）</span>
+            } <span class="kw">else</span> {
+                cur = cur.next;                     <span class="cm">// 没命中才前进</span>
+            }
+        }
+        <span class="kw">return</span> dummy.next;                          <span class="cm">// 注意：返回 dummy.next</span>
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n)：每个节点最多被访问一次。空间 O(1)：只用 dummy 和工作指针。
+为什么是这个复杂度？无论删不删，每个节点都只被 <code>cur</code> 扫描一遍，没有回退。</p>
+
+<h3>手推一遍：<code>1→2→6→3</code> 删 6</h3>
+
+<p>光看代码不够，在纸上让指针走一遍才真懂。初始 <code>dummy→1→2→6→3→null</code>，<code>cur=dummy</code>：</p>
+
+<pre><code class="nohl">cur=dummy: cur.next=dummy.next=1, val=1≠6 → cur 前进到 1
+cur=1:     cur.next=2, val=2≠6 → cur 前进到 2
+cur=2:     cur.next=6, val=6==6 → cur.next = 6.next = 3
+          链变成 dummy→1→2→3→null（6 被跳过，断链重接成功）
+cur=2:     cur.next=3, val=3≠6 → cur 前进到 3
+cur=3:     cur.next=null, 循环条件 cur.next!=null 不成立 → 结束
+返回 dummy.next = 1，即 1→2→3 ✓
+</code></pre>
+
+<p>注意第 3 步：<strong><code>cur</code> 没有前进</strong>，因为它改完 <code>cur.next</code> 后，新的 <code>cur.next</code> 还得检查（万一后面还连着等于 6 的）。
+这一题里连续删多个相同值也不会漏，正是因为这个「原地不前进」的写法。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>循环条件是 <code>cur.next != null</code>，不是 <code>cur != null</code>。
+  因为我们操作的是 <code>cur.next</code>，得保证它有东西可操作，否则 <code>cur.next.val</code> 会空指针。
+  另外删节点时 <code>cur</code> 不前进，是为了接着检查新接上的节点——别顺手写成 <code>cur = cur.next</code>。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>删除链表的倒数第 N 个结点（力扣 19，中等）</strong>——与本题共用「dummy 统一删除边界 + 操作 cur.next」；差异在要定位「倒数第 N 个的前一个」，用快慢指针先走 n+1 步制造固定间距（提示：fast 先走 n+1 步，快慢同速直到 fast 到尾，slow 即停在前一个，再 <code>slow.next = slow.next.next</code>）。</li>
+    <li><strong>删除排序链表中的重复项（力扣 83，简单）</strong>——与本题共用「dummy + cur 操作 cur.next 跳过节点」；差异在只删「连续重复」且保留一个，遇到相等时跳过整段而非单个（提示：当 <code>cur.next.val == cur.next.next.val</code> 时不断接 <code>cur.next.next</code> 跳过多余的，否则正常前进）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">5.4</span>反转链表（简单，力扣 206）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：prev / cur / next 三指针</span></p>
+
+<p><strong>题意：</strong>把 <code>1→2→3→4→5</code> 反转成 <code>5→4→3→2→1</code>，返回新头。
+这是面试出现率极高的一道题，几乎是「链表指针操作」的入场券。</p>
+
+<h3>思路推导</h3>
+
+<p>反转的本质是：<strong>把每个节点原本指向下一个的箭头，调头指向前一个</strong>。
+问题来了——当你把 <code>cur.next</code> 改成 <code>cur.next = prev</code> 之后，原来 <code>cur</code> 后面的链就找不到了，
+因为你覆盖了 <code>cur.next</code>。所以操作前必须先把「下一个」存起来。</p>
+
+<p>于是诞生三指针经典套路：</p>
+
+<ul>
+  <li><code>prev</code>：已经反转好的那一段的头（初始为 null，因为最前面没有）；</li>
+  <li><code>cur</code>：当前正在处理的节点；</li>
+  <li><code>next</code>：临时保存 <code>cur.next</code>，防止改箭头后丢失后面的链。</li>
+</ul>
+
+<p>每一步只做四件事：① 存 next；② 让 cur 指向 prev；③ prev 前进到 cur；④ cur 前进到 next。
+循环结束（cur 走到 null）时，prev 正好停在最后一个节点，也就是新头。</p>
+
+<pre><code class="nohl">初始：   prev = null    cur = 1 ──▶ 2 ──▶ 3 ──▶ null
+
+第1步：  next = 2
+         1.next = null         （cur 指向 prev）
+         prev = 1,  cur = 2
+         →  1 ──▶ null      prev=1     cur=2 ──▶ 3 ──▶ null
+
+第2步：  next = 3
+         2.next = 1
+         prev = 2,  cur = 3
+         →  2 ──▶ 1 ──▶ null   prev=2    cur=3 ──▶ null
+
+第3步：  next = null
+         3.next = 2
+         prev = 3,  cur = null
+         →  3 ──▶ 2 ──▶ 1 ──▶ null   cur=null 结束
+
+返回 prev = 3（新头）
+</code></pre>
+
+<h3>参考代码（迭代版）</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> ListNode reverseList(ListNode head) {
+        ListNode prev = <span class="kw">null</span>;     <span class="cm">// 已反转段的头，初始无</span>
+        ListNode cur = head;      <span class="cm">// 当前节点</span>
+        <span class="kw">while</span> (cur != <span class="kw">null</span>) {
+            ListNode next = cur.next; <span class="cm">// ① 先存下一个，防断链</span>
+            cur.next = prev;          <span class="cm">// ② 调头指向前一个</span>
+            prev = cur;               <span class="cm">// ③ prev 前移</span>
+            cur = next;               <span class="cm">// ④ cur 前移</span>
+        }
+        <span class="kw">return</span> prev;             <span class="cm">// prev 停在最后，即新头</span>
+    }
+}
+</code></pre>
+
+<h3>参考代码（递归版，思路更简洁）</h3>
+
+<p>递归的直觉：<strong>先一路递归到尾节点，让尾节点当新头；回退时把箭头一个个反调</strong>。
+<code>reverseList(head.next)</code> 返回的是「以 head.next 为起点的子链反转后的新头」。
+回到 head 这一层时，<code>head.next</code> 已经是反转后子链的尾节点，让 <code>head.next.next = head</code> 把它接回头，
+再断开 <code>head.next = null</code> 即可。</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> ListNode reverseList(ListNode head) {
+        <span class="kw">if</span> (head == <span class="kw">null</span> || head.next == <span class="kw">null</span>) <span class="kw">return</span> head; <span class="cm">// 空或单节点直接返回</span>
+        ListNode newHead = reverseList(head.next); <span class="cm">// 递归到尾，拿到新头</span>
+        head.next.next = head;  <span class="cm">// 让后一个节点指向自己（反调箭头）</span>
+        head.next = <span class="kw">null</span>;       <span class="cm">// 断开原来指向下一个的箭头</span>
+        <span class="kw">return</span> newHead;         <span class="cm">// 一路把新头传上去</span>
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>迭代与递归都是 O(n) 时间、O(1) 额外空间（递归版有 O(n) 调用栈，但逻辑清晰）。
+为什么迭代是 O(1) 空间？全程只多了 prev/cur/next 三个指针，没有额外数组。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>忘记 <code>next = cur.next</code> 这一步，直接写 <code>cur.next = prev</code> 再 <code>cur = cur.next</code>，
+  第二句就读不到原来的下一个了（已经被覆盖成 prev）。  <strong>「先存后改」是链表操作的铁律。</strong>
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>反转链表 II（力扣 92，中等）</strong>——与本题共用「prev/cur/next 三指针 + 先存后改」；差异在只反转 [left, right] 区间，需先定位区间前驱、局部反转后再接回原链（提示：用 dummy 让 left 有前驱，反转 m 到 n 段后把 pre 的 next 和 cur 的 next 重新接回）。</li>
+    <li><strong>回文链表（力扣 234，中等）</strong>——与本题共用「指针操作 + 反转思路」；差异在要判回文，先用快慢指针找中点、反转后半段再逐节点比较（提示：慢指针走到中点，反转后半段，双指针从头和中点比；注意长度奇偶，恢复链表可选）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">5.5</span>合并两个有序链表（简单，力扣 21）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：双指针 + dummy 串新链</span></p>
+
+<p><strong>题意：</strong>两个<strong>各自升序</strong>的链表，合成一个升序链表。
+例：<code>1→2→4</code> 和 <code>1→3→4</code> → <code>1→1→2→3→4→4</code>。</p>
+
+<h3>思路推导</h3>
+
+<p>你脑子里怎么合并两个有序数组？每次比较两个队首最小的，取走，指针后移。链表一模一样，
+只是「取走」变成「把那个节点接在新链后面」。</p>
+
+<p>怎么串新链？还是用 dummy：让 <code>cur</code> 从 dummy 出发，每次比较 <code>l1.val</code> 和 <code>l2.val</code>，
+小的那个接到 <code>cur.next</code>，对应的指针 (<code>l1</code> 或 <code>l2</code>) 后移，<code>cur</code> 也后移。
+当某一个走完后，把另一个剩余的整段直接接上（剩下的本来就有序）。</p>
+
+<pre><code class="nohl">l1: 1 ──▶ 2 ──▶ 4 ──▶ null
+l2: 1 ──▶ 3 ──▶ 4 ──▶ null
+
+dummy ──▶ (接 1 from l1) ──▶ (接 1 from l2) ──▶ (接 2) ──▶ (接 3) ...
+cur 始终指向「新链最后一个」
+最后 l1 或 l2 有一个剩一堆，cur.next 直接指向它。
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode dummy = <span class="kw">new</span> ListNode(-1); <span class="cm">// 新链哨兵</span>
+        ListNode cur = dummy;
+        <span class="kw">while</span> (l1 != <span class="kw">null</span> &amp;&amp; l2 != <span class="kw">null</span>) {  <span class="cm">// 两个都还有才比</span>
+            <span class="kw">if</span> (l1.val &lt;= l2.val) {
+                cur.next = l1;              <span class="cm">// 接 l1 当前节点</span>
+                l1 = l1.next;               <span class="cm">// l1 前进</span>
+            } <span class="kw">else</span> {
+                cur.next = l2;
+                l2 = l2.next;
+            }
+            cur = cur.next;                 <span class="cm">// 新链尾前进</span>
+        }
+        cur.next = (l1 != <span class="kw">null</span>) ? l1 : l2;  <span class="cm">// 接上剩余整段</span>
+        <span class="kw">return</span> dummy.next;
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n+m)：每个节点最多被比较接一次。空间 O(1)（迭代）；递归版 O(n+m) 栈。
+为什么接剩余整段是对的？因为另一个链表已经走完，剩下的部分天然有序且都比已接的大。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>别用 <code>new ListNode(l1.val)</code> 复制节点来拼——题目允许直接「挪用」原节点，
+  复制既浪费又没必要。  <strong>改指针接原节点即可。</strong>
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>合并 K 个升序链表（力扣 23，困难）</strong>——与本题共用「双指针 + dummy 串新链」；差异在不是两个而是 K 个有序链表，用优先队列每次取最小、或两两合并（提示：用最小堆存各链表当前头，每次取最小接上并推进该链表；也可把本题当子函数两两合并）。</li>
+    <li><strong>合并两个有序数组（力扣 88，简单）</strong>——与本题共用「双指针合并有序序列」；差异在数组可随机访问且 nums1 留足空间，从尾部往前填避免覆盖（提示：双指针从两尾开始、填到 nums1 末尾，空间 O(1)）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">5.6</span>环形链表 I / II（简单 / 中等，力扣 141 / 142）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill orange">中等</span> <span class="pill">核心：快慢指针 + 相遇数学</span></p>
+
+<p><strong>题意：</strong></p>
+<ul>
+  <li><strong>I（141）：</strong>判断链表有没有环。例：<code>3→2→0→-4</code>，其中 -4 又指向 2 → 有环，返回 true。</li>
+  <li><strong>II（142）：</strong>不仅有环，还要返回<strong>环的入口节点</strong>。例：返回值为节点 2。</li>
+</ul>
+
+<h3>思路推导（I）：快慢指针</h3>
+
+<p>怎么判断「有没有环」而不用一个超大的计数器？经典招数是<strong>快慢指针（龟兔赛跑）</strong>：
+慢指针每次走 1 步，快指针每次走 2 步。如果没环，快指针先到 null；如果有环，
+快指针会在环里绕圈，<strong>最终从后面追上慢指针（相遇）</strong>。为什么一定追上？
+因为每走一轮，快的比慢的多走 1 步，环是有限的，差距迟早补平，就像操场上快的人套圈慢的人。</p>
+
+<h3>参考代码（I）</h3>
+
+<pre><code><span class="kw">public</span> <span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">boolean</span> hasCycle(ListNode head) {
+        ListNode slow = head, fast = head;
+        <span class="kw">while</span> (fast != <span class="kw">null</span> &amp;&amp; fast.next != <span class="kw">null</span>) { <span class="cm">// 快指针走两步，要确认下下个存在</span>
+            slow = slow.next;
+            fast = fast.next.next;
+            <span class="kw">if</span> (slow == fast) <span class="kw">return</span> <span class="kw">true</span>;  <span class="cm">// 套圈相遇，必有环</span>
+        }
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+}
+</code></pre>
+
+<h3>思路推导（II）：相遇后怎么找入口</h3>
+
+<p>这是本题的精华，也是很多人「背下代码但不懂」的地方。先定义几段距离：</p>
+
+<ul>
+  <li><code>a</code>：头节点到<strong>环入口</strong>的距离；</li>
+  <li><code>b</code>：环入口到<strong>快慢指针相遇点</strong>的距离（沿前进方向）；</li>
+  <li><code>c</code>：相遇点再走回环入口的距离。于是<strong>一圈长度 = b + c</strong>。</li>
+</ul>
+
+<p>相遇时，慢指针走了 <code>a + b</code>；快指针走的是 <code>a + b</code> 再多绕了 n 圈，即 <code>a + b + n×(b+c)</code>。
+快指针速度是慢的两倍，所以路程也是两倍：</p>
+
+<pre><code class="nohl">2 × (a + b) = a + b + n × (b + c)
+        a + b = n × (b + c)
+            a = n × (b + c) − b
+            a = (n − 1) × (b + c) + c
+            a = c + (n − 1) 圈
+</code></pre>
+
+<p><strong>直觉翻译：</strong>「从头到入口的距离 a」等于「从相遇点沿环走回入口的距离 c」加上整数圈。
+也就是说——如果你让一个指针从<strong>头节点</strong>出发、另一个从<strong>相遇点</strong>出发，
+两者都以每步 1 的速度前进，那么从相遇点出发的那个，走完 c 就到入口，而此时从头出发的正好也走到入口（它走 a = c + 整圈）。
+它们必然在<strong>入口节点相遇</strong>。这就是 II 的解法：相遇后，一个回头部，同步走，再相遇即入口。</p>
+
+<div class="tip">
+  <strong>别硬背公式：</strong>记住一句话——<strong>「相遇点走回入口的距离，等于头到入口的距离（差整数圈）」</strong>。
+  于是「头指针」和「相遇点指针」同速前进，必在入口碰头。这比背 a=c+(n-1)圈 好记也更好讲。
+</div>
+
+<h3>参考代码（II）</h3>
+
+<pre><code><span class="kw">public</span> <span class="kw">class</span> Solution {
+    <span class="kw">public</span> ListNode detectCycle(ListNode head) {
+        ListNode slow = head, fast = head;
+        <span class="kw">while</span> (fast != <span class="kw">null</span> &amp;&amp; fast.next != <span class="kw">null</span>) {
+            slow = slow.next;
+            fast = fast.next.next;
+            <span class="kw">if</span> (slow == fast) {            <span class="cm">// 先找到相遇点</span>
+                ListNode p = head;         <span class="cm">// 一个指针拉回头部</span>
+                <span class="kw">while</span> (p != slow) {        <span class="cm">// 同速走，必在入口相遇</span>
+                    p = p.next;
+                    slow = slow.next;
+                }
+                <span class="kw">return</span> p;                  <span class="cm">// 入口节点</span>
+            }
+        }
+        <span class="kw">return</span> <span class="kw">null</span>;                       <span class="cm">// 无环</span>
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n)：快慢指针最多绕一圈多就相遇，找入口再走 a 步，合起来线性。
+空间 O(1)：只用了几个指针。为什么快指针设 2 步、慢设 1 步？步数差 1 保证「每轮差距 +1」，必然套圈；
+设更大的倍数也行但没必要，且可能跳过。</p>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>寻找重复数（力扣 287，中等）</strong>——与本题共用「快慢指针 + 相遇数学（Floyd 判圈）」；差异在把数组下标和值看成链表（<code>next = nums[i]</code>），必有环、重复数即环入口（提示：以 <code>f(x)=nums[x]</code> 走快慢指针，相遇后一指针回 0 同速再遇即重复值，且不能改数组）。</li>
+    <li><strong>快乐数（力扣 202，简单）</strong>——与本题共用「快慢指针判断是否有环」；差异在序列由「各位平方和」生成而非链表节点，用快/慢指针检测是否陷入循环（提示：非快乐数必进入循环，相遇即说明不是快乐数；也可用集合判重）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">5.7</span>删除链表的倒数第 N 个结点（中等，力扣 19）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：快慢指针定距</span></p>
+
+<p><strong>题意：</strong>删掉倒数第 N 个节点。例：<code>1→2→3→4→5</code>，<code>n=2</code> → <code>1→2→3→5</code>。
+注意 n 保证有效，且可能删的就是头节点（n 等于长度）。</p>
+
+<h3>思路推导</h3>
+
+<p>链表不能倒着数，但我们可以「换算」：倒数第 N 个 = 正数第 (长度 − N + 1) 个。
+直接数长度再走第二趟当然可以，但<strong>一趟搞定更优雅</strong>——用快慢指针制造固定间距。</p>
+
+<p>让快指针先走 N 步，此时快慢之间<strong>正好隔了 N 个节点</strong>。然后快慢一起走，
+当快指针到达末尾（null）时，慢指针正好停在「倒数第 N+1 个」，也就是<strong>待删节点的前一个</strong>。
+一个 <code>slow.next = slow.next.next</code> 就删掉了。</p>
+
+<p>这里有个边界：如果要删的是头节点，慢指针一开始就得有「前一个」可站——所以还是请出 dummy。</p>
+
+<pre><code class="nohl">链表 1→2→3→4→5，删倒数第 2（即 4）
+dummy→1→2→3→4→5→null
+fast 先走 n+1=3 步：fast 指向 3
+slow 仍在 dummy
+然后同走，直到 fast=null：
+  fast 走完 3→4→5→null，共 3 步
+  slow 走 dummy→1→2→3
+slow 停在 3（待删节点 4 的前一个），slow.next = slow.next.next 删掉 4
+</code></pre>
+
+<p>注意这里 fast 先走的是 <code>n + 1</code> 步（不是 n 步），因为我们要让 slow 停在「前一个」，
+多走一步就是为了留出一个身位。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> ListNode removeNthFromEnd(ListNode head, <span class="kw">int</span> n) {
+        ListNode dummy = <span class="kw">new</span> ListNode(-1, head); <span class="cm">// 处理删头节点</span>
+        ListNode fast = dummy, slow = dummy;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n + 1; i++) {         <span class="cm">// 快指针先走 n+1 步</span>
+            fast = fast.next;
+        }
+        <span class="kw">while</span> (fast != <span class="kw">null</span>) {                    <span class="cm">// 同速走，直到快指针到尾</span>
+            fast = fast.next;
+            slow = slow.next;
+        }
+        slow.next = slow.next.next;               <span class="cm">// 删掉倒数第 n 个</span>
+        <span class="kw">return</span> dummy.next;
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n)：fast 走完一趟，slow 跟着走，没有回退。空间 O(1)。
+为什么先走 n+1 而不是 n？因为目标是让 slow 停在待删节点的<strong>前一个</strong>，
+n+1 的间距恰好让 fast 到 null 时 slow 落在前一个。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>本题如果不加 dummy，当 <code>n == 链表长度</code>（删头节点）时 slow 会停在 head 之前没处站，
+  要么特判要么越界。  <strong>dummy 再一次救了边界。</strong>
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>旋转链表（力扣 61，中等）</strong>——与本题共用「快慢指针定距 + 链表重接」；差异在要「向右旋转 k 个位置」，先走到倒数第 k 个做断点、再把首尾接成环后断开（提示：先求长度，fast 走 len−k%len 步定位新尾，新头是其 next，原尾接回原头）。</li>
+    <li><strong>重排链表（力扣 143，中等）</strong>——与本题共用「快慢指针定位中点 + 链表指针重接」；差异在要先找中点、反转后半段、再交叉合并两半（提示：slow/fast 找中点，反转后半，双指针交替接成 L0→Ln→L1→Ln-1…）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">5.8</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>断链 / 丢引用：</strong>改 <code>cur.next</code> 前没先存 <code>cur.next</code>（如反转链表），
+    导致后面的链再也找不回。铁律：<strong>先存后改</strong>。</li>
+    <li><strong>while 条件写错：</strong>遍历用 <code>cur != null</code> 还是 <code>cur.next != null</code> 取决于你操作的是 cur 还是 cur.next。
+    操作 <code>cur.next</code> 必须保证它非空，写 <code>cur != null</code> 会在最后一步空指针。</li>
+    <li><strong>dummy 忘了返回 dummy.next：</strong>头可能被换，返回原 <code>head</code> 会得到错误（甚至旧的）头。
+    统一收尾 <code>return dummy.next</code>。</li>
+    <li><strong>删头节点的边界：</strong>凡是「可能删头」的题，优先用 dummy，别在循环外特判 <code>head = head.next</code>，易漏。</li>
+    <li><strong>环形题快指针条件：</strong><code>while (fast != null && fast.next != null)</code> 缺一不可，
+    因为快指针一次走两步，得确认「下下个」存在，否则 <code>fast.next.next</code> 空指针。</li>
+    <li><strong>快慢指针间距数错：</strong>定距题（如 19）先走 n 还是 n+1，画一遍图再定，别凭感觉。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s9"><span class="h2-num">5.9</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.（动手题）不参考代码，默写「反转链表」迭代版。要求：写出 prev/cur/next 三步顺序，并说明为什么必须 <code>next = cur.next</code> 在前。</p>
+  <div class="qa-a">
+    <p>顺序：① <code>ListNode next = cur.next</code>；② <code>cur.next = prev</code>；③ <code>prev = cur</code>；④ <code>cur = next</code>。
+    必须先存 next，是因为第②步把 <code>cur.next</code> 覆盖成了 prev，若先执行②再想取原 next 已经丢失，后面链断裂。
+    最后返回 <code>prev</code>。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 环形链表 II 里，为什么「头指针」和「相遇点指针」同速走，一定在入口相遇，而不是在别处？</p>
+  <div class="qa-a">
+    <p>因为推导得出 <code>a = c + (n−1)圈</code>：从头到入口的距离 a，等于从相遇点走回入口的距离 c 再加上整数圈。
+    两者同速，从相遇点出发的走 c 到入口时，从头出发的正好也走了 a（= c + 整圈）到达入口，必在此碰头。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.（动手题）合并两个有序链表，如果其中一个是 null，你的代码会返回什么？会不会出错？</p>
+  <div class="qa-a">
+    <p>不会。循环条件 <code>l1 != null && l2 != null</code> 直接不进，最后 <code>cur.next = (l1 != null) ? l1 : l2</code>
+    把另一个（可能就是 null）接上，返回 <code>dummy.next</code> 即另一个链表本身。null 入参也能正确返回对方。</p>
+  </div>
+</div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「链表删除题，怎么一句话统一所有边界？」</em>
+  答案：加一个虚拟头节点 dummy 指向 head，用工作指针从 dummy 出发操作 <code>cur.next</code>，
+  最后返回 <code>dummy.next</code>，头节点被删也无需特判。能独立写出反转、合并、环形 II、删倒数第 N 个，
+  就进 <a href="ch06.html">专题 06 · 栈与队列</a>。
+</div>
+
+<div class="navfoot">
+  <a href="ch04.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 04 · 二分查找</div></a>
+  <a class="next" href="ch06.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 06 · 栈与队列</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 5 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

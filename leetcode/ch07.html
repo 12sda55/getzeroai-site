@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 07 · 二叉树 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link active" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <div class="sb-sub">
+      <a href="#s1">7.1 树题的两种思考方式：遍历与分解</a>
+      <a href="#s2">7.2 二叉树的最大深度（简单）</a>
+      <a href="#s3">7.3 翻转二叉树（简单）</a>
+      <a href="#s4">7.4 对称二叉树（简单）</a>
+      <a href="#s5">7.5 二叉树的层序遍历（中等）</a>
+      <a href="#s6">7.6 二叉树的最近公共祖先（中等）</a>
+      <a href="#s7">7.7 本专题常见坑</a>
+      <a href="#s8">7.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 07</div>
+  <h1><span class="ch-tag">专题 07</span>二叉树：递归思维的主战场</h1>
+  <p class="lead">如果说数组考验细心、链表考验指针，那<strong>二叉树就是递归思维的主战场</strong>。
+  树天然是「自相似」的——一棵树的左子树、右子树，本身又是一棵小树。这种结构几乎逼着你用递归。
+  本章先给你一个看待树题的「二分法」：<strong>遍历 vs 分解</strong>，再带你用 6 道题把递归写顺。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">建立树的递归直觉</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 06 栈（递归=隐式栈）</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">6 道 Hot 题 + 两种思路</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">5–7 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">7.1</span>树题的两种思考方式：遍历与分解</h2>
+
+<p>很多人写树题卡住，不是不会递归，是不知道「递归函数该返回什么」。
+其实树题基本只有两种写法，先分清楚，后面每题都对号入座：</p>
+
+<h3>方式一：遍历（Traverse）——「一边走一边做事」</h3>
+
+<p>递归只是为了<strong>走到每个节点</strong>，真正的工作在「路过」时顺手做。函数<strong>返回值常常没用</strong>（返回 void 或一个标记），
+典型如「打印整棵树」「统计节点个数」「把每个节点值加 1」。你脑子里是一根指针在树上逛，逛到哪算到哪。</p>
+
+<h3>方式二：分解（Divide &amp; Conquer）——「把问题拆给左右子树」</h3>
+
+<p>这是本章重点，也是面试 80% 树题的写法。核心想法：<strong>「我不管左右子树内部怎么长，只要它们各自把结果交给我，我合并一下就出答案」</strong>。
+递归函数<strong>有返回值</strong>，返回值就是「以当前节点为根的子树，针对这个问题该给的答案」。</p>
+
+<pre><code class="nohl">分解式思考模板（伪代码）：
+  int f(节点 root):
+      if root == null: return 基线值        // 空树的情况
+      left  = f(root.left)                  // 左子树交出的答案
+      right = f(root.right)                 // 右子树交出的答案
+      return 用 left、right、root 算出的本层答案
+</code></pre>
+
+<p>本章的<strong>最大深度、翻转、对称、LCA 全是分解式</strong>。区分窍门：题目问的是「整棵树某个全局量」（最大深度、是否对称），
+那就用分解——让每个子树先报自己的局部答案，父节点汇总。</p>
+
+<div class="tip">
+  <strong>一句话：</strong>遍历是「我亲自逛遍每个节点干活」，分解是「我让左右子树干完把结果递上来，我只在中间做汇总」。
+  面试优先想分解式，因为返回值能一路把信息带上顶层，比全局变量干净。
+</div>
+
+<h3>树节点的标准定义</h3>
+
+<p>力扣里树节点长这样，后面所有题都基于它：</p>
+
+<pre><code><span class="kw">public</span> <span class="kw">class</span> TreeNode {
+    <span class="kw">int</span> val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode() {}                          <span class="cm">// 无参构造</span>
+    TreeNode(<span class="kw">int</span> val) { <span class="kw">this</span>.val = val; } <span class="cm">// 只给值</span>
+    TreeNode(<span class="kw">int</span> val, TreeNode left, TreeNode right) {
+        <span class="kw">this</span>.val = val;                    <span class="cm">// 给值 + 左右孩子</span>
+        <span class="kw">this</span>.left = left;
+        <span class="kw">this</span>.right = right;
+    }
+}
+</code></pre>
+
+<h3>用一个例子区分两种方式</h3>
+
+<p>同样一棵简单的树，两种写法写出来差别巨大。以「<code>[1,2,3]</code>」为例，比较「前序打印所有值」和「求节点总数」：</p>
+
+<pre><code class="nohl">    1
+   / \
+  2   3
+
+【遍历式：打印每个节点值】
+void dfs(TreeNode root) {
+    if (root == null) return;
+    System.out.print(root.val); // 路过就干活
+    dfs(root.left);
+    dfs(root.right);
+}
+→ 输出 1 2 3。函数无返回值，信息靠「副作用」（打印）带出。
+
+【分解式：数节点总数】
+int count(TreeNode root) {
+    if (root == null) return 0;
+    return 1 + count(root.left) + count(root.right); // 左右交答案，父层汇总
+}
+→ 返回 3。每个子树报自己的节点数，父节点 +1 合并。
+</code></pre>
+
+<p>看出区别了吗？打印那个函数「脑子里有个游客在走」，到哪打到哪；计数那个函数「自己不动，让左右孩子报数，最后加总」。
+<strong>凡是结果能「由左右子树的同类结果合并得到」的，优先写分解式</strong>——它不需要全局变量，返回值一路把信息带上顶层，
+既好写又好测。遍历式适合「副作用型」任务（打印、收集到外部 List、修改原树）。</p>
+
+<div class="tip">
+  <strong>判断口诀：</strong>问自己「这个问题的答案，是不是『左子树的答案 ⊕ 右子树的答案 ⊕ 自己』？」
+  是 → 分解式（有返回值）；否，只是「顺手做件事」→ 遍历式（无返回值，靠副作用）。
+  本章 6 题里，深度/翻转/对称/LCA 全是分解式，只有「按某种顺序打印」才算遍历式。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">7.2</span>二叉树的最大深度（简单，力扣 104）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：分解式入门</span></p>
+
+<p><strong>题意：</strong>返回树的<strong>最大深度</strong>（从根到最远叶子节点的节点数）。例：<code>[3,9,20,null,null,15,7]</code> 最大深度 3。</p>
+
+<h3>思路推导</h3>
+
+<p>用分解式想：一棵树的「最大深度」等于什么？<strong>等于「左子树的最大深度」和「右子树的最大深度」里较大的那个，再加 1（自己这一层）</strong>。
+「左右子树最大深度」怎么来？递归调用自己就行了——同一个函数，丢给它左孩子、右孩子。
+空节点（null）深度是 0，这是递归停下来的地方（base case）。</p>
+
+<pre><code class="nohl">       3                  depth(3) = max(depth(9), depth(20)) + 1
+      / \                 depth(9) = 0+1 = 1（左右都空）
+     9  20                depth(20) = max(depth(15), depth(7)) + 1 = max(1,1)+1 = 2
+       / \                depth(15)=1, depth(7)=1
+      15  7
+    → depth(3) = max(1, 2) + 1 = 3 ✓
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> maxDepth(TreeNode root) {
+        <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span> 0;            <span class="cm">// 空树深度 0（base case）</span>
+        <span class="kw">int</span> left = maxDepth(root.left);        <span class="cm">// 左子树报深度</span>
+        <span class="kw">int</span> right = maxDepth(root.right);      <span class="cm">// 右子树报深度</span>
+        <span class="kw">return</span> Math.max(left, right) + 1;      <span class="cm">// 取较大者 + 自己这层</span>
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n)：每个节点恰好访问一次。空间 O(n)：最坏退化为链表时递归栈深 n；平衡树 O(log n)。
+为什么是 <code>+1</code>？因为上面的左右子树深度都还没算「当前节点本身」这一层，汇总时得补上。</p>
+
+<div class="tip">
+  <strong>关键点：</strong><code>if (root == null) return 0</code> 必须写，且返回 0 不是 1。
+  空节点没有层数，是「贡献 0 层」，让父节点的 <code>+1</code> 自然表达「加上自己」。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>二叉树的最小深度（力扣 111，简单）</strong>——与本题共用「分解式求深度」技巧；差异在最小深度必须到达<strong>叶子节点</strong>才算一层，某一侧为空的分支不能算作深度（提示：返回前判断左右孩子是否都为空，只在一侧为空时不要直接取 min，要先过滤掉空支再比）。</li>
+    <li><strong>平衡二叉树（力扣 110，简单）</strong>——与本题共用「自底向上返回高度」的分解式技巧；差异在要同时检查左右子树是否平衡且高度差不超过 1（提示：用辅助返回值既带高度又带「是否平衡」标记，遇到不平衡就提前返回 -1）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">7.3</span>翻转二叉树（简单，力扣 226）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：先递归后交换</span></p>
+
+<p><strong>题意：</strong>把整棵树的左右子树<strong>镜像翻转</strong>。例：根 4 的左孩子 2 和右孩子 7 互换，且各自子树也翻。</p>
+
+<h3>思路推导</h3>
+
+<p>分解式：翻转一棵以 root 为根的树，等于——<strong>先分别翻转它的左子树和右子树，再把 root 的 left、right 指针对调</strong>。
+注意顺序：先「递归翻完下面」，再「在本层交换」。如果先交换再递归，交换后 left/right 已经互换，递归就翻错边了。
+（其实先交换再递归也对，只要递归传的是交换后的引用；但「先递归后交换」最直观、最不易错。）</p>
+
+<pre><code class="nohl">原:        4           翻左子树(2→1,3)  翻右子树(7→6,9)  交换 4 的左右
+          / \          → 2:左右换        → 7:左右换        → 4.left=7, 4.right=2
+         2   7         1   3            9   6
+翻转后:    4
+          / \
+         7   2
+        / \ / \
+       9  6 3  1
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> TreeNode invertTree(TreeNode root) {
+        <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span> <span class="kw">null</span>;        <span class="cm">// 空树直接返回</span>
+        TreeNode left = invertTree(root.left);  <span class="cm">// 先翻左子树</span>
+        TreeNode right = invertTree(root.right); <span class="cm">// 再翻右子树</span>
+        root.left = right;                     <span class="cm">// 交换：左接翻好的右</span>
+        root.right = left;                     <span class="cm">// 右接翻好的左</span>
+        <span class="kw">return</span> root;                           <span class="cm">// 返回翻转后的根</span>
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n)：每个节点访问一次。空间 O(n)（递归栈，最坏链表）。
+为什么返回 <code>root</code>？因为翻转是「原地改」，改完把根交回去，上层就能接着接。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>交换用的是「递归后的返回值」left/right，不是直接 <code>root.left = root.right</code>。
+  后者会丢失引用（root.right 被赋给 left 后，原 right 的子树就乱了）。先收好左右翻转结果再赋值才安全。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>对称二叉树（力扣 101，简单）</strong>——与本题共用「递归处理左右子树」技巧；差异在对称是比较「左子树的左 vs 右子树的右」的<strong>交叉镜像</strong>关系，而不是真的把树翻过来（提示：写一个 check(p, q) 双树递归，注意是交叉比较而非平行比较）。</li>
+    <li><strong>翻转等价二叉树（力扣 951，中等）</strong>——与本题共用「翻转/交换左右子树」技巧；差异在判断两棵树是否「翻转等价」——每对节点可交换可不交换，只要存在一种翻转方案使两树相同即可（提示：比较 root1 与 root2 时，分别尝试「不交换」与「交换左右」两种情况，任一成立即可）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">7.4</span>对称二叉树（简单，力扣 101）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：双树同步递归</span></p>
+
+<p><strong>题意：</strong>判断一棵树是否<strong>中心对称</strong>（左子树是右子树的镜像）。例：<code>[1,2,2,3,4,4,3]</code> 对称 → true；<code>[1,2,2,null,3,null,3]</code> → false。</p>
+
+<h3>思路推导</h3>
+
+<p>「对称」不是「左右相等」，是「左子树的左 = 右子树的右，左子树的右 = 右子树的左」——典型的<strong>镜像</strong>关系。
+所以不能只比较 root.left 和 root.right 的值，要<strong>同时递归两棵树</strong>：一个走「外侧」（左的左 vs 右的右），一个走「内侧」（左的右 vs 右的左）。</p>
+
+<p>写一个辅助函数 <code>check(p, q)</code> 判断「两棵树是否互为镜像」：</p>
+<ul>
+  <li>都为空 → 真；一个空一个不空 → 假；值不等 → 假；</li>
+  <li>否则递归 <code>check(p.left, q.right) &amp;&amp; check(p.right, q.left)</code>。</li>
+</ul>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">boolean</span> isSymmetric(TreeNode root) {
+        <span class="kw">return</span> root == <span class="kw">null</span> || check(root.left, root.right); <span class="cm">// 空树算对称</span>
+    }
+
+    <span class="cm">// 判断两棵树是否互为镜像</span>
+    <span class="kw">private</span> <span class="kw">boolean</span> check(TreeNode p, TreeNode q) {
+        <span class="kw">if</span> (p == <span class="kw">null</span> &amp;&amp; q == <span class="kw">null</span>) <span class="kw">return</span> <span class="kw">true</span>;   <span class="cm">// 都空，这一支对称</span>
+        <span class="kw">if</span> (p == <span class="kw">null</span> || q == <span class="kw">null</span>) <span class="kw">return</span> <span class="kw">false</span>;  <span class="cm">// 一个空一个不空，不对称</span>
+        <span class="kw">if</span> (p.val != q.val) <span class="kw">return</span> <span class="kw">false</span>;          <span class="cm">// 值不同，不对称</span>
+        <span class="cm">// 外侧配外侧，内侧配内侧</span>
+        <span class="kw">return</span> check(p.left, q.right) &amp;&amp; check(p.right, q.left);
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n)：每个节点在比较中被访问（镜像对一一对应）。空间 O(n)（递归栈）。
+为什么用「双树递归」而不是单树？因为对称性是<strong>两棵树之间的关系</strong>，单棵树无法表达「左子树的左」和「右子树的右」的对应，必须两个指针各走一边。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>递归调用是 <code>check(p.left, q.right)</code> 和 <code>check(p.right, q.left)</code>——
+  <strong>交叉</strong>而非平行。写成 <code>check(p.left, q.left)</code> 就变成「判断两树完全相同」了（那题是 100 题 Same Tree）。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>相同的树（力扣 100，简单）</strong>——与本题共用「双树同步递归」技巧；差异在相同的树是「平行比较」（左比左、右比右）而非交叉镜像（提示：把 check 里的交叉调用改成平行调用 <code>check(p.left, q.left) &amp;&amp; check(p.right, q.right)</code> 即可，这正是本题 tip 里点到的对比）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">7.5</span>二叉树的层序遍历（中等，力扣 102）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：BFS + 按层出队</span></p>
+
+<p><strong>题意：</strong>返回「按层」的节点值列表。例：<code>[3,9,20,null,null,15,7]</code> → <code>[[3],[9,20],[15,7]]</code>。</p>
+
+<h3>思路推导</h3>
+
+<p>层序 = 广度优先（BFS），用<strong>队列</strong>实现。难点在「怎么把同一层的节点分到一组」。
+诀窍是：每一层开始前，先记下<strong>当前队列的长度 size</strong>——这个 size 就是「本层节点数」。
+然后<strong>只出队 size 次</strong>，把这一层的节点收集起来；出队时把它们的孩子入队，孩子会自然排在「下一层」的队伍后面。
+下一轮再取新的 size，如此一层层展开。</p>
+
+<pre><code class="nohl">队列初始 [3]，size=1 → 出3，入9,20 → 本层[3]
+队列 [9,20]，size=2 → 出9入null忽略；出20入15,7 → 本层[9,20]
+队列 [15,7]，size=2 → 出15,7，无孩子 → 本层[15,7]
+结果 [[3],[9,20],[15,7]]
+</code></pre>
+
+<p>注意：<strong>size 必须在每层循环外先取好</strong>。如果写在循环里 <code>while (!q.isEmpty())</code> 每次都重新数，
+新入队的孩子会被算进同一层，分层就乱了。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> List&lt;List&lt;Integer&gt;&gt; levelOrder(TreeNode root) {
+        List&lt;List&lt;Integer&gt;&gt; res = <span class="kw">new</span> ArrayList&lt;&gt;();
+        <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span> res;                  <span class="cm">// 空树返回空列表</span>
+        Deque&lt;TreeNode&gt; queue = <span class="kw">new</span> ArrayDeque&lt;&gt;();
+        queue.offer(root);                             <span class="cm">// 根入队</span>
+        <span class="kw">while</span> (!queue.isEmpty()) {
+            <span class="kw">int</span> size = queue.size();                  <span class="cm">// ① 先取本层节点数</span>
+            List&lt;Integer&gt; level = <span class="kw">new</span> ArrayList&lt;&gt;();
+            <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; size; i++) {          <span class="cm">// ② 只出队 size 次</span>
+                TreeNode node = queue.poll();
+                level.add(node.val);
+                <span class="kw">if</span> (node.left != <span class="kw">null</span>) queue.offer(node.left);   <span class="cm">// 孩子入队，排到下一层</span>
+                <span class="kw">if</span> (node.right != <span class="kw">null</span>) queue.offer(node.right);
+            }
+            res.add(level);                            <span class="cm">// 本层收集完，加入结果</span>
+        }
+        <span class="kw">return</span> res;
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n)：每个节点入队出队各一次。空间 O(n)：队列最坏存满一层（满二叉树底层约 n/2）。
+为什么必须「先 size 再循环」？因为循环内入队的孩子属于下一层，若实时取 size 会把它们算进当前层，分层失败。</p>
+
+<h3>为什么用「队列」而不是「栈」</h3>
+
+<p>层序要求「先遇到的节点先处理」——这正好是队列的 FIFO 语义。如果用栈（DFS 那套），会一头扎进最深的左子树，
+出来的顺序是「根→左到底→回退」，变成深度优先，不是逐层。所以<strong>层序 = BFS = 队列</strong>，这是结构性绑定，不是个人喜好。
+可以对比记忆：</p>
+
+<table>
+  <thead><tr><th style="width:120px">遍历方式</th><th style="width:120px">用的结构</th><th>出来的顺序</th><th>典型题</th></tr></thead>
+  <tbody>
+    <tr><td>前/中/后序</td><td>系统调用栈（或显式栈）</td><td>一根筋走到叶子再回退</td><td>最大深度、翻转、LCA</td></tr>
+    <tr><td>层序</td><td>队列</td><td>一层一层从左到右</td><td>102、之字形 103</td></tr>
+  </tbody>
+</table>
+
+<p>再手推一遍 <code>[3,9,20,null,null,15,7]</code> 的 size 机制，重点看「size 怎么锁住当前层」：</p>
+
+<pre><code class="nohl">初始队列 [3]，进入 while：size=1（锁定第1层只有3）
+  循环1次：poll 3，level=[3]，入队 9,20 → 队列[9,20]
+  res 加 [3]
+下一轮：size=2（锁定第2层只有9,20，刚入队的15,7不算）
+  循环2次：poll 9（入15,7→队列[20,15,7]），poll 20（入15? 已入；入7? 已入）→ level=[9,20]
+  res 加 [9,20]
+下一轮：size=2（锁定第3层：队列里正是[15,7]）
+  循环2次：poll 15、poll 7，都无孩子 → level=[15,7]
+  res 加 [15,7]
+队列空，结束 → [[3],[9,20],[15,7]] ✓
+</code></pre>
+
+<p>关键就在每一轮开头那句 <code>int size = queue.size()</code>：它把「当前层有几个节点」快照下来，
+循环里新入队的孩子虽然进了同一个队列，但不在本次 size 的计数内，于是自动归到下一轮。这个「快照」是分层的核心。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>BFS 的 <code>size</code> 是层序遍历的命门。固定写法：<code>int size = queue.size(); for (i=0; i<size; i++)</code>。
+  这句话背下来，所有「按层处理」的题（之字形遍历 103、层平均值 637）都靠它。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>二叉树的层次遍历 II（力扣 107，简单）</strong>——与本题共用「BFS + size 分层」技巧；差异在结果要从底层往上层输出（提示：先按正常层序收集，最后把结果列表整体反转一次即可）。</li>
+    <li><strong>二叉树的右视图（力扣 199，中等）</strong>——与本题共用「按层 BFS」技巧；差异在每层只取「最右边」那个节点（提示：每层出队 size 次时，取最后一个出队的节点加入答案）。</li>
+    <li><strong>二叉树的锯齿形层序遍历（力扣 103，中等）</strong>——与本题共用「size 分层 BFS」框架；差异在奇数层要逆序（提示：用层号标记，偶数层正常收集、奇数层头部插入或收集后反转）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">7.6</span>二叉树的最近公共祖先（中等，力扣 236）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：后序递归传信息</span></p>
+
+<p><strong>题意：</strong>给定树和两个节点 p、q，返回它们<strong>最近的公共祖先</strong>（最低的、同时是两者祖先的节点）。
+例：树 <code>[3,5,1,6,2,0,8,...]</code>，p=5、q=1 → 返回 3；p=5、q=4 → 返回 5（5 是 4 的祖先，自己也是自己的祖先）。</p>
+
+<h3>思路推导</h3>
+
+<p>这是分解式里「<strong>后序</strong>」最漂亮的例子。从底向上想：对每个节点，问它的左右子树——</p>
+
+<ul>
+  <li>「你那边找到 p 或 q 了吗？」</li>
+  <li>如果<strong>左子树找到、右子树也找到</strong> → 当前节点就是 LCA（p、q 分列两侧）；</li>
+  <li>如果<strong>只有一侧找到</strong> → 把找到的那个往上传递（LCA 在更上层）；</li>
+  <li>如果<strong>都没找到</strong> → 返回 null。</li>
+</ul>
+
+<p>再看 base case：如果当前节点就是 p 或 q 本身，直接返回它（它自己就是答案的候选，不用再往下找）。
+这样天然处理了「一个节点是另一个祖先」的情况。</p>
+
+<pre><code class="nohl">       3
+      / \
+     5   1         找 p=5, q=4（4在5的左子树2里）
+    / \ / \
+   6  2 0  8
+     / \
+    7   4
+
+递归到 4：==q 返回 4
+递归到 2：左null 右4 → 返回 4
+递归到 5：左6返回null，右2返回4 → 一侧有 → 向上传 4？不对，5本身是p！
+  实际上 5==p 直接返回 5；但 5 的右子树返回了 4（含 q）
+  → 5 的左返回 null，右返回 4，且 5 自身是 p → 5 就是 LCA ✓
+</code></pre>
+
+<p>更严谨地说：函数返回「以 root 为根的子树里，是否包含了 p 或 q 中的一个（且是哪个）」。
+当 root 自身命中、或左右各命中一个，root 即 LCA。</p>
+
+<h3>为什么「后序」是关键</h3>
+
+<p>这题的递归是<strong>后序</strong>（先左右、后处理当前），和前面几题的「先处理后递归」不同。原因：LCA 的答案
+<strong>取决于左右子树的返回结果</strong>，必须先拿到两边「找到没」，才能在本层判断「我是不是 LCA」。
+如果写成前序（先判断当前再递归），你就还没知道下面的情况，无从决策。</p>
+
+<p>换个角度理解「左右各命中一个 → 我是 LCA」：p 和 q 在树里的相对位置只有两种——</p>
+
+<ul>
+  <li><strong>分列两侧：</strong>一个在左子树、一个在右子树，那它们最近的公共祖先只能是「当前这个分叉点」；</li>
+  <li><strong>祖先关系：</strong>一个在另一个的子树里。这时递归到「那个祖先」时，它本身命中（<code>root==p</code> 或 <code>root==q</code>），
+  直接把自己返回，上层把「含另一个的那侧结果」和「这个命中」凑一起，祖先被确认为 LCA。</li>
+</ul>
+
+<p>两种情况被同一套逻辑统一了，不需要特判「谁是祖先」——这正是后序递归的优雅之处。</p>
+
+<div class="warn">
+  <strong>易错提醒：</strong>有人想用「自底向上找父指针」做 LCA，但力扣的 <code>TreeNode</code> 没有 parent 指针，
+  那种思路在这里行不通。递归后序返回「找到的节点」是唯一干净的路子。也别在递归里用全局变量记答案，
+  用返回值一路上传更不容易错。
+</div>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        <span class="cm">// 遇到空、或正好碰到 p/q，直接返回（p/q 自身可作为候选祖先）</span>
+        <span class="kw">if</span> (root == <span class="kw">null</span> || root == p || root == q) <span class="kw">return</span> root;
+
+        TreeNode left = lowestCommonAncestor(root.left, p, q);  <span class="cm">// 左子树结果</span>
+        TreeNode right = lowestCommonAncestor(root.right, p, q); <span class="cm">// 右子树结果</span>
+
+        <span class="kw">if</span> (left != <span class="kw">null</span> &amp;&amp; right != <span class="kw">null</span>) <span class="kw">return</span> root; <span class="cm">// 分列两侧 → 当前是 LCA</span>
+        <span class="kw">return</span> left != <span class="kw">null</span> ? left : right;             <span class="cm">// 只在一侧 → 把找到的传上去</span>
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n)：最坏遍历全树一遍。空间 O(n)（递归栈）。
+为什么「自身命中就返回」能覆盖祖先情况？因为如果 p 是 q 的祖先，递归到 p 时直接返回 p，
+上层发现一侧返回 p、另一侧（含 q 的子树）也最终返回非 null，于是 p 被确认为 LCA——逻辑自洽。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>比较用的是 <code>root == p</code>（<strong>引用相等</strong>），不是 <code>root.val == p.val</code>。
+  题目保证 p、q 是树中真实存在的节点对象，用引用比对最稳，也避免「值相同但不是同一个节点」的歧义。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>二叉搜索树的最近公共祖先（力扣 235，中等）</strong>——与本题共用「后序递归找 p/q 在哪一侧」技巧；差异在利用 BST 的有序性：p、q 值都小就走左、都大就走右，分列两侧时当前节点即答案（提示：无需像 236 那样同时查左右返回值，比较值大小即可决定单边深入）。</li>
+    <li><strong>路径总和（力扣 112，简单）</strong>——与本题共用「后序递归把结果往上传」技巧；差异在目标变成「是否存在一条根到叶子的路径，其节点值之和等于 targetSum」（提示：到叶子时判断累加值是否等于目标，递归返回左右两侧是否有任意一条满足）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">7.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>递归没写 base case：</strong>树递归第一句几乎永远是 <code>if (root == null) return …</code>。
+    漏了会无限递归或空指针。返回什么要看题意（深度返回 0、翻转返回 null、LCA 返回 null）。</li>
+    <li><strong>层序遍历 size 在循环里重取：</strong>必须 <code>int size = queue.size()</code> 在 for 外取好，
+    否则新入队的孩子被算进当前层，分层错乱。</li>
+    <li><strong>混淆「深度」与「高度」：</strong>深度是「根到该节点」，高度是「该节点到叶子」。
+    最大深度 = 根的高度，但二者递归写法方向相反，别混。</li>
+    <li><strong>翻转时直接交换引用：</strong>写成 <code>root.left = root.right; root.right = root.left</code> 会丢失原引用。
+    应先收好递归后的 left/right 再赋值。</li>
+    <li><strong>对称题写成平行比较：</strong>check 里必须用 <code>check(p.left, q.right)</code> 交叉，平行比较会变成「判断相同树」。</li>
+    <li><strong>遍历 vs 分解选错：</strong>问「全局量」优先分解式（有返回值），别硬用全局变量遍历。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">7.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.（动手题）默写「最大深度」递归版，并说明 <code>return 0</code> 能不能改成 <code>return 1</code>。</p>
+  <div class="qa-a">
+    <p><code>if (root == null) return 0;</code> 然后 <code>return Math.max(maxDepth(left), maxDepth(right)) + 1;</code>。
+    不能改 1：空节点代表「没有这一支」，应贡献 0 层；若返回 1，叶子节点的空孩子也被算成 1 层，整棵树深度会凭空多 1。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 最近公共祖先里，如果 p 和 q 是同一个节点（题目说保证不同，但假设），代码会返回什么？</p>
+  <div class="qa-a">
+    <p>递归到该节点时 <code>root == p</code> 命中返回自己；上层左右一侧返回它、另一侧返回 null，
+    最终 <code>left != null ? left : right</code> 把它传上去，LCA 就是 p 自身。逻辑也成立，说明代码对「节点是自身祖先」天然兼容。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.（动手题）层序遍历若要求「之字形」（奇数层正序、偶数层反序），在现有代码上改哪一处即可？</p>
+  <div class="qa-a">
+    <p>只改「收集本层」那一步：偶数层（从 0 或 1 计，看约定）把 level 反转，或用 <code>LinkedList</code> 的 <code>addFirst</code> 头插。
+    核心的 <code>int size = queue.size(); for...</code> 框架一字不动——这就是先固定 size 的好处，换花样只动收集方式。</p>
+  </div>
+</div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「树题我该用遍历还是分解？递归函数返回什么？」</em>
+  答案：问全局量（最大深度、是否对称、LCA）用分解式，让左右子树先交答案、父节点汇总；
+  递归第一句必写 base case（null 怎么返回）。能独立写出最大深度、翻转、对称、层序、LCA，
+  就进 <a href="ch08.html">专题 08 · 递归与回溯</a>。
+</div>
+
+<div class="navfoot">
+  <a href="ch06.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 06 · 栈与队列</div></a>
+  <a class="next" href="ch08.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 08 · 递归与回溯</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 7 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

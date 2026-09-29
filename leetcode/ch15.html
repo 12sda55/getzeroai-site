@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 15 · 数学与模拟 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link active" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <div class="sb-sub">
+      <a href="#s1">15.1 数学题与模拟题考什么</a>
+      <a href="#s2">15.2 罗马数字转整数（简单）</a>
+      <a href="#s3">15.3 快乐数（简单）</a>
+      <a href="#s4">15.4 计数质数：埃氏筛（中等）</a>
+      <a href="#s5">15.5 阶乘后的零（中等）</a>
+      <a href="#s6">15.6 螺旋矩阵：模拟题怎么写（中等）</a>
+      <a href="#s7">15.7 本专题常见坑</a>
+      <a href="#s8">15.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 15</div>
+  <h1><span class="ch-tag">专题 15</span>数学与模拟</h1>
+  <p class="lead">这个专题没有通用模板，却恰恰是很多学生的<strong>失分重灾区</strong>——因为考的不是「你会不会算法」，而是
+  <strong>「你能不能把一个朴素的想法，一个坑都不踩地写成代码」</strong>。数学题靠观察（找到隐藏的规律），模拟题靠细心（按题意直译 + 边界枚举）。
+  好消息是：这两类题的解题过程完全可复现，练 10 道就能明显感觉到「手稳了」。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">能从题目描述里「看出来」隐藏的数学规律，并能不慌不忙地写模拟代码</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 01 双指针（快乐数要用）；基本位运算直觉</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">观察类题目的 4 个固定切入点 + 模拟题的三要素写法</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">3~4 小时（5 道题 + 巩固练习）</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">15.1</span>数学题与模拟题考什么</h2>
+
+<p>先把这两类题分清楚，因为对策完全不同：</p>
+
+<table>
+  <thead><tr><th style="width:120px">类型</th><th style="width:190px">长什么样</th><th>对策</th></tr></thead>
+  <tbody>
+    <tr><td><strong>数学题</strong></td><td>题面给一个数字游戏，问某个性质/计数/极值</td><td><strong>找规律</strong>：拿小例子手动算 3~5 组，观察「什么东西不变 / 什么单调 / 什么成周期」——规律往往就藏在这些小例子里</td></tr>
+    <tr><td><strong>模拟题</strong></td><td>题面把规则讲得很长（游戏、走格子、流程），要求你复现结果</td><td><strong>直译</strong>：题面每句话对应一行代码；先把「状态变量」列出来（位置、方向、计数器），再填循环体</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>模拟题三要素</strong>：① 按题意直译，不要自作聪明「优化」规则；② 边界单独枚举（第一行、最后一列、只剩一行一列）；③
+  写不下去时把中间状态 <code>System.out.println</code> 出来对比题面例子——模拟题调试靠「对答案」，不靠盯着代码看。
+</div>
+
+<p>为什么学生容易在这类题翻车？因为<strong>没有模板可以背</strong>。前面专题里你背了双指针、二分、BFS 的骨架，遇到题先套再调；
+数学与模拟题没有骨架，考的是从零搭。所以这一章的重点不是题本身，而是<strong>两个可复现的思考切入点</strong>：观察小例子找规律（数学），列出状态变量再直译（模拟）。</p>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">15.2</span>罗马数字转整数（简单，力扣 13）</h2>
+<p><span class="pill teal">简单</span> <span class="pill">核心：观察字符间的位置关系</span></p>
+
+<p><strong>题意。</strong>罗马数字用 7 个符号表示数：I=1、V=5、X=10、L=50、C=100、D=500、M=1000。通常大符号在左、小符号在右，直接加起来；
+但恰好有 6 种「小在大左」的减法组合：IV=4、IX=9、XL=40、XC=90、CD=400、CM=900。给你一个罗马数字字符串，转成整数。</p>
+
+<p><strong>思路推导。</strong>暴力想法是把 6 种减法组合单独写 if——能做，但啰嗦。停一下，观察减法组合的共同点：</p>
+
+<p>它们都是「<strong>小符号出现在大符号的左边</strong>」。也就是说，逐位扫描时：</p>
+<ul>
+  <li>当前符号值 ≥ 右边符号值 → 正常，<strong>加</strong>上它；</li>
+  <li>当前符号值 &lt; 右边符号值 → 它是减法组合的前半截，<strong>减</strong>去它。</li>
+</ul>
+
+<p>一个判断就覆盖了全部 6 种情况——这就是从「枚举特例」到「观察共性」的典型过程。小例子验证：<code>MCMXCIV</code> = 1000 − 100 + 1000 − 10 + 100 − 1 + 5 = 1994 ✓</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> romanToInt(String s) {
+        <span class="cm">// 符号 -&gt; 值 的映射表</span>
+        java.util.Map&lt;Character, Integer&gt; map = java.util.Map.of(
+            <span class="st">'I'</span>, 1, <span class="st">'V'</span>, 5, <span class="st">'X'</span>, 10, <span class="st">'L'</span>, 50,
+            <span class="st">'C'</span>, 100, <span class="st">'D'</span>, 500, <span class="st">'M'</span>, 1000);
+
+        <span class="kw">int</span> ans = 0;
+        <span class="kw">int</span> n = s.length();
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) {
+            <span class="kw">int</span> cur = map.get(s.charAt(i));
+            <span class="cm">// 关键判断：如果当前符号比右边的小，说明它是 IV / IX 这类减法前缀</span>
+            <span class="kw">if</span> (i + 1 &lt; n &amp;&amp; cur &lt; map.get(s.charAt(i + 1))) {
+                ans -= cur;   <span class="cm">// 减掉它，下一轮循环右边那个大符号会被正常加上</span>
+            } <span class="kw">else</span> {
+                ans += cur;   <span class="cm">// 正常累加</span>
+            }
+        }
+        <span class="kw">return</span> ans;
+    }
+}</code></pre>
+
+<p><strong>复杂度。</strong>时间 O(n)，每个字符看一次；空间 O(1)，映射表是固定 7 项。</p>
+
+<div class="tip"><strong>关键点：</strong>「比右边小就减」这个判断是对的，因为罗马数字里<strong>不存在</strong>「两个连续小符号在同一个大符号左边」的合法写法（比如 IIC 不是合法表示）。</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>整数转罗马数字（力扣 12，中等）</strong>——本题的逆向；共用「枚举所有组合」的思想，差异在贪心地从大到小拼（提示：把 13 种组合做成两张平行数组，每次尽量取大的）。</li>
+    <li><strong>Excel 表列序号（力扣 171，简单）</strong>——同样是「自定义进制的逐位解析」，差异在它是 26 进制且没有减法（提示：ans = ans * 26 + 当前位）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">15.3</span>快乐数（简单，力扣 202）</h2>
+<p><span class="pill teal">简单</span> <span class="pill">核心：把「循环检测」迁移到数字上</span></p>
+
+<p><strong>题意。</strong>对一个数反复做「各位平方和」变换：比如 19 → 1²+9²=82 → 64+4=68 → 36+64=100 → 1。若最终<strong>变到 1</strong>，就是快乐数；
+若<strong>永远变不到 1</strong>（陷入一个不含 1 的循环），就不是。判断给定数字是否为快乐数。</p>
+
+<p><strong>思路推导。</strong>先想暴力：不断变换，那循环到什么时候停？题面没说步数上限。直觉上变换结果不会无限增大（位数多了平方和会被压回去，
+比如 999...9 的平方和远小于自身），所以要么到 1，要么<strong>陷入循环</strong>。「判断一个过程是否陷入循环」——你在链表专题见过完全同构的问题：
+环形链表判断。链表里节点用 next 连接，这里「下一个数」就是 next。</p>
+
+<p>于是两种现成武器都能搬过来：</p>
+<ul>
+  <li><strong>哈希集合</strong>：把每次变换的结果存进 HashSet，重复出现即死循环；</li>
+  <li><strong>快慢指针</strong>：slow 每次变换一次，fast 变换两次，相遇时若值是 1 就是快乐数——省掉 O(循环长度) 的空间。</li>
+</ul>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="cm">// 计算「各位平方和」，相当于链表的 next 指针</span>
+    <span class="kw">private</span> <span class="kw">int</span> next(<span class="kw">int</span> n) {
+        <span class="kw">int</span> sum = 0;
+        <span class="kw">while</span> (n &gt; 0) {
+            <span class="kw">int</span> d = n % 10;   <span class="cm">// 取出个位</span>
+            sum += d * d;     <span class="cm">// 累加平方</span>
+            n /= 10;          <span class="cm">// 去掉个位</span>
+        }
+        <span class="kw">return</span> sum;
+    }
+
+    <span class="kw">public</span> <span class="kw">boolean</span> isHappy(<span class="kw">int</span> n) {
+        <span class="cm">// 快慢指针：slow 一步，fast 两步</span>
+        <span class="kw">int</span> slow = n, fast = next(n);
+        <span class="cm">// 只要 fast 还没到 1 且两者没相遇，就继续追</span>
+        <span class="kw">while</span> (fast != 1 &amp;&amp; slow != fast) {
+            slow = next(slow);        <span class="cm">// 慢指针走一步</span>
+            fast = next(next(fast));  <span class="cm">// 快指针走两步</span>
+        }
+        <span class="cm">// 循环退出只有两种可能：fast 到了 1（快乐），或 slow==fast 相遇（死循环）</span>
+        <span class="kw">return</span> fast == 1;
+    }
+}</code></pre>
+
+<p><strong>复杂度。</strong>时间 O(log n) 每次变换，循环长度经验上很短；空间 O(1)（快慢指针版）。</p>
+
+<div class="tip"><strong>关键点：</strong>这不是巧合式套用——<strong>任何「状态按固定规则不断转移」的问题</strong>（链表、数字变换、数组下标跳转）都可以用快慢指针判环。记住这个「同构迁移」的视角，比记住本题更重要。</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>环形链表（力扣 141，简单）</strong>——回到源头，确认你已经能脱手写快慢指针判环（提示：相遇后用第三个指针从头走，与慢指针同速，相遇点即入口）。</li>
+    <li><strong>循环数组是否存在环（力扣 457，中等）</strong>——同构迁移的进阶版：下标按 nums[i] 跳转，方向还必须一致（提示：快慢指针 + 额外判断方向不变、环长大于 1）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">15.4</span>计数质数：埃氏筛（中等，力扣 204）</h2>
+<p><span class="pill orange">中等</span> <span class="pill">核心：筛法的「排除」视角</span></p>
+
+<p><strong>题意。</strong>统计小于 n 的质数个数。比如 n=10 时，质数有 2、3、5、7，答案是 4。</p>
+
+<p><strong>思路推导。</strong>逐个数判断是不是质数：对每个 i 试除到 √i，整体 O(n√n)。n=10⁷ 时约 3×10¹⁰ 次操作——必超时。
+优化点在哪？观察：<strong>判断 4、6、8 时我们在重复排除 2 的倍数</strong>。换个视角——与其「逐个判断谁质数」，不如「一次性排除所有合数」：</p>
+
+<p>从 2 开始，把 2 的所有倍数标记成合数；遇到下一个没被标记的数（3），它必然是质数（因为它的所有更小因子都被筛过了），
+再把 3 的倍数全标记……这样每个合数只被它的<strong>质因子</strong>碰到一次，整体约 O(n log log n)。</p>
+
+<p>还有一个细节：筛 2 的倍数时从 4 开始还是从 2×2=4 开始？从 <code>i*i</code> 开始——小于 i² 的 i 的倍数（如 2i、3i…(i−1)·i）已经被更小的质数筛过了，再筛一遍是重复劳动。</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> countPrimes(<span class="kw">int</span> n) {
+        <span class="kw">if</span> (n &lt;= 2) <span class="kw">return</span> 0;
+        <span class="cm">// isComposite[i] = true 表示 i 是合数（被筛掉的）</span>
+        <span class="kw">boolean</span>[] isComposite = <span class="kw">new</span> <span class="kw">boolean</span>[n];
+        <span class="kw">int</span> count = 0;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 2; i &lt; n; i++) {
+            <span class="kw">if</span> (isComposite[i]) <span class="kw">continue</span>;  <span class="cm">// 已被更小的质数筛掉，跳过</span>
+            count++;                       <span class="cm">// 没被筛掉 =&gt; i 是质数</span>
+            <span class="cm">// 从 i*i 开始筛 i 的倍数：更小的倍数已被筛过</span>
+            <span class="cm">// 用 long 防止 i*i 溢出 int</span>
+            <span class="kw">for</span> (<span class="kw">long</span> j = (<span class="kw">long</span>) i * i; j &lt; n; j += i) {
+                isComposite[(<span class="kw">int</span>) j] = <span class="kw">true</span>;
+            }
+        }
+        <span class="kw">return</span> count;
+    }
+}</code></pre>
+
+<p><strong>复杂度。</strong>时间 O(n log log n)——每个合数被 Σ(1/p) 覆盖，p 取遍质数，这个级数增长极慢；空间 O(n) 的标记数组。</p>
+
+<div class="tip"><strong>关键点：</strong>筛法快在「<strong>共享排除工作</strong>」——试除法是每个数独立判断，筛法是所有质数的倍数一次性排除。这种「把重复劳动摊平」的思想，和前缀和「一次预处理多次查询」是同一族。</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>质数排列（力扣 1175，简单）</strong>——筛法算出质数个数后接一个排列计数（提示：质数个数的阶乘 × 合数个数的阶乘）。</li>
+    <li><strong>二进制表示中质数个计算置位（力扣 762，简单）</strong>——把「统计 1 的个数」与「小范围质数判断」组合，数据范围小到可以直接试除（提示：L ≤ 10⁶，试除到 √L 就够）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">15.5</span>阶乘后的零（中等，力扣 172）</h2>
+<p><span class="pill orange">中等</span> <span class="pill">核心：把问题翻译成因子计数</span></p>
+
+<p><strong>题意。</strong>给定整数 n，返回 n! 结果末尾 0 的个数。比如 5! = 120，末尾 1 个零。</p>
+
+<p><strong>思路推导。</strong>直接算 n! 再数零？n=30 时阶乘就超出 long 范围，不可行。<strong>观察末尾零是怎么来的</strong>：每个末尾零对应一个因子 10，
+而 10 = 2 × 5。所以问题等价于：<strong>n! 的质因子分解里，2 和 5 各出现多少次，取较小值</strong>。</p>
+
+<p>谁更少？在阶乘里，每隔 2 个数就有个偶数（贡献 2），每隔 5 个数才有 5 的倍数（贡献 5）——2 的因子远多于 5。所以<strong>答案 = 5 的因子总数</strong>。</p>
+
+<p>那 5 的因子怎么数？n/5 数出「至少含一个 5」的数（5, 10, 15, …）；但 25 含两个 5，只数一次不够——再除：n/25 数「至少含两个 5」的，
+再 n/125……直到商为 0。每一层都给答案贡献 1（对每个被数到的数）。小例子：n=100 → 100/5=20，100/25=4，100/125=0 → 20+4=24 个零 ✓</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> trailingZeroes(<span class="kw">int</span> n) {
+        <span class="kw">int</span> ans = 0;
+        <span class="kw">long</span> p = 5;              <span class="cm">// 用 long 防止 p*5 溢出</span>
+        <span class="kw">while</span> (p &lt;= n) {
+            ans += n / p;        <span class="cm">// 「至少含 p 一个因子 5」的数的个数</span>
+            p *= 5;              <span class="cm">// 下一轮数 25、125……每个这样的数额外贡献一个 5</span>
+        }
+        <span class="kw">return</span> ans;
+    }
+}</code></pre>
+
+<p><strong>复杂度。</strong>时间 O(log₅ n)，循环次数约 13 次就到 10⁹ 以上；空间 O(1)。</p>
+
+<div class="warn"><strong>别掉进「模拟阶乘」的坑。</strong>这道题的面试价值在于：题面诱导你算出 n! 再数零（不可行），而正确路径是<strong>把「数零」翻译成「数因子」</strong>。看到「巨大数字的性质」类题，第一反应应该是质因子分解，而不是硬算。</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>阶乘后的 K 个零（力扣 793，困难）</strong>——本题反过来：给零的个数问有几个 n；用同样的因子计数 + 二分（提示：答案要么 0 要么 5 个连续，因为零的个数在 5 的倍数处跳变）。</li>
+    <li><strong>约数个数（力扣 1390 不存在，改练 507 完美数，简单）</strong>——同属「因子视角」：枚举到 √n 成对收集约数（提示：i 和 n/i 一起收）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">15.6</span>螺旋矩阵：模拟题怎么写（中等，力扣 54）</h2>
+<p><span class="pill orange">中等</span> <span class="pill">核心：边界收缩的四指针法</span></p>
+
+<p><strong>题意。</strong>给定 m×n 矩阵，按<strong>顺时针螺旋顺序</strong>返回所有元素。比如：</p>
+
+<pre><code class="nohl">输入:            螺旋顺序:
+ 1  2  3        1 -&gt; 2 -&gt; 3 -&gt; 6 -&gt; 9 -&gt; 8 -&gt; 7 -&gt; 4 -&gt; 5
+ 4  5  6
+ 7  8  9</code></pre>
+
+<p><strong>思路推导。</strong>这是模拟题的标准样本。按题意直译：「顺时针转圈」= 依次走<strong>上边（左→右）、右边（上→下）、下边（右→左）、左边（下→上）</strong>，
+每走完一条边就把对应边界往里收缩一格。用四个变量维护当前未走区域的边界：<code>top / bottom / left / right</code>。</p>
+
+<p>每条边走之前先判断边界还有没有剩余（防止在只剩一行/一列时重复走），这是本题唯一的坑点：</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> List&lt;Integer&gt; spiralOrder(<span class="kw">int</span>[][] matrix) {
+        List&lt;Integer&gt; ans = <span class="kw">new</span> ArrayList&lt;&gt;();
+        <span class="kw">int</span> top = 0, bottom = matrix.length - 1;
+        <span class="kw">int</span> left = 0, right = matrix[0].length - 1;
+
+        <span class="kw">while</span> (top &lt;= bottom &amp;&amp; left &lt;= right) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = left; j &lt;= right; j++) ans.add(matrix[top][j]);    <span class="cm">// 上边：左 -&gt; 右</span>
+            top++;                                                          <span class="cm">// 上边界收缩</span>
+            <span class="kw">for</span> (<span class="kw">int</span> i = top; i &lt;= bottom; i++) ans.add(matrix[i][right]);  <span class="cm">// 右边：上 -&gt; 下</span>
+            right--;                                                        <span class="cm">// 右边界收缩</span>
+
+            <span class="cm">// 剩余不止一行时才走下边，否则 top 收缩后可能越界重复</span>
+            <span class="kw">if</span> (top &lt;= bottom) {
+                <span class="kw">for</span> (<span class="kw">int</span> j = right; j &gt;= left; j--) ans.add(matrix[bottom][j]); <span class="cm">// 下边：右 -&gt; 左</span>
+                bottom--;
+            }
+            <span class="cm">// 剩余不止一列时才走左边</span>
+            <span class="kw">if</span> (left &lt;= right) {
+                <span class="kw">for</span> (<span class="kw">int</span> i = bottom; i &gt;= top; i--) ans.add(matrix[i][left]);   <span class="cm">// 左边：下 -&gt; 上</span>
+                left++;
+            }
+        }
+        <span class="kw">return</span> ans;
+    }
+}</code></pre>
+
+<p><strong>复杂度。</strong>时间 O(m·n)，每个元素恰好访问一次；空间 O(1)（不算返回列表）。</p>
+
+<div class="tip"><strong>关键点：</strong>两个 <code>if</code> 是全部难点。走完上、右两条边后 top 和 right 已收缩，若此时只剩一行（top == bottom），下边会<strong>从右往左把刚走过的又加一遍</strong>。用「走之前重新判断边界」这个习惯，可以防御几乎所有模拟题的重复访问 bug。</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>螺旋矩阵 II（力扣 59，中等）</strong>——同一套四边界框架，只是从「读出」变成「按序填入 1~n²」（提示：一个计数器代替读取）。</li>
+    <li><strong>对角线遍历（力扣 498，中等）</strong>——另一版走格子模拟；方向变量 + 越界反弹（提示：用 (dir==up) 切换，碰边时修正 i/j）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">15.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul>
+    <li><strong>整型溢出</strong>：i * i、p * 5 这类乘法，操作数稍大（i 到 46341 以上）就会溢出 int 且不报错、结果变负数——先转 long 再乘：<code>long j = (long) i * i</code>。</li>
+    <li><strong>模拟题边界收缩顺序</strong>：收缩边界（top++）与走下一条边（for 循环）的先后写错，就在只剩一行/一列时重复访问。习惯「每条边走之前重新判断边界」。</li>
+    <li><strong>埃氏筛从 2*i 开始</strong>：能过题但白做一倍功；从 i*i 开始才是标准写法。同理，内层循环下标用 long 存，n 取到 10⁷ 时 i*i 会溢出。</li>
+    <li><strong>数学题硬模拟</strong>：172 这类题的信号词是「结果可能非常大 / 只问性质不问值」——先把问题翻译成计数，别上来就算大数。</li>
+    <li><strong>字符与数字混用</strong>：'5' - '0' 才是 5；直接 (int) '5' 得到的是 ASCII 53。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">15.8</span>自测题</h2>
+
+<div class="qa"><p class="qa-q">Q1. 埃氏筛为什么内层循环从 i*i 开始，而不是从 2*i 开始？</p>
+<div class="qa-a">小于 i² 的 i 的倍数形如 k·i（k &lt; i），它必然有一个小于 i 的质因子，所以早已被那个质数筛掉。再筛一遍是重复劳动。从 i*i 开始筛是「第一次可能出现未被标记的 i 的倍数」的位置。</div></div>
+
+<div class="qa"><p class="qa-q">Q2. 快乐数里为什么快慢指针一定会相遇（或 fast 到 1）？</p>
+<div class="qa-a">因为变换的值域有限（位数多的数平方和会收缩，最终在有限范围内循环），转移是确定的，所以序列最终进入环。环上快指针每轮比慢指针多走一步，距离差每轮减 1，必然追上。这与链表判环的数学完全一致。</div></div>
+
+<div class="qa"><p class="qa-q">Q3. n! 末尾零的个数为什么只数因子 5，不用数 2？</p>
+<div class="qa-a">每个末尾零 = 一个因子 10 = 一个 2 配一个 5。阶乘里 2 的因子个数远多于 5（每两个连续数就有一个偶数，每五个数才有一个 5 的倍数），短板是 5。答案由较少的那个决定，所以只数 5。</div></div>
+
+<div class="qa"><p class="qa-q">Q4.【动手题】不开数组，判断 1~100 里哪些数是快乐数，只打印结果。</p>
+<div class="qa-a">对每个数跑快慢指针判环（复用 15.3 的 next 与 isHappy 逻辑），空间 O(1)。写完对照：1, 7, 10, 13, 19, 23, 28, 31, 32, 44… 是快乐数。</div></div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「拿到一个没有模板的题，第一步做什么？」</em>
+  答案：先判断它是<strong>观察题</strong>（拿小例子手动算几组找规律，如罗马数字、阶乘零）还是<strong>模拟题</strong>（列出状态变量与四条边界，按题意直译）；
+  数学题警惕「硬算大数」的诱导，模拟题靠「每条边走之前重新判边界」防重复；整型乘法先转 long。
+</div>
+
+<div class="navfoot">
+  <a href="ch14.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 14 · 位运算</div></a>
+  <a class="next" href="ch16.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 16 · 排序与分治</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 15 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

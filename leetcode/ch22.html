@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 22 · 图论进阶：最短路与最小生成树 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link active" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <div class="sb-sub">
+      <a href="#s1">22.1 带权图与最短路的两大家族</a>
+      <a href="#s2">22.2 网络延迟时间：Dijkstra（中等）</a>
+      <a href="#s3">22.3 K 站中转内最便宜的航班：Bellman-Ford（中等）</a>
+      <a href="#s4">22.4 Floyd：多源最短路</a>
+      <a href="#s5">22.5 连接所有点的最小费用：Kruskal（中等）</a>
+      <a href="#s6">22.6 本专题常见坑</a>
+      <a href="#s7">22.7 自测题</a>
+    </div>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 22</div>
+  <h1><span class="ch-tag">专题 22</span>图论进阶：最短路与最小生成树</h1>
+  <p class="lead">专题 12 你学会了在<strong>无权图</strong>上用 BFS 求最短路——因为每条边「代价相同」，层数天然就是距离。可一旦边带上了<strong>权重</strong>（比如飞行时间、过路费），BFS 立刻失效：
+  走两步「近路」可能比走一步「远路」还慢。这一章我们进入<strong>带权图</strong>的世界，先把最短路的「两大家族」理清，再补上最小生成树。
+  你会学到：什么时候用 Dijkstra（贪心 + 堆）、什么时候它无能为力而必须上 Bellman-Ford、多源最短路为什么用 Floyd、以及把分散的点连成一张「最省钱网络」的 Kruskal。承接 <a href="ch12.html#s1">专题 12</a> 的图遍历基础，本章是面试图论的半壁江山。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握 Dijkstra / Bellman-Ford / Floyd / Kruskal</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 12 图遍历、专题 20 并查集</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 类最短路/生成树模板 + Java 代码</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">9–11 小时</div></div>
+</div>
+
+<hr>
+
+<h2 id="s1"><span class="h2-num">22.1</span>带权图与最短路的两大家族</h2>
+
+<p>先建立一张「选择地图」，避免拿到题不知道掏哪个算法。带权最短路主要分三派：</p>
+
+<table>
+  <thead><tr><th style="width:130px">算法</th><th style="width:170px">思想</th><th style="width:150px">能处理</th><th>典型题</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Dijkstra</strong></td><td>贪心 + 小顶堆，每次确定「当前最近」的点</td><td>边权<strong>非负</strong>、单源</td><td>743 网络延迟时间</td></tr>
+    <tr><td><strong>Bellman-Ford</strong></td><td>逐边松弛，|V|-1 轮；可限 K 步</td><td><strong>负权</strong>、限中转次数</td><td>787 K 站中转航班</td></tr>
+    <tr><td><strong>Floyd</strong></td><td>三重循环 dp，经中转点 k 会不会更近</td><td>多源（任意两点）</td><td>399 除法求值</td></tr>
+  </tbody>
+</table>
+
+<h3>为什么带权后 BFS 不行了</h3>
+
+<p>专题 12 里 BFS 的「层数 = 距离」成立，前提是<strong>每条边代价相等（都是 1）</strong>。一旦边权不同，走 3 条边未必比走 1 条边远——「先到的不一定更近」。所以必须引入能比较「真实累积代价」的算法，这就是 Dijkstra 和 Bellman-Ford 的出发点。</p>
+
+<h3>邻接表怎么建</h3>
+
+<p>带权图几乎都用<strong>邻接表</strong>存：每个节点挂一串「邻居 + 边权」。Java 里最顺手的是 <code>List<int[]></code>，其中 <code>int[]{to, weight}</code> 表示「到 to 的边、权重 weight」：</p>
+
+<pre><code><span class="kw">int</span> n = ...;                              <span class="cm">// 节点数</span>
+List&lt;<span class="kw">int</span>[]&gt;[] graph = <span class="kw">new</span> List[n];        <span class="cm">// 邻接表</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) graph[i] = <span class="kw">new</span> ArrayList&lt;&gt;();
+<span class="cm">// 加一条有向边 u -&gt; v，权重 w</span>
+graph[u].add(<span class="kw">new</span> <span class="kw">int</span>[]{v, w});</code></pre>
+
+<div class="tip">
+  <strong>一句话选型：</strong>单源 + 无负权 → <strong>Dijkstra</strong>；要处理<strong>负权</strong>或<strong>限制走几步</strong> → <strong>Bellman-Ford</strong>；要算<strong>所有点对</strong>的最短路（且点数小）→ <strong>Floyd</strong>。最小生成树（把点连起来且总权最小）是另一回事，用 Kruskal / Prim，见 <a href="ch22.html#s5">22.5 节</a>。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">22.2</span>网络延迟时间：Dijkstra（中等，力扣 743）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：小顶堆 · 惰性删除</span></p>
+
+<p><strong>题意：</strong>有 <code>n</code> 个节点（编号 1~n），<code>times[i] = [u, v, w]</code> 表示信号从 <code>u</code> 到 <code>v</code> 需要 <code>w</code> 毫秒（有向）。从节点 <code>k</code> 发出信号，求<strong>所有节点都收到信号的最短时间</strong>（即「最远的那个节点」收到的时间）；若有节点收不到，返回 -1。
+<strong>例：</strong><code>n=4, k=2, times=[[2,1,1],[2,3,1],[3,4,1]]</code> → 节点 4 最后收到，耗时 2，返回 <code>2</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，这本质就是单源最短路。</strong>从 <code>k</code> 出发到每个点的最短时间就是「k 到该点的最短路」。因为边权都是正毫秒（非负），用 Dijkstra。</p>
+
+<p><strong>第二步，Dijkstra 的核心直觉——「贪心确定最近点」。</strong>维护每个点的「当前已知最短距离」<code>dist[]</code>，初始除 <code>k</code> 外都是无穷大。用一个<strong>小顶堆</strong>（优先队列）存 <code>(距离, 节点)</code>，始终弹出「当前距离最小」的点。</p>
+
+<p><strong>关键性质：</strong>从堆里 <code>poll</code> 出来的一个点，它此时的距离<strong>就是最终最短距离</strong>——因为所有还没确定的点距离都更大，不可能再找到一条更短的路绕过它。<strong>第一次弹出即确定</strong>，这就是 Dijkstra 的正确性基石。</p>
+
+<p><strong>第三步，「惰性删除」为什么安全。</strong>一个节点可能被多次入队（每次通过不同邻居松弛出更小的距离）。但我们用一个 <code>visited</code>（或对比 <code>dist</code>）判断：<strong>一旦某点已被确定（弹出的距离 ≤ 已知 dist），再遇到它就直接跳过</strong>。旧的大距离记录「躺在堆里不用管」，相当于惰性删除，省去手动维护堆的麻烦。</p>
+
+<p><strong>第四步，答案是「最远节点」。</strong>所有点都确定后，<code>dist</code> 数组里的最大值就是「最后一个收到信号的时间」。若有任何 <code>dist</code> 仍是无穷大，说明有节点不可达，返回 -1。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> networkDelayTime(<span class="kw">int</span>[][] times, <span class="kw">int</span> n, <span class="kw">int</span> k) {
+        <span class="cm">// 建邻接表：graph[u] 存 {v, w}</span>
+        List&lt;<span class="kw">int</span>[]&gt;[] graph = <span class="kw">new</span> List[n + 1];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= n; i++) graph[i] = <span class="kw">new</span> ArrayList&lt;&gt;();
+        <span class="kw">for</span> (<span class="kw">int</span>[] t : times) graph[t[0]].add(<span class="kw">new</span> <span class="kw">int</span>[]{t[1], t[2]});
+
+        <span class="kw">int</span>[] dist = <span class="kw">new</span> <span class="kw">int</span>[n + 1];                 <span class="cm">// 最短距离</span>
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[k] = 0;
+        <span class="cm">// 小顶堆：(距离, 节点)，按距离升序</span>
+        PriorityQueue&lt;<span class="kw">int</span>[]&gt; pq = <span class="kw">new</span> PriorityQueue&lt;&gt;((a, b) -&gt; a[0] - b[0]);
+        pq.offer(<span class="kw">new</span> <span class="kw">int</span>[]{0, k});
+
+        <span class="kw">while</span> (!pq.isEmpty()) {
+            <span class="kw">int</span>[] cur = pq.poll();
+            <span class="kw">int</span> d = cur[0], u = cur[1];
+            <span class="kw">if</span> (d &gt; dist[u]) <span class="kw">continue</span>;               <span class="cm">// 惰性删除：旧记录跳过</span>
+            <span class="kw">for</span> (<span class="kw">int</span>[] edge : graph[u]) {             <span class="cm">// 松弛邻居</span>
+                <span class="kw">int</span> v = edge[0], w = edge[1];
+                <span class="kw">if</span> (dist[u] + w &lt; dist[v]) {          <span class="cm">// 找到更近的路</span>
+                    dist[v] = dist[u] + w;
+                    pq.offer(<span class="kw">new</span> <span class="kw">int</span>[]{dist[v], v});  <span class="cm">// 入队（可能重复，靠上面跳过）</span>
+                }
+            }
+        }
+
+        <span class="kw">int</span> ans = 0;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= n; i++) {
+            <span class="kw">if</span> (dist[i] == Integer.MAX_VALUE) <span class="kw">return</span> -1; <span class="cm">// 有节点不可达</span>
+            ans = Math.max(ans, dist[i]);                 <span class="cm">// 取最远</span>
+        }
+        <span class="kw">return</span> ans;
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O((V+E) log V) 时间（每个点/边最多入堆一次，堆操作 log V），O(V+E) 空间（邻接表 + 堆 + dist）。边权非负时这是最优单源最短路。</p>
+
+<div class="tip">
+  <strong>边界自查：</strong>① 只有 1 个节点 → <code>dist[k]=0</code>，答案 0。② 存在孤立节点（无任何边指向）→ 其 dist 保持 MAX，返回 -1，正确。③ 多个等长路径 → 堆弹出顺序不影响最终 dist 正确性，因为「第一次确定即最短」。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>最小体力消耗路径（力扣 1631，中等）</strong>——与本题同用 Dijkstra / 优先队列；差异在<strong>节点是网格格子、边权是相邻格高度差绝对值</strong>，求从 (0,0) 到右下角的「路径上最大高度差」尽量小（提示：把每个格子当点，松弛时取 <code>max(已走最大差, 当前边权)</code> 而非累加）。</li>
+    <li><strong>阈值距离内邻居最少（力扣 1334，中等）</strong>——多次 Dijkstra；差异在<strong>对每个节点当源点都跑一遍</strong>，统计在阈值内可达的邻居数，取最小（提示：外层枚举源点，内层标准 Dijkstra，计数 ≤threshold 的节点）。</li>
+    <li><strong>到达目的地的方案数（力扣 1976，中等）</strong>——Dijkstra + 计数；差异在松弛时<strong>同时维护「最短路条数」</strong>（提示：距离相等则方案数相加，更短则覆盖，最后对方案数取模）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">22.3</span>K 站中转内最便宜的航班：Bellman-Ford（中等，力扣 787）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：限步松弛 · 备份数组</span></p>
+
+<p><strong>题意：</strong>有 <code>n</code> 个城市，<code>flights[i] = [u, v, w]</code> 表示从 <code>u</code> 到 <code>v</code> 的票价 <code>w</code>。求从 <code>src</code> 到 <code>dst</code>、<strong>最多经 K 站中转</strong>（即最多坐 K+1 段航班）的最低价格；无法到达返回 -1。
+<strong>例：</strong><code>n=3, flights=[[0,1,100],[1,2,100],[0,2,500]], src=0, dst=2, k=1</code> → 经 1 站走 0→1→2 共 200，比直飞 500 便宜，返回 <code>200</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，为什么这里 Dijkstra 不合适。</strong>本题多了一个硬约束：<strong>「最多中转 K 次」</strong>。Dijkstra 按距离贪心，可能先选一条「步数多但总价低」的路，而它超过了 K 步限制；或者相反，一条「步数少但贵」的路才是合法的。Dijkstra 本身不区分「走了几步」，硬塞步数维度会把状态搞复杂。<strong>限制步数（或处理负权）正是 Bellman-Ford 的强项。</strong></p>
+
+<p><strong>第二步，Bellman-Ford 的本质——「按轮松弛」。</strong>标准 Bellman-Ford 做 <code>|V|-1</code> 轮，每轮<strong>遍历所有边</strong>，尝试用 <code>u→v</code> 把 <code>dist[v]</code> 缩短（松弛）。经过 <code>t</code> 轮松弛后，<code>dist</code> 里装的就是「最多走 <code>t</code> 条边」能到达的最短路——<strong>轮数天然对应步数</strong>。</p>
+
+<p><strong>第三步，关键的「备份数组」技巧。</strong>最容易写错的地方：如果直接在原 <code>dist</code> 上松弛，同一轮里前面更新的结果会被后面「串联」利用，导致<strong>一轮就走了多步</strong>，破坏了「第 t 轮恰好 t 步」的语义。解决办法：每轮开始前<strong>把上一轮的 dist 备份</strong>成 <code>prev</code>，这一轮所有松弛都<strong>基于 prev 去更新新 dist</strong>：</p>
+
+<pre><code class="nohl">for (每一轮 t = 1 .. K+1):          // K+1 条边 = K 站中转
+    prev = dist 的副本
+    for (每条边 u-&gt;v 票价 w):
+        if (prev[u] != INF)
+            dist[v] = min(dist[v], prev[u] + w)   // 必须用上一轮的 prev[u]!</code></pre>
+
+<p>这样每一轮严格只「多走一条边」,走满 K+1 条边即满足「最多 K 站中转」。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> findCheapestPrice(<span class="kw">int</span> n, <span class="kw">int</span>[][] flights, <span class="kw">int</span> src, <span class="kw">int</span> dst, <span class="kw">int</span> k) {
+        <span class="kw">int</span> INF = Integer.MAX_VALUE / 2;
+        <span class="kw">int</span>[] dist = <span class="kw">new</span> <span class="kw">int</span>[n];
+        Arrays.fill(dist, INF);
+        dist[src] = 0;
+
+        <span class="cm">// 最多 K 站中转 = 最多坐 K+1 段航班 = 松弛 K+1 轮</span>
+        <span class="kw">for</span> (<span class="kw">int</span> t = 1; t &lt;= k + 1; t++) {
+            <span class="kw">int</span>[] prev = dist.clone();          <span class="cm">// 备份上一轮（关键！）</span>
+            <span class="kw">for</span> (<span class="kw">int</span>[] f : flights) {
+                <span class="kw">int</span> u = f[0], v = f[1], w = f[2];
+                <span class="kw">if</span> (prev[u] != INF) {            <span class="cm">// 基于 prev 松弛，避免一轮串联</span>
+                    dist[v] = Math.min(dist[v], prev[u] + w);
+                }
+            }
+        }
+        <span class="kw">return</span> dist[dst] == INF ? -1 : dist[dst];
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(K·E) 时间（K+1 轮 × 边数 E），O(V) 空间。当 K 较小而图大时，比跑完整 |V|-1 轮的标准 Bellman-Ford 更快，也比重载 Dijkstra 干净。</p>
+
+<div class="warn">
+  <strong>忘备份数组 = 隐形 bug：</strong>若直接 <code>dist[v] = min(dist[v], dist[u]+w)</code> 而不用 <code>prev</code>，一轮内 <code>u</code> 刚被更新的值会立刻被后续边用到，相当于一步走了好几条边，结果会「偷偷多中转」，与题意「最多 K 站」冲突，且很难察觉。务必每轮 <code>clone</code> 一份旧的再松弛。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>规定时间内到达的最小花费（力扣 1928，中等）</strong>——与本题同是「限步 Bellman」；差异在约束是<strong>时间上限 maxTime</strong> 而非中转次数（提示：<code>dp[t][u]</code> 表示第 <code>t</code> 分钟到达 <code>u</code> 的最小花费，按分钟轮次松弛，<code>t</code> 从 1 到 maxTime）。</li>
+    <li><strong>使网格图至少有一条有效路径（力扣 1368，困难）</strong>——最短路的变体；差异在<strong>边权只有 0 或 1</strong>，用 0-1 BFS（双端队列）比 Bellman 更高效（提示：边权 0 从队头入、边权 1 从队尾入，保证队内按距离有序）。</li>
+    <li><strong> cheapest flights 的 Dijkstra 版（力扣 787 本身也可）</strong>——用 <code>(距离, 节点, 步数)</code> 三元组入堆，步数 ≤K 才松弛（提示：把「已走步数」作为状态维，超出 K 不入堆，是另一种正确写法）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">22.4</span>Floyd：多源最短路</h2>
+
+<p><span class="pill">核心：dp 三重循环 · 经 k 会不会更近</span></p>
+
+<p><strong>它解决什么：</strong>前面 Dijkstra / Bellman-Ford 都是<strong>单源</strong>（从一个点出发）。如果题目要你回答「<strong>任意两个点</strong>之间的最短距离」（比如「从每个城市到其他所有城市各要多久」），对每个点都跑一遍 Dijkstra 是 O(V·(V+E)logV)。当 <strong>V 很小（≤200）</strong>时，Floyd 用一段极短的代码一次性算完所有点对，更香。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>核心想法：</strong>设 <code>dp[i][j]</code> 是 <code>i</code> 到 <code>j</code> 的当前最短距离。我们允许路径<strong>经过编号为 1…k 的点</strong>当中转。那么「允许经过 k」相比「只经过 1…k-1」,唯一可能变短的情况是：<strong>绕道走 i→k→j 比原来的 i→j 更近</strong>。于是得到著名的转移：</p>
+
+<pre><code class="nohl">dp[i][j] = min( dp[i][j], dp[i][k] + dp[k][j] )</code></pre>
+
+<p>外层枚举 <code>k</code>（中转点），内层两重枚举 <code>i, j</code>。注意 <code>k</code> 必须在最外层——它代表「逐步放开可经的中转集合」，内层 <code>i,j</code> 顺序无所谓。三个循环都是 <code>0..n-1</code>，构成 O(n³)。</p>
+
+<h3>参考代码（短小精悍）</h3>
+
+<pre><code><span class="cm">// 初始化：dp[i][i]=0；有直接边 dp[i][j]=w；其余 INF</span>
+<span class="kw">for</span> (<span class="kw">int</span> k = 0; k &lt; n; k++) {            <span class="cm">// 中转点，必须在最外层</span>
+    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) {
+        <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; n; j++) {
+            <span class="kw">if</span> (dp[i][k] &lt; INF &amp;&amp; dp[k][j] &lt; INF) {
+                dp[i][j] = Math.min(dp[i][j], dp[i][k] + dp[k][j]);
+            }
+        }
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(n³) 时间，O(n²) 空间。<strong>只适合点数小的图</strong>（n≤200 左右）。它还能顺便判传递闭包（可达性）、做除法求值等，见下方巩固练习。</p>
+
+<div class="tip">
+  <strong>为什么 k 必须在最外层：</strong>若把 <code>i</code> 放最外层，意味着「先固定 i，再逐步放开中转」——但此时 <code>dp[i][k]</code> 可能还没用「经过更大中转点」更新过，导致 <code>i→k→j</code> 这条路径没被充分探索。只有 <code>k</code> 最外层，才能保证「放开 k 这一层中转时，<code>i→k</code> 和 <code>k→j</code> 都已是基于 1…k-1 的最优」。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>除法求值（力扣 399，中等）</strong>——Floyd 做「传递」；差异在边权是<strong>比值</strong>、运算从加法变乘法（提示：<code>dp[a][b]</code> 存 a/b 的值，转移 <code>dp[i][j] = dp[i][k] * dp[k][j]</code>，初始对角为 1）。</li>
+    <li><strong>课程安排的合法性（力扣 1462，中等）</strong>——Floyd 求传递闭包；差异在只关心<strong>可达性（布尔）</strong>而非距离（提示：<code>reach[i][j] |= reach[i][k] &amp; reach[k][j]</code>，判断先修关系是否成环）。</li>
+    <li><strong>阈值距离内邻居最少（力扣 1334）</strong>——先 Floyd 算全源最短路，再数 ≤threshold 的点（提示：和 Dijkstra 版思路互补，图小直接用 Floyd 更省事）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">22.5</span>连接所有点的最小费用：Kruskal（中等，力扣 1584）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：边排序 + 并查集判环</span></p>
+
+<p><strong>题意：</strong>平面上有 <code>n</code> 个点，连接点 <code>i</code> 和 <code>j</code> 的代价是它们的<strong>曼哈顿距离</strong>。求把这些点<strong>全部连通</strong>（任意两点间有路径）的<strong>最小总代价</strong>。
+<strong>例：</strong><code>points = [[0,0],[2,2],[3,10],[5,2],[7,0]]</code> → 最小生成树总代价为 <code>20</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，问题转化 = 最小生成树（MST）。</strong>「连通所有点 + 总权最小 + 无环」正是 MST 的定义。任意两点都能连（完全图），我们要挑 <code>n-1</code> 条边把 n 个点连成一棵树，且总权最小。</p>
+
+<p><strong>第二步，为什么 Kruskal 直观。</strong>贪心思路：<strong>能连就尽量连便宜的边</strong>。把所有「候选边」按权值从小到大排序，依次考虑：若这条边连接的两个点<strong>当前还不连通</strong>，就选它（加入生成树）；若已经连通（加了会成环），就<strong>跳过</strong>。选够 <code>n-1</code> 条即停。</p>
+
+<p><strong>第三步，「判环」靠并查集（承接 <a href="ch20.html#s1">专题 20</a>）。</strong>判断两点是否连通，就是查它们是否<strong>同属一个集合</strong>——这正是并查集的拿手好戏。选边时 <code>find(u) != find(v)</code> 说明不连通，<code>union</code> 合并；相等则跳过。这样保证最后是一棵无环的树。</p>
+
+<p><strong>第四步，对比 Prim（一句话）。</strong>Prim 是「从某个点出发，每次把离已连通集合最近的未连通点拉进来」，用堆维护。Kruskal 是「全局按边排序 + 并查集」。两者都得到 MST，<strong>边多（稠密图）用 Prim，边少或想写简单用 Kruskal</strong>。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">int</span>[] parent;
+    <span class="kw">int</span> find(<span class="kw">int</span> x) {                       <span class="cm">// 并查集找根 + 路径压缩</span>
+        <span class="kw">if</span> (parent[x] != x) parent[x] = find(parent[x]);
+        <span class="kw">return</span> parent[x];
+    }
+    <span class="kw">void</span> union(<span class="kw">int</span> a, <span class="kw">int</span> b) { parent[find(a)] = find(b); }
+
+    <span class="kw">public</span> <span class="kw">int</span> minCostConnectPoints(<span class="kw">int</span>[][] points) {
+        <span class="kw">int</span> n = points.length;
+        parent = <span class="kw">new</span> <span class="kw">int</span>[n];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) parent[i] = i;
+
+        <span class="cm">// ① 生成所有边 (u, v, 曼哈顿距离)</span>
+        List&lt;<span class="kw">int</span>[]&gt; edges = <span class="kw">new</span> ArrayList&lt;&gt;();
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++)
+            <span class="kw">for</span> (<span class="kw">int</span> j = i + 1; j &lt; n; j++) {
+                <span class="kw">int</span> d = Math.abs(points[i][0] - points[j][0])
+                      + Math.abs(points[i][1] - points[j][1]);
+                edges.add(<span class="kw">new</span> <span class="kw">int</span>[]{d, i, j});
+            }
+        <span class="cm">// ② 按权值排序（Kruskal 核心：贪心选最小边）</span>
+        edges.sort((a, b) -&gt; a[0] - b[0]);
+
+        <span class="kw">int</span> ans = 0, cnt = 0;               <span class="cm">// cnt 记录已选边数</span>
+        <span class="kw">for</span> (<span class="kw">int</span>[] e : edges) {
+            <span class="kw">int</span> d = e[0], u = e[1], v = e[2];
+            <span class="kw">if</span> (find(u) != find(v)) {       <span class="cm">// 不连通才选，避免成环</span>
+                union(u, v);
+                ans += d;
+                cnt++;
+                <span class="kw">if</span> (cnt == n - 1) <span class="kw">break</span>;    <span class="cm">// 选够 n-1 条边即连通，停</span>
+            }
+        }
+        <span class="kw">return</span> ans;
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>建边 O(n²)、排序 O(n² log n²)、并查集近乎 O(1)，总 O(n² log n) 时间，O(n²) 空间（边集）。这是 MST 的标准模板，<strong>可直接套用到任何「连点最小代价」题</strong>。</p>
+
+<div class="tip">
+  <strong>边界自查：</strong>① 只有 1 个点 → 不需要边，返回 0（循环不选边，ans=0）。② 所有点共线且等距 → 排序后依次连通，恰好 n-1 条边。③ 并查集必须初始化 <code>parent[i]=i</code> 且用路径压缩，否则退化为 O(n) 查找会超时。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>最低成本联通所有城市（力扣 1135，中等）</strong>——与本题几乎同一个 Kruskal 模板；差异在<strong>图已给定、部分边已免费（connections 里有）</strong>（提示：把给定边按权排序，免费边权当 0 优先选，最后若边数不足 n-1 则无法连通返回 -1）。</li>
+    <li><strong>水资源分配（力扣 1168，困难）</strong>——Kruskal 的「虚拟节点」技巧；差异在<strong>每个城市有独立的井造价</strong>，引入一个虚拟水源点，把「打井」当成连到水源的边（提示：建虚拟节点 0，城市 i 连 0 的权 = 井造价，再和管道边一起排序跑 Kruskal）。</li>
+    <li><strong>以图判树（力扣 261，简单）</strong>——并查集判「连通且无环」；差异在不求最小权、只判断给定 n-1 条边能否构成树（提示：边数为 n-1 且用并查集 union 时不出现同集合，即连通无环 → 是树）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">22.6</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul>
+    <li><strong>坑一：Dijkstra 用于负权边。</strong>Dijkstra 的「贪心确定最近点」依赖「边权非负」——若有负权，一个已弹出的点<strong>可能之后被更负的边拉得更近</strong>，第一次弹出就不再是最短，算法正确性崩塌。负权一律用 Bellman-Ford（或 SPFA，但面试少用）。</li>
+    <li><strong>坑二：Bellman-Ford 忘备份数组。</strong>直接在原 <code>dist</code> 上松弛会让一轮内更新「串联」，一步多走多步，破坏「第 t 轮恰 t 步」语义，导致中转次数约束失效。务必每轮 <code>clone</code> 成 <code>prev</code> 再基于它松弛（见 <a href="ch22.html#s3">22.3 节</a>）。</li>
+    <li><strong>坑三：Kruskal 忘用并查集直接扫边。</strong>若只按权排序、不加「是否连通」判断就全选，会<strong>连出环</strong>、且选超过 n-1 条边。必须用并查集 <code>find</code> 判同集合，<code>union</code> 合并，选够 n-1 即停。</li>
+    <li><strong>坑四：INF 取值导致加法溢出。</strong>用 <code>Integer.MAX_VALUE</code> 当 INF，再做 <code>dist[u] + w</code> 会整数溢出变负，松弛判断全乱。习惯用 <code>MAX_VALUE / 2</code> 或先判 <code>dist[u] != INF</code> 再相加。</li>
+    <li><strong>坑五：Floyd 的 k 循环放错层。</strong>k 必须在最外层，否则中转点没被充分放开，结果漏算部分路径。三循环顺序记住「k, i, j」。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">22.7</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.【动手题】给定 n=4 的带权有向图，边权均非负。请口述 Dijkstra 从节点 1 出发的前三步（堆里依次弹出什么、dist 如何更新），并说明为什么「第一次弹出的距离就是最终最短距离」。</p>
+  <div class="qa-a">初始 dist[1]=0、其余 INF，堆里 {(0,1)}。第一步 poll (0,1)，确定节点 1 最短距离 0，松弛其邻居更新 dist 并入堆。第二步 poll 当前堆中距离最小者，其距离即最终值（因为剩余未确定点距离都更大，不可能再找到更短路绕过它）。第三步同理。核心：贪心 + 「已确定点不会再被更优更新」（依赖非负边权）。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 为什么「K 站中转内最便宜航班」不适合直接套 Dijkstra，而用 Bellman-Ford 的限步松弛？</p>
+  <div class="qa-a">因为约束是「最多走 K 段边（K 站中转）」，属于<strong>步数限制</strong>。Dijkstra 按距离贪心、不区分走了几步，可能先采纳一条步数超标的低价路或漏掉合法的少步高价路。Bellman-Ford 每轮严格多走一条边，轮数 = 边数，天然匹配「步数」维度，用备份数组保证每轮只增一步。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3. 最小生成树的 Kruskal 和单源最短路的 Dijkstra，都用到「贪心选最小」，区别在哪？</p>
+  <div class="qa-a">Dijkstra 选的是「从源点出发、当前距离最小的点」（基于点到源的距离，且需非负权 + 堆）；Kruskal 选的是「全局权值最小的、且不造成环的边」（基于边权排序 + 并查集）。一个服务于「单源到各点最近」，一个服务于「连通所有点总权最小」。</div>
+</div>
+
+<div class="goal">学完这章，你应该能回答：① 拿到带权图最短路题，如何根据「单源/多源、有无负权、是否限步」选 Dijkstra / Bellman-Ford / Floyd？② 手写 Dijkstra 的小顶堆 + 惰性删除？③ 用备份数组实现限 K 步松弛？④ 用 Kruskal + 并查集求最小生成树？⑤ 说出本专题五个常见坑的应对。</div>
+
+<div class="navfoot">
+  <a href="ch21.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 21 · 字符串算法</div></a>
+  <a class="next" href="ch23.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 23 · 动态规划高阶：区间、树形与状态压缩</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 22 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

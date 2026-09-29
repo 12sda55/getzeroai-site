@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  本项目专用 Maven 配置（不装进 ~/.m2，不动全局）：
+    1. localRepository 指到 D 盘 —— 满足"产出不落 C 盘"的硬要求
+    2. 阿里云镜像 —— 国内下载依赖快且稳
+  用法：mvn -s D:/wx/springai/_tools/maven-settings.xml ...
+-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+  <localRepository>D:/wx/.m2-repo</localRepository>
+
+  <mirrors>
+    <mirror>
+      <id>aliyunmaven</id>
+      <mirrorOf>central</mirrorOf>
+      <name>阿里云公共仓库</name>
+      <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
+  </mirrors>
+</settings>

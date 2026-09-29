@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 11 章 · 综合项目 | Spring AI 2.0 学习指南</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="springai">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">AI</span>
+    <span>Spring AI 2.0 学习指南<small>企业级智能应用开发实践</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与环境准备</option>
+    <option value="ch01.html">01 · Spring AI 入门</option>
+    <option value="ch02.html">02 · 提示词与对话</option>
+    <option value="ch03.html">03 · 结构化输出与 Advisors</option>
+    <option value="ch04.html">04 · 嵌入模型与向量数据库</option>
+    <option value="ch05.html">05 · RAG</option>
+    <option value="ch06.html">06 · 记忆与多模型</option>
+    <option value="ch07.html">07 · 工具调用</option>
+    <option value="ch08.html">08 · MCP</option>
+    <option value="ch09.html">09 · 智能体</option>
+    <option value="ch10.html">10 · 可观测性与评估</option>
+    <option value="ch11.html">11 · 综合项目</option>
+    <option value="appendix.html">附录 · 速查手册</option>
+  </select>
+  <a class="tb-link" href="index.html#env">环境准备</a>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>Spring AI 入门</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>提示词与对话</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>结构化输出与 Advisors</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>嵌入模型与向量数据库</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>RAG</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>记忆与多模型</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>工具调用</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>MCP</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>智能体</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>可观测性与评估</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>综合项目</span></a>
+    <div class="sb-sub">
+      <a href="#s1">11.1 需求与业务场景</a>
+      <a href="#s2">11.2 功能清单与验收标准</a>
+      <a href="#s3">11.3 总体架构设计</a>
+      <a href="#s4">11.4 数据模型设计</a>
+      <a href="#s5">11.5 接口契约</a>
+      <a href="#s6">11.6 核心编排实现</a>
+      <a href="#s7">11.7 部署上线</a>
+      <a href="#s8">11.8 性能与成本优化</a>
+      <a href="#s9">11.9 交付清单与答辩</a>
+      <a href="#s10">11.10 自测与扩展方向</a>
+    </div>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>速查手册 / 排错表</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">Spring AI 指南</a> / 第 11 章</div>
+  <h1><span class="ch-tag">CH 11</span>综合项目：企业知识问答 + 工单辅助系统</h1>
+  <p class="lead">前九章你学了一堆「零件」，本章把它们装成一台机器。
+  这个项目会用到前面<strong>全部</strong>章节的能力：RAG（第 4、5 章）、记忆（第 2、6 章）、结构化输出（第 3 章）、
+  工具调用与 MCP（第 7、8 章）、Agent 与人工确认（第 9 章）、可观测性与评估（第 10 章）。
+  更重要的是，本章会讲清<strong>「怎么把 Demo 变成产品」</strong>——这是企业开发真正的门槛。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">端到端交付一个可用系统</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 1–10 章</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">可部署、可演示、可验收</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">15–25 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">11.1</span>需求与业务场景</h2>
+
+<h3>先讲一个真实的业务痛点</h3>
+
+<p>「智汇科技」有一支 20 人的客服团队，每天处理约 300 个用户咨询，典型的一天是这样的：</p>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h4>😫 现状（成本高、体验差）</h4>
+    <ul style="font-size:13.5px;margin-bottom:0">
+      <li><strong>60% 的问题是重复的</strong>：「退款几天到账」「发票怎么开」「怎么改地址」——答案都写在制度文档里，但客服要手动翻找。</li>
+      <li><strong>新人上手慢</strong>：制度文档 200 多页，新人要 2 周才能独立应对常见问题。</li>
+      <li><strong>答复口径不一致</strong>：同一个问题，不同客服给的答案不一样，引发二次投诉。</li>
+      <li><strong>工单靠手工建</strong>：查完订单、翻完政策，再手工录工单，平均 8 分钟一单。</li>
+      <li><strong>知识库更新滞后</strong>：制度改了，客服还在按旧版回答。</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>🎯 目标（可量化的收益）</h4>
+    <ul style="font-size:13.5px;margin-bottom:0">
+      <li>常见问题<strong>自动回答</strong>，客服只处理疑难——目标自动化解率 <strong>50%</strong></li>
+      <li>回答<strong>必带出处</strong>，客服可一键核对，杜绝口径不一致</li>
+      <li>工单处理从 8 分钟降到 <strong>2 分钟</strong>（自动查订单 + 自动生成方案）</li>
+      <li>知识库<strong>一键重建索引</strong>，制度更新当天生效</li>
+      <li>全链路可观测：成本、效果、异常都有数据支撑</li>
+    </ul>
+  </div>
+</div>
+
+<h3>用户角色与核心诉求</h3>
+
+<table>
+  <thead><tr><th style="width:130px">角色</th><th style="width:200px">核心诉求</th><th>系统要提供什么</th></tr></thead>
+  <tbody>
+    <tr><td><strong>客服专员</strong></td><td>快速拿到"可以直接发给客户"的答案</td><td>带出处的问答 + 一键复制 + 转人工</td></tr>
+    <tr><td><strong>客服主管</strong></td><td>知道 AI 答得准不准、哪些问题答不了</td><td>效果看板 + 未命中问题清单（反哺知识库）</td></tr>
+    <tr><td><strong>知识库管理员</strong></td><td>制度更新后能快速生效</td><td>文档上传 + 一键重建索引 + 版本管理</td></tr>
+    <tr><td><strong>终端用户</strong></td><td>自助解决问题，不用排队</td><td>多轮对话 + 自助查订单 + 工单进度查询</td></tr>
+    <tr><td><strong>运维</strong></td><td>系统稳定、成本可控</td><td>健康检查 + 指标看板 + 降级策略</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s2"><span class="h2-num">11.2</span>功能清单与验收标准</h2>
+
+<h3>功能模块（P0 必须做，P1 加分）</h3>
+
+<table>
+  <thead><tr><th style="width:70px">优先级</th><th style="width:170px">模块</th><th>功能点</th><th style="width:110px">用到章节</th></tr></thead>
+  <tbody>
+    <tr><td><span class="pill" style="background:var(--red-soft);color:var(--red);border-color:#f6c9c9">P0</span></td><td>知识问答</td><td>基于公司制度文档的问答，回答必须带引用出处；知识库外的问题必须拒答</td><td>3,4,5</td></tr>
+    <tr><td><span class="pill" style="background:var(--red-soft);color:var(--red);border-color:#f6c9c9">P0</span></td><td>多轮对话</td><td>能记住上下文；不同用户/会话隔离；重启不丢</td><td>2,6</td></tr>
+    <tr><td><span class="pill" style="background:var(--red-soft);color:var(--red);border-color:#f6c9c9">P0</span></td><td>订单查询</td><td>通过工具查询订单状态；越权查询必须被拦截</td><td>7</td></tr>
+    <tr><td><span class="pill" style="background:var(--red-soft);color:var(--red);border-color:#f6c9c9">P0</span></td><td>工单辅助</td><td>查订单 → 匹配政策 → 生成方案 → 创建工单（需人工确认）</td><td>9</td></tr>
+    <tr><td><span class="pill" style="background:var(--red-soft);color:var(--red);border-color:#f6c9c9">P0</span></td><td>知识库管理</td><td>文档上传、一键重建索引、按来源删除</td><td>4,5</td></tr>
+    <tr><td><span class="pill" style="background:var(--red-soft);color:var(--red);border-color:#f6c9c9">P0</span></td><td>可观测性</td><td>Trace 链路、Token 成本指标、评测报告</td><td>10</td></tr>
+    <tr><td><span class="pill orange">P1</span></td><td>意图路由</td><td>统一入口自动识别：知识问答 / 查订单 / 建工单 / 闲聊</td><td>3,6</td></tr>
+    <tr><td><span class="pill orange">P1</span></td><td>模型路由与降级</td><td>分类用便宜模型；主模型挂了自动切换</td><td>6</td></tr>
+    <tr><td><span class="pill orange">P1</span></td><td>MCP 工具服务</td><td>把订单查询能力独立成 MCP Server，供其他系统复用</td><td>8</td></tr>
+    <tr><td><span class="pill green">P2</span></td><td>效果看板</td><td>Grafana 展示 QPS、延迟、Token 成本、检索命中率</td><td>10</td></tr>
+    <tr><td><span class="pill green">P2</span></td><td>流式输出</td><td>前端打字机效果</td><td>1</td></tr>
+  </tbody>
+</table>
+
+<h3>验收标准（对应大纲「产物验收标准」）</h3>
+
+<div class="goal">
+  <strong>技术验收（必须全部满足）</strong>
+  <ul style="margin-bottom:0">
+    <li>知识问答准确率 ≥ 80%（在 30 条自建评测集上）</li>
+    <li>知识库外问题拒答率 100%（不能编造）</li>
+    <li>问答响应 P95 ≤ 8 秒（流式首字 ≤ 2 秒）</li>
+    <li>越权订单查询拦截率 100%</li>
+    <li>高风险操作 100% 需人工确认，挂起期间零副作用</li>
+    <li>服务重启后会话记忆不丢失</li>
+    <li>全链路可在 Zipkin 中查看</li>
+    <li>单次问答平均成本可计算、可展示</li>
+  </ul>
+</div>
+
+<div class="goal">
+  <strong>业务验收（演示时能说清楚）</strong>
+  <ul style="margin-bottom:0">
+    <li>能现场演示：一个真实客服场景从提问到建单的完整流程</li>
+    <li>能展示：三种失败场景下的兜底表现（知识库外、越权、模型不可用）</li>
+    <li>能给出：成本测算（每天 300 次咨询，月成本约多少）</li>
+    <li>能解释：每个技术选型的理由与替代方案</li>
+  </ul>
+</div>
+
+<h2 id="s3"><span class="h2-num">11.3</span>总体架构设计</h2>
+
+<h3>分层架构</h3>
+
+<div class="filetree">┌──────────────────────────────────────────────────────────────┐
+│  接入层   前端控制台 / 客服工作台 / 第三方系统（OpenAPI）           │
+└───────────────────────────┬──────────────────────────────────┘
+                            │ HTTP / SSE
+┌───────────────────────────▼──────────────────────────────────┐
+│  网关层   Controller + 统一响应 + 鉴权(JWT) + 限流 + 全局异常      │
+│           · ChatController  · KnowledgeController             │
+│           · TicketController · AgentConfirmController         │
+└───────────────────────────┬──────────────────────────────────┘
+                            │
+┌───────────────────────────▼──────────────────────────────────┐
+│  编排层   Orchestrator（★ 项目的"大脑"）                        │
+│   ① 意图识别（小模型，结构化输出）                                │
+│   ② 路由分发：KNOWLEDGE / ORDER / TICKET / CHITCHAT            │
+│   ③ 组装结果：answer + citations + traceId + cost              │
+└──────┬────────────────┬────────────────┬─────────────────────┘
+       │                │                │
+┌──────▼──────┐  ┌──────▼──────┐  ┌──────▼──────────────────┐
+│  知识链路    │  │  业务链路    │  │  Agent 链路              │
+│  RAG        │  │  Tool 调用   │  │  ReAct 循环 + HITL       │
+│  ·检索      │  │  ·订单查询   │  │  ·查订单→查政策→建工单    │
+│  ·重排      │  │  ·越权拦截   │  │  ·高风险操作挂起          │
+│  ·生成      │  │  ·结果格式化 │  │  ·轨迹记录                │
+│  ·引用溯源  │  │             │  │                          │
+└──────┬──────┘  └──────┬──────┘  └──────┬──────────────────┘
+       │                │                │
+┌──────▼────────────────▼────────────────▼─────────────────────┐
+│  能力层                                                        │
+│   ModelRouter（多模型路由/降级）  ChatMemory（会话记忆）           │
+│   VectorStore（向量检索）        ToolCallbacks（本地工具）          │
+│   McpClient（外部工具）          Advisor（日志/限流/脱敏）          │
+└──────────────────────────┬───────────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────────┐
+│  基础设施层                                                    │
+│   MySQL(业务/工单/记忆)  Redis(缓存/限流)  PostgreSQL+pgvector(向量) │
+│   Milvus(可选大规模)     Zipkin(链路)      Prometheus(指标)      │
+└──────────────────────────────────────────────────────────────┘</div>
+
+<h3>模块划分（工程结构）</h3>
+
+<pre><code>springai-lab/
+├── docker-compose.yml
+├── init/pgvector-init.sql
+├── <span class="dir">springai-common/</span>              <span class="cm"># 公共模块：配置、异常、工具类、Advisor</span>
+│   ├── ChatClientConfig
+│   ├── ModelRouter
+│   ├── ConversationIds
+│   ├── TokenUsageAdvisor / SafeGuardAdvisor
+│   └── GlobalExceptionHandler
+├── <span class="dir">springai-rag/</span>                 <span class="cm"># 知识检索模块</span>
+│   ├── KnowledgeIndexService
+│   ├── KnowledgeQaService
+│   └── docreader/ (多格式解析)
+├── <span class="dir">springai-agent/</span>               <span class="cm"># 智能体模块</span>
+│   ├── SimpleAgent（循环 + 刹车）
+│   ├── PendingActionService（HITL）
+│   └── TicketAgentService
+├── <span class="dir">springai-tools/</span>               <span class="cm"># 工具模块</span>
+│   ├── OrderTools / TicketTools
+├── <span class="dir">springai-eval/</span>                <span class="cm"># 评测模块</span>
+│   ├── EvalRunner / RagEvaluationTest
+└── <span class="dir">springai-app/</span>                 <span class="cm"># 启动模块（组装以上全部）</span>
+    ├── controller/
+    └── SpringAiLabApplication</code></pre>
+
+<div class="tip">
+  <strong>关于多模块：</strong>课堂作业用<strong>单模块 + 分包</strong>就够（简单，不容易出配置问题）。
+  只有在「模块要独立部署」「多人协作需明确边界」时才拆多模块。
+  拆模块的代价是 Maven 配置复杂度上升、启动变慢、调试链路变长——<strong>不要为了架构而架构</strong>。
+</div>
+
+<h2 id="s4"><span class="h2-num">11.4</span>数据模型设计</h2>
+
+<h3>① MySQL：业务数据</h3>
+
+<pre><code><span class="cm">-- ============================================================</span>
+<span class="cm">-- 1. 知识库文档（记录文档元信息与索引状态）</span>
+<span class="cm">--    作用：支持"哪些文档已入库""何时重建的索引"</span>
+<span class="cm">-- ============================================================</span>
+CREATE TABLE kb_document (
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tenant_id     VARCHAR(64)  NOT NULL,
+    file_name     VARCHAR(255) NOT NULL,
+    category      VARCHAR(64)  DEFAULT <span class="st">'未分类'</span>,
+    file_hash     CHAR(64)     NOT NULL COMMENT <span class="st">'SHA-256，用于判断内容是否变化'</span>,
+    chunk_count   INT          DEFAULT 0,
+    status        VARCHAR(20)  DEFAULT <span class="st">'PENDING'</span> COMMENT <span class="st">'PENDING/INDEXED/FAILED'</span>,
+    indexed_at    DATETIME     NULL,
+    created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    <span class="cm">-- 同一租户下同一文件只保留一条</span>
+    UNIQUE KEY uk_tenant_file (tenant_id, file_name),
+    KEY idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+<span class="cm">-- ============================================================</span>
+<span class="cm">-- 2. 会话（用于会话列表、归属校验、统计）</span>
+<span class="cm">-- ============================================================</span>
+CREATE TABLE chat_session (
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    session_id    VARCHAR(64)  NOT NULL COMMENT <span class="st">'服务端生成的 UUID'</span>,
+    tenant_id     VARCHAR(64)  NOT NULL,
+    user_id       VARCHAR(64)  NOT NULL,
+    title         VARCHAR(128) COMMENT <span class="st">'由首轮问题自动生成'</span>,
+    message_count INT          DEFAULT 0,
+    last_active   DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_session (session_id),
+    <span class="cm">-- ★ 查询"我的会话列表"时用这个索引</span>
+    KEY idx_user_active (tenant_id, user_id, last_active DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+<span class="cm">-- ============================================================</span>
+<span class="cm">-- 3. 工单（业务核心表）</span>
+<span class="cm">-- ============================================================</span>
+CREATE TABLE ticket (
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ticket_no     VARCHAR(32)  NOT NULL COMMENT <span class="st">'工单号，如 T20260315001'</span>,
+    tenant_id     VARCHAR(64)  NOT NULL,
+    order_no      VARCHAR(32)  NOT NULL,
+    user_id       VARCHAR(64)  NOT NULL,
+    type          VARCHAR(32)  NOT NULL COMMENT <span class="st">'超时发货/质量问题/退款/其他'</span>,
+    priority      VARCHAR(10)  NOT NULL COMMENT <span class="st">'低/中/高'</span>,
+    status        VARCHAR(20)  DEFAULT <span class="st">'待处理'</span>,
+    suggested_action VARCHAR(500) COMMENT <span class="st">'AI 建议的处理方案'</span>,
+    created_by    VARCHAR(20)  COMMENT <span class="st">'AI / 人工'</span>,
+    trace_id      VARCHAR(32)  COMMENT <span class="st">'★ 关联到生成它的那次 Agent 执行'</span>,
+    created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_ticket_no (ticket_no),
+    <span class="cm">-- ★ 幂等关键：同一订单同一类型 24 小时内不允许重复建单</span>
+    KEY idx_order_type (tenant_id, order_no, type, created_at),
+    KEY idx_status (tenant_id, status, created_at DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+<span class="cm">-- ============================================================</span>
+<span class="cm">-- 4. 待人工确认的操作（HITL，第 9 章）</span>
+<span class="cm">-- ============================================================</span>
+CREATE TABLE pending_action (
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    action_id     VARCHAR(64)  NOT NULL,
+    trace_id      VARCHAR(32)  NOT NULL,
+    tenant_id     VARCHAR(64)  NOT NULL,
+    user_id       VARCHAR(64)  NOT NULL COMMENT <span class="st">'★ 用于确认时的归属校验'</span>,
+    tool_name     VARCHAR(64)  NOT NULL,
+    arguments     TEXT         NOT NULL COMMENT <span class="st">'JSON 字符串'</span>,
+    summary       VARCHAR(500),
+    risk_level    VARCHAR(20)  NOT NULL,
+    status        VARCHAR(20)  DEFAULT <span class="st">'PENDING'</span>,
+    expires_at    DATETIME     NOT NULL COMMENT <span class="st">'★ 过期时间，防止长期悬挂'</span>,
+    created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_action (action_id),
+    KEY idx_user_status (tenant_id, user_id, status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+<span class="cm">-- ============================================================</span>
+<span class="cm">-- 5. Agent 执行轨迹（第 9、10 章）</span>
+<span class="cm">-- ============================================================</span>
+CREATE TABLE agent_trace (
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    trace_id      VARCHAR(32)  NOT NULL,
+    tenant_id     VARCHAR(64)  NOT NULL,
+    user_id       VARCHAR(64),
+    scene         VARCHAR(64)  COMMENT <span class="st">'ticket-agent / kb-qa …'</span>,
+    task          VARCHAR(500) COMMENT <span class="st">'原始任务'</span>,
+    steps_json    JSON         COMMENT <span class="st">'完整步骤数组'</span>,
+    final_answer  TEXT,
+    step_count    INT,
+    total_tokens  INT,
+    elapsed_ms    BIGINT,
+    success       TINYINT(1),
+    created_at    DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_trace (trace_id),
+    KEY idx_scene_time (scene, created_at DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+<span class="cm">-- ============================================================</span>
+<span class="cm">-- 6. 问答审计（用于成本核算与效果分析）</span>
+<span class="cm">-- ============================================================</span>
+CREATE TABLE qa_audit (
+    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
+    trace_id       VARCHAR(32)  NOT NULL,
+    tenant_id      VARCHAR(64)  NOT NULL,
+    user_id        VARCHAR(64),
+    session_id     VARCHAR(64),
+    question       VARCHAR(1000),
+    intent         VARCHAR(32)  COMMENT <span class="st">'KNOWLEDGE/ORDER/TICKET/CHITCHAT'</span>,
+    answer_len     INT,
+    citation_count INT          COMMENT <span class="st">'引用数，0 表示可能没检索到'</span>,
+    retrieval_hits INT,
+    top_score      DECIMAL(6,4),
+    model          VARCHAR(64),
+    prompt_tokens  INT,
+    completion_tokens INT,
+    cost_yuan      DECIMAL(10,6),
+    elapsed_ms     BIGINT,
+    feedback       TINYINT      COMMENT <span class="st">'1=点赞 -1=点踩 0=无'</span>,
+    created_at     DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_tenant_time (tenant_id, created_at DESC),
+    KEY idx_feedback (feedback),
+    KEY idx_intent (intent)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;</code></pre>
+
+<div class="tip">
+  <strong>三张表值得特别说明：</strong>
+  ① <code>qa_audit</code> 是「成本与效果的账本」——第 10 章的所有分析都基于它；
+  ② <code>pending_action</code> 的 <code>user_id</code> 是安全关键字段（确认时校验归属）；
+  ③ <code>ticket</code> 的 <code>trace_id</code> 把业务数据与 AI 执行链关联起来——
+  出了问题可以从工单反查到当时的 Agent 轨迹。
+</div>
+
+<h3>② PostgreSQL + pgvector：向量表</h3>
+
+<p>沿用 <a href="index.html#env">0.4.4 节</a>的初始化脚本，但生产版本要补上多租户与来源字段：</p>
+
+<pre><code>CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE IF NOT EXISTS vector_store (
+    id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    content   TEXT,
+    metadata  JSON,
+    <span class="cm">-- ★ 维度必须与 embedding 模型一致（1536 = text-embedding-3-small）</span>
+    embedding VECTOR(1536)
+);
+
+<span class="cm">-- HNSW 索引：余弦距离，与 Spring AI 的 COSINE_DISTANCE 对应</span>
+CREATE INDEX IF NOT EXISTS idx_vs_hnsw
+    ON vector_store USING hnsw (embedding vector_cosine_ops);
+
+<span class="cm">-- ★ 元数据索引：加速按租户/来源过滤（过滤条件是先于向量计算执行的）</span>
+CREATE INDEX IF NOT EXISTS idx_vs_tenant
+    ON vector_store ((metadata->>'tenantId'));
+CREATE INDEX IF NOT EXISTS idx_vs_source
+    ON vector_store ((metadata->>'source'));
+
+<span class="cm">-- 排查用：看看每个租户灌了多少块</span>
+<span class="cm">-- SELECT metadata->>'tenantId' AS tenant, COUNT(*) FROM vector_store GROUP BY 1;</span></code></pre>
+
+<div class="warn">
+  <strong>元数据索引很重要，但常被忽略。</strong>有了它，查询 <code>WHERE metadata->>'tenantId' = 't1'</code>
+  才能走索引而不是全表扫描。没有它，数据量到十万级后，每次检索前都要扫全表做过滤，延迟会明显上升。
+</div>
+
+<h2 id="s5"><span class="h2-num">11.5</span>接口契约</h2>
+
+<h3>统一响应格式</h3>
+
+<pre><code><span class="cm">/**</span>
+<span class="cm"> * 统一响应包装。所有接口返回这个结构，前端处理逻辑统一。</span>
+<span class="cm"> * ★ 一定要带 traceId——用户反馈问题时，报这个就能精确定位。</span>
+<span class="cm"> */</span>
+<span class="kw">public record</span> ApiResponse&lt;T&gt;(
+        <span class="kw">int</span> code,            <span class="cm">// 0=成功，非 0=业务错误码</span>
+        String message,
+        T data,
+        String traceId
+) {
+    <span class="kw">public static</span> &lt;T&gt; ApiResponse&lt;T&gt; ok(T data) {
+        <span class="kw">return new</span> ApiResponse&lt;&gt;(0, <span class="st">"ok"</span>, data,
+                org.slf4j.MDC.get(<span class="st">"traceId"</span>));
+    }
+
+    <span class="kw">public static</span> &lt;T&gt; ApiResponse&lt;T&gt; fail(<span class="kw">int</span> code, String msg) {
+        <span class="kw">return new</span> ApiResponse&lt;&gt;(code, msg, <span class="kw">null</span>,
+                org.slf4j.MDC.get(<span class="st">"traceId"</span>));
+    }
+}</code></pre>
+
+<h3>接口清单</h3>
+
+<table>
+  <thead><tr><th style="width:60px">方法</th><th style="width:280px">路径</th><th>说明</th><th style="width:100px">权限</th></tr></thead>
+  <tbody>
+    <tr><td>POST</td><td><code>/api/v1/chat/ask</code></td><td>★ 统一入口：自动识别意图并分发（问答 / 查订单 / 建工单）</td><td>登录用户</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/chat/stream</code></td><td>流式版本（SSE）</td><td>登录用户</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/chat/sessions</code></td><td>我的会话列表</td><td>登录用户</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/chat/sessions/{id}/messages</code></td><td>某会话的历史消息</td><td>本人</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/knowledge/reindex</code></td><td>重建索引（可指定来源）</td><td>管理员</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/knowledge/documents</code></td><td>文档列表与索引状态</td><td>管理员</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/tickets</code></td><td>工单列表（分页 + 状态筛选）</td><td>客服/本人</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/agent/confirm/{actionId}</code></td><td>★ 确认高风险操作</td><td>本人</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/agent/reject/{actionId}</code></td><td>拒绝高风险操作</td><td>本人</td></tr>
+    <tr><td>POST</td><td><code>/api/v1/feedback</code></td><td>点赞/点踩（效果回流）</td><td>登录用户</td></tr>
+    <tr><td>GET</td><td><code>/actuator/health</code></td><td>健康检查（含依赖状态）</td><td>运维</td></tr>
+    <tr><td>GET</td><td><code>/actuator/prometheus</code></td><td>指标抓取</td><td>运维</td></tr>
+  </tbody>
+</table>
+
+<h3>核心接口契约：统一问答入口</h3>
+
+<pre><code><span class="cm">// ==================== 请求 ====================</span>
+{
+  "sessionId": "web-20260315-a3f2",     <span class="cm">// 可空：为空则服务端新建会话</span>
+  "message": "订单 2024001 一直没发货，怎么处理？",
+  "stream": false
+}
+<span class="cm">// 注意：没有 userId！由服务端从 JWT 解析——这是安全底线</span>
+
+<span class="cm">// ==================== 响应 ====================</span>
+{
+  "code": 0,
+  "message": "ok",
+  "traceId": "a3f2b1c9",
+  "data": {
+    "sessionId": "web-20260315-a3f2",
+    "intent": "TICKET",                    <span class="cm">// 识别出的意图</span>
+    "answer": "已查明订单 2024001 自 3 月 1 日起超期未发货 14 天。\n\n依据《超时发货处理规范》，可申请订单金额 5% 的补偿（899 × 5% = 44.95 元）。\n\n我准备创建一张【超时发货】工单，建议方案：催促仓库发货并申请 44.95 元补偿。\n\n请确认后继续。",
+    "citations": [                         <span class="cm">// ★ 引用来源，第三方可核对</span>
+      { "index": 1, "source": "refund-policy.md", "score": 0.82,
+        "excerpt": "订单超过承诺发货日期 7 天未发货的，按订单金额 5% 补偿…" }
+    ],
+    "pendingAction": {                     <span class="cm">// 待确认操作（有则返回）</span>
+      "actionId": "8f3a2b1c-...",
+      "summary": "创建工单：订单 2024001，类型 超时发货，优先级 高",
+      "riskLevel": "HIGH",
+      "expiresAt": "2026-03-15T12:15:00"
+    },
+    "meta": {                              <span class="cm">// 透明化：让前端能展示与统计</span>
+      "model": "deepseek-chat",
+      "steps": 3,
+      "elapsedMs": 8420,
+      "tokens": { "prompt": 9482, "completion": 3391 },
+      "costYuan": 0.0163
+    }
+  }
+}
+
+<span class="cm">// ==================== 错误码约定 ====================</span>
+<span class="cm">// 0     成功</span>
+<span class="cm">// 1001  参数非法</span>
+<span class="cm">// 2001  模型服务不可用（已降级）</span>
+<span class="cm">// 2002  达到调用配额上限</span>
+<span class="cm">// 3001  无权访问该资源（会话/订单/操作）</span>
+<span class="cm">// 3002  待确认操作已过期</span>
+<span class="cm">// 4001  知识库为空或索引未建立</span></code></pre>
+
+<div class="note">
+  <strong>响应里为什么要带 <code>meta</code>？</strong>
+  三个好处：① 前端可以展示「本次回答用了多少 Token、花了多少钱」，让成本透明；
+  ② 测试与验收时可以直接断言步数、耗时；
+  ③ 出问题时用户报 traceId，你立刻能对上。
+  <strong>透明度本身就是企业级产品的竞争力。</strong>
+</div>
+
+<h2 id="s6"><span class="h2-num">11.6</span>核心编排实现（项目的「大脑」）</h2>
+
+<p>编排层的职责：<strong>先判断用户想干什么，再交给对应的链路，最后统一组装结果</strong>。
+这是整个项目最核心的 100 行代码。</p>
+
+<h3>① 意图识别：用结构化输出（第 3 章）</h3>
+
+<pre><code><span class="kw">package</span> com.example.springai.orchestrator;
+
+<span class="kw">import</span> com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
+<span class="cm">/**</span>
+<span class="cm"> * 意图识别的结果。用 record + 字段描述，让模型输出稳定可控。</span>
+<span class="cm"> * 注意：意图枚举值要少（4~6 个），多了模型容易判错。</span>
+<span class="cm"> */</span>
+<span class="kw">public record</span> IntentResult(
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"""
+            意图类型，只能取以下四个值之一：
+            - KNOWLEDGE：询问公司制度、流程、政策等知识性问题（答案在文档里）
+            - ORDER_QUERY：查询具体订单的状态、物流、金额等信息
+            - TICKET_HANDLE：需要处理投诉、创建工单、申请补偿等操作
+            - CHITCHAT：打招呼、闲聊、与业务无关的问题
+            """</span>)
+    String intent,
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"从用户问题中提取的订单号，纯数字；未提及则返回 null"</span>)
+    String orderNo,
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"用户的核心诉求，一句话概括，20 字以内"</span>)
+    String coreDemand,
+
+    <span class="an">@JsonPropertyDescription</span>(<span class="st">"判断置信度，0.0~1.0；低于 0.6 时系统会追问用户"</span>)
+    Double confidence
+) {}</code></pre>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> IntentClassifier {
+
+    <span class="kw">private final</span> ModelRouter router;
+
+    <span class="kw">public</span> IntentClassifier(ModelRouter router) {
+        <span class="kw">this</span>.router = router;
+    }
+
+    <span class="kw">private static final</span> String PROMPT = <span class="st">"""
+            你是一个意图分类器。请分析用户的问题，判断它属于哪一类意图。
+
+            分类规则：
+            1. 问"怎么做""是什么""规定是什么" → KNOWLEDGE
+            2. 问"我的订单怎么样了"，且提到了具体订单号 → ORDER_QUERY
+            3. 包含"投诉""催""退款""赔偿""处理一下"等诉求 → TICKET_HANDLE
+            4. 打招呼、感谢、与业务无关 → CHITCHAT
+
+            注意：
+            - 如果同时涉及查询和处理（如"订单没发货帮我处理"），归为 TICKET_HANDLE。
+            - 不要输出解释，只输出 JSON。
+
+            用户问题：{question}
+
+            最近对话（用于理解指代）：
+            {recentHistory}
+            """</span>;
+
+    <span class="kw">public</span> IntentResult classify(String question, String recentHistory) {
+        <span class="kw">try</span> {
+            <span class="cm">// ★ 用便宜的小模型做分类：这类任务占总调用量的大头（第 6 章）</span>
+            IntentResult result = router.route(ModelRouter.TaskType.CLASSIFY)
+                    .prompt()
+                    .user(u -&gt; u.text(PROMPT)
+                               .param(<span class="st">"question"</span>, question)
+                               .param(<span class="st">"recentHistory"</span>, recentHistory == <span class="kw">null</span> ? <span class="st">"（无）"</span> : recentHistory))
+                    .options(OpenAiChatOptions.builder().temperature(0.0).build())
+                    .call()
+                    .entity(IntentResult.class);
+
+            <span class="cm">// 置信度过低时降级为"再问一句"，而不是猜</span>
+            <span class="kw">if</span> (result.confidence() != <span class="kw">null</span> &amp;&amp; result.confidence() &lt; 0.6) {
+                log.info(<span class="st">"意图识别置信度较低：{}，将追问用户"</span>, result.confidence());
+                <span class="kw">return new</span> IntentResult(<span class="st">"UNCLEAR"</span>, <span class="kw">null</span>, result.coreDemand(), result.confidence());
+            }
+            <span class="kw">return</span> result;
+        } <span class="kw">catch</span> (Exception e) {
+            <span class="cm">// 分类失败不影响主流程：兜底成 KNOWLEDGE，走知识问答链路</span>
+            log.warn(<span class="st">"意图识别失败，兜底为 KNOWLEDGE"</span>, e);
+            <span class="kw">return new</span> IntentResult(<span class="st">"KNOWLEDGE"</span>, <span class="kw">null</span>, question, 0.5);
+        }
+    }
+}</code></pre>
+
+<h3>② 编排服务：路由 + 组装</h3>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> ChatOrchestrator {
+
+    <span class="kw">private final</span> IntentClassifier classifier;
+    <span class="kw">private final</span> KnowledgeQaService knowledgeQa;      <span class="cm">// 第 5 章</span>
+    <span class="kw">private final</span> OrderAssistantService orderAssistant; <span class="cm">// 第 7 章</span>
+    <span class="kw">private final</span> TicketAgentService ticketAgent;        <span class="cm">// 第 9 章</span>
+    <span class="kw">private final</span> ModelRouter router;                    <span class="cm">// 第 6 章</span>
+    <span class="kw">private final</span> QaAuditRepository auditRepository;     <span class="cm">// 审计与成本</span>
+    <span class="kw">private final</span> ChatMemory chatMemory;                 <span class="cm">// 第 2、6 章</span>
+
+    <span class="kw">public</span> ChatResult ask(String tenantId, String userId, String sessionId, String message) {
+        <span class="kw">long</span> t0 = System.currentTimeMillis();
+        String conversationId = ConversationIds.of(tenantId, userId, sessionId);
+        String traceId = org.slf4j.MDC.get(<span class="st">"traceId"</span>);
+
+        <span class="cm">// ---------- 第 1 步：取最近对话（用于理解"它""这个单"等指代）----------</span>
+        String recentHistory = chatMemory.get(conversationId).stream()
+                .map(m -&gt; m.getMessageType() + <span class="st">": "</span> + m.getText())
+                .limit(6)
+                .collect(java.util.stream.Collectors.joining(<span class="st">"\n"</span>));
+
+        <span class="cm">// ---------- 第 2 步：意图识别 ----------</span>
+        IntentResult intent = classifier.classify(message, recentHistory);
+        log.info(<span class="st">"意图识别：intent={} orderNo={} confidence={}"</span>,
+                intent.intent(), intent.orderNo(), intent.confidence());
+
+        <span class="cm">// ---------- 第 3 步：路由分发 ----------</span>
+        String answer;
+        List&lt;Citation&gt; citations = List.of();
+        PendingAction pending = <span class="kw">null</span>;
+
+        <span class="kw">switch</span> (intent.intent()) {
+
+            <span class="kw">case</span> <span class="st">"KNOWLEDGE"</span> -&gt; {
+                <span class="cm">// 知识问答链路：RAG + 引用溯源</span>
+                KnowledgeQaService.RagAnswer rag = knowledgeQa.ask(message, tenantId);
+                answer = rag.answer();
+                citations = rag.citations();
+                <span class="cm">// ★ 检索为空时记录"知识盲区"，主管看板据此补充知识库</span>
+                <span class="kw">if</span> (rag.citations().isEmpty()) {
+                    auditRepository.markKnowledgeGap(message, tenantId);
+                }
+            }
+
+            <span class="kw">case</span> <span class="st">"ORDER_QUERY"</span> -&gt; {
+                <span class="cm">// 订单查询链路：工具调用（含越权拦截）</span>
+                answer = orderAssistant.ask(message);
+            }
+
+            <span class="kw">case</span> <span class="st">"TICKET_HANDLE"</span> -&gt; {
+                <span class="cm">// Agent 链路：多步决策 + 高风险操作挂起</span>
+                AgentTrace trace = ticketAgent.handle(message);
+                answer = trace.finalAnswer();
+                pending = pendingActionService.findLatestPending(tenantId, userId);
+            }
+
+            <span class="kw">case</span> <span class="st">"CHITCHAT"</span> -&gt; {
+                <span class="cm">// 闲聊：用便宜模型直接回答，不检索不调用工具，省钱省时</span>
+                answer = router.route(ModelRouter.TaskType.CLASSIFY)
+                        .prompt()
+                        .system(<span class="st">"你是友好的企业助手。简短应答，并在合适时机引导用户提出业务问题。"</span>)
+                        .user(message)
+                        .call()
+                        .content();
+            }
+
+            <span class="kw">default</span> -&gt; {
+                <span class="cm">// 意图不明确：追问而不是乱猜</span>
+                answer = <span class="st">"抱歉，我没太理解您的意思。您是想：① 咨询公司政策；② 查询订单状态；③ 提交售后处理？请告诉我。"</span>;
+            }
+        }
+
+        <span class="cm">// ---------- 第 4 步：写审计（成本与效果分析的数据来源）----------</span>
+        <span class="kw">long</span> elapsed = System.currentTimeMillis() - t0;
+        auditRepository.save(QaAudit.builder()
+                .traceId(traceId).tenantId(tenantId).userId(userId)
+                .sessionId(sessionId).question(message).intent(intent.intent())
+                .answerLength(answer.length()).citationCount(citations.size())
+                .elapsedMs(elapsed)
+                .build());
+
+        <span class="cm">// ---------- 第 5 步：统一组装返回 ----------</span>
+        String newSessionId = sessionId != <span class="kw">null</span> ? sessionId
+                : sessionService.create(tenantId, userId).sessionId();
+
+        <span class="kw">return new</span> ChatResult(newSessionId, intent.intent(), answer, citations, pending, traceId);
+    }
+
+    <span class="kw">public record</span> ChatResult(String sessionId, String intent, String answer,
+                               List&lt;Citation&gt; citations, PendingAction pendingAction, String traceId) {}
+}</code></pre>
+
+<div class="goal">
+  <strong>这个编排器体现了三个重要的工程决策，请务必理解：</strong>
+  <ol style="margin-bottom:0">
+    <li><strong>闲聊和分类用便宜模型</strong>：这两类占调用量的大头（可能 70%），用强模型是巨大浪费。</li>
+    <li><strong>意图不明确时追问，而不是硬猜</strong>：这是「体验优先」的设计——猜错了要重来，代价更高。</li>
+    <li><strong>每次请求都落一条审计</strong>：成本、效果、知识盲区的所有分析都基于这张表，是后面做优化的前提。</li>
+  </ol>
+</div>
+
+<h2 id="s7"><span class="h2-num">11.7</span>部署上线</h2>
+
+<h3>① Dockerfile（多阶段构建，镜像更小）</h3>
+
+<pre><code><span class="cm"># ---------- 阶段一：构建 ----------</span>
+FROM maven:3.9-eclipse-temurin-21 AS builder
+WORKDIR /build
+
+<span class="cm"># 先只拷贝 pom，利用 Docker 层缓存：依赖不变时不会重新下载</span>
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+<span class="cm"># 再拷贝源码并打包</span>
+COPY src ./src
+RUN mvn clean package -DskipTests -B
+
+<span class="cm"># ---------- 阶段二：运行 ----------</span>
+<span class="cm"># 用 JRE 而非 JDK，用 alpine 变体，镜像从 ~700MB 降到 ~200MB</span>
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+<span class="cm"># 时区：日志和业务时间必须准确</span>
+RUN apk add --no-cache tzdata curl &amp;&amp; \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+<span class="cm"># ★ 非 root 用户运行（安全基线要求）</span>
+RUN addgroup -S app &amp;&amp; adduser -S app -G app
+USER app
+
+COPY --from=builder /build/target/*.jar app.jar
+
+<span class="cm"># JVM 参数：容器感知 + 虚拟线程友好 + OOM 时 dump 便于排查</span>
+ENV JAVA_OPTS=<span class="st">"-XX:MaxRAMPercentage=75 -XX:+UseZGC \
+-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs -Dfile.encoding=UTF-8"</span>
+
+EXPOSE 8080
+
+<span class="cm"># 健康检查：容器编排系统据此判断是否重启</span>
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
+
+ENTRYPOINT [<span class="st">"sh"</span>, <span class="st">"-c"</span>, <span class="st">"java $JAVA_OPTS -jar app.jar"</span>]</code></pre>
+
+<h3>② docker-compose（应用 + 全部依赖，一键起）</h3>
+
+<pre><code><span class="cm"># 在 0.4.4 节的基础设施 compose 上，增加应用服务</span>
+services:
+  <span class="cm"># ……（mysql / redis / pgvector / milvus / zipkin 保持原样，此处省略）</span>
+
+  app:
+    build: .
+    container_name: sai-app
+    ports: [<span class="st">"8080:8080"</span>]
+    environment:
+      <span class="cm"># ★ 密钥从宿主机环境变量透传，绝不写进 compose 文件</span>
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY}
+      <span class="cm"># ★ 容器内访问其他服务要用 service 名，不是 localhost！</span>
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/springai_lab?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root123456
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_AI_VECTORSTORE_PGVECTOR_DATASOURCE_URL: jdbc:postgresql://pgvector:5432/vectordb
+      SPRING_AI_VECTORSTORE_PGVECTOR_DATASOURCE_USERNAME: ai
+      SPRING_AI_VECTORSTORE_PGVECTOR_DATASOURCE_PASSWORD: ai123456
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      <span class="cm"># 生产环境：关闭 Prompt 日志，降低采样率</span>
+      SPRING_AI_CHAT_OBSERVATIONS_LOG_PROMPT: <span class="st">"false"</span>
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: <span class="st">"0.2"</span>
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      mysql:    { condition: service_healthy }
+      redis:    { condition: service_started }
+      pgvector: { condition: service_started }
+    restart: unless-stopped</code></pre>
+
+<div class="pit">
+  <strong>容器化最常见的三个坑：</strong>
+  <ol style="margin-bottom:0">
+    <li><strong>用 localhost 连其他容器</strong>——容器有各自的网络命名空间，
+    <code>localhost</code> 指的是容器自己。必须用 <strong>service 名</strong>（如 <code>mysql</code>、<code>pgvector</code>）。</li>
+    <li><strong>忘记 depends_on 的 healthcheck 条件</strong>——MySQL 容器"启动了"不等于"可以连接了"，
+    应用会在启动时连接失败退出。用 <code>condition: service_healthy</code> 等它真正就绪。</li>
+    <li><strong>时区不对</strong>——容器默认 UTC，日志时间差 8 小时，
+    排查问题时会对不上时间线。加 tzdata 并设置 <code>Asia/Shanghai</code>。</li>
+  </ol>
+</div>
+
+<h3>③ 上线前检查清单</h3>
+
+<ul class="chk">
+  <li>所有密钥通过环境变量注入，仓库里<strong>搜不到</strong> <code>sk-</code> 开头的字符串</li>
+  <li><code>spring.profiles.active=prod</code>，且 prod profile 里日志级别为 <code>info</code></li>
+  <li>Prompt 与响应内容<strong>不写入日志</strong>（或已脱敏）</li>
+  <li>追踪采样率降到 0.1~0.2</li>
+  <li>所有外部调用都有超时设置（模型 60~120s、数据库 5s、工具 3~15s）</li>
+  <li>降级方法已验证（人为断开模型网络，确认返回友好话术而非 500）</li>
+  <li>数据库连接池上限合理（不要超过数据库 max_connections / 实例数）</li>
+  <li>健康检查接口能正确反映依赖状态</li>
+  <li>评测集跑过一遍，指标达标</li>
+  <li>有一个"应急开关"：能一键关闭 AI 功能、退回纯人工（<code>feature.ai.enabled=false</code>）</li>
+</ul>
+
+<div class="tip">
+  <strong>最后那条「应急开关」经常被忽略，但极其重要。</strong>
+  当模型服务大面积故障、或者 AI 出现了严重的业务错误时，
+  <strong>你需要能在 10 秒内把 AI 功能整体关掉，让系统退回人工流程</strong>，而不是紧急发版。
+  实现方式很简单：一个配置项 + 在编排层入口判断，返回"AI 助手暂时维护中"。
+</div>
+
+<h2 id="s8"><span class="h2-num">11.8</span>性能与成本优化</h2>
+
+<h3>① 延迟优化：从 12 秒降到 3 秒</h3>
+
+<table>
+  <thead><tr><th style="width:190px">手段</th><th>做法</th><th style="width:130px">预期收益</th><th style="width:90px">代价</th></tr></thead>
+  <tbody>
+    <tr><td><strong>流式输出</strong></td><td>前端用 SSE，首字 0.5s 就出现</td><td>感知延迟降 80%</td><td>前端改造成本</td></tr>
+    <tr><td><strong>意图分类用小模型</strong></td><td>分类交给本地 Ollama（100ms 级）</td><td>省 1~2 秒</td><td>准确率略降</td></tr>
+    <tr><td><strong>闲聊/FAQ 走缓存</strong></td><td>相同问题命中 Redis 缓存直接返回</td><td>命中时 &lt; 50ms</td><td>需要缓存失效策略</td></tr>
+    <tr><td><strong>只读工具并行</strong></td><td>查订单 + 查政策用虚拟线程并行</td><td>省 1~3 秒</td><td>实现复杂度上升</td></tr>
+    <tr><td><strong>压小 topK</strong></td><td>从 8 降到 4，并在提示词里要求精炼</td><td>省 1~2 秒</td><td>可能漏召回</td></tr>
+    <tr><td><strong>简化 Agent 步数</strong></td><td>能写死的流程不要交给 Agent 决策（第 9 章）</td><td>省 3~8 秒</td><td>灵活性下降</td></tr>
+  </tbody>
+</table>
+
+<h3>② 成本优化：从每月 1800 元降到 400 元</h3>
+
+<p>先算清基线（按每天 300 次咨询估算）：</p>
+
+<pre><code><span class="cm"># 优化前的成本估算（用强模型 + 每次都走 Agent）</span>
+每次咨询：
+  · 意图分类      800 token   × 0.8 元/百万 = 0.00064 元
+  · RAG 检索生成  6000 token  × 1.0 元/百万 = 0.00600 元
+  · Agent 3 步    20000 token × 1.0 元/百万 = 0.02000 元
+  合计约 0.027 元/次
+
+月成本 = 0.027 × 300 × 30 ≈ 243 元
+<span class="cm"># 但如果全部用 gpt-4o 级别（输入 18 元/百万、输出 72 元/百万）</span>
+<span class="cm"># 单次成本会涨到 0.6 元以上 → 月成本 5400 元</span></code></pre>
+
+<table>
+  <thead><tr><th style="width:200px">优化手段</th><th>做法</th><th style="width:120px">节省</th></tr></thead>
+  <tbody>
+    <tr><td><strong>分级用模型</strong></td><td>分类/闲聊走本地 Ollama（0 成本），生成走中档模型，只有复杂推理用强模型</td><td>40~60%</td></tr>
+    <tr><td><strong>结果缓存</strong></td><td>相同问题（归一化后）1 小时内命中 Redis 缓存</td><td>15~30%</td></tr>
+    <tr><td><strong>精简上下文</strong></td><td>topK 从 8 降到 4；历史只带最近 6 条；工具返回值截断</td><td>20~35%</td></tr>
+    <tr><td><strong>控制 Agent 步数</strong></td><td>把确定流程改成固定工作流，只保留必要的模型决策</td><td>30~50%</td></tr>
+    <tr><td><strong>本地向量化</strong></td><td>embedding 用本地 nomic-embed-text，不走 API</td><td>重灌库成本降为 0</td></tr>
+    <tr><td><strong>语义缓存</strong></td><td>用向量相似度判断"这个问题问过类似的"，命中直接返回</td><td>额外 10~20%</td></tr>
+  </tbody>
+</table>
+
+<pre><code><span class="cm">/**</span>
+<span class="cm"> * 语义缓存：比"完全相同才命中"更聪明的缓存。</span>
+<span class="cm"> * "退款几天到账" 和 "钱多久能退回来" 语义相同 → 命中同一条缓存。</span>
+<span class="cm"> */</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> SemanticCache {
+
+    <span class="cm">/** 相似度超过这个值就认为是同一个问题 */</span>
+    <span class="kw">private static final double</span> SIMILARITY_THRESHOLD = 0.92;
+
+    <span class="kw">private final</span> VectorStore cacheStore;      <span class="cm">// 独立的缓存向量表</span>
+    <span class="kw">private final</span> RedisTemplate&lt;String, String&gt; redis;
+
+    <span class="kw">public</span> java.util.Optional&lt;String&gt; get(String question, String tenantId) {
+        List&lt;Document&gt; hits = cacheStore.similaritySearch(
+                SearchRequest.builder()
+                        .query(question)
+                        .topK(1)
+                        .similarityThreshold(SIMILARITY_THRESHOLD)   <span class="cm">// ★ 阈值必须高</span>
+                        .filterExpression(<span class="st">"tenantId == '"</span> + tenantId + <span class="st">"'"</span>)
+                        .build());
+
+        <span class="kw">if</span> (hits.isEmpty()) <span class="kw">return</span> java.util.Optional.empty();
+
+        String cacheKey = (String) hits.get(0).getMetadata().get(<span class="st">"cacheKey"</span>);
+        String cached = redis.opsForValue().get(cacheKey);
+
+        <span class="cm">// 缓存过期则视为未命中（TTL 由写入时设置）</span>
+        <span class="kw">return</span> java.util.Optional.ofNullable(cached);
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * ★ 注意：知识库内容更新后，必须清空语义缓存！</span>
+<span class="cm">     *   否则用户会拿到基于旧制度的回答。</span>
+<span class="cm">     *   做法：reindex 完成后调用 clearAll()。</span>
+<span class="cm">     */</span>
+    <span class="kw">public void</span> clearAll(String tenantId) {
+        cacheStore.delete(<span class="st">"tenantId == '"</span> + tenantId + <span class="st">"'"</span>);
+    }
+}</code></pre>
+
+<div class="warn">
+  <strong>语义缓存的两个风险：</strong>
+  ① <strong>阈值设低了会答错</strong>——0.85 可能把「退款要几天」和「退货要几天」判成同一个问题，
+  答案完全不同。建议 ≥ 0.92，并只缓存"标准问答类"内容。
+  ② <strong>内容更新后不清理缓存 = 用户看到旧答案</strong>——这是最容易被忽略的严重问题，
+  必须在重建索引后清缓存。
+</div>
+
+<h3>③ 成本看板：让花钱看得见</h3>
+
+<pre><code><span class="cm">-- 每天按意图统计成本（直接查 qa_audit，做成本归因）</span>
+SELECT
+    DATE(created_at)                            AS 日期,
+    intent                                      AS 意图,
+    COUNT(*)                                    AS 次数,
+    SUM(prompt_tokens + completion_tokens)      AS 总Token,
+    ROUND(SUM(cost_yuan), 2)                    AS 成本元,
+    ROUND(AVG(elapsed_ms))                      AS 平均耗时ms
+FROM qa_audit
+WHERE tenant_id = <span class="st">'t1'</span>
+  AND created_at &gt;= DATE_SUB(NOW(), INTERVAL 7 DAY)
+GROUP BY DATE(created_at), intent
+ORDER BY 日期 DESC, 成本元 DESC;
+
+<span class="cm">-- 找出最"贵"的问题类型——这些是优化的重点</span>
+SELECT intent, ROUND(AVG(prompt_tokens)) AS 平均输入Token,
+       ROUND(AVG(cost_yuan), 4) AS 平均成本元, COUNT(*) AS 次数
+FROM qa_audit
+GROUP BY intent
+ORDER BY 平均成本元 DESC;</code></pre>
+
+<div class="goal">
+  <strong>优化的正确顺序：先度量，再优化，最后验证。</strong>
+  <ol style="margin-bottom:0">
+    <li><strong>度量</strong>：跑一周，看 <code>qa_audit</code> 表，找出最贵和最慢的意图。</li>
+    <li><strong>优化</strong>：优先做「高收益低成本」的——分级用模型、结果缓存、精简上下文。</li>
+    <li><strong>验证</strong>：优化后再跑一次评测集，确认<strong>准确率没有下降</strong>。
+    <strong>成本优化绝不能以牺牲效果为代价</strong>——省了钱但答错了，是负收益。</li>
+  </ol>
+</div>
+
+<h2 id="s9"><span class="h2-num">11.9</span>交付清单与答辩要点</h2>
+
+<h3>交付物清单</h3>
+
+<table>
+  <thead><tr><th style="width:60px">#</th><th style="width:230px">交付物</th><th>要求</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>源代码仓库</td><td>结构清晰、有 README、能一键起（<code>docker compose up</code>）</td></tr>
+    <tr><td>2</td><td>数据库脚本</td><td>MySQL 建表 + pgvector 初始化，含注释</td></tr>
+    <tr><td>3</td><td>知识库样例文档</td><td>至少 5 份、覆盖 3 个分类</td></tr>
+    <tr><td>4</td><td>评测集与评测报告</td><td>≥ 30 条，含知识库外问题；报告有指标与未通过明细</td></tr>
+    <tr><td>5</td><td>接口文档</td><td>OpenAPI/Swagger，含请求响应示例与错误码</td></tr>
+    <tr><td>6</td><td>架构设计文档</td><td>分层图、时序图、数据模型说明、技术选型理由</td></tr>
+    <tr><td>7</td><td>部署文档</td><td>环境要求、启动步骤、配置项说明、常见问题</td></tr>
+    <tr><td>8</td><td>演示脚本</td><td>5 分钟能演完的完整流程，含失败场景演示</td></tr>
+    <tr><td>9</td><td>成本测算表</td><td>按调用量估算月成本，含优化前后对比</td></tr>
+    <tr><td>10</td><td>监控看板截图</td><td>Trace 链路 + 指标图表 + 评测报告</td></tr>
+  </tbody>
+</table>
+
+<h3>演示脚本（建议按这个顺序，5 分钟内完成）</h3>
+
+<ol class="steps">
+  <li>
+    <strong>开场（30 秒）</strong>：一句话讲清业务背景与目标。<br>
+    「客服团队每天处理 300 个咨询，60% 是重复问题。我们用 Spring AI 做了知识问答与工单辅助系统，
+    目标是把常见问题自动化率做到 50%。」
+  </li>
+  <li>
+    <strong>知识问答（1 分钟）</strong>：用<strong>口语化</strong>问题提问（不要用文档里的原话）。<br>
+    演示：「我买的东西不想要了，钱什么时候能退给我？」<br>
+    ★ 重点展示<strong>引用出处</strong>——点击引用能看到原文。
+  </li>
+  <li>
+    <strong>拒答能力（30 秒）</strong>：问一个知识库里没有的问题。<br>
+    「公司年会在哪天举办？」→ 系统回答"资料中未提及"。<br>
+    ★ 这一步价值极高，要主动演示，说明"我们不编造"。
+  </li>
+  <li>
+    <strong>订单查询与越权拦截（1 分钟）</strong>：<br>
+    ① 问自己的订单 → 正确返回；<br>
+    ② 问别人的订单 → 返回"未查询到"（而不是别人的数据，也不是 500）。<br>
+    ★ 展示 ToolContext 传身份的设计，说明"模型无法伪造身份"。
+  </li>
+  <li>
+    <strong>工单处理与人工确认（1.5 分钟）</strong>：<br>
+    ① 输入「订单 2024001 一直没发货，帮我处理」；<br>
+    ② 展示 Agent 的<strong>三步决策链</strong>（查订单 → 查政策 → 准备建单）；<br>
+    ③ 系统提示"请确认后执行"，此时<strong>数据库里还没有工单</strong>；<br>
+    ④ 点击确认 → 工单生成；<br>
+    ⑤ 再确认一次 → 提示"已处理"，证明幂等。
+  </li>
+  <li>
+    <strong>可观测性（1 分钟）</strong>：<br>
+    ① 打开 Zipkin，用刚才的 traceId 查出完整链路；<br>
+    ② 打开 Grafana，展示 Token 成本曲线与检索命中率；<br>
+    ③ 打开评测报告，展示 30 条评测的通过率。
+  </li>
+  <li>
+    <strong>收尾（30 秒）</strong>：给出成本测算与后续规划。<br>
+    「当前单次平均成本 0.012 元，按每天 300 次计算月成本约 108 元。
+    下一步计划补充 200 条评测集，把准确率从 80% 提到 88%。」
+  </li>
+</ol>
+
+<h3>答辩常见问题（提前准备）</h3>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q：为什么用 pgvector 而不是 Milvus？</p>
+    <div class="qa-a">
+      <p>数据量 3 万条以内、并发不高的情况下，pgvector 完全够用，且复用已有的 PostgreSQL，
+      运维成本几乎为零，还能用 SQL 做混合查询。
+      当数据量到千万级或向量检索成为瓶颈时，再迁移到 Milvus。
+      <strong>关键是要能说出「什么条件下我会换」，而不是「我以为小的就是好的」。</strong></p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q：怎么保证 AI 不会胡说？</p>
+    <div class="qa-a">
+      <p>五层防线：① 检索阈值过滤掉弱相关内容；② 提示词强制「只依据资料」；
+      ③ 检索为空时直接拒答（不调用模型）；④ 评测集含 15% 知识库外问题，专门验证拒答；
+      ⑤ 生产环境可加 FactCheckingEvaluator 抽查。<strong>并且用数据说话：拒答率 100%。</strong></p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q：模型服务挂了怎么办？</p>
+    <div class="qa-a">
+      <p>三层：① 重试（只重试 5xx 和网络超时）；② 熔断（失败率超 50% 熔断 30 秒）；
+      ③ 降级（切换备用模型 → 命中缓存 → 返回友好话术 + 转人工）。
+      另外有总开关 <code>feature.ai.enabled</code> 可一键退回纯人工。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q：用户数据安全怎么保障？</p>
+    <div class="qa-a">
+      <p>① 身份从服务端登录态取，绝不接受前端传的 userId；
+      ② 会话按 <code>租户|用户|会话</code> 三级隔离，向量检索带 <code>tenantId</code> 过滤做物理隔离；
+      ③ 日志脱敏，不记录完整 Prompt；④ 高风险操作走人工确认；
+      ⑤ 全量审计留痕。<strong>安全的关键是「机制约束」而不是「提示词要求」。</strong></p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q：这个项目还能怎么改进？</p>
+    <div class="qa-a">
+      <p>按优先级：① 扩充评测集到 100+ 并把评测接入 CI；② 引入重排模型提升检索精度；
+      ③ 做混合检索（向量 + BM25）解决专有名词召回；④ 把订单工具改造成 MCP Server 供其他系统复用；
+      ⑤ 加前端反馈闭环（点赞/点踩）自动沉淀难例。这五条都是有明确收益的，不吹「大模型多智能体」。</p>
+    </div>
+  </div>
+</div>
+
+<h2 id="s10"><span class="h2-num">11.10</span>自测与扩展方向</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 用一张图说明本项目的分层架构，并指出「意图识别」在哪一层、为什么放那里。</p>
+    <div class="qa-a">
+      <p>五层：接入层 → 网关层 → <strong>编排层</strong> → 能力层 → 基础设施层。
+      意图识别属于<strong>编排层</strong>，因为它是「路由决策」——决定把请求交给哪条业务链路。
+      放在网关层会让网关承担业务逻辑；放在能力层则没有「决策」的语义位置。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q2. 为什么 <code>qa_audit</code> 表要单独设计，而不是从日志里分析？</p>
+    <div class="qa-a">
+      <p>三个原因：① <strong>日志会被轮转清理</strong>，无法做长期的成本趋势分析；
+      ② 日志是非结构化文本，做聚合统计需要额外解析，成本高；
+      ③ 审计数据有<strong>合规要求</strong>（保留期限、不可篡改）。
+      用结构化表存关键字段（意图、Token、成本、引用数、反馈），一次 SQL 就能出报表。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q3. 语义缓存的阈值为什么必须设得很高（≥0.92）？</p>
+    <div class="qa-a">
+      <p>因为语义相近的问题可能答案完全不同。
+      「退款要几天」和「退货要几天」在向量空间里非常接近，但答案一个是「3 个工作日到账」，
+      一个是「7 天无理由」。阈值设低就会出现「答非所问」的错误缓存命中。
+      <strong>错误缓存比不缓存更危险</strong>，因为它看起来"很快"，实际上是错的。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q4.【核心动手题】把这个项目从零搭起来，按下面的顺序推进，每完成一步运行一次对应的验证：</p>
+    <div class="qa-a">
+      <p><strong>第 1 天</strong>：环境 + 建表 + 灌知识库 → 验证：<code>/api/v1/knowledge/ask</code> 能带引用回答。<br>
+      <strong>第 2 天</strong>：多轮会话 + 记忆持久化 → 验证：重启后记忆不丢。<br>
+      <strong>第 3 天</strong>：订单工具 + 越权拦截 → 验证：查别人订单返回"未查询到"。<br>
+      <strong>第 4 天</strong>：Agent + 人工确认 → 验证：挂起期间无工单产生。<br>
+      <strong>第 5 天</strong>：意图路由 + 模型分级 → 验证：分类走便宜模型（看日志）。<br>
+      <strong>第 6 天</strong>：可观测性 + 评测 → 验证：Zipkin 有链路、评测报告有指标。<br>
+      <strong>第 7 天</strong>：Docker 部署 + 演示脚本排练 → 验证：新机器 <code>docker compose up</code> 能跑起来。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章（也就是整门课）的最终验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>新环境执行 <code>docker compose up</code>，5 分钟内系统可用</li>
+    <li>知识问答带引用，且有据可查</li>
+    <li>知识库外问题 100% 拒答，不编造</li>
+    <li>越权查询 100% 拦截</li>
+    <li>高风险操作 100% 人工确认，挂起期间无副作用</li>
+    <li>服务重启后会话记忆不丢</li>
+    <li>Zipkin 能看到完整链路，Grafana 能看到成本指标</li>
+    <li>评测报告指标达标（检索命中率 ≥ 80%，答案通过率 ≥ 75%）</li>
+    <li>能在 5 分钟内完成完整演示，并回答答辩问题</li>
+  </ul>
+</div>
+
+<h3>继续深入的方向</h3>
+
+<table>
+  <thead><tr><th style="width:200px">方向</th><th>具体做什么</th><th style="width:150px">难度</th></tr></thead>
+  <tbody>
+    <tr><td><strong>混合检索</strong></td><td>向量检索 + BM25 关键词检索，结果合并后重排</td><td><span class="pill green">中等</span></td></tr>
+    <tr><td><strong>重排模型</strong></td><td>召回 20 条后用 Rerank 模型精排取前 5</td><td><span class="pill green">中等</span></td></tr>
+    <tr><td><strong>多智能体协作</strong></td><td>分析 Agent + 执行 Agent + 审核 Agent 分工</td><td><span class="pill orange">较难</span></td></tr>
+    <tr><td><strong>微调</strong></td><td>用积累的优质问答对微调小模型，替代高频场景的 API 调用</td><td><span class="pill orange">较难</span></td></tr>
+    <tr><td><strong>GraphRAG</strong></td><td>把文档抽成知识图谱，支持多跳推理</td><td><span class="pill" style="background:var(--red-soft);color:var(--red);border-color:#f6c9c9">困难</span></td></tr>
+    <tr><td><strong>多模态</strong></td><td>支持发票/截图识别，工单里能附图片</td><td><span class="pill green">中等</span></td></tr>
+    <tr><td><strong>主动学习闭环</strong></td><td>用户点踩的问题自动进入难例集，定期人工标注后优化提示词</td><td><span class="pill green">中等</span></td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>最后一句忠告：先让系统稳定可用，再追求技术先进性。</strong>
+  见过太多项目，一上来就搞多智能体、GraphRAG、自研框架，
+  结果连「检索不准」和「不编造」这两个最基本的问题都没解决，上线后被业务方质疑 «AI 到底有什么用»。<br>
+  <strong>把基础做扎实——准确的检索、可靠的拒答、清晰的引用、可观测的成本——
+  这四件事做好了，项目就已经超过大部分同行的水平。</strong>
+</div>
+
+<div class="navfoot">
+  <a href="ch10.html"><div class="dir-label">← 上一章</div><div class="dir-name">第 10 章 · 可观测性与评估</div></a>
+  <a class="next" href="appendix.html"><div class="dir-label">下一步 →</div><div class="dir-name">附录 · 速查手册 / 排错表</div></a>
+</div>
+
+<div class="footer">Spring AI 2.0 学习指南 · 第 11 章 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+</main>
+</div>
+<script src="../assets/app.js"></script>
+</body>
+</html>
+
+
+

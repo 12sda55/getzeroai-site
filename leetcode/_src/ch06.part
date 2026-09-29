@@ -1,0 +1,521 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 06</div>
+  <h1><span class="ch-tag">专题 06</span>栈与队列：先进后出与先进先出</h1>
+  <p class="lead">栈和队列不是「数据结构考试里背的两个概念」，它们是<strong>两类天然的问题结构的镜子</strong>：
+  当你发现一个问题「只关心最近发生的那件事」「需要回退」「需要按层展开」，栈或队列往往就是解法本身。
+  本章先讲栈的「撤销」思想，再带你认识 <a href="ch06.html#s6">单调栈</a>——这是力扣里性价比极高的一件武器。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">识别栈/队列型问题</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">Java 基础 · 专题 05 链表</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">6 题 + 单调栈模板</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">6.1</span>栈：后进先出的「撤销」思想</h2>
+
+<p>栈（Stack）的核心性质是 <strong>LIFO（Last In, First Out，后进先出）</strong>：最后压进去的元素，最先被弹出来。
+生活里最像栈的是<strong>一摞盘子</strong>——你只能从顶上放、从顶上取，底下的最晚动。</p>
+
+<p>为什么算法里老用栈？因为很多问题的结构本身就是「最近匹配 / 回退」：</p>
+
+<ul>
+  <li><strong>括号匹配：</strong>遇到右括号，要找的是「离它最近的、还没匹配的左括号」——典型的栈顶操作；</li>
+  <li><strong>撤销（Undo）：</strong>文本编辑器按 Ctrl+Z，撤销的是「最近一次」操作；</li>
+  <li><strong>函数调用：</strong>程序运行时的调用栈，后调用的函数先返回；</li>
+  <li><strong>深度优先搜索：</strong>递归本质就是系统帮你维护了一个栈。</li>
+</ul>
+
+<h3>Java 里怎么写栈</h3>
+
+<p>重点：<strong>不要用老旧的 <code>Stack</code> 类</strong>。它是早期 Collection 框架的边角，方法都 synchronized（线程安全但拖慢速度），而且继承了 <code>Vector</code>，设计上有缺陷。
+Java 官方推荐用 <strong><code>Deque</code>（双端队列）</strong>来当栈：</p>
+
+<pre><code>// 推荐写法：用 ArrayDeque 当栈
+Deque<Integer> stack = new ArrayDeque<>();
+stack.push(1);          // 入栈（= addFirst）
+stack.push(2);
+int top = stack.peek(); // 看栈顶但不弹出 = 2
+int x = stack.pop();    // 弹出栈顶 = 2，栈里剩 1
+boolean empty = stack.isEmpty();
+</code></pre>
+
+<p><code>Deque</code> 既能当栈（<code>push</code>/<code>pop</code>/<code>peek</code>）又能当队列（<code>offer</code>/<code>poll</code>/<code>peek</code>），一个接口两种用法，本章和 <a href="ch07.html">专题 07</a> 都靠它。</p>
+
+<h3>队列：先进先出的「排队」思想</h3>
+
+<p>队列（Queue）的核心是 <strong>FIFO（First In, First Out，先进先出）</strong>：最早进来的最早出去，像食堂排队，先来的先打饭。
+它解决的问题结构刚好和栈相反——<strong>「按出现顺序依次处理，且处理最早发生的」</strong>：</p>
+
+<ul>
+  <li><strong>层序遍历二叉树：</strong>一层一层从左到右处理，先遇到的节点先展开它的孩子；</li>
+  <li><strong>广度优先搜索（BFS）：</strong>从起点一圈圈扩散，先发现的点先探索；</li>
+  <li><strong>消息队列 / 任务调度：</strong>先提交的任务先执行。</li>
+</ul>
+
+<p>Java 里队列同样用 <code>Deque</code>（或 <code>LinkedList</code>）实现，<strong>不要用 <code>LinkedList</code> 直接当 Queue 时混用 List 方法</strong>，保持接口纯粹更好：</p>
+
+<pre><code>// 用 ArrayDeque 当队列（推荐）
+Deque<Integer> queue = new ArrayDeque<>();
+queue.offer(1);          // 入队（从尾进）
+queue.offer(2);
+int head = queue.peek(); // 看队首 = 1，不弹出
+int x = queue.poll();    // 出队（从头出）= 1，剩下 2
+</code></pre>
+
+<div class="tip">
+  <strong>记忆：</strong>栈是「后进先出」，所有操作都在<strong>同一端（顶端）</strong>，对应「撤销 / 最近匹配」；
+  队是「先进先出」，从<strong>一端进、另一端出</strong>，对应「按序展开 / 逐层处理」。
+  判断用哪个，先问自己：这个问题「最近发生的」要不要最先处理（栈），还是「最早发生的」要最先处理（队）？
+  本题 6.4 还会让你用栈<strong>反向模拟</strong>出队列，正好把两者关系吃透。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">6.2</span>有效的括号（简单，力扣 20）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：栈顶匹配最近左括号</span></p>
+
+<p><strong>题意：</strong>判断字符串里的括号是否合法配对。例：<code>"()[]{}"</code> → true；<code>"(]"</code> → false；<code>"([)]"</code> → false。
+合法意味着：每类括号左右数量相等、且<strong>嵌套/相邻顺序正确</strong>。</p>
+
+<h3>思路推导</h3>
+
+<p>暴力想：数三类括号各有多少对，相等就 true？不对——<code>"(]"</code> 数量也对，但顺序错。
+真正要判断的是<strong>「最近没匹配的左括号，要和下一个右括号同类型」</strong>，这正是栈的活。</p>
+
+<p>从左往右扫：</p>
+<ul>
+  <li>遇到<strong>左括号</strong>：压栈（记下来，等它的右括号来配）；</li>
+  <li>遇到<strong>右括号</strong>：它应该和「栈顶那个左括号」配对。弹出栈顶看类型对不对：
+    <ul>
+      <li>栈空？说明右括号没人配，直接 false（比如一上来就是 <code>')'</code>）；</li>
+      <li>类型不对？比如栈顶是 <code>'('</code> 却来了 <code>']'</code>，false；</li>
+    </ul>
+  </li>
+  <li>扫完：栈必须<strong>空</strong>才合法（所有左括号都配对完，没剩）。</li>
+</ul>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public boolean isValid(String s) {
+        Deque<Character> stack = new ArrayDeque<>();
+        for (char c : s.toCharArray()) {
+            if (c == '(' || c == '[' || c == '{') {
+                stack.push(c);                       // 左括号入栈
+            } else {
+                if (stack.isEmpty()) return false;   // 右括号先来，必错
+                char top = stack.pop();              // 找最近左括号
+                if (c == ')' && top != '(') return false;
+                if (c == ']' && top != '[') return false;
+                if (c == '}' && top != '{') return false;
+            }
+        }
+        return stack.isEmpty();   // 全匹配完，栈应空
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n)：扫一遍，每个字符一次入栈或出栈。空间 O(n)：最坏全是左括号，栈高 n。
+为什么最后要判 <code>isEmpty()</code>？因为 <code>"((("</code> 扫完栈不空，说明左括号多出来了，不合法。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>先判断 <code>stack.isEmpty()</code> 再 <code>pop()</code>，否则右括号比左括号多时会空栈弹出异常。
+  这是栈题的通用安全习惯：<strong>弹之前先确认非空</strong>。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>括号的分数（力扣 856，中等）</strong>——与本题共用「栈匹配括号」；差异在括号带分值，<code>()</code> 记 1 分、嵌套/并列用 <code>2×</code> 内层或相加（提示：栈里存分数，遇 <code>(</code> 压 0，遇 <code>)</code> 弹出内层 v 后压入 <code>max(2*v, 1)</code> 并与新栈顶累加）。</li>
+    <li><strong>最长有效括号（力扣 32，困难）</strong>——与本题共用「栈处理括号配对」；差异在要算最长连续有效长度，用栈存下标、遇 <code>)</code> 配对后长度 = 当前下标 - 栈顶（提示：栈底先压 -1 作哨兵，遇 <code>(</code> 压下标、遇 <code>)</code> 弹栈后长度 = i - 栈顶剩余下标）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">6.3</span>最小栈（中等，力扣 155）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：辅助栈同步保存最小值</span></p>
+
+<p><strong>题意：</strong>设计一个栈，除了正常的 <code>push</code>/<code>pop</code>/<code>top</code>，还要能在 O(1) 时间内返回<strong>当前栈里的最小值</strong>。
+例：依次 push 3,2,1,4，<code>getMin()</code> 依次返回 3,2,1,1。</p>
+
+<h3>思路推导</h3>
+
+<p>普通栈的 <code>pop</code> 把元素丢了，可万一丢的正是最小值，下次 <code>getMin</code> 问谁去？
+所以光存数据不够，得<strong>随时知道「此刻的最小值」</strong>。</p>
+
+<p>办法是用<strong>第二个栈（辅助栈）</strong>和数据栈<strong>同步进出</strong>，辅助栈里存「到当前位置为止的最小值」：</p>
+
+<ul>
+  <li><strong>push(x)：</strong>数据栈压 x；辅助栈压 <code>min(x, 辅助栈栈顶)</code>——也就是「之前的最小值和 x 取更小」；
+  <li><strong>pop：</strong>两个栈<strong>一起弹</strong>，辅助栈弹出的正是「对应这次的最小值」，数据栈恢复后，新的栈顶就是剩余部分的最小值；</li>
+  <li><strong>getMin：</strong>直接看辅助栈栈顶，O(1)。</li>
+</ul>
+
+<p>为了「辅助栈空时也能压」，空栈压入就直接压 x 当最小值。</p>
+
+<pre><code class="nohl">push 3:  数据[3]    辅助[3]      min=3
+push 2:  数据[3,2]  辅助[3,2]    min=2   (min(2,3)=2)
+push 4:  数据[3,2,4]辅助[3,2,2]  min=2   (min(4,2)=2，辅助栈顶仍是2)
+pop:     数据[3,2]  辅助[3,2]    min=2
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code>class MinStack {
+    private Deque<Integer> stack;     // 数据栈
+    private Deque<Integer> minStack;  // 辅助栈：存「当前最小值」
+
+    public MinStack() {
+        stack = new ArrayDeque<>();
+        minStack = new ArrayDeque<>();
+    }
+
+    public void push(int val) {
+        stack.push(val);
+        if (minStack.isEmpty() || val <= minStack.peek()) {
+            minStack.push(val);            // 更小或相等，压入新最小
+        } else {
+            minStack.push(minStack.peek()); // 否则复制当前最小，保持同步高度
+        }
+    }
+
+    public void pop() {
+        stack.pop();
+        minStack.pop();                 // 同步弹出
+    }
+
+    public int top() {
+        return stack.peek();
+    }
+
+    public int getMin() {
+        return minStack.peek();         // 栈顶即当前最小
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>四个操作都是 O(1) 时间。空间 O(n)，多了一个辅助栈。
+为什么辅助栈<strong>每次都压</strong>（哪怕不是新最小也压旧值）？为了让它和数据栈<strong>高度永远一致</strong>，
+pop 时一起弹，getMin 永远对应「此刻栈状态」的最小值，不用算。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>也可以只在「val ≤ 当前最小」时压辅助栈、pop 时判断弹不弹，能省点空间，但逻辑更绕。
+  同步压法是面试最稳的写法，<strong>高度一致 = 永远不用想对应问题</strong>。
+</div>
+
+<h3>省空间变体（了解即可）</h3>
+
+<p>如果链表很长、重复值很多，同步压法会存大量重复的「旧最小」。优化版：<strong>只有 val ≤ 当前最小才压辅助栈</strong>，
+并且 pop 时判断「弹出的数据是不是正好等于辅助栈顶」——是才把辅助栈也弹一下。这里用 <code>≤</code> 而不是 <code><</code> 很关键：
+若连续压两个相同的最小值（如 push 2, push 2），必须用 <code>≤</code> 让第二个 2 也进辅助栈，
+否则第一次 pop 2 时辅助栈顶也被弹掉，第二次 pop 2 时辅助栈就已经丢了「还有一个 2 是最小」的信息。
+  这个边界是省空间写法最容易翻车的地方，所以面试<strong>首推同步压法</strong>，稳。</p>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>股票价格跨度（力扣 901，中等）</strong>——与本题共用「辅助栈同步保存信息」；差异在辅助栈存「单调递减的价格下标」，弹出比今天高的，剩余栈顶与今日下标的间隔即跨度（提示：维护一个单调递减栈（存下标），每天弹出所有价格 ≤ 今天的，跨度 = 今天下标 - 栈顶下标）。</li>
+    <li><strong>最大栈（力扣 716，中等）</strong>——与本题共用「辅助栈同步保存极值」；差异在保存的是「当前最大值」而非最小值，push / pop 同步（提示：把 155 辅助栈里的 min 换成 max 即可，其余同步压法完全一致）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">6.4</span>用栈实现队列（简单，力扣 232）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：双栈互相倒</span></p>
+
+<p><strong>题意：</strong>只给你两个栈，实现队列的 <code>push</code>/<code>pop</code>/<code>peek</code>/<code>empty</code>。
+栈是后进先出，队是先进先出，怎么用反的模拟正的？</p>
+
+<h3>思路推导</h3>
+
+<p>一个栈不够——栈顶是「最后进的」，可队列要出「最先进的」。妙招是<strong>两个栈</strong>：</p>
+
+<ul>
+  <li><code>in</code> 栈：<code>push</code> 时直接压进它（新元素都在 in 顶）；</li>
+  <li><code>out</code> 栈：要 <code>pop</code>/<code>peek</code> 时，如果 out 空，就把 in 里的元素<strong>全部倒进 out</strong>。</li>
+</ul>
+
+<p>「倒一次」会发生什么？in 里 <code>[1,2,3]</code>（1 在底、3 在顶），倒进 out 后 out 变成 <code>[3,2,1]</code>（out 顶是 1）。
+1 正好是「最先入队的」，现在在 out 顶，弹出它就是队的先进先出！</p>
+
+<pre><code class="nohl">push 1,2,3  → in=[1,2,3](顶3)，out=[]
+pop 时 out 空，把 in 倒进 out：
+  out = [3,2,1](顶1)，in=[]
+  弹出 out 顶 = 1  （正是最早进队的）✓
+再 pop → out 顶=2 ✓（不用再倒，in 还空着）
+push 4 → in=[4]
+pop → out 顶=3 ✓；pop → out 顶=4... 
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code>class MyQueue {
+    private Deque<Integer> in;   // 入队栈
+    private Deque<Integer> out;  // 出队栈
+
+    public MyQueue() {
+        in = new ArrayDeque<>();
+        out = new ArrayDeque<>();
+    }
+
+    public void push(int x) {
+        in.push(x);              // 入队只压 in
+    }
+
+    private void drain() {       // 把 in 倒进 out（仅当 out 空）
+        while (!in.isEmpty()) {
+            out.push(in.pop());
+        }
+    }
+
+    public int pop() {
+        if (out.isEmpty()) drain();
+        return out.pop();
+    }
+
+    public int peek() {
+        if (out.isEmpty()) drain();
+        return out.peek();
+    }
+
+    public boolean empty() {
+        return in.isEmpty() && out.isEmpty();
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间：<strong>摊还 O(1)</strong>。单次 pop 看似可能倒 n 个，但每个元素一辈子只被「倒一次」（从 in 到 out），
+平均下来每次操作代价是常数。空间 O(n)。
+为什么叫「摊还」？因为最坏一次 O(n)，但 n 次操作总共 O(n)，平摊每次 O(1)。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>只在该<strong>出队且 out 空</strong>时才倒。别每 push 都倒，否则退化成 O(n)。
+  倒一次的「顺序反转」正好补偿了栈的反向，这是本题的灵魂。
+</div>
+
+<h3>直觉检验：为什么「倒一次」就够了</h3>
+
+<p>有人会担心：如果 push、pop 交错很多次，会不会有元素卡在 in 里一直倒不出来？不会，原因在于<strong>顺序的单调性</strong>：
+in 栈里元素从底到顶是「早进 → 晚进」，而 out 栈需要的是「早进的在顶」。只要 out 还没空，说明「比当前更早进队的元素」都还在 out 里排着，
+in 里压根<strong>轮不到</strong>被弹出——新来的元素必须等 out 清空才能轮到它出队。所以「out 空才倒」既正确又最优，
+  每个元素一生只经历一次 in→out 的搬运。可以拿 <code>push 1, push 2, pop, push 3, pop, pop</code> 在纸上推一遍验证。</p>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>用队列实现栈（力扣 225，简单）</strong>——与本题共用「用一种结构模拟另一种（LIFO↔FIFO）」；差异在只有一个队列，靠「把前面元素重新入队转到后面」把最新元素顶到队首（提示：push 后把队里其余元素依次出队再入队，让新元素转到队首，pop 直接出队即得最后进的）。</li>
+    <li><strong>比较含退格的字符串（力扣 844，简单）</strong>——与本题共用「栈的『撤销 / 回退』思想」；差异在把退格 <code>#</code> 当成弹栈、普通字符压栈，最后比较两个栈（提示：对两个字符串各跑一遍「遇 # 弹栈、否则压栈」，再比较剩余序列是否相等）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">6.5</span>每日温度（中等，力扣 739）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：单调栈首次登场</span></p>
+
+<p><strong>题意：</strong>给每天温度，对每一天回答「还要等几天才出现更高的温度」。例：
+<code>[73,74,75,71,69,72,76,73]</code> → <code>[1,1,4,2,1,1,0,0]</code>。
+最后两天之后没有更热，答案是 0。</p>
+
+<h3>思路推导</h3>
+
+<p>暴力：对每天往后扫找第一个更大的，O(n²)，n 大就超时。怎么优化？</p>
+
+<p>核心洞察：<strong>栈里存的是「还没找到答案的那些天的下标」</strong>。我们维护一个栈，保持<strong>栈底到栈顶温度递减</strong>（单调栈）。
+从左往右走：</p>
+
+<ul>
+  <li>当前温度 <code>t</code> 比栈顶那天的温度<strong>高</strong> → 说明栈顶那天「等到了」它的更热天，就是今天！
+  算出间隔 <code>i − 栈顶下标</code>，弹出栈顶；</li>
+  <li>不断重复，直到栈顶温度 ≥ t（或栈空），再把今天下标压栈。</li>
+</ul>
+
+<p>那些一直没被弹出的（比如最后两天），永远等不到更热，答案保持默认 0。</p>
+
+<pre><code class="nohl">温度: 73 74 75 71 69 72 76 73
+下标:  0  1  2  3  4  5  6  7
+
+i=0: 栈空，压0       栈[0]
+i=1: 74>73(栈顶0) → ans[0]=1-0=1，弹0；压1   栈[1]
+i=2: 75>74(栈顶1) → ans[1]=2-1=1，弹1；压2   栈[2]
+i=3: 71<75 → 压3                           栈[2,3]  (递减)
+i=4: 69<71 → 压4                           栈[2,3,4]
+i=5: 72>69(4)→ans[4]=1; 72>71(3)→ans[3]=2; 压5  栈[2,5]
+i=6: 76>72(5)→ans[5]=1; 76>75(2)→ans[2]=4; 压6   栈[6]
+i=7: 73<76 → 压7                           栈[6,7]
+结束，栈里剩的[6,7]答案0。
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        int n = temperatures.length;
+        int[] ans = new int[n];                 // 默认 0，没找到的保持 0
+        Deque<Integer> stack = new ArrayDeque<>(); // 存「下标」
+        for (int i = 0; i < n; i++) {
+            // 当前温度更高，说明栈顶那天等到了答案
+            while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {
+                int idx = stack.pop();
+                ans[idx] = i - idx;             // 间隔天数
+            }
+            stack.push(i);                      // 今天入栈，等它自己的答案
+        }
+        return ans;
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>时间 O(n)：每个下标<strong>最多入栈一次、出栈一次</strong>，while 里弹出的是别的天的，总弹出次数 ≤ n。
+空间 O(n)：栈最坏存全部下标。为什么存「下标」不存「温度」？因为答案要的是<strong>间隔天数</strong>，得用下标相减。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>单调栈<strong>存下标</strong>而不只存值。理由有二：① 要算距离必须知道位置；
+  ② 比较时仍用 <code>temperatures[栈顶]</code> 取温度。这是单调栈的通用约定。
+</div>
+
+<h3>怎么一眼认出单调栈题</h3>
+
+<p>单调栈不是背出来的，是「认」出来的。当你读题时脑子里冒出下面这些话，就可以往单调栈想：</p>
+
+<ul>
+  <li><strong>「对每个元素，找它左边/右边第一个比它大/小的」</strong>——这是最典型的信号，如每日温度、下一个更大元素、柱状图最大矩形；</li>
+  <li><strong>「不能双重循环，否则超时」</strong>——数据量 n 到 10⁵ 还让你「比较每个元素和周围」，O(n²) 必超时，需要把某些比较「跳过」；</li>
+  <li><strong>「答案和‘顺序’有关」</strong>——比如接雨水要算左右边界、股票价格算等待天数，本质都是「找某个方向的第一个越界点」。</li>
+</ul>
+
+<p>反过来说，如果你发现自己写的是「对每个 i，内层再 for j 往后找」，先别急着交——想想能不能用单调栈把那些「永远不可能再被需要」的元素提前踢掉。
+  每日温度里，一旦遇到更高的温度，前面那些更低的就「被答案了结」，再也不用管，这就是单调栈省掉内层循环的根本原因。</p>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>下一个更大元素 I（力扣 496，简单）</strong>——与本题共用「单调栈求『右边第一个更大』」；差异在要在 nums2 里找、结果映射到 nums1 对应的数（提示：对 nums2 跑单调栈模板，用哈希表记下每个数「右边第一个更大」是谁，再查 nums1）。</li>
+    <li><strong>下一个更大元素 II（力扣 503，中等）</strong>——与本题共用「单调栈求右边第一个更大」；差异在数组是循环的，要模运算把数组「接一圈」再跑（提示：循环 i 到 2n，下标用 <code>i % n</code>，栈里仍存原下标，等第二次遇到就能看到「绕回来」的更大值）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">6.6</span>单调栈模板总结</h2>
+
+<p>每日温度只是单调栈的「求右侧第一个更大」一种。把「更大/更小」「下一个/上一个」四个方向组合，能覆盖一大类题：</p>
+
+<table>
+  <thead><tr><th style="width:230px">想要的结果</th><th>栈的单调性</th><th>触发弹出的条件</th><th>经典题</th></tr></thead>
+  <tbody>
+    <tr><td>右边第一个<strong>更大</strong></td><td>栈内<strong>递减</strong></td><td>当前 &gt; 栈顶</td><td>每日温度 739</td></tr>
+    <tr><td>右边第一个<strong>更小</strong></td><td>栈内<strong>递增</strong></td><td>当前 &lt; 栈顶</td><td>接雨水 42（部分）</td></tr>
+    <tr><td>左边第一个<strong>更大</strong></td><td>从右往左扫，栈内递减</td><td>当前 &gt; 栈顶</td><td>每日温度反过来扫</td></tr>
+    <tr><td>左边第一个<strong>更小</strong></td><td>从右往左扫，栈内递增</td><td>当前 &lt; 栈顶</td><td>柱状图 84（变体）</td></tr>
+  </tbody>
+</table>
+
+<h3>一个完整例子：套模板算一遍</h3>
+
+<p>拿 <code>nums = [2, 1, 2, 4, 3]</code> 跑一遍「求右边第一个更大」的模板，把每一步栈和结果写出来，你会发现规律特别整齐：</p>
+
+<pre><code class="nohl">i=0 值2: 栈空，压0            栈[0]
+i=1 值1: 1<2(栈顶) 压1        栈[0,1]
+i=2 值2: 2>1(栈顶1)→res[1]=2; 2==2(栈顶0)不弹; 压2   栈[0,2]
+i=3 值4: 4>2(2)→res[2]=3; 4>2(0)→res[0]=3; 压3      栈[3]
+i=4 值3: 3<4(3) 压4          栈[3,4]
+结束: 栈里[3,4]没被弹 → res[3]=res[4]=-1
+结果: [3, 2, 3, -1, -1]
+含义: 2右边第一个更大是下标3的值4; 1右边第一个更大是下标2的值2; 4和3右边没有更大 → -1。
+</code></pre>
+
+<p>多跑几遍这种小例子，比背模板管用——你会真正「看见」栈是怎么帮你跳过那些不可能再被需要的元素的。</p>
+
+<p>一套通用骨架（以「求每个元素右边第一个更大的下标」为例）：</p>
+
+<pre><code>// 通用模板：求每个元素「右边第一个更大」的下标（没有则 -1）
+int[] nextGreater(int[] nums) {
+    int n = nums.length;
+    int[] res = new int[n];
+    Arrays.fill(res, -1);                  // 默认没有更大的
+    Deque<Integer> stack = new ArrayDeque<>();
+    for (int i = 0; i < n; i++) {
+        while (!stack.isEmpty() && nums[i] > nums[stack.peek()]) {
+            int idx = stack.pop();
+            res[idx] = i;                  // 当前 i 是 idx 右边第一个更大
+        }
+        stack.push(i);
+    }
+    return res;
+}
+</code></pre>
+
+<div class="tip">
+  <strong>怎么判断用不用单调栈：</strong>题目如果是「找每个元素<strong>左边/右边第一个比它大/小的</strong>」，
+  且暴力是 O(n²)，八成就是单调栈。记住一句话——<strong>栈里永远留着「还没找到答案的那些位置」</strong>。
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">6.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>空栈先 pop：</strong>任何 <code>pop()</code>/<code>peek()</code> 前先 <code>isEmpty()</code> 判断，
+    否则 <code>EmptyStackException</code>（实际 ArrayDeque 抛 NoSuchElementException）。</li>
+    <li><strong>单调栈存值还是存下标：</strong>凡是答案需要「位置/距离」，必须存下标，比较时用原数组取数。
+    只存值会算不出间隔。</li>
+    <li><strong>Deque 的 push/pop 与 addFirst 混用：</strong><code>push</code>=<code>addFirst</code>、<code>pop</code>=<code>removeFirst</code>、<code>peek</code>=<code>peekFirst</code>。
+    当栈用时统一用 push/pop/peek；当队列用 offer/poll/peek。别混，容易自己绕晕。</li>
+    <li><strong>单调栈单调性写反：</strong>求「更大」用递减栈（当前大才弹），求「更小」用递增栈。写反会得到相反结果且不易察觉。</li>
+    <li><strong>最小栈辅助栈不同步：</strong>pop 时忘了辅助栈一起弹，或只在新最小才压——后者 pop 时要判断弹不弹，逻辑易错。同步压法最稳。</li>
+    <li><strong>用栈实现队列频繁倒：</strong>每 push 都倒会退化成 O(n)。只在 out 空时倒一次。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">6.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.（动手题）用栈判断字符串 <code>"([{()}])"</code> 是否合法。写出栈的变化过程，并指出哪一步决定了最后返回 true。</p>
+  <div class="qa-a">
+    <p>过程：压 ( [ {，遇到 } 弹 { 匹配、遇到 ) 弹 ( 匹配、遇到 ] 弹 [ 匹配；扫完栈空 → 返回 <code>stack.isEmpty()</code> 为 true。
+    关键在最后那句 <code>return stack.isEmpty()</code>——它确认所有左括号都被配对掉了。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 每日温度里，如果数组本来就是<strong>严格递减</strong>的（如 5,4,3,2,1），栈会怎样？答案数组是什么？</p>
+  <div class="qa-a">
+    <p>每个新元素都比栈顶小，永远不会触发弹出，全部下标依次入栈，最后栈里有 5 个元素都没被弹。
+    答案数组全 0（谁都没等到更热的天）。这也印证了「栈里留的是还没找到答案的位置」。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.（动手题）最小栈为什么辅助栈「即使不是新最小也压旧值」？如果不压（只在更小才压），pop 时该怎么处理？</p>
+  <div class="qa-a">
+    <p>同步压是为了让辅助栈和数据栈<strong>高度一致</strong>，pop 时直接一起弹、getMin 永远看栈顶，零判断。
+    若不压：push 时仅当 <code>val ≤ 当前最小</code> 才压辅助栈；pop 时若弹出的正是当前最小（<code>stack.peek()==minStack.peek()</code>），
+    再把辅助栈弹一次，否则只弹数据栈。能省空间但 pop 逻辑更绕，面试易错。</p>
+  </div>
+</div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「看到『找每个元素左边/右边第一个比它大/小的』，我该想到什么？」</em>
+  答案：单调栈——栈里始终保留「还没找到答案的位置」，根据要找更大还是更小决定栈是递减还是递增。
+  能独立写出有效括号、最小栈、每日温度，并默出单调栈模板，就进 <a href="ch07.html">专题 07 · 二叉树</a>。
+</div>

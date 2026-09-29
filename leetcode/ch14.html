@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 14 · 位运算 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link active" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <div class="sb-sub">
+      <a href="#s1">14.1 位运算的本质：直接操作二进制</a>
+      <a href="#s2">14.2 六个常用技巧</a>
+      <a href="#s3">14.3 位 1 的个数（简单）</a>
+      <a href="#s4">14.4 只出现一次的数字（简单）</a>
+      <a href="#s5">14.5 2 的幂（简单）</a>
+      <a href="#s6">14.6 丢失的数字（简单）</a>
+      <a href="#s7">14.7 本专题常见坑</a>
+      <a href="#s8">14.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 14</div>
+  <h1><span class="ch-tag">专题 14</span>位运算</h1>
+  <p class="lead">前面的专题我们都在和「数」打交道——用哈希存值、用前缀和累加。这一章我们换一个更底层的视角：<strong>直接去拨弄整数在内存里的那一个个二进制位</strong>。
+  位运算（bitwise）不是什么黑魔法，它就是几条作用在 0/1 上的硬件指令：与、或、异或、移位。它们的特点是<strong>极快</strong>（一个 CPU 周期就能完成），而且能写出「用加减乘除怎么想都想不出来」的巧妙解法。
+  这一章你会明白：为什么「找落单的数」用异或一行就够、为什么「判断是不是 2 的幂」只要一次位与。学会它，你手里就多了一把专门对付「成对 / 2 的幂 / 状态开关」这类问题的快刀。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握 6 个位运算技巧，独立写 4 题</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 01 数组、专题 02 哈希表</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 道题推导 + 可提交 Java 代码</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">14.1</span>位运算的本质：直接操作二进制</h2>
+
+<p>要理解位运算，先得想清楚「计算机里的整数到底长什么样」。<strong>整数在内存里是按二进制补码存储的</strong>——比如十进制的 12，在 32 位里就是 <code>...00001100</code>，从左到右是「第 31 位、第 30 位……第 1 位、第 0 位」。
+我们平时写的 <code>a + b</code>、<code>a * 2</code>，CPU 要先做一串算数逻辑；而位运算 <code>a &amp; b</code>、<code>a &gt;&gt; 1</code> 是直接对这串 0/1 逐位操作的——<strong>它是离硬件最近的一层操作，所以又快又省</strong>。</p>
+
+<h3>为什么位运算快</h3>
+
+<p>「右移一位」在电路上就是把那串比特往右挪一格，一个时钟周期搞定；而「除以 2」在软件层面要经历除法器的一系列步骤，慢得多。同理，「判断奇偶」用 <code>n &amp; 1</code> 取末位，比 <code>n % 2</code> 取模快——取模本质是做除法。
+当然，现代 JVM 很聪明，很多时候会把 <code>n % 2</code>、<code>n / 2</code> 自动优化成位运算。但<strong>位运算真正的价值不止是快，更是能表达「逐位思维」</strong>：当你需要「数一个数里有几个 1」「把成对的消掉」「把某个开关拨到开 / 关」时，位运算是最自然的语言。</p>
+
+<h3>什么时候该想到位运算</h3>
+
+<p>看到下面这些「信号」，别急着上哈希和循环，先想想能不能用位来解决：</p>
+
+<ul>
+  <li><strong>「成对出现，只有一个落单」</strong>——所有数都出现偶数次、或都成对，只有一个特殊。异或（相同为 0、不同为 1）天生擅长「抵消成对」，见 14.4、14.6。</li>
+  <li><strong>「判断是不是 2 的幂 / 4 的幂」</strong>——2 的幂的二进制<strong>只有一个 1</strong>，这个结构用一次 <code>n &amp; (n-1)</code> 就能识别，见 14.5。</li>
+  <li><strong>「状态开关 / 多标志位」</strong>——用一个数的不同位表示多个布尔状态（比如第 0 位表示「是否访问过」），用 <code>|</code> 打开、<code>&amp;</code> 读取、<code>^</code> 翻转。</li>
+  <li><strong>「快速除 2 / 乘 2 / 取末位」</strong>——移位比乘除高效，且能避免浮点。</li>
+  <li><strong>「统计某些二进制特征」</strong>——如「有几个 1」「最低位的 1 在哪」，只能用位运算高效做，见 14.3 与 14.2 的 <code>n &amp; -n</code>。</li>
+</ul>
+
+<div class="tip">
+  <strong>一句话提醒：</strong>位运算不是「更难的算法」，而是「换一种观察角度」。当你发现题目里反复出现「成对」「只有一个」「2 的幂」「开关」这些词，先默念一句「<em>这题会不会是位运算？</em>」，往往能省下大半功夫。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">14.2</span>六个常用技巧</h2>
+
+<p>位运算的工具箱不大，但高频的就这几个。下面这张表是整章的「字典」，建议背下来——后面每一题都是其中一个或两个的组合。</p>
+
+<table>
+  <thead><tr><th style="width:210px">技巧</th><th style="width:230px">写法</th><th>作用 / 直觉</th></tr></thead>
+  <tbody>
+    <tr><td>判奇偶</td><td><code>n &amp; 1</code></td><td>取末位：末位 0 是偶数，1 是奇数</td></tr>
+    <tr><td>除 2（向下取整）</td><td><code>n &gt;&gt; 1</code></td><td>右移一位，丢弃末位，等价于 n/2</td></tr>
+    <tr><td>去掉最低位的 1</td><td><code>n &amp; (n - 1)</code></td><td>把最右边那个 1 抹成 0</td></tr>
+    <tr><td>取出最低位的 1</td><td><code>n &amp; (-n)</code></td><td>只保留最右边那个 1，其余清零</td></tr>
+    <tr><td>异或三性质</td><td><code>a^a=0, a^0=a, 交换/结合</code></td><td>成对抵消、与 0 不变、顺序无关</td></tr>
+    <tr><td>判断 2 的幂</td><td><code>(n &amp; (n-1)) == 0 &amp;&amp; n &gt; 0</code></td><td>2 的幂二进制只有一个 1</td></tr>
+  </tbody>
+</table>
+
+<p>下面用 <strong>12（二进制 <code>1100</code>）</strong> 把每个技巧都跑一遍，建立肌肉记忆。注意这里 12 是 4 位视角，高位全是 0，我们只看低 4 位。</p>
+
+<h3>① n &amp; 1 判奇偶</h3>
+
+<pre><code class="nohl">12 的二进制:  1100
+            &amp; 0001   (即 1)
+            ------
+              0000   → 结果为 0，说明 12 是偶数
+原理：末位是 0 → 偶数；末位是 1 → 奇数</code></pre>
+
+<h3>② n &gt;&gt; 1 除 2</h3>
+
+<pre><code class="nohl">12 的二进制:  1100
+右移一位:     0110   → 即十进制的 6，正好是 12/2
+注意：这是「向下取整」的除法，13 &gt;&gt; 1 = 6（不是 6.5）</code></pre>
+
+<h3>③ n &amp; (n - 1) 去最低位 1</h3>
+
+<pre><code class="nohl">12  = 1100
+12-1= 1011   （减 1 把最低位的 1 变成 0，其右边的 0 全翻成 1）
+12 &amp; (12-1):
+  1100
+&amp; 1011
+  ------
+  1000   → 8，原来最右边的那个 1 被抹掉了</code></pre>
+
+<h3>④ n &amp; (-n) 取最低位 1</h3>
+
+<pre><code class="nohl">12  = ...00001100
+-n  = 补码(~n + 1) = ...11110100   （取反加一）
+12 &amp; -12:
+  00001100
+&amp; 11110100
+  --------
+  00000100   → 4，恰好是「最低位那个 1」所代表的值</code></pre>
+
+<p>为什么 <code>n &amp; -n</code> 能「掏出」最低位的 1？补码 <code>-n = ~n + 1</code> 有个性质：<code>~n</code> 把 n 的所有位取反，于是 n 里最低位的 1 在 <code>~n</code> 里是 0，且其右边全是 1；加 1 之后，右边那些 1 又进位变回 0，最低位 1 的位置变成 1。所以 <code>~n+1</code> 和 n 只有在「最低位 1」那一位<strong>同为 1</strong>，其余位都相反，<code>&amp;</code> 一下就只留下它。</p>
+
+<h3>⑤ 异或三性质</h3>
+
+<pre><code class="nohl">a ^ a = 0      （相同的两个数异或，每一位都相同 → 全 0）
+a ^ 0 = a      （和 0 异或，原样不变）
+a ^ b = b ^ a  （交换律；还有结合律 a^(b^c)=(a^b)^c）
+直觉：异或就是「无进位的加法」，相同抵消、不同保留</code></pre>
+
+<h3>⑥ 判 2 的幂</h3>
+
+<pre><code class="nohl">8  = 1000  → 8 &amp; 7  = 1000 &amp; 0111 = 0000 → 是 2 的幂
+6  = 0110  → 6 &amp; 5  = 0110 &amp; 0101 = 0100 ≠ 0 → 不是 2 的幂
+原理：2 的幂的二进制「恰好只有一个 1」，而 n-1 会把那一个 1 变 0、右边全变 1，
+      两者 &amp; 起来所有位都是 0</code></pre>
+
+<div class="tip">
+  <strong>记忆口诀：</strong>「<em>&amp;1 看奇偶，&gt;&gt;1 砍一半，&amp;(n-1) 抹最低 1，&amp;-n 掏最低 1，异或成对消，&amp;(n-1)==0 验 2 的幂</em>」。这六句话背熟，14.3~14.6 四题就都在射程内了。
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">14.3</span>位 1 的个数（简单，力扣 191）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：n &amp; (n-1) 每次消一个 1，消几次就有几个 1</span></p>
+
+<p><strong>题意：</strong>给定一个<strong>无符号</strong> 32 位整数 <code>n</code>，返回其二进制表示中 <code>1</code> 的个数（也叫「汉明重量 / Hamming weight」）。
+例如 <code>n = 11</code>（二进制 <code>1011</code>，有 3 个 1），返回 3；<code>n = 128</code>（二进制 <code>10000000</code>，1 个 1），返回 1。</p>
+
+<h3>思路推导：从逐位检查到「消 1 计数」</h3>
+
+<p><strong>暴力法：</strong>不断对 n 取模 2、再除以 2，统计末位为 1 的次数。即 <code>while (n &gt; 0) { if (n % 2 == 1) cnt++; n /= 2; }</code>。
+这要循环「二进制位数」次（最多 32 次），可行但不是最优——因为它把<strong>每一位</strong>（包括大量的 0）都检查了一遍。</p>
+
+<p><strong>关键观察（优化）：</strong>我们其实<strong>只关心 1 在哪</strong>。14.2 学了 <code>n &amp; (n-1)</code> 能「抹掉最低位的那个 1」。那我们何不<strong>每消掉一个 1 就计一次数</strong>？这样循环次数只等于「1 的个数」，n 里 0 再多也不影响。</p>
+
+<p>为什么 <code>n &amp; (n-1)</code> 每次<strong>恰好</strong>消掉一个 1？把 n 写成「<code>...a1000</code>」的形式，其中 <code>a</code> 是更左边的位，右边最低的 1 后面跟若干 0。减 1 时：最低位的 1 变成 0，它右边的所有 0 全部借位变成 1，得到「<code>...a0111</code>」。两者做 <code>&amp;</code>：</p>
+
+<pre><code class="nohl">n    = ...a 1 0 0 0
+n-1  = ...a 0 1 1 1
+n&amp;(n-1) = ...a 0 0 0 0   ← 最低位那个 1 被抹掉了，左边 a 原样保留</code></pre>
+
+<p>可见每次 <code>n = n &amp; (n-1)</code>，n 里就少一个 1，直到 n 变成 0（1 全消完）。循环体执行几次，就有几个 1。这正是「<em>只数 1、跳过 0</em>」的精髓。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">public</span> <span class="kw">class</span> Solution {
+    <span class="cm">// 统计无符号整数 n 的二进制中 1 的个数</span>
+    <span class="kw">public</span> <span class="kw">int</span> hammingWeight(<span class="kw">int</span> n) {
+        <span class="kw">int</span> cnt = 0;                 <span class="cm">// 记录 1 的个数</span>
+        <span class="kw">while</span> (n != 0) {             <span class="cm">// 只要还有 1 没消完就继续</span>
+            n = n &amp; (n - 1);         <span class="cm">// 抹掉最低位的那一个 1</span>
+            cnt++;                   <span class="cm">// 每抹掉一个，计数 +1</span>
+        }
+        <span class="kw">return</span> cnt;                  <span class="cm">// n 归零时，cnt 就是 1 的总个数</span>
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(k)，k 是 n 中 1 的个数，最多 32 次；空间 O(1)。
+对比暴力法的「固定 32 次」，当 n 中 1 很少时（比如 <code>1000...000</code>）本方法只循环 1 次，差距明显。本质上我们不再浪费时间去数那些 0。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>本法的循环条件用 <code>n != 0</code> 而非 <code>n &gt; 0</code>，因为输入是「无符号」整数，n 可能很大（最高位为 1 时作为有符号 int 会是负数）。用 <code>!= 0</code> 能正确处理无符号语义。
+  另外，<code>n &amp; (n-1)</code> 这种「消 1」套路在 14.5 判断 2 的幂时还会再用到，是位运算里最高频的变形之一。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>颠倒二进制位（力扣 190，简单）</strong>——与本题共用「逐位处理二进制」技巧；差异在不是计数而是把 32 位整体反转（提示：初始化 ans=0，循环 32 次，每次把 ans 左移一位、再把 n 的最低位塞进去 ans |= (n &amp; 1)，然后 n &gt;&gt;= 1；注意用无符号右移）。</li>
+    <li><strong>比特位计数（力扣 338，简单）</strong>——共用「n &amp; (n-1) 消 1」技巧，但更优解用 DP；差异在要返回 0~n 每个数的 1 的个数（提示：观察到 <code>dp[i] = dp[i &amp; (i-1)] + 1</code>，因为 i 比「消掉最低位 1 后的数」正好多一个 1，O(n) 一遍出）。</li>
+    <li><strong>汉明距离（力扣 461，简单）</strong>——共用「数 1 的个数」技巧；差异在两数的汉明距离等于它们异或后 1 的个数（提示：先 <code>x ^ y</code>，再对结果用 191 的方法数 1，异或把「不同位」标成了 1）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">14.4</span>只出现一次的数字（简单，力扣 136）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：异或三性质，成对的数互相抵消，只剩落单的</span></p>
+
+<p><strong>题意：</strong>给定一个<strong>非空</strong>整数数组，除了某一个元素只出现一次外，<strong>其余每个元素都恰好出现两次</strong>，找出那个只出现一次的元素。要求<strong>线性时间、且只用 O(1) 额外空间</strong>。
+例如 <code>nums = [4, 1, 2, 1, 2]</code>，只有 4 落单，返回 4；<code>nums = [2, 2, 1]</code> 返回 1。</p>
+
+<h3>思路推导：从哈希到异或</h3>
+
+<p><strong>暴力 / 常规思路：</strong>用哈希表统计每个数出现次数，扫一遍找到次数为 1 的。时间 O(n) 没问题，但空间 O(n)——题目明确要求 O(1) 空间，哈希不行。
+或者用排序，相同数会挨在一起再扫描，时间 O(n log n)、空间 O(1)，但没利用到「恰好出现两次」这个强条件。</p>
+
+<p><strong>关键观察：</strong>「每个数都出现两次，只有一个出现一次」——这正是 14.2 里异或三性质的完美用场：</p>
+
+<ul>
+  <li><code>a ^ a = 0</code>：两个相同的数异或，直接变成 0，相当于「成对的互相抵消」。</li>
+  <li><code>a ^ 0 = a</code>：0 和任何数异或，原数不变，相当于「落单的保留下来」。</li>
+  <li>交换律 / 结合律：异或的顺序不影响结果，所以谁先谁后抵消都行。</li>
+</ul>
+
+<p>于是把所有数从头到尾异或一遍：成对的都变成 0，0 再和那个落单数异或，结果就是落单数本身。<strong>整个过程只用一个变量，空间 O(1)</strong>。</p>
+
+<pre><code class="nohl">示例 nums = [4, 1, 2, 1, 2]：
+4 ^ 1 ^ 2 ^ 1 ^ 2
+= 4 ^ (1 ^ 1) ^ (2 ^ 2)     // 交换/结合，把相同的凑一起
+= 4 ^ 0 ^ 0
+= 4                          // 落单的 4 被保留</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> singleNumber(<span class="kw">int</span>[] nums) {
+        <span class="kw">int</span> ans = 0;                 <span class="cm">// 初始为 0（a^0=a，0 不影响结果）</span>
+        <span class="kw">for</span> (<span class="kw">int</span> x : nums) {
+            ans ^= x;                <span class="cm">// 逐个异或：成对的抵消成 0，落单的留下来</span>
+        }
+        <span class="kw">return</span> ans;                  <span class="cm">// 最终剩下的就是只出现一次的数</span>
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(n)（一遍遍历）；空间 O(1)（只用了 ans 一个变量）。
+这是「用位运算把空间压到极致」的经典案例——哈希要 O(n) 空间，异或只要 O(1)，而且思路比哈希更优雅。</p>
+
+<div class="warn">
+  <strong>前提条件别忘：</strong>本解法<em>强依赖</em>「其余每个元素恰好出现两次」。如果出现三次、或有两个落单数，异或就不成立了（两个落单数会互相留下）。遇到「出现三次只一个落单」要用另一种思路（见 drill 的 137），遇到「两个落单」用分组异或（见 drill 的 260）。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>只出现一次的数字 II（力扣 137，中等）</strong>——与本题同源但「其余出现三次」；差异在不能用一次异或解决（提示：统计每一位上 1 的个数，若某位 1 的个数不是 3 的倍数，说明落单数该位为 1，逐位拼回答案；或用「状态机 / 三进制」技巧）。</li>
+    <li><strong>只出现一次的数字 III（力扣 260，中等）</strong>——与本题同源但「有两个落单数」；差异在要把两个落单数分开（提示：全员异或得到 a^b，找到 a^b 中最低位的 1 作为分组标志，按该位把数组分成两组，每组各含一个落单，分别异或即得）。</li>
+    <li><strong>丢失的数字（力扣 268，简单）</strong>——可共用「异或抵消」思想（见 14.6），把 0~n 与数组元素一起异或，成对抵消后剩缺失值。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">14.5</span>2 的幂（简单，力扣 231）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：2 的幂的二进制只有一个 1，用 n &amp; (n-1) == 0 识别</span></p>
+
+<p><strong>题意：</strong>给定一个整数 <code>n</code>，判断它是否是 <strong>2 的幂</strong>（即存在整数 k 使 n = 2^k）。是返回 <code>true</code>，否则 <code>false</code>。
+例如 <code>n = 1</code>（2⁰）返回 true，<code>n = 16</code>（2⁴）返回 true，<code>n = 3</code>、<code>n = 0</code>、<code>n = -16</code> 都返回 false。</p>
+
+<h3>思路推导：从循环除 2 到一次位与</h3>
+
+<p><strong>暴力法：</strong>不断把 n 除以 2，看最后能否到 1 且没有余数；或枚举 <code>1, 2, 4, 8...</code> 比较。时间 O(log n)，还要处理负数和 0 的边界，写起来啰嗦。</p>
+
+<p><strong>关键观察：</strong>2 的幂在二进制里有极其显著的特征——<strong>它恰好只有一个 1</strong>。比如：</p>
+
+<pre><code class="nohl">1  = 0001
+2  = 0010
+4  = 0100
+8  = 1000
+16 = 10000</code></pre>
+
+<p>而 14.2 学过：<code>n &amp; (n-1)</code> 会「抹掉最低位的那个 1」。如果 n 本来就只有一个 1，抹掉之后就变成 0；如果 n 不止一个 1（比如 6 = <code>0110</code>），抹掉最低位 1 后还剩别的 1，结果就不是 0。</p>
+
+<pre><code class="nohl">8  = 1000,  8-1 = 0111,  8 &amp; 7  = 0000  → 0，是 2 的幂
+6  = 0110,  6-1 = 0101,  6 &amp; 5  = 0100  → 非 0，不是 2 的幂</code></pre>
+
+<p>所以判断条件就是 <code>(n &amp; (n-1)) == 0</code>。但还差一个关键补充：<strong>n 必须大于 0</strong>。因为 <code>n = 0</code> 时 <code>0 &amp; (-1) = 0</code> 也会成立，可 0 不是 2 的幂；负数更不是。所以完整条件是 <code>n &gt; 0 &amp;&amp; (n &amp; (n-1)) == 0</code>。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">boolean</span> isPowerOfTwo(<span class="kw">int</span> n) {
+        <span class="cm">// 必须 n&gt;0：排除 0 和负数（0 &amp; (0-1) 也等于 0，会误判）</span>
+        <span class="cm">// n &amp; (n-1) == 0：保证二进制里「只有一个 1」</span>
+        <span class="kw">return</span> n &gt; 0 &amp;&amp; (n &amp; (n - 1)) == 0;
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(1)（就一次位与和一次比较）；空间 O(1)。
+对比暴力除 2 的 O(log n)，这是降维打击——把「判断数学性质」直接翻译成「看一个位结构」，常数时间搞定。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>千万别漏掉 <code>n &gt; 0</code>。单独看 <code>n &amp; (n-1) == 0</code> 对 <code>n=0</code> 也成立（0 没有 1 可抹），但它不是 2 的幂。写成 <code>n &gt; 0 &amp;&amp; ...</code> 把 0 和负数一并挡掉。
+  顺带一提，等价写法还有 <code>(n & -n) == n</code>（用 14.2 的取最低位 1 技巧），但 <code>n&gt;0 &amp;&amp; n&amp;(n-1)==0</code> 更直观好记。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>3 的幂（力扣 326，简单）</strong>——与本题同构（判断某底数的幂）；差异在 3 不是 2 的幂，不能直接用位运算，要用循环除 3 或「最大 3 的幂能否整除 n」（提示：int 范围内最大 3 的幂是 1162261467，若 n&gt;0 且它能被 n 整除则 n 是 3 的幂）。</li>
+    <li><strong>4 的幂（力扣 342，简单）</strong>——共用「先判 2 的幂」技巧；差异在 4 的幂那个唯一的 1 必须在<strong>偶数位</strong>（提示：先 <code>n&gt;0 &amp;&amp; n&amp;(n-1)==0</code>，再用 <code>n &amp; 0x55555555 != 0</code> 验证 1 落在奇（偶）数位置，因为 4^k 的 1 总在第 0、2、4… 位）。</li>
+    <li><strong>位 1 的个数（力扣 191，简单）</strong>——共用「n &amp; (n-1)」技巧，方向相反（提示：191 用它来<em>计数</em> 1 的个数，本题用它来<em>验证</em> 1 的个数为 1，同一招两种用法）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">14.6</span>丢失的数字（简单，力扣 268）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：异或法——下标与值一起异或，成对的抵消，剩缺失的</span></p>
+
+<p><strong>题意：</strong>给定一个包含 <code>[0, n]</code> 中 <code>n</code> 个数的数组 <code>nums</code>（长度为 n），<code>[0, n]</code> 这 n+1 个整数里<strong>恰好缺了一个</strong>，找出这个缺失的数。
+例如 <code>nums = [3, 0, 1]</code>（n=3，本应有 0,1,2,3），缺 2，返回 2；<code>nums = [0, 1]</code> 缺 2，返回 2；<code>nums = [9,6,4,2,3,5,7,0,1]</code>（n=9）缺 8，返回 8。</p>
+
+<h3>思路推导：从求和到异或</h3>
+
+<p><strong>方法一（求和法）：</strong>0 到 n 的总和公式 <code>n*(n+1)/2</code>，减去数组所有元素的和，差就是缺失值。时间 O(n)、空间 O(1)，很直观。但它有个隐患：<strong>当 n 较大时 <code>n*(n+1)/2</code> 会超过 int 范围导致溢出</strong>（虽然 268 题 n≤10⁴ 还安全，但这种写法换个更大的数据就翻车）。</p>
+
+<p><strong>方法二（异或法，更稳）：</strong>把「缺失」看成另一种「成对抵消」问题。如果 0~n 每个数都出现且数组也包含它们，那把所有「<strong>下标 i</strong>」和「<strong>nums[i] 的值</strong>」以及最后的 n 一起异或，会怎样？</p>
+
+<p>技巧在于：正常的配对是「下标 i 配对数值 i」。数组里大多数数值都能和某个下标配对抵消；<strong>唯一和任何下标都配不上的，就是缺失的那个值</strong>。具体做法：</p>
+
+<pre><code class="nohl">令 ans = 0
+先 ans ^= n                      （把最大的那个数 n 放进去）
+对 i 从 0 到 n-1：
+    ans ^= i ^ nums[i]           （下标 i 和 它对应的数值 nums[i] 一起异或）
+结束时，成对的都抵消为 0，剩下的就是缺失的数</code></pre>
+
+<p>为什么？数组有 n 个元素、下标 0~n-1；而完整集合是 0~n 共 n+1 个数。下标 0~n-1 这 n 个「位置」会和数组中 n 个值配对：数组中<strong>存在的</strong>每个值 v，都会在某个 i 处作为 nums[i] 出现，于是 <code>i ^ nums[i]</code> 里如果 v 恰好等于某个下标，就抵消了……更严谨地说：把所有下标 0..n-1、所有 nums[i]、以及 n 这 (n) + (n) + 1 个数全部异或，每个「在数组里出现的值」都和「它的某个下标」同值相消，最终只剩「没有下标跟它配对的值」——也就是缺失的那个数。配合 14.4 的 <code>a^a=0, a^0=a</code>，结果水落石出。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> missingNumber(<span class="kw">int</span>[] nums) {
+        <span class="kw">int</span> ans = nums.length;      <span class="cm">// 先把 n（即 nums.length）放进 ans</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; nums.length; i++) {
+            ans ^= i;               <span class="cm">// 异或下标 i</span>
+            ans ^= nums[i];         <span class="cm">// 异或它对应的值 nums[i]</span>
+        }
+        <span class="kw">return</span> ans;                 <span class="cm">// 成对的抵消完，剩下缺失的数</span>
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(n)（一遍遍历）；空间 O(1)（只用 ans）。
+相比求和法，<strong>异或不会溢出</strong>——它不累积大小，只做位翻转，这对大 n 尤其安全。这也是为什么很多官方题解更偏爱异或。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>异或法把「缺失值」巧妙地转化成了「没有配对的下标 / 数值」。记住三句话：① 初始化 <code>ans = n</code>；② 循环里 <code>ans ^= i ^ nums[i]</code>；③ 返回 ans。
+  如果更习惯求和法，务必注意在 n 可能很大时用 <code>long</code> 存总和防止溢出。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>找到所有消失的数字（力扣 448，简单）</strong>——与本题同源（缺失检测），但返回<strong>所有</strong>缺失值；差异在允许原地修改数组做「标记」（提示：遍历时把 <code>nums[abs(nums[i])-1]</code> 取负作标记，第二轮扫到正数说明该下标+1 缺失；也可继续用异或但需逐位分组，标记法更直白）。</li>
+    <li><strong>只出现一次的数字（力扣 136，简单）</strong>——共用「异或抵消」思想（见 14.4）；差异在 136 是「成对出现只一个落单」，本题是「完整集合缺一」用下标补足配对。</li>
+    <li><strong>错误的集合（力扣 645，简单）</strong>——共用「缺失 + 重复」检测；差异在数组 1~n 既缺一个又多一个重复的，可用异或或标记法同时找出缺失和重复（提示：用 448 的取负标记法，正数位是缺失、被两次取负的位置是重复）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">14.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>坑一：负数右移补符号位，循环可能死。 </strong>
+      Java 的 <code>&gt;&gt;</code> 是<strong>算术右移</strong>，右移时空出来的高位补的是<strong>符号位</strong>（负数补 1）。如果你写 <code>while (n != 0) { n &gt;&gt;= 1; }</code> 且 n 是负数，高位会一直补 1，n 永远变不成 0，<strong>死循环</strong>。
+      处理无符号语义或想「纯逻辑右移」时要用 <code>&gt;&gt;&gt;</code>（逻辑右移，高位补 0）。191 题用 <code>n &amp; (n-1)</code> 不会出现这个坑，但若你用「逐位右移统计」的写法，务必用 <code>&gt;&gt;&gt;</code>。</li>
+    <li><strong>坑二：<code>&amp;</code> 优先级低于 <code>==</code>，必须加括号。 </strong>
+      Java 里 <code>&amp;</code>、<code>|</code>、<code>^</code> 的优先级都<strong>低于比较运算符</strong>。写 <code>if (n &amp; 1 == 0)</code> 会被解析成 <code>if (n &amp; (1 == 0))</code> = <code>if (n &amp; false)</code>，直接编译错误或逻辑全错。
+      正确写法是 <code>if ((n &amp; 1) == 0)</code>——<strong>凡是位运算和比较放一起，位运算两侧先加括号</strong>。这是位运算题里最容易被忽略、却必炸的坑。</li>
+    <li><strong>坑三：<code>n &amp; -n</code> 在 n = 0 时失效。 </strong>
+      <code>n &amp; -n</code> 用来「取最低位的 1」，但 <code>0 &amp; -0 = 0 &amp; 0 = 0</code>，这时「结果 0」表达的是「没有 1」，并不是某个低位的 1。如果你的逻辑依赖「取到的 1 的值 &gt; 0」来推进，在 n=0 上会卡住或误判。使用前先确认 n≠0，或加 <code>if (n == 0) return ...</code> 兜底。</li>
+    <li><strong>坑四：忘记排除 n ≤ 0（2 的幂 / 4 的幂）。 </strong>
+      只写 <code>n &amp; (n-1) == 0</code> 对 <code>n=0</code> 也成立，对负数（如 -8，补码低位也满足形态）也可能误判。判 2 的幂一定带上 <code>n &gt; 0</code>，判 4 的幂同理且还要验证 1 落在正确位置。</li>
+    <li><strong>坑五：把异或当加法 / 当普通减法。 </strong>
+      异或是「无进位加法」，<code>a ^ b</code> 不等于 <code>a + b</code>，也不等于 <code>a - b</code>。它只适合「成对抵消」语义。不要因为 <code>x ^ x = 0</code> 就以为能用异或做累计求和——一旦有重复值就不是「抵消」而是乱套。</li>
+    <li><strong>坑六：移位位数超过类型宽度。 </strong>
+      <code>n &gt;&gt; 32</code> 对 int 而言实际移的是 <code>32 &amp; 31 = 0</code> 位（Java 对移位量取模 32），不是你以为的「清空」。需要整体清零请用赋值 0，别指望移 32 位。</li>
+  </ul>
+</div>
+
+<div class="warn">
+  <strong>优先级表记一句：</strong>Java 里运算符优先级大致是「<code>()</code> &gt; 单目（<code>~</code>、<code>!</code>）&gt; 乘除 &gt; 加减 &gt; 移位（<code>&gt;&gt;</code> 等）&gt; 关系（<code>==</code>、<code>&lt;</code>）&gt; 位与 <code>&amp;</code> &gt; 位异或 <code>^</code> &gt; 位或 <code>|</code> &gt; 逻辑与 <code>&amp;&amp;</code>」。
+  所以<em>任何「位运算 + 比较」的表达式，永远先把位运算用括号包起来</em>，这是保命习惯。
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">14.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.【动手题】只用位运算（不允许用 <code>%</code>、<code>/</code>、<code>*</code>），写一个函数判断一个整数是奇数还是偶数，并解释为什么这样写是对的。</p>
+  <div class="qa-a">
+    <p>用 <code>(n &amp; 1) == 1</code> 判奇数、<code>(n &amp; 1) == 0</code> 判偶数（注意加括号）。原理：二进制末位为 1 是奇数、为 0 是偶数，<code>n &amp; 1</code> 把除末位外的所有位都 &amp; 成 0，只留下末位，于是结果只能是 0 或 1，直接反映奇偶。它比 <code>n % 2</code> 更接近硬件，且避免了除法。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 为什么 <code>n &amp; (n-1)</code> 能判断 2 的幂，但必须同时写 <code>n &gt; 0</code>？请用 n=0 和 n=8 分别演示。</p>
+  <div class="qa-a">
+    <p>n=8（<code>1000</code>）：<code>8-1=7（0111）</code>，<code>8 &amp; 7 = 0000</code>，且 8&gt;0，判定为 2 的幂，正确。n=0：<code>0-1=-1</code>，<code>0 &amp; -1 = 0</code> 也满足「等于 0」，但 0 并不是 2 的幂。所以若不写 <code>n &gt; 0</code>，0 会被误判成 true。负数同理（补码形态也可能满足等式），也必须被 <code>n &gt; 0</code> 挡掉。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.【动手题】把 136「只出现一次的数字」改成「有两个数各出现一次、其余都出现两次」，思路上要增加哪一步？写出关键步骤（不必完整代码）。</p>
+  <div class="qa-a">
+    <p>关键多出的两步：① 先把所有数异或，得到 <code>diff = a ^ b</code>（两个落单数的异或，非 0）；② 在 diff 里任取一个为 1 的位（例如用 <code>diff &amp; -diff</code> 取最低位的 1），这个位上 a 和 b 必然一个为 0、一个为 1，据此把原数组分成两组；③ 两组各自内部异或，成对的抵消，分别剩下 a 和 b。核心思想仍是「异或抵消」，只是先用一个差异位把两个落单数「拆进不同组」再各算。</p>
+  </div>
+</div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「位运算为什么快？n &amp; (n-1) 每次到底消掉了什么？136 的异或为什么能找出落单数？231 为什么必须加 n&gt;0？负数右移用 &gt;&gt; 还是 &gt;&gt;&gt;？」</em>
+  答案：位运算直接操作二进制位是硬件指令所以快；<code>n &amp; (n-1)</code> 把最低位的 1 抹成 0，消几次就有几个 1；136 靠 <code>a^a=0、a^0=a</code> 让成对抵消、落单留存；231 的 <code>n&gt;0</code> 用来排除 0 和负数；处理无符号 / 防死循环用逻辑右移 <code>&gt;&gt;&gt;</code>。
+  回到 <a href="index.html">总览</a> 继续进阶专题。
+</div>
+
+<div class="navfoot">
+  <a href="ch13.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 13 · 前缀和与差分</div></a>
+  <a class="next" href="ch15.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 15 · 数学与模拟</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 14 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

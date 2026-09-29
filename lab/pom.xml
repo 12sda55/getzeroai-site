@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  《Spring AI 2.0 学习指南》第 1 章配套示例工程
+  ============================================================
+  版本基准（与教程站点 ch01 完全一致）：
+    - Spring Boot 4.1.1（Initializr 当前默认；Boot 3.x 已不兼容，不可混用）
+    - Spring AI   2.0.1（由 spring-ai-bom 统一管理版本号）
+    - Java        17（Spring AI 2.0 的硬性底线，课程基线也是 17）
+
+  学生只需要改两个地方就能跑起来：
+    1. application.yml 里的 base-url / model（默认 DeepSeek，可换智谱等）
+    2. 环境变量 OPENAI_API_KEY（填你在对应平台申请的密钥）
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- 继承 Spring Boot 官方父工程：所有依赖的版本号都由它统一裁定，
+       我们自己不用（也不应该）到处写 version -->
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>4.1.1</version>
+    <relativePath/> <!-- 从 Maven 仓库取 parent，不从本地目录找 -->
+  </parent>
+
+  <groupId>com.example</groupId>
+  <artifactId>springai-lab</artifactId>
+  <version>1.0.0</version>
+  <name>springai-lab</name>
+  <description>Spring AI 2.0 学习指南 · 配套可运行示例</description>
+
+  <properties>
+    <!-- 告诉 Boot 父工程用哪个 JDK 编译 -->
+    <java.version>17</java.version>
+  </properties>
+
+  <dependencies>
+    <!-- Web：提供 HTTP 接口 -->
+    <!-- ★ 注意是 starter-webmvc，不是 3.x 教程里的 starter-web：
+         Spring Boot 4 已废弃旧名。写成旧名不会报错，但迟早被移除 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>
+    </dependency>
+
+    <!-- ★ Spring AI 的核心模型接入：OpenAI 协议及其所有兼容实现
+         （DeepSeek、智谱等国内厂商都兼容 OpenAI 协议，换厂商只改配置不改代码） -->
+    <dependency>
+      <groupId>org.springframework.ai</groupId>
+      <artifactId>spring-ai-starter-model-openai</artifactId>
+    </dependency>
+
+    <!-- 测试：mvn test 时使用，第 1 章暂时用不到，先留着 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <!-- ★ BOM：统一管理所有 spring-ai-* 的版本，缺了它就要逐个写版本号
+       注意：dependencyManagement 是 <project> 的直接子元素，
+       和 <dependencies> 平级，不能嵌进 dependencies 里（学生常踩的坑） -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.ai</groupId>
+        <artifactId>spring-ai-bom</artifactId>
+        <version>2.0.1</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <!-- 打可执行 jar：java -jar springai-lab-1.0.0.jar 直接运行 -->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

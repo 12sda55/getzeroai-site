@@ -1,0 +1,461 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 13</div>
+  <h1><span class="ch-tag">专题 13</span>前缀和与差分</h1>
+  <p class="lead">前一章我们用哈希把「查找」压成 O(1)；这一章换一类高频场景：<strong>反复求「一段区间的和 / 反复对一段区间做加减」</strong>。
+  如果每次都从头加到尾，查询一多就超时。前缀和（prefix sum）与差分（difference）是处理这两类问题的两把钥匙：
+  前者让「区间和」变成一次减法，后者让「区间批量加减」变成两个端点的操作。它们本质都是同一个思想——<strong>把「区间操作」预处理成「端点操作」，再用一次前缀和还原</strong>。
+  这一章会带你从里程表类比一路走到力扣 1094 拼车，并弄清为什么 560 题必须初始化 <code>pre[0]=1</code>。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握一/二维前缀和、差分，独立写 4 题</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 01 数组、专题 02 哈希表</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 道题推导 + 可提交 Java 代码</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">5–7 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">13.1</span>前缀和：把区间和变成一次减法</h2>
+
+<p>先想一个生活场景：<strong>汽车里程表</strong>。你不需要每次都单独数「从 A 收费站到 B 收费站走了多远」——只要看 B 处的总里程减去 A 处的总里程就行。
+里程表记录的，就是「从起点到当前位置的<strong>累计值</strong>」。前缀和就是这个思路搬到数组上。</p>
+
+<h3>定义与直觉</h3>
+
+<p>设数组 <code>nums</code> 长度为 n。我们定义前缀和数组 <code>pre</code>，其中</p>
+
+<pre><code class="nohl">pre[i] = nums[0] + nums[1] + ... + nums[i-1]   // 即 nums[0..i-1] 的全部元素之和
+pre[0] = 0   // 空区间的和为 0，作为哨兵</code></pre>
+
+<p>换句话说，<code>pre[i]</code> 记的是「<strong>下标 0 到 i-1</strong>」这段的累计和。注意它比 <code>nums</code> 多一位、且<strong>偏移一位</strong>——这是后面所有边界 bug 的根源，先记牢。</p>
+
+<h3>区间和如何变成一次减法</h3>
+
+<p>想求 <code>nums[i..j]</code>（含两端）的和。把它拆成「从开头到 j 的累计」减去「从开头到 i-1 的累计」：</p>
+
+<pre><code class="nohl">nums[i] + nums[i+1] + ... + nums[j]
+= (nums[0]+...+nums[j])        - (nums[0]+...+nums[i-1])
+= pre[j+1]                     - pre[i]</code></pre>
+
+<p>所以<strong>任意区间和 = <code>pre[j+1] - pre[i]</code></strong>，一次减法解决，与区间长度无关，是 O(1)。
+暴力做法是每次从 i 加到 j，区间长度 m 就是 O(m)；前缀和把它降到 O(1)。当查询次数很多（比如力扣 303 允许多次调用）时，差距就从「超时」变成「轻松过」。</p>
+
+<table>
+  <thead><tr><th style="width:240px">做法</th><th style="width:200px">单次区间和</th><th>整体（q 次查询）</th></tr></thead>
+  <tbody>
+    <tr><td>暴力：每次从 i 加到 j</td><td>O(区间长度)</td><td>O(q × n)</td></tr>
+    <tr><td>前缀和：先建 pre 再减法</td><td>O(1)</td><td>建 O(n) + 查 O(q)</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>什么时候想到前缀和：</strong>当你看到「<em>求连续子数组/子矩阵的和</em>」「<em>多次区间求和</em>」「<em>子数组和为某值</em>」这类描述，第一反应就该是前缀和。
+  它专治一切「区间求和」相关的反复计算。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">13.2</span>一维前缀和模板</h2>
+
+<p>把上面思路落成一段可复用的代码。这是整个专题的基石，<strong>逐行读懂它</strong>，后面几题都是它的变体。</p>
+
+<pre><code>// 1) 构建前缀和（长度 n+1，pre[0]=0 哨兵，避免查询时判断 i==0 的特殊情况）
+int n = nums.length;
+int[] pre = new int[n + 1];
+for (int i = 0; i < n; i++) {
+    pre[i + 1] = pre[i] + nums[i];   // 递推：第 i+1 个前缀和 = 上一个 + 当前数
+}
+
+// 2) 查询区间 [l, r]（含两端，0-based）的和
+int sum = pre[r + 1] - pre[l];       // 注意是 r+1 和 l，不是 r 和 l-1</code></pre>
+
+<h3>为什么要「长度 n+1」且 pre[0]=0</h3>
+
+<p>如果 <code>pre</code> 和 <code>nums</code> 一样长（<code>pre[i]=nums[0..i]</code>），那么查询 <code>[0, r]</code> 时会用到 <code>pre[-1]</code>，下标为负要特判。
+改成「<strong>偏移一位、pre[0]=0</strong>」后，区间 <code>[l, r]</code> 永远用 <code>pre[r+1] - pre[l]</code>，l=0 时只是减去 <code>pre[0]=0</code>，天然成立，无需任何特判。
+这种「<strong>多开一位当哨兵</strong>」的技巧在数组题里反复出现，记住它省无数边界判断。</p>
+
+<h3>亲手走一遍：nums = [3, 1, 4, 1, 5, 9]</h3>
+
+<pre><code class="nohl">构建 pre（长度 7，pre[0]=0）：
+  pre[0] = 0
+  pre[1] = 0 + 3  = 3     (nums[0])
+  pre[2] = 3 + 1  = 4     (nums[0..1])
+  pre[3] = 4 + 4  = 8     (nums[0..2])
+  pre[4] = 8 + 1  = 9
+  pre[5] = 9 + 5  = 14
+  pre[6] = 14 + 9 = 23
+
+查询 [2, 4]（即 nums[2..4] = 4,1,5，期望 4+1+5=10）：
+  pre[4+1] - pre[2] = pre[5] - pre[2] = 14 - 4 = 10  ✓
+
+查询 [0, 0]（即 nums[0]=3）：
+  pre[1] - pre[0] = 3 - 0 = 3  ✓ （l=0 时减去哨兵 0，无需特判）</code></pre>
+
+<p>可以看到，无论区间是否从头开始，公式 <code>pre[r+1]-pre[l]</code> 一律成立。这就是偏移设计的价值。</p>
+
+<div class="tip">
+  <strong>记忆口诀：</strong>「<em>前缀和数组长 n+1，pre[0] 是 0，区间 [l,r] 和等于 pre[r+1] 减 pre[l]</em>」。背下这句，80% 的前缀和题边界都不会错。
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">13.3</span>区域和检索 - 数组不可变（简单，力扣 303）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：前缀和最直接的应用——预处理一次，查询 O(1)</span></p>
+
+<p><strong>题意：</strong>给定一个整数数组 <code>nums</code>，实现一个类，支持多次调用 <code>sumRange(i, j)</code> 返回 <code>nums[i..j]</code> 的和（包含 i、j）。
+例如 <code>nums = [-2, 0, 3, -5, 2, -1]</code>：</p>
+
+<pre><code class="nohl">sumRange(0, 2) = (-2) + 0 + 3 = 1
+sumRange(2, 5) = 3 + (-5) + 2 + (-1) = -1
+sumRange(0, 5) = 全部之和 = -3</code></pre>
+
+<h3>思路推导</h3>
+
+<p>题目的关键暗示在名字「<strong>数组不可变</strong>」——nums 建好之后不会改，但 <code>sumRange</code> 会被调用非常多次。
+如果每次调用都从 i 加到 j，单次 O(n)，调用 m 次就是 O(m·n)，遇到海量查询必超时。</p>
+
+<p>把问题套进 13.1 的框架：<strong>构造函数里一次性把前缀和 pre 建好（O(n)），之后每次查询只做一次减法（O(1)）</strong>。
+这正是前缀和最 textbook 的用武之地——「<em>查询远多于修改、且数据不变</em>」时，预处理 + O(1) 查询是标准套路。</p>
+
+<p>为什么不是用哈希？因为这题不是「找某个值」，而是「求一段连续和」，哈希帮不上忙，前缀和才是正解。两种武器分工明确：哈希管查找，前缀和管理区间累加。</p>
+
+<h3>参考代码</h3>
+
+<pre><code>class NumArray {
+    private int[] pre;   // pre[i] = nums[0..i-1] 的累加和，长度 n+1
+
+    public NumArray(int[] nums) {
+        int n = nums.length;
+        pre = new int[n + 1];          // 多开一位，pre[0]=0 哨兵
+        for (int i = 0; i < n; i++) {
+            pre[i + 1] = pre[i] + nums[i];  // 递推构建：每个前缀和 = 上一个 + 当前元素
+        }
+    }
+
+    public int sumRange(int i, int j) {
+        // 下标 i..j 的和 = 前缀到 j 的累计 - 前缀到 i-1 的累计
+        return pre[j + 1] - pre[i];
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>构造函数 O(n)（遍历建前缀和）；每次 <code>sumRange</code> O(1)（一次减法）。
+空间 O(n)。之所以快，是因为「昂贵的累加」只发生一次，之后所有查询都「白嫖」这一次预处理的结果。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>「<em>数组不可变 + 多次查询</em>」是前缀和的最强信号。一看到这个组合，立刻预处理前缀和，别在查询里反复累加。
+  另外注意 <code>sumRange</code> 里是 <code>pre[j+1] - pre[i]</code>——是 <code>j+1</code> 减 <code>i</code>，不是 <code>j</code> 减 <code>i-1</code>，这是偏移一位设计的直接用法。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>二维区域和检索 - 矩阵不可变（力扣 304，中等）</strong>——与本题是同一思想，只是从一维升到二维；差异在构建和查询都变成二维容斥（提示：pre[i][j] 用容斥递推，查询用大矩形减两个伸出部分再加回重叠角，见 13.5）。</li>
+    <li><strong>矩阵区域和（力扣 1314，中等）</strong>——共用「二维前缀和」技巧；差异在查询不是精确矩形，而是以每个点为中心、半径 k 范围内的和，边界要用 Math.max/min 夹紧（提示：把越界的下标钳到 0 和 m-1，其余完全复用 304 的容斥公式）。</li>
+    <li><strong>除自身以外数组的乘积（力扣 238，中等）</strong>——虽不是前缀和「求和」，但同属「左右两侧预处理」思想；差异在不用加法用乘法，且要求 O(1) 空间（提示：用左右两个前缀乘积数组，或原地滚动变量，注意乘 0 的处理）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">13.4</span>和为 K 的子数组（中等，力扣 560）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：前缀和 + 哈希计数，把「找子数组」变成「找出现过几次的目标前缀和」</span></p>
+
+<p><strong>题意：</strong>给定整数数组 <code>nums</code> 和整数 <code>k</code>，求<strong>和为 k 的连续子数组的个数</strong>。
+例如 <code>nums = [1, 1, 1]</code>，<code>k = 2</code>，有 2 个满足条件的子数组：<code>[1,1]</code>（位置 0~1）和 <code>[1,1]</code>（位置 1~2），返回 2。</p>
+
+<h3>思路推导（从暴力到最优）</h3>
+
+<p><strong>暴力：</strong>枚举所有起点 i、终点 j，算 <code>nums[i..j]</code> 的和是否等于 k。O(n²) 个子数组，每个再求和 O(n)，总 O(n³)；若边走边累加可降到 O(n²)，但 n 到 2×10⁴ 仍会超时。</p>
+
+<p><strong>前缀和观察：</strong>子数组 <code>nums[i..j]</code> 的和 = <code>pre[j+1] - pre[i]</code>。要它等于 k，即：</p>
+
+<pre><code class="nohl">pre[j+1] - pre[i] == k
+⇒  pre[i] == pre[j+1] - k</code></pre>
+
+<p>也就是说：<strong>以 j 结尾、和为 k 的子数组个数，等于「前面有多少个前缀和等于 pre[j+1] - k」</strong>。
+暴力里我们是对每个 j 往前扫 i 去数；现在换思路——<strong>用哈希表记录「每个前缀和值出现过几次」</strong>，边走边查。</p>
+
+<p><strong>关键变形：</strong>不要去枚举 i，而是维护一个 <code>Map&lt;前缀和, 出现次数&gt;</code>。走到下标 x（当前前缀和记为 cur）时：</p>
+
+<ul>
+  <li>先问：<code>cur - k</code> 在哈希里出现过几次？那就是「以当前位置结尾、和为 k」的子数组个数，直接累加进答案。</li>
+  <li>再把 <code>cur</code> 自己记入哈希（次数 +1），供后面的位置查询。</li>
+</ul>
+
+<h3>为什么必须初始化 map.put(0, 1)？</h3>
+
+<p>这是本题<strong>最容易漏、漏了就错</strong>的一步。考虑子数组从下标 0 就开始的情况：比如 <code>nums=[2], k=2</code>。
+走到 x=0，cur=2，我们要查 <code>cur - k = 0</code> 出现过几次。但此时哈希里还没有任何前缀和——除非我们一开始就把「前缀和 0（空前缀）」记成出现 1 次。</p>
+
+<p><strong>直觉：</strong>前缀和 pre[0]=0 代表「一个元素都没取」的空前缀。当一个子数组恰好从数组开头开始时，它的前缀和差里就用到这个 pre[0]=0。
+不初始化，所有「从开头起、和为 k」的子数组都会被漏掉。所以开局 <code>map.put(0, 1)</code> 是必选项，不是可选项。</p>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public int subarraySum(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);            // 关键：空前缀和为 0，记 1 次，否则从下标 0 开始的子数组会被漏
+        int cur = 0, ans = 0;     // cur：当前前缀和；ans：满足条件的子数组总数
+        for (int x : nums) {
+            cur += x;             // 走到当前位置的前缀和
+            // 前面有多少个前缀和 == cur - k，就有多少个「以当前结尾、和为 k」的子数组
+            ans += map.getOrDefault(cur - k, 0);
+            // 把当前前缀和记入哈希，供后续位置查询
+            map.put(cur, map.getOrDefault(cur, 0) + 1);
+        }
+        return ans;
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(n)（一遍遍历，哈希增查均摊 O(1)）；空间 O(n)（哈希最坏存 n 个不同前缀和）。
+对比暴力 O(n²)，这是质的飞跃——因为它把「对每个结尾往前数」换成了「一次哈希查表」。</p>
+
+<h3>亲手走一遍：nums = [1, 1, 1]，k = 2</h3>
+
+<pre><code class="nohl">map 初始 {0:1}，cur=0, ans=0
+x=1: cur=1；查 cur-k = -1，map 里 0 次 → ans=0；map{0:1, 1:1}
+x=1: cur=2；查 cur-k = 0，map 里 1 次 → ans=1；map{0:1,1:1,2:1}
+x=1: cur=3；查 cur-k = 1，map 里 1 次 → ans=2；map{0:1,1:1,2:1,3:1}
+返回 ans=2 ✓ （子数组 [0..1] 和 [1..2]）</code></pre>
+
+<p>注意第二次循环查到 <code>cur-k=0</code> 命中初始的 <code>{0:1}</code>——这正是「从开头到当前」那个子数组 <code>nums[0..1]</code> 被统计进来的原因。
+如果没有 <code>map.put(0,1)</code>，这一步就查不到，答案会少 1。</p>
+
+<div class="warn">
+  <strong>反复强调：</strong>560 这类「前缀和 + 哈希」题，<code>map.put(0, 1)</code> 是<em>铁律</em>。任何「求子数组和为 k / 为 0 / 满足某等式」且用前缀和哈希的题，开局都要把空前缀 0 记一次。
+  漏掉它，所有「从数组第一个元素开始的合法子数组」都会凭空消失。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>连续的子数组和（力扣 523，中等）</strong>——共用「前缀和 + 哈希」技巧；差异在要求子数组长度至少 2 且和为 k 的倍数，需把前缀和取模 k 后存「最早出现下标」（提示：同余等价，存每个余数首次出现的索引，判断间距 ≥ 2；注意 k 可能为 0 或负数要先取绝对值）。</li>
+    <li><strong>和可被 K 整除的子数组（力扣 974，中等）</strong>——共用「前缀和取模 + 哈希计数」技巧；差异在目标从「等于 k」变成「模 k 同余」，相同余数两两组合（提示：余数 r 出现 c 次可凑 C(c,2) 对，开局仍要放余数 0 一次）。</li>
+    <li><strong>连续数组（力扣 525，中等）</strong>——共用「前缀和哈希找差值」技巧；差异在把 0 当 -1、1 当 +1，目标是子数组和为 0（提示：前缀和变 -1/+1 累加，哈希存每个和值「最早出现位置」，求最大间距）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">13.5</span>二维前缀和（中等，力扣 304）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：一维前缀和升维，区间和靠「容斥原理」四个角相减</span></p>
+
+<p><strong>题意：</strong>给定一个二维矩阵 <code>matrix</code>，多次调用 <code>sumRegion(row1, col1, row2, col2)</code> 返回以 <code>(row1,col1)</code> 为左上、<code>(row2,col2)</code> 为右下的子矩阵元素和。
+例如 <code>matrix = [[3,0,1,4,2],[5,6,3,2,1],[1,2,0,1,5],[4,1,0,1,7],[1,0,3,0,5]]</code>，<code>sumRegion(2,1,4,3)</code> 返回 8。</p>
+
+<h3>思路推导：从一维到二维</h3>
+
+<p>一维时，区间和 = 两个端点的前缀和之差。二维时，「从 (0,0) 到 (i-1,j-1) 的矩形和」可以递推得到，关键还是「<strong>多包一圈</strong>」让下标从 1 开始，省去越界特判。</p>
+
+<p>定义 <code>pre[i][j]</code> = 以 (0,0) 为左上、(i-1,j-1) 为右下的矩形和（i、j 从 1 起）。
+构建时把当前格 <code>matrix[i-1][j-1]</code> 加进来，会重复计算两个半边，要用容斥修正：</p>
+
+<pre><code class="nohl">pre[i][j] = pre[i-1][j] + pre[i][j-1] - pre[i-1][j-1] + matrix[i-1][j-1]
+            └ 上方矩形 ┘   └ 左方矩形 ┘   └ 重叠被加两次 ┘   └ 当前格 ┘</code></pre>
+
+<h3>查询的容斥直觉（两块重叠面积）</h3>
+
+<p>想求子矩阵 <code>(r1,c1)</code> 到 <code>(r2,c2)</code> 的和。先取「从 (0,0) 到 (r2,c2) 的大矩形」<code>pre[r2+1][c2+1]</code>，它多包了上面和左边两块伸出部分：</p>
+
+<pre><code class="nohl">            列 c1                       列 c2
+行 r1  ┌─────────┬──────────────────────┐
+       │ 左上伸出 │   我们要的目标矩形      │
+       │ (要减)  │   (r1,c1)~(r2,c2)     │
+行 r2  ├─────────┼──────────────────────┤
+       │ 左下伸出 │  (这部分被多减，要加回) │
+       └─────────┴──────────────────────┘</code></pre>
+
+<p>大矩形 <code>pre[r2+1][c2+1]</code> 减去「上方伸出」<code>pre[r1][c2+1]</code>、减去「左方伸出」<code>pre[r2+1][c1]</code>，
+但左上角那块小矩形 <code>pre[r1][c1]</code> 被减了两次，要<strong>加回来一次</strong>：</p>
+
+<pre><code class="nohl">答案 = pre[r2+1][c2+1] - pre[r1][c2+1] - pre[r2+1][c1] + pre[r1][c1]</code></pre>
+
+<p>记忆：<strong>「大减小减，左下角加回」</strong>，四块拼成一个减两加一。这是二维前缀和唯一容易写错的符号点（最后一个必须是 +）。</p>
+
+<h3>参考代码</h3>
+
+<pre><code>class NumMatrix {
+    private int[][] pre;   // pre[i][j]：从(0,0)到(i-1,j-1)的矩形和，i,j 从 1 起
+
+    public NumMatrix(int[][] matrix) {
+        int m = matrix.length, n = matrix[0].length;
+        pre = new int[m + 1][n + 1];          // 多包一圈，pre[0][*]、pre[*][0] 全为 0
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                // 容斥递推：上方 + 左方 - 重叠 + 当前格
+                pre[i][j] = pre[i - 1][j] + pre[i][j - 1]
+                          - pre[i - 1][j - 1] + matrix[i - 1][j - 1];
+            }
+        }
+    }
+
+    public int sumRegion(int r1, int c1, int r2, int c2) {
+        // 大矩形 - 上伸 - 左伸 + 左上被多减的角
+        return pre[r2 + 1][c2 + 1] - pre[r1][c2 + 1]
+             - pre[r2 + 1][c1] + pre[r1][c1];
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>构建 O(m×n)（每个格算一次），每次查询 O(1)（四次加减）。空间 O(m×n)。
+和一维一样，「昂贵的二维累加」只发生一次，海量查询稳过。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>二维前缀和的符号是「<em>减、减、加</em>」，最后一个 <code>+ pre[r1][c1]</code> 极易误写成减——那块角被前两个减法各削了一次，必须补回。
+  用「大减小减，左下角加回」这句口诀防错。另外 <code>pre</code> 是 <code>(m+1)×(n+1)</code>，查询下标用 <code>r2+1 / c2+1</code>，与一维的 <code>j+1</code> 同理。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>矩阵区域和（力扣 1314，中等）</strong>——共用「二维前缀和容斥」技巧；差异在查询是以每个点为中心、半径 k 的方形和，越界下标用 Math.max(0,...) / Math.min(m-1,...) 夹紧（提示：把四点坐标钳进矩阵范围后直接套 304 公式）。</li>
+    <li><strong>元素和等于目标值的子矩阵数量（力扣 1074，困难）</strong>——共用「二维前缀和」技巧，但升一维用哈希；差异在要数「和为 target 的子矩阵个数」，需固定上下边界、把每列压成一维后再用 560 的哈希法（提示：枚举上边界 r1、下边界 r2，对中间每列求和得一维数组，问题退化为 560）。</li>
+    <li><strong>区域和检索 - 数组不可变（力扣 303，简单）</strong>——与本题同源，是本题的一维版本（提示：把二维退化成只有一行，容斥公式就塌缩成 pre[j+1]-pre[i]，见 13.3）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">13.6</span>差分：区间批量加减（中等，力扣 1094 拼车）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：区间加减只需改两个端点，前缀和还原即实时值</span></p>
+
+<p><strong>题意：</strong>你有一辆车，容量 <code>capacity</code>。给定若干行程 <code>trips[i] = [numPassengers, from, to]</code>，表示在 <code>from</code> 站上 <code>numPassengers</code> 人，到 <code>to</code> 站下车（即人在 <code>[from, to)</code> 这段路上在车上）。
+问能否在不超载的情况下完成所有行程。例如 <code>trips = [[2,1,5],[3,3,7]]</code>，<code>capacity = 4</code>：在位置 3~5 有 2+3=5 人 &gt; 4，返回 false。</p>
+
+<h3>思路推导：从「区间加」到差分</h3>
+
+<p>朴素想法：建一个数组 <code>cnt[位置]</code> 表示每站车上人数，对每个 trip 把 <code>[from, to)</code> 每段都 +numPassengers。但这样每个 trip 可能改很多段，总 O(总里程)，数据大就慢。</p>
+
+<p><strong>差分的思想：</strong>「区间统一加一个数」其实<strong>不需要真的逐段加</strong>。我们维护一个差分数组 <code>diff</code>，只在两个端点做标记：</p>
+
+<pre><code class="nohl">diff[from]      += numPassengers   // 在 from 站，上车，人数开始 +v
+diff[to]        -= numPassengers   // 在 to 站，下车，人数结束（to 是开区间端点）</code></pre>
+
+<p>然后对 <code>diff</code> 求<strong>前缀和</strong>，就还原出每一站的实时人数：</p>
+
+<pre><code class="nohl">cur = 0
+for 每站 x:
+    cur += diff[x]      // 前缀和 = 当前站车上实时人数
+    if cur > capacity: 返回 false</code></pre>
+
+<h3>上 / 下车的直觉对比</h3>
+
+<p>把 <code>diff</code> 想成「<strong>人数的变化量记录表</strong>」：有人上车，就在那站 +v；有人下车，就在那站 -v。
+最后「累计变化」自然就是实时人数。这和前缀和正好是<strong>互逆</strong>操作：</p>
+
+<table>
+  <thead><tr><th style="width:200px">操作</th><th>原数组视角</th><th>差分数组视角</th></tr></thead>
+  <tbody>
+    <tr><td>区间 [l, r) 统一 +v</td><td>每段都改，O(区间长)</td><td>只改 diff[l]+=v、diff[r]-=v，O(1)</td></tr>
+    <tr><td>还原实时值</td><td>—</td><td>对 diff 求前缀和，O(n)</td></tr>
+  </tbody>
+</table>
+
+<p>为什么 <code>diff[to] -= v</code> 用开区间？因为 <code>to</code> 站人已经下车，<code>to</code> 这个位置本身<strong>不在车上</strong>。车上的区间是 <code>[from, to)</code>，所以在 <code>to</code> 这一格把人减掉，前缀和到 <code>to</code> 时人数正好回落。这正是里程表类比的反面：前缀和是「累计里程」，差分是「每段的里程增量」。</p>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public boolean carPooling(int[][] trips, int capacity) {
+        int[] diff = new int[1001];   // 题目约定 from/to ≤ 1000，长度 1001 足够（to 最大 1000 仍合法）
+        for (int[] t : trips) {
+            int v = t[0], l = t[1], r = t[2];
+            diff[l] += v;             // from 站上车：人数变化 +v
+            diff[r] -= v;             // to 站下车：人数变化 -v（to 为开区间端点，人已不在车上）
+        }
+        int cur = 0;                  // 当前车上实时人数（diff 的前缀和）
+        for (int x : diff) {
+            cur += x;                 // 累加变化量 = 当前站人数
+            if (cur > capacity) {     // 任一站超载，直接失败
+                return false;
+            }
+        }
+        return true;
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(n + M)（n 为 trip 数，M 为位置范围上限，本题 M=1001）；空间 O(M)。
+相比逐段加减，每个 trip 只动两个端点，效率极高。这正是差分「<em>把区间操作压成端点操作</em>」的威力。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>差分专治「<em>多次区间加减 + 最后看每个位置的值</em>」。记住两步：① 区间 <code>[l, r)</code> 加 v 就 <code>diff[l]+=v; diff[r]-=v</code>；
+  ② 全程对 diff 求前缀和得到实时值。注意区间是<strong>左闭右开</strong>，<code>r</code> 那一格要减回。
+  力扣里「拼车 / 航班预订 / 会议室冲突」本质都是差分数组的扫描线。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>航班预订统计（力扣 1109，中等）</strong>——与本题完全同构（差分）；差异在返回每一趟航班的最终预订数，而非判断是否超载（提示：同样 diff[l]+=v、diff[r]-=v，最后求一遍前缀和输出整个数组）。</li>
+    <li><strong>区间加法（力扣 370，中等）</strong>——差分的「纯模板」题；差异在给定若干 [start,end,inc] 区间加法，返回最终数组（提示：没有任何业务判断，纯 diff 改端点 + 前缀和还原，本题是 1094 的裸核）。</li>
+    <li><strong>会议室 II（力扣 253，中等）</strong>——共用「差分 / 扫描线」思想；差异在事件是「开始时间 +1、结束时间 -1」求最大并发会议数（提示：把每个会议拆成两个端点事件，按时间排序扫描累加，求过程中的最大值，比固定数组更通用）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">13.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>坑一：pre 数组「偏移一位」的边界写错。</strong>
+      前缀和定义是 <code>pre[i] = nums[0..i-1]</code>，长度 n+1、<code>pre[0]=0</code>。查询时区间 <code>[l, r]</code> 必须用 <code>pre[r+1] - pre[l]</code>。
+      新人常写成 <code>pre[r] - pre[l-1]</code>，导致 l=0 时访问 <code>pre[-1]</code> 越界，或写成 <code>pre[r] - pre[l]</code> 少算一个元素。牢牢记住「<em>右端 +1、左端不动</em>」。</li>
+    <li><strong>坑二：560 忘了初始化 map.put(0, 1)。</strong>
+      这是最高频错误。没放空前缀 0，所有「从下标 0 开始的、和为 k 的子数组」都会被漏掉。开局必写 <code>map.put(0, 1)</code>，铁律。</li>
+    <li><strong>坑三：差分数组 r+1 越界。</strong>
+      若把区间写成闭区间 <code>[l, r]</code> 并误用 <code>diff[r+1] -= v</code>，当 r 已是数组最大下标时就越界。
+      正确做法是<strong>明确区间是左闭右开 [l, r)</strong>，用 <code>diff[r] -= v</code>，且 diff 长度要比最大位置多 1（如 1094 中 to 最大 1000，diff 长度 1001，diff[1000] 合法）。</li>
+    <li><strong>坑四：二维前缀和容斥的加减号。</strong>
+      查询公式 <code>pre[r2+1][c2+1] - pre[r1][c2+1] - pre[r2+1][c1] + pre[r1][c1]</code> 中，<strong>最后一个必须是 +</strong>（左上角被前两个减法各削一次，要补回）。写成减号会整片算错。</li>
+    <li><strong>坑五：把差分当前缀和直接读。</strong>
+      diff 数组本身不是实时值，<strong>必须再求一次前缀和</strong>才是每站人数 / 每趟预订数。直接在 diff 上判断会完全错误。</li>
+    <li><strong>坑六：一维前缀和误存成 pre[i]=nums[0..i]。</strong>
+      若 pre 与 nums 等长、pre[i] 含 nums[i]，则查询公式变成 <code>pre[r] - pre[l-1]</code> 且 l=0 要特判，反而更麻烦且易错。统一用「长 n+1、偏移一位」最稳。</li>
+  </ul>
+</div>
+
+<div class="warn">
+  <strong>关于坑三再提醒：</strong>差分区间到底是 <code>[l, r]</code> 还是 <code>[l, r)</code>，<em>必须在写代码前想清楚并注释</em>。
+  拼车题中「to 站人已下车」，所以车上区间是 <code>[from, to)</code>，减在 <code>diff[to]</code>；若某题区间是闭区间（如「第 l 到第 r 天都包括」），则减在 <code>diff[r+1]</code>。
+  两种都行，但<strong>前后必须一致</strong>，且数组长度要能容纳最大的那个下标。
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">13.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.【动手题】用一维前缀和写出「返回 nums 中所有长度为 k 的连续子数组的和」的函数（要求 O(n)）。说明为什么不能用哈希。</p>
+  <div class="qa-a">
+    <p>滑动窗口配合前缀和：先建 <code>pre</code>（长 n+1），然后对每个起点 i 从 0 到 n-k，输出 <code>pre[i+k] - pre[i]</code> 即可，一遍扫描 O(n)。
+    这题求的是「具体每段的和」而不是「和为某值的段数」，哈希管的是「查某个值出现几次」，这里没有要查的目标值，所以哈希用不上——前缀和的减法查询才是正解。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 560 题若把 <code>map.put(0, 1)</code> 删掉，对样例 <code>nums=[2], k=2</code> 会返回什么？为什么？</p>
+  <div class="qa-a">
+    <p>会返回 0 而非 1。走到唯一元素 x=2 时 cur=2，要查 <code>cur-k = 0</code>。此时哈希里只有后续才写入的键，开局没有任何记录，<code>getOrDefault(0,0)=0</code>，ans 不变。
+      这正是「从下标 0 开始、和为 k 的子数组」被漏掉的典型——它依赖空前缀 pre[0]=0 来被统计，删掉初始化就永远查不到 0。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.【动手题】把 1094 拼车改成「返回车上出现过的最大人数」（而不是判断是否超载），只改哪几行？</p>
+  <div class="qa-a">
+    <p>把 <code>if (cur > capacity) return false;</code> 换成「记录最大值」：<code>max = Math.max(max, cur);</code>，循环结束后 <code>return max;</code>。
+      其余 diff 构建与前缀和还原逻辑一字不改。这正好说明差分是「通用的区间加减还原工具」，业务判断只是最后扫一遍时加的一行。</p>
+  </div>
+</div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「前缀和怎么把区间和变成 O(1)？560 为什么必须放 pre[0]=1？差分和前缀和是什么关系？二维前缀和容斥的符号怎么记？」</em>
+  答案：前缀和用 <code>pre[r+1]-pre[l]</code> 把区间和降为一次减法；560 的 <code>map.put(0,1)</code> 是在记「空前缀」，否则从开头起的子数组会被漏；
+  差分是前缀和的逆操作——区间加减只改两个端点、再求前缀和还原；二维前缀和符号是「减、减、加」最后一个必加。
+  回到 <a href="index.html">总览</a> 继续进阶专题。
+</div>

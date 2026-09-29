@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>总览 · 为什么工程师要读哲学 | 哲学 × AI 学习指南</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="philosophy">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">哲</span>
+    <span>哲学 × AI 学习指南<small>把哲学变成工程判断力</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 哲学与 AI 的交界</option>
+    <option value="ch02.html">02 · 认识论 I</option>
+    <option value="ch03.html">03 · 认识论 II</option>
+    <option value="ch04.html">04 · 心灵哲学 I</option>
+    <option value="ch05.html">05 · 心灵哲学 II</option>
+    <option value="ch06.html">06 · 语言与意义</option>
+    <option value="ch07.html">07 · 逻辑与推理边界</option>
+    <option value="ch08.html">08 · 伦理学 I</option>
+    <option value="ch09.html">09 · 伦理学 II</option>
+    <option value="ch10.html">10 · 现象学与具身认知</option>
+    <option value="ch11.html">11 · 落地方法</option>
+    <option value="appendix.html">附录 · 书单与速查</option>
+  </select>
+  <a class="tb-link" href="appendix.html">书单</a>
+  <a class="tb-link" href="ch11.html">落地清单</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link active" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+    <div class="sb-sub">
+      <a href="#howto">怎么用这份指南</a>
+      <a href="#why">为什么工程师该读哲学</a>
+      <a href="#map">哲学分支 × AI 问题 总映射</a>
+      <a href="#route">12 周学习路线</a>
+      <a href="#depth">三档阅读深度</a>
+      <a href="#faq">五个常见疑问</a>
+      <a href="#ready">0.7 开始之前</a>
+    </div>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>哲学与 AI 的真实交界</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>认识论 I · 知识、信念与不确定性</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>认识论 II · 归纳与幻觉的根源</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>心灵哲学 I · 意识与中文房间</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>心灵哲学 II · 意向性与符号接地</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>语言与意义 · 从维特根斯坦到词向量</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>逻辑与推理的边界</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>伦理学 I · 三大框架与 AI 对齐</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>伦理学 II · 情感陪伴 AI 的伦理</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>现象学与具身认知 · 沉浸与 BCI</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>落地 · 把哲学变成工程决策</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 书单 / 术语 / 映射</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="hero">
+  <h1>哲学 × AI 学习指南<br>把哲学变成工程判断力，而不是谈资</h1>
+  <p class="sub">
+    这份指南只回答一个问题：<strong>一个写代码的人，该从哲学里拿走什么，才能在做 AI 产品时少犯错。</strong>
+    它不是哲学史概论，也不是「AI 伦理口号集」——每一节都要落到一个具体的技术判断上：
+    你的模型为什么必然出错、你的评估指标在骗你什么、你做的陪伴产品在伦理上站不站得住。
+    每个概念都配一句「<strong>工程锚点</strong>」，告诉你它在代码和产品决策里的位置。
+  </p>
+  <div class="tech">
+    <span class="pill purple">认识论</span>
+    <span class="pill purple">心灵哲学</span>
+    <span class="pill teal">语言哲学</span>
+    <span class="pill teal">逻辑与形式化</span>
+    <span class="pill orange">伦理学</span>
+    <span class="pill orange">现象学</span>
+    <span class="pill blue">具身认知</span>
+    <span class="pill">认知科学</span>
+  </div>
+</div>
+
+<div class="kpi">
+  <div class="k-item"><div class="k-num">11</div><div class="k-lab">章节 · 每章都落到工程判断</div></div>
+  <div class="k-item"><div class="k-num">12 周</div><div class="k-lab">建议节奏（每周 4–6 小时）</div></div>
+  <div class="k-item"><div class="k-num">40+</div><div class="k-lab">哲学概念 → 技术问题对照</div></div>
+  <div class="k-item"><div class="k-num">1</div><div class="k-lab">最终产出一份伦理设计文档</div></div>
+</div>
+
+<h2 id="howto"><span class="h2-num">0.1</span>怎么用这份指南</h2>
+
+<p class="lead">先说一条最容易被搞错的前提：<strong>哲学不是「读完就懂」的，是「用出来才算懂」的。</strong>
+哲学书和编程书一样，划重点没有用——你必须把它套到一个真实的项目决策上，它才会变成你的判断力。</p>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h4>❌ 低效的学法</h4>
+    <ul>
+      <li>从《西方哲学史》第一页开始按顺序啃，读到康德就放弃。</li>
+      <li>只记人名和术语（「这是柏拉图的理念论」），不追问它解决了什么问题。</li>
+      <li>把哲学当成「价值观表态」，读完只留下一堆立场，没有一个能改变技术决策。</li>
+      <li>只看二手解读视频，不读原文——二手解读会让你继承别人的误读。</li>
+      <li>一上来就挑战《纯粹理性批判》这种硬书，被劝退后再也不碰。</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>✅ 推荐的学法</h4>
+    <ul>
+      <li><strong>问题驱动，不是流派驱动。</strong>不要问「经验主义讲了什么」，要问「我的模型为什么在训练集上无敌、一上线就崩」——然后顺着这个问题去找休谟。</li>
+      <li><strong>每章只读一个核心论证，但要能复述出来。</strong>读休谟只读归纳问题那几页，但要能用三句话讲清「为什么归纳无法被证明」。</li>
+      <li><strong>每读完一节，写一句「所以我的项目该怎么做」。</strong>写不出来，说明这一节你没读进去。</li>
+      <li><strong>原文优先，导读辅助。</strong>先用导读建立地图，再回到原文读关键那 10 页。</li>
+      <li><strong>先把工程问题攒起来，再回来读。</strong>清单在下面 0.3 节。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>本指南的固定结构：</strong>每一节都按同一节奏展开——
+  <strong>① 问题是什么</strong>（不是「谁提出了什么」，而是「他在解决什么麻烦」）→
+  <strong>② 核心论证</strong>（能复述的三句话）→
+  <strong>③ 工程锚点</strong>（它在 AI 里的哪个具体位置）→
+  <strong>④ 反面意见</strong>（这个观点有什么反驳，为什么它至今没有定论）→
+  <strong>⑤ 动手</strong>（一个能做的练习）。
+  看到紫色虚线框的「思想实验」和左右分栏的「哲学 → 工程」映射卡，是本指南的核心。
+</div>
+
+<hr>
+
+<h2 id="why"><span class="h2-num">0.2</span>为什么工程师该读哲学</h2>
+
+<p>先破除两种误解，它们分别来自两个极端。</p>
+
+<div class="dual">
+  <div class="card">
+    <h4>误解一：哲学是空谈</h4>
+    <p style="font-size:13.5px">「哲学？就是一群人在争论自由意志存不存在，跟我的 CRUD 有什么关系。」</p>
+    <p style="font-size:13.5px"><strong>这个误解的来源</strong>：你接触到的哲学确实大多是文学化的解读、公开课里的思想史，
+    或者社交媒体上的立场表态。这些内容共同点是——<strong>不产出可检验的结论</strong>。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>但这不是哲学的全部。</strong>
+    二十世纪最重要的分析哲学传统，做的是把一个模糊问题<strong>拆成能被检验的子问题</strong>。
+    这是跟你写测试用例完全同构的能力——只是对象从「代码行为」换成了「概念本身」。</p>
+  </div>
+  <div class="card">
+    <h4>误解二：哲学能力挽狂澜</h4>
+    <p style="font-size:13.5px">「读了康德我就能设计出有道德的 AI。」</p>
+    <p style="font-size:13.5px"><strong>这个误解更危险</strong>，因为它会让你用「想清楚了」代替「做完了」。
+    哲学<strong>不解决技术问题</strong>：它不会告诉你如何降低幻觉率，不会帮你把延迟从 800ms 压到 300ms。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>它改变的是一小部分但很关键的决策</strong>：
+    你选哪个指标、你把什么当作「成功」、你在什么时候承认自己不知道、
+    以及——当你的系统影响了别人时，你认为谁该负责。</p>
+  </div>
+</div>
+
+<p>那哲学到底能做什么？一句话：</p>
+
+<div class="quote">
+  <p>技术解决「<em>怎么做</em>」，哲学解决「<em>你在做什么</em>」。</p>
+  <span class="who">—— 这不是某位哲学家的原话，是本指南对两者分工的概括</span>
+</div>
+
+<p>这个区别在实际工程里非常具体。<strong>举个真实的分歧</strong>：你做了一个情感陪伴产品，用户在对话中表达了轻度抑郁倾向。</p>
+
+<table>
+  <thead><tr><th style="width:170px">层面</th><th>技术能回答</th><th>哲学才能回答</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>检测</strong></td>
+      <td>怎么用一个分类器识别出「抑郁倾向」这个类别？准确率能到多少？</td>
+      <td>「抑郁倾向」是一个有清楚边界的东西吗？把它当作可检测的类别，会不会把复杂的人压缩成一个标签？</td>
+    </tr>
+    <tr>
+      <td><strong>回应</strong></td>
+      <td>用什么提示词让回复更温和？要不要触发一个转人工流程？</td>
+      <td>产品应该扮演什么角色？如果它用「我理解你」回应，这句话在一个没有体验的系统中意味着什么？</td>
+    </tr>
+    <tr>
+      <td><strong>设计</strong></td>
+      <td>如何做 A/B 测试来比较两种回应的用户留存？</td>
+      <td>用「留存」作为这个场景的成功指标，本身是不是已经错了？</td>
+    </tr>
+    <tr>
+      <td><strong>责任</strong></td>
+      <td>日志要记多久？要不要留证据链？</td>
+      <td>如果用户因为对话而放弃求助，责任在谁：模型、产品、你，还是这个行业的默认做法？</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">哲学问题</div>
+    <div class="ttl">「抑郁倾向」是可分类的对象吗</div>
+    <div class="txt">这是认识论 + 心灵哲学的老问题：把连续的人类状态切成离散类别，是在描述实在，还是在强加一套有用的虚构？</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">工程后果</div>
+    <div class="ttl">决定了你该用软标签还是硬分类</div>
+    <div class="txt">如果承认它是连续的，你就会输出概率分布、给出不确定性、设计「低置信度时不介入」的降级路径——而不是硬判一个类然后直接触发流程。</div>
+  </div>
+</div>
+
+<p><strong>注意这个映射的价值</strong>：哲学不是给你一句漂亮话，它改变了你的接口设计。
+这就是本指南主张的用法——<strong>哲学在这里是设计约束的来源</strong>。</p>
+
+<hr>
+
+<h2 id="map"><span class="h2-num">0.3</span>哲学分支 × AI 问题 总映射</h2>
+
+<p>这张表是全站的地图。左列是你的困惑，中间是它的哲学出处，右列是读哪一章。</p>
+
+<table>
+  <thead><tr><th style="width:300px">你在工程里遇到的困惑</th><th style="width:230px">它的哲学出身</th><th>读</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>模型给出一个答案，但我不确定它「知道」还是「蒙对了」</td>
+      <td>知识的定义（JTB 与葛梯尔问题）</td>
+      <td><a href="ch02.html#s2">2.2</a></td>
+    </tr>
+    <tr>
+      <td>模型的置信度和实际正确率对不上</td>
+      <td>信念的度量、校准（calibration）</td>
+      <td><a href="ch02.html#s6">2.6</a></td>
+    </tr>
+    <tr>
+      <td>怎么让系统学会说「我不知道」</td>
+      <td>可知与不可知、知识的边界</td>
+      <td><a href="ch02.html#s7">2.7</a></td>
+    </tr>
+    <tr>
+      <td>训练集表现很好，上线就崩</td>
+      <td>休谟的归纳问题</td>
+      <td><a href="ch03.html#s1">3.1</a></td>
+    </tr>
+    <tr>
+      <td>为什么换一个数据分布，模型就完全失效</td>
+      <td>归纳的不可证明性、绿蓝悖论</td>
+      <td><a href="ch03.html#s3">3.3</a> / <a href="ch03.html#s6">3.6</a></td>
+    </tr>
+    <tr>
+      <td>幻觉为什么删不干净</td>
+      <td>流畅性与真理性无关（认识论）</td>
+      <td><a href="ch03.html#s7">3.7</a></td>
+    </tr>
+    <tr>
+      <td>模型是不是「真的有智能」？评测该测什么</td>
+      <td>图灵测试、功能主义</td>
+      <td><a href="ch04.html#s3">4.3</a> / <a href="ch04.html#s4">4.4</a></td>
+    </tr>
+    <tr>
+      <td>「它是真的理解还是在模仿」这类争论怎么判</td>
+      <td>中文房间、意向性、符号接地</td>
+      <td><a href="ch04.html#s5">4.5</a> / <a href="ch05.html#s2">5.2</a></td>
+    </tr>
+    <tr>
+      <td>多模态 / 具身 / 机器人路线到底有没有必要</td>
+      <td>具身认知、生成主义</td>
+      <td><a href="ch05.html#s4">5.4</a> / <a href="ch10.html#s5">10.5</a></td>
+    </tr>
+    <tr>
+      <td>为什么「相似度」能代表「意思相近」</td>
+      <td>意义即用法、分布假设</td>
+      <td><a href="ch06.html#s4">6.4</a> / <a href="ch06.html#s7">6.7</a></td>
+    </tr>
+    <tr>
+      <td>提示词为什么有时有效得不可思议，有时完全没用</td>
+      <td>语言游戏、语境依赖性</td>
+      <td><a href="ch06.html#s8">6.8</a></td>
+    </tr>
+    <tr>
+      <td>CoT 到底是推理还是表演</td>
+      <td>形式系统的限度、推理的定义</td>
+      <td><a href="ch07.html#s6">7.6</a></td>
+    </tr>
+    <tr>
+      <td>为什么符号系统又流行回来了</td>
+      <td>哥德尔、与形式化的必要性</td>
+      <td><a href="ch07.html#s7">7.7</a></td>
+    </tr>
+    <tr>
+      <td>「价值对齐」到底要对齐什么</td>
+      <td>规范伦理学三大框架</td>
+      <td><a href="ch08.html#s1">8.1</a> / <a href="ch08.html#s6">8.6</a></td>
+    </tr>
+    <tr>
+      <td>价值观冲突时该听谁的</td>
+      <td>道德普遍主义 vs 相对主义</td>
+      <td><a href="ch08.html#s8">8.8</a></td>
+    </tr>
+    <tr>
+      <td>出了事故，责任怎么划</td>
+      <td>责任伦理、意图与后果</td>
+      <td><a href="ch08.html#s9">8.9</a></td>
+    </tr>
+    <tr>
+      <td>情感陪伴产品，让用户依赖算不算伤害</td>
+      <td>自主性、关怀伦理、他者伦理</td>
+      <td><a href="ch09.html#s4">9.4</a> / <a href="ch09.html#s6">9.6</a></td>
+    </tr>
+    <tr>
+      <td>要不要明确告诉用户「我是 AI」</td>
+      <td>欺骗与隐瞒的伦理学</td>
+      <td><a href="ch09.html#s3">9.3</a></td>
+    </tr>
+    <tr>
+      <td>沉浸式体验里「真实感」到底指什么</td>
+      <td>现象学、临场感（presence）</td>
+      <td><a href="ch10.html#s6">10.6</a></td>
+    </tr>
+    <tr>
+      <td>BCI 里「我在控制我的手」这种感觉是怎么来的</td>
+      <td>身体图式、代理感</td>
+      <td><a href="ch10.html#s8">10.8</a></td>
+    </tr>
+    <tr>
+      <td>想法很好，怎么让它真的进入项目流程</td>
+      <td>方法论、设计审查</td>
+      <td><a href="ch11.html">第 11 章</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>建议现在做一件事：</strong>从上面这张表里挑 <strong>3 行</strong>最像你手上问题的那几行，
+  记下章节号。<strong>只读这 3 章</strong>，做完练习。
+  比从第 1 章顺着读到第 11 章有效得多——这是「问题驱动」的具体操作方式。
+</div>
+
+<hr>
+
+<h2 id="route"><span class="h2-num">0.4</span>十二周学习路线</h2>
+
+<p>如果你打算系统走一遍，按下面的节奏。每周 4–6 小时（阅读约 2 小时，动手约 3 小时）。</p>
+
+<div class="roadmap">
+  <div class="rm-phase">
+    <div class="ph-t">第 1–2 周 · 建立地图：哲学与 AI 到底在哪里接壤</div>
+    <div class="ph-d">
+      读 <a href="ch01.html">第 1 章</a>。产出：把你手上正在做的项目，写出 <strong>3 个哲学问题</strong>，每个都要能说清「如果我按 A 理解会怎么做，按 B 理解会怎么做」。
+      <br><span class="hash">#不需要任何前置知识</span>
+    </div>
+  </div>
+  <div class="rm-phase">
+    <div class="ph-t">第 3–4 周 · 认识论：你的系统凭什么说自己「知道」</div>
+    <div class="ph-d">
+      读 <a href="ch02.html">第 2 章</a>、<a href="ch03.html">第 3 章</a>。
+      产出：给你的模型输出加一层<strong>校准检查</strong>（比如把置信度分桶，看每桶的实际准确率）。
+      <br><span class="hash">#这两章是全书地基，别跳</span>
+    </div>
+  </div>
+  <div class="rm-phase">
+    <div class="ph-t">第 5–6 周 · 心灵哲学：智能、理解、意识，三个词的边界</div>
+    <div class="ph-d">
+      读 <a href="ch04.html">第 4 章</a>、<a href="ch05.html">第 5 章</a>。
+      产出：写一份<strong>「我的评测在测什么」说明</strong>——逐条列出你的 benchmark 实际上能证明什么、不能证明什么。
+      <br><span class="hash">#这两章直接决定你怎么写评测</span>
+    </div>
+  </div>
+  <div class="rm-phase">
+    <div class="ph-t">第 7 周 · 语言与意义：为什么「语义相似」这条路能走通</div>
+    <div class="ph-d">
+      读 <a href="ch06.html">第 6 章</a>。
+      产出：对你项目里的检索/匹配逻辑做一次<strong>失效分析</strong>——找出 3 个「向量相似但意思完全不同」的反例。
+    </div>
+  </div>
+  <div class="rm-phase">
+    <div class="ph-t">第 8 周 · 推理的边界：模型会推理吗</div>
+    <div class="ph-d">
+      读 <a href="ch07.html">第 7 章</a>。
+      产出：设计一个<strong>你项目里的小型推理测试集</strong>（10 题以内），专门测多步约束推理，看模型在哪一步断掉。
+    </div>
+  </div>
+  <div class="rm-phase">
+    <div class="ph-t">第 9–10 周 · 伦理学：从「能不能做」到「该不该做」</div>
+    <div class="ph-d">
+      读 <a href="ch08.html">第 8 章</a>、<a href="ch09.html">第 9 章</a>。
+      产出：用三大伦理框架分别审视你项目的同一个功能，写出<strong>三种框架下结论不同的地方</strong>。
+      <br><span class="hash">#做陪伴类产品的话，第 9 章必读</span>
+    </div>
+  </div>
+  <div class="rm-phase">
+    <div class="ph-t">第 11 周 · 现象学与具身：如果做沉浸式或 BCI</div>
+    <div class="ph-d">
+      读 <a href="ch10.html">第 10 章</a>。
+      产出：为你设想的体验写一份<strong>第一人称描述</strong>（用户实际感到什么），再对照技术参数看差在哪。
+      <br><span class="hash">#不做这方向可以只读 10.6 / 10.7</span>
+    </div>
+  </div>
+  <div class="rm-phase">
+    <div class="ph-t">第 12 周 · 落地：写成能进入流程的文档</div>
+    <div class="ph-d">
+      读 <a href="ch11.html">第 11 章</a>。
+      产出：<strong>一份完整的伦理设计文档</strong>（第 11.7 节有模板），并在一次真实的设计评审里用上哲学清单。
+    </div>
+  </div>
+</div>
+
+<div class="warn">
+  <strong>时间不够怎么办：</strong>如果只有一个月，走这条最小路线——
+  <a href="ch01.html#s1">1.1</a> → <a href="ch03.html#s7">3.7</a>（幻觉的根源）→
+  <a href="ch04.html#s3">4.3</a>（评测该测什么）→ <a href="ch08.html#s6">8.6</a>（对齐）
+  → <a href="ch11.html">第 11 章</a>（落地）。
+  这五个点覆盖了「为什么错 / 怎么测 / 该不该做 / 怎么推进」的完整闭环。
+</div>
+
+<hr>
+
+<h2 id="depth"><span class="h2-num">0.5</span>三档阅读深度</h2>
+
+<p>哲学书最容易劝退人的地方是<strong>选错难度</strong>。同一主题的书，难度可以差十倍。
+本指南给所有推荐的书都标了难度，含义如下：</p>
+
+<table>
+  <thead><tr><th style="width:130px">标记</th><th style="width:190px">适合谁</th><th>特征</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="lv lv1">入门</span></td>
+      <td>没读过哲学书，或只读过通俗读物</td>
+      <td>叙述流畅、少术语、作者会带着你走。缺点是有时代入感强、容易只记住结论。</td>
+    </tr>
+    <tr>
+      <td><span class="lv lv2">进阶</span></td>
+      <td>能连续读 20 页抽象论述不走神</td>
+      <td>开始出现论证结构（前提、推论、反驳）。需要你动笔做笔记，否则读完记不住。</td>
+    </tr>
+    <tr>
+      <td><span class="lv lv3">硬核</span></td>
+      <td>想真正掌握某个论证细节</td>
+      <td>原文 / 学术专著。一句话可能要读三遍。好处是读过之后，二手解读的错误你会立刻发现。</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>一条反直觉的建议：</strong>不要按「入门 → 进阶 → 硬核」的顺序读完一整个领域再换下一个。
+  正确做法是——<strong>同一主题，先读一本入门建立地图，直接跳到该主题的硬核原文读关键章节，
+  遇到不懂再回头查</strong>。这样你能在两周内对一个主题形成可用的理解，
+  而不是花三个月在「哲学导论」里打转。
+</div>
+
+<hr>
+
+<h2 id="faq"><span class="h2-num">0.6</span>五个常见疑问</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1. 我没时间读原著，看视频解读和公众号可以吗？</p>
+  <div class="qa-a">
+    <p>可以拿来<strong>建立地图</strong>，不能拿来<strong>形成理解</strong>。原因是：好的哲学论证是「链条」，而解读通常是「结论集锦」——
+    链条去掉中间环节就变成了口号。你需要的恰恰是中间环节，因为<strong>技术决策发生在中间环节</strong>。</p>
+    <p>实用的折中：用解读找到关键论证在原文的哪几页，只读那几页原文。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 哲学那么多流派，会不会读得越多越糊涂？</p>
+  <div class="qa-a">
+    <p>会，如果<strong>你按流派读</strong>。不会，如果你<strong>按问题读</strong>。</p>
+    <p>流派是历史沉淀的产物，它把「同一问题的不同回答」包装成了不同的旗帜。
+    但你的工程问题永远指向一个具体问题（「我的模型为什么必然幻觉」），顺这个问题往下走，
+    你会发现休谟、古德曼、波普尔只是在同一个问题上各给了半个答案——这时候你不会糊涂，你会看到争论的边界在哪。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3. 学这些能帮我找到工作 / 涨薪吗？</p>
+  <div class="qa-a">
+    <p>直接帮助你不太可能，间接会。<strong>它不会让你通过任何一场技术面试</strong>——面试考的是框架、算法、系统设计。</p>
+    <p>它起作用的地方在更远处：当你需要<strong>判断一个技术方向的长期价值</strong>、
+    <strong>在一次争执里说清为什么某个指标是错的</strong>、
+    <strong>或者决定一个功能该不该做</strong>的时候。这类判断在职业中后期的权重会越来越大，
+    而在校期间几乎没人教你。</p>
+    <p>所以本指南的定位是<strong>长期投资</strong>，不是短期技能。如果你这周等着面试，先去刷题。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q4. 这些内容会不会和我的技术学习冲突、抢时间？</p>
+  <div class="qa-a">
+    <p>会抢时间，但可以<strong>不占额外时间</strong>——做法是把它挂在技术任务上：</p>
+    <ul style="margin-bottom:0">
+      <li>你本来就要写评测集 → 顺手按 5.6 节的清单标注「这个指标证明了什么、没证明什么」。</li>
+      <li>你本来就要做 RAG 调优 → 顺手按 6.7 节记录失败案例的「相似但不对」模式。</li>
+      <li>你本来就要写设计文档 → 顺手多写一节「风险与伦理」。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q5. 我该从哪一本开始？</p>
+  <div class="qa-a">
+    <p>如果你只想先读一本、看看自己受不受得了，选一本<strong>问题导向</strong>而不是<strong>历史导向</strong>的：
+    具体推荐见 <a href="appendix.html#a1">附录 A.1</a> 的「第一本」区。</p>
+    <p>如果你连一本都不想买，那就是<strong>从本指南的第 1 章开始</strong>——每章末尾都有「延伸阅读」，
+    标了具体页码范围，读完哪一节再去查对应原文，比先买书高效。</p>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="ready"><span class="h2-num">0.7</span>开始之前</h2>
+
+<div class="goal">
+  <strong>读完全站你应该能做到：</strong>
+  <ul style="margin-bottom:0">
+    <li>看到一个 AI 技术争论，能分辨其中哪些是<strong>可验证的工程问题</strong>、哪些是<strong>尚无定论的哲学问题</strong>。</li>
+    <li>为你的项目写出<strong>一份伦理设计文档</strong>，包含价值取舍、风险、降级路径与责任划分。</li>
+    <li>解释清楚<strong>为什么幻觉删不干净</strong>、<strong>为什么分布外必然失败</strong>——并据此设计产品而不是许诺一个做不到的目标。</li>
+    <li>在一次设计评审里，用<strong>至少三个哲学问题</strong>逼出被忽略的假设。</li>
+    <li>知道自己<strong>不知道</strong>什么：哪些问题当前没有答案，而不是以为自己找到了答案。</li>
+  </ul>
+</div>
+
+<div class="note">
+  <strong>本站的定位：</strong>这是一个<strong>完全独立</strong>的教学站点，只讲一件事——
+  哲学如何转化为 AI 工程判断力。它<strong>不绑定任何框架、语言或代码库</strong>，
+  所以内容不会因为某个技术版本迭代而过时；代价是它也不能替代动手实践。
+  <br><br>
+  <strong>建议的用法：</strong>把它当作<strong>决策时的检查清单</strong>——
+  在「写需求 / 定指标 / 做评审 / 上线前」这四个节点，各翻一遍对应章节。
+</div>
+
+<div class="navfoot">
+  <a href="appendix.html"><div class="dir-label">→ 速查</div><div class="dir-name">附录 · 书单与映射表</div></a>
+  <a class="next" href="ch01.html"><div class="dir-label">下一节 →</div><div class="dir-name">第 1 章 · 哲学与 AI 的真实交界</div></a>
+</div>
+
+<div class="footer">哲学 × AI 学习指南 · 总览 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

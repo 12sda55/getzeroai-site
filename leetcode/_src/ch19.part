@@ -1,0 +1,353 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 19</div>
+  <h1><span class="ch-tag">专题 19</span>Trie 前缀树：把前缀查询做到 O(单词长度)</h1>
+  <p class="lead">哈希表能 O(1) 查「某个完整单词存不存在」，但如果你要的是<strong>「有没有以 app 开头的单词」「apple 是不是某个单词的前缀」</strong>，哈希就傻了——它只能一个一个比。
+  Trie（前缀树 / 字典树）就是为这类「前缀相关」问题而生的：它把一堆单词按字符一层层挂成一棵树，<strong>共享前缀的单词共用树枝</strong>，于是一次前缀查询只需沿着树走「单词长度」步，O(L) 而不是 O(总字符数)。
+  本章用 4 道题带你看清 Trie 的实现与威力，并标注一道选学的困难题（单词搜索 II）。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握 Trie 结构与实现</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">Java 基础 · 专题 07 递归/树</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 道 Hot 题 + 应用场景表</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">19.1</span>Trie：把前缀查询做到 O(单词长度)</h2>
+
+<p>先用一个场景引出 Trie 的价值。假设词库里有 <code>app</code>、<code>apple</code>、<code>apply</code> 三个词，现在要回答「有没有以 <code>ap</code> 开头的词」。
+哈希表得把每个词拿出来看前两个字母，O(词数 × 词长)。Trie 则把它们<strong>共享前缀的部分合并成一枝</strong>：</p>
+
+<pre><code class="nohl">Trie 结构（每个节点是一个字符，边是“下一个字符”）：
+        (root)
+         │ a
+         ▼
+         a ── p ── p ── l ── e
+                          └── y
+三个词 app / apple / apply 共享 a→p→p 这一段，后面才分叉。
+
+查「以 ap 开头」：从 root 走 a→p，两步就到，后面有节点 → 存在 ✓
+查「是否有 app」：走 a→p→p，且第三个 p 节点标记 isEnd=true → 是完整单词 ✓
+</code></pre>
+
+<p>Trie 的每个节点代表「走到这里已经拼出的前缀」。节点上通常存两样东西：</p>
+
+<ul>
+  <li><strong>子节点们</strong>：从当前前缀往下还能接哪些字符（常用数组 <code>children[26]</code> 或哈希表）；</li>
+  <li><strong>isEnd 标记</strong>：当前节点是否代表「某个完整单词的结尾」（区分「前缀存在」和「完整单词存在」）。</li>
+</ul>
+
+<div class="tip">
+  <strong>一句话：</strong>Trie 把「一堆单词」压成一棵树，共享前缀的单词合并树枝，这样查前缀、查完整词都只要沿着树走单词长度步，与词库总量无关。代价是空间（每个字符一个节点）。
+</div>
+
+<h3>Trie 和哈希表，到底差在哪</h3>
+
+<p>很多同学会问：「我用一个 HashSet 把所有单词存进去，<code>contains(word)</code> 不也是 O(L) 吗？为什么还要 Trie？」
+这个疑问很合理，关键区别在<strong>查询的形态</strong>：</p>
+
+<table>
+  <thead>
+    <tr><th>操作</th><th>HashSet / HashMap</th><th>Trie</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>查完整单词 <code>"apple"</code> 在不在</td><td>O(L)，优秀</td><td>O(L)，同样优秀</td></tr>
+    <tr><td>查「有没有以 ap 开头的词」</td><td>只能遍历所有词逐个比前缀，O(总字符)</td><td>走 a→p 两步，O(2)</td></tr>
+    <tr><td>查「词典里所有 app 前缀的词」</td><td>遍历整个词典</td><td>从 ap 节点往下把整棵子树收出来</td></tr>
+    <tr><td>最长前缀匹配（IP 路由）</td><td>几乎做不到</td><td>逐 bit 走，天然支持</td></tr>
+  </tbody>
+</table>
+
+<p>一句话：<strong>HashSet 擅长「精确查一个」，Trie 擅长「前缀相关的批量/模式查询」</strong>。前缀补全、拼写检查、路由最长前缀匹配这类活，Trie 是唯一的合理选择。</p>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">19.2</span>实现 Trie（前缀树）（中等，力扣 208）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：children[26] + isEnd</span></p>
+
+<p><strong>题意：</strong>请你实现一个 Trie，支持三个操作：<code>insert(word)</code> 插入单词、<code>search(word)</code> 查单词是否存在、<code>startsWith(prefix)</code> 查是否有以 prefix 开头的单词。</p>
+
+<h3>思路推导：逐字符往下挂</h3>
+
+<p>Trie 节点结构：一个长度为 26 的数组 <code>children</code>（假设只含小写字母）和一个布尔 <code>isEnd</code>。</p>
+
+<ul>
+  <li><strong>insert：</strong>从根出发，对单词每个字符 c，算出下标 <code>idx = c - 'a'</code>；若 <code>children[idx]</code> 为空就 new 一个节点；然后「走下去」到那个子节点。走完所有字符后，在最后一个节点标 <code>isEnd = true</code>。</li>
+  <li><strong>search：</strong>同样逐字符往下走，若某步子节点为空说明单词不存在；走完若 <code>isEnd == true</code> 才是「完整单词存在」。</li>
+  <li><strong>startsWith：</strong>和 search 一样走，但<strong>不要求 isEnd</strong>——只要能走完 prefix 每个字符（节点都存在）就返回 true。</li>
+</ul>
+
+<h3>参考代码</h3>
+
+<pre><code>class Trie {
+    private Trie[] children;   // 26 个小写字母的子节点
+    private boolean isEnd;     // 本节点是否为某个单词结尾
+
+    public Trie() {
+        children = new Trie[26];
+        isEnd = false;
+    }
+
+    // 插入单词：逐字符往下挂，末尾打标记
+    public void insert(String word) {
+        Trie node = this;                 // 从根（this）出发
+        for (int i = 0; i < word.length(); i++) {
+            int idx = word.charAt(i) - 'a';   // 字符转下标
+            if (node.children[idx] == null) {  // 没有这个分支就新建
+                node.children[idx] = new Trie();
+            }
+            node = node.children[idx];         // 往下走一层
+        }
+        node.isEnd = true;                 // 单词结束，打标记
+    }
+
+    // 查找完整单词：必须走到末尾且 isEnd
+    public boolean search(String word) {
+        Trie node = this;
+        for (int i = 0; i < word.length(); i++) {
+            int idx = word.charAt(i) - 'a';
+            if (node.children[idx] == null) return false; // 走不下去
+            node = node.children[idx];
+        }
+        return node.isEnd;   // 关键是 isEnd，否则可能只是前缀
+    }
+
+    // 查前缀：能走完即可，不要求 isEnd
+    public boolean startsWith(String prefix) {
+        Trie node = this;
+        for (int i = 0; i < prefix.length(); i++) {
+            int idx = prefix.charAt(i) - 'a';
+            if (node.children[idx] == null) return false;
+            node = node.children[idx];
+        }
+        return true;   // 走到头说明前缀存在
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>每个操作都只走「单词长度 L」步，时间 O(L)；空间是「所有插入单词的字符总数」（每个字符一个节点）。边界：插入空串、重复插入同一单词（isEnd 重设 true 即可，幂等）。</p>
+
+<div class="tip">
+  若字符集不是小写字母（比如含大写、数字、Unicode），把 <code>children</code> 换成 <code>Map&lt;Character, Trie&gt;</code> 更通用，代价是稍慢。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>添加与搜索单词（力扣 211，中等）</strong>——在本题 Trie 上加通配符 '.' 支持模糊匹配（提示：见 <a href="ch19.html#s3">19.3</a>，遇 '.' 时 DFS 枚举 26 个分支）。</li>
+    <li><strong>词典中最长的单词（力扣 720，简单）</strong>——与本题同 insert+search 框架；差异在用 Trie 找出「由词库中其它单词逐字符拼接而成」的最长单词（提示：插入全部后 DFS 遍历 Trie，只在 isEnd 节点继续往下，记录最长路径）。</li>
+    <li><strong>键值映射（力扣 677，中等）</strong>——把 isEnd 改成「值」，支持 insert 覆盖值和前缀求和（提示：节点存 sum 或 val，前缀查找时累加）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">19.3</span>添加与搜索单词（中等，力扣 211）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：通配符 '.' 的 DFS 分支</span></p>
+
+<p><strong>题意：</strong>在 <a href="ch19.html#s2">19.2</a> 的 Trie 上加一个 <code>search(word)</code> 支持<strong>通配符</strong>：<code>'.'</code> 可以匹配<strong>任意一个小写字母</strong>。例如插入 <code>bad</code>、<code>dad</code>、<code>mad</code> 后，<code>search("b..")</code> 应返回 true。</p>
+
+<h3>思路推导：遇到 '.' 就分支搜索</h3>
+
+<p>insert 和之前完全一样。难点在 search：普通字符就走对应分支；一旦遇到 <code>'.'</code>，它代表「任意一个字母都行」，于是我们要<strong>对当前节点的所有 26 个子节点都试一遍</strong>——只要有任意一条分支最终能匹配完剩余字符，就返回 true。这正是<strong>DFS（深度优先搜索）</strong>的用武之地。</p>
+
+<pre><code class="nohl">插入 bad / dad / mad 后，搜 "b.."：
+  b → 确定走 b 分支
+  . → 枚举 b 节点的所有子节点（这里只有 a）
+  . → 枚举 a 节点的所有子节点（d）→ 走完且 isEnd → true
+如果有多个子节点（比如 b 下有 a 和 o），两条都要试，任一成功即成功。
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code>class WordDictionary {
+    private WordDictionary[] children;
+    private boolean isEnd;
+
+    public WordDictionary() {
+        children = new WordDictionary[26];
+        isEnd = false;
+    }
+
+    public void addWord(String word) {
+        WordDictionary node = this;
+        for (int i = 0; i < word.length(); i++) {
+            int idx = word.charAt(i) - 'a';
+            if (node.children[idx] == null) {
+                node.children[idx] = new WordDictionary();
+            }
+            node = node.children[idx];
+        }
+        node.isEnd = true;
+    }
+
+    public boolean search(String word) {
+        return dfs(this, word, 0);
+    }
+
+    // 从 node 开始，匹配 word 的第 i 个字符起
+    private boolean dfs(WordDictionary node, String word, int i) {
+        if (i == word.length()) return node.isEnd; // 走完，看是否完整单词
+        char c = word.charAt(i);
+        if (c != '.') {
+            // 普通字符：只走对应分支
+            int idx = c - 'a';
+            return node.children[idx] != null
+                && dfs(node.children[idx], word, i + 1);
+        } else {
+            // 通配符 '.'：枚举所有非空子节点，任一成功即可
+            for (int j = 0; j < 26; j++) {
+                if (node.children[j] != null
+                    && dfs(node.children[j], word, i + 1)) {
+                    return true;   // 剪枝：找到一条就够
+                }
+            }
+            return false;  // 所有分支都失败
+        }
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>最坏情况下（全是 '.'），每个 '.' 展开 26 个分支，复杂度约 O(26^L)——但 L 通常很小，实际可接受。insert O(L)。边界：空串、全是 '.' 的搜索都按逻辑正常处理。</p>
+
+<div class="tip">
+  这里的递归和 <a href="ch07.html#s1">专题 07</a> 学的「分解式」一脉相承：把「匹配剩余字符串」这子问题交给下一层，本层只负责当前字符怎么走。只是 '.' 让本层从「走 1 条」变成「走至多 26 条」。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>实现 Trie（力扣 208，中等）</strong>——本题的前置，无通配符版（提示：见 <a href="ch19.html#s2">19.2</a>，search 不分支）。</li>
+    <li><strong>单词替换（力扣 648，中等）</strong>——与本题同 Trie 前缀匹配；差异在句子中每个词用 Trie 找最短前缀词并替换（提示：insert 词典，对每个词从 root 沿字符走，遇到的第一个 isEnd 即最短替换前缀）。</li>
+    <li><strong>单词搜索 II（力扣 212，困难，选学）</strong>——Trie + 网格 DFS 的组合（提示：见 <a href="ch19.html#s4">19.4</a>）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">19.4</span>单词搜索 II（困难，力扣 212，选学）</h2>
+
+<p><span class="pill purple">困难</span> <span class="pill">核心：网格 DFS + Trie 同时走（选学）</span></p>
+
+<p><strong>题意：</strong>在一个 m×n 字母网格里，找出所有<strong>能被拼出的词典单词</strong>。每个格子只能上下左右走、不能重复使用同一格。例如网格里有 <code>o,a,n</code> 等组成，词典 <code>["oath","pea","rain"]</code>，返回能拼出的那些。</p>
+
+<h3>思路推导：把「每个单词都搜一遍」优化成「Trie 一起走」</h3>
+
+<p><strong>暴力思路：</strong>对词典里每个单词，从网格每个格子开始 DFS 尝试拼。复杂度约 O(w·m·n·4^L)，w 是词数、L 是词长，显然太慢——同一个前缀 <code>oa</code> 被不同单词反复从网格重搜。</p>
+
+<p><strong>优化思路：</strong>把所有词典单词建一棵 Trie，然后<strong>让网格 DFS 和 Trie 同时走</strong>。从网格某格出发，每走到一个字母，就沿 Trie 往对应子节点走一步；当 Trie 走到某个 <code>isEnd</code> 节点，说明当前拼出的路径正好是词典里一个单词，收入答案。这样<strong>共享前缀的单词只搜一次</strong>，复杂度降到 O(m·n·4^L)（与词数 w 无关！）。</p>
+
+<div class="warn">
+  <strong>选学提示：</strong>本题是 Trie + 回溯 DFS 的综合，第一次读到可先跳过，等把 19.1~19.3 和 <a href="ch07.html#s1">专题 07</a> 递归吃透再回来。面试中被问「大量单词在网格里找」时才必会。
+</div>
+
+<h3>为什么非得 Trie？一个具体数字</h3>
+
+<p>假设词典有 w=10 万个单词，平均长度 L=8，网格 10×10。暴力做法要对每个单词从 100 个格子起手 DFS，约 <code>10^5 × 100 × 4^8 ≈ 6.5×10^12</code> 次操作，根本跑不完。
+而 Trie 方案：无论词典多大，网格 DFS 总次数只和「网格大小 × 每步分支」有关，约 <code>100 × 4^8 ≈ 6.5×10^5</code>——差了上百万倍。差距来源就是「共享前缀只搜一次」。</p>
+
+<h3>参考代码（核心框架）</h3>
+
+<pre><code>// 思路骨架（省略 Trie 定义，复用 19.2 的结构）：
+// 1. 把所有单词 insert 进 Trie
+// 2. 对网格每个格子 (i,j) 起手 DFS，同时带着当前 Trie 节点走
+// 3. 走到 Trie 的 isEnd 节点 → 收集该单词；走过格子标记为已访问避免回头
+// 4. 上下左右四方向继续，回溯时恢复访问标记
+
+// 关键片段（在 DFS 中）：
+//   char c = board[i][j];
+//   int idx = c - 'a';
+//   Trie next = cur.children[idx];
+//   if (next == null) return;        // 这条拼法词典里没有，剪枝
+//   if (next.isEnd) ans.add(next.word);  // 拼出一个完整单词
+//   board[i][j] = '#';               // 标记已用
+//   dfs(board, i+1,j, next); ... 四方向
+//   board[i][j] = c;                 // 回溯
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>网格每个起点一次 DFS，每步 4 方向，深度 ≤ 最长词 L，约 O(m·n·4^L)；建 Trie O(总字符数)。相比暴力 O(w·m·n·4^L)，当 w 大时优势巨大。</p>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>单词搜索（力扣 79，中等）</strong>——本题的「单单词」退化版，不需要 Trie，纯网格 DFS 即可（提示：对一个单词从每格 DFS 四方向拼，注意访问标记与回溯）。</li>
+    <li><strong>添加与搜索单词（力扣 211，中等）</strong>——Trie 通配符搜索（提示：见 <a href="ch19.html#s3">19.3</a>）。</li>
+    <li><strong>实现 Trie（力扣 208，中等）</strong>——本题的 Trie 构件（提示：见 <a href="ch19.html#s2">19.2</a>）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">19.5</span>Trie 的应用场景总结</h2>
+
+<p>Trie 不是银弹，它专门吃「前缀相关」的活儿。一张表看清什么时候该上 Trie：</p>
+
+<table>
+  <thead>
+    <tr><th>场景</th><th>说明</th><th>为什么用 Trie</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>前缀补全 / 自动联想</strong></td><td>输入 <code>app</code> 提示 apple、apply</td><td>沿树走三步就拿到所有以 app 开头的词</td></tr>
+    <tr><td><strong>拼写检查</strong></td><td>判断一个词是否在词典、找近似词</td><td>逐字符匹配，O(L) 判定</td></tr>
+    <tr><td><strong>词频 / 词表统计</strong></td><td>一批字符串去重、计数</td><td>节点可挂额外信息（频次、含义）</td></tr>
+    <tr><td><strong>IP 路由最长前缀匹配</strong></td><td>路由器按目的 IP 找最匹配网段</td><td>二进制 Trie，逐 bit 走，天然前缀匹配</td></tr>
+  </tbody>
+</table>
+
+<pre><code class="nohl">什么时候【不用】Trie，改用 HashMap：
+  · 字符集很大（中文/任意 Unicode）→ 节点数组爆内存，HashMap 更省
+  · 单词数量很少、且只查「完整单词」→ 直接 HashSet 即可，O(1)
+  · 不需要前缀能力 → Trie 的空间浪费不划算
+</code></pre>
+
+<div class="tip">
+  <strong>选型一句话：</strong>要「前缀」「联想」「最长前缀匹配」就上 Trie；只查「完整词存不存在」且词少，HashSet 就够了。Trie 用空间换前缀查询的时间。
+</div>
+
+<h3>一个直觉类比：电话簿 vs 通讯录搜索框</h3>
+
+<p>把 Trie 想象成老式电话簿：按首字母分 section，A 开头的全堆在 A 区，再按第二个字母细分。你要找「以 Li 开头的所有人」，直接翻到 L→i 那一块，整块都是，不用扫全书。
+HashSet 则像一张没有排序的名片盒，查「名片上有没有叫张三的」很快，但要「所有姓 Li 的」就得一张张翻——这就是前缀能力的差距。</p>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">19.6</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul>
+    <li><strong>isEnd 忘标记导致 search 把前缀误判为成功。</strong>插入完一定要在最后一个节点设 <code>isEnd = true</code>；search 必须检查 <code>node.isEnd</code>，否则 <code>app</code> 会被当成 <code>apple</code> 存在。startsWith 才不需要 isEnd。</li>
+    <li><strong>children 忘判空就访问。</strong>走子节点前必须先 <code>if (node.children[idx] == null) return false</code>，否则空指针。</li>
+    <li><strong>字符 <code>'a'</code> 与下标混用。</strong>统一用 <code>idx = c - 'a'</code> 转下标，数组大小 26；别把字符本身当索引。</li>
+    <li><strong>211 通配符剪枝错：</strong>遇到 '.' 必须用循环枚举所有非空子节点 DFS，不能只走第一个；且任一分支成功就 <code>return true</code> 剪枝。</li>
+    <li><strong>212 回溯忘恢复访问标记。</strong>网格 DFS 标记 <code>'#'</code> 后，回溯必须把格子恢复原字符，否则会影响其它起点的搜索。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">19.7</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.（概念题）Trie 相比 HashSet 查「单词是否存在」慢，为什么还要用它？它最擅长什么？</p>
+  <div class="qa-a">Trie 空间更大、单查不一定更快，但它 O(L) 支持「前缀查询」（startsWith）、自动联想、最长前缀匹配，这些是 HashSet 做不到的。HashSet 只能查完整键。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2.（概念题）search 和 startsWith 的代码几乎一样，唯一区别在哪？漏掉会怎样？</p>
+  <div class="qa-a">区别在 search 最后返回 <code>node.isEnd</code> 而 startsWith 返回 <code>true</code>。漏掉 isEnd 判断会让 search 把「某个单词的前缀」也误判成「完整单词存在」（如插了 apple 却搜出 app 成功）。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.（动手题）实现 Trie 的 insert，要求把 <code>"apple"</code> 插入后，<code>search("app")</code> 返回 false 但 <code>startsWith("app")</code> 返回 true。写出 insert 与两个查询的核心代码。</p>
+  <div class="qa-a">insert 逐字符 <code>idx=c-'a'</code>，new 缺失分支，走到底设 <code>isEnd=true</code>。search 走完返回 <code>node.isEnd</code>（app 的 p 节点 isEnd=false→false）；startsWith 走完返回 true（app 路径存在→true）。详见 <a href="ch19.html#s2">19.2</a> 代码。</div>
+</div>
+
+<div class="goal">学完这章，你应该能回答：Trie 节点为什么是 children[26]+isEnd；insert/search/startsWith 怎么写；通配符 '.' 为什么要用 DFS 枚举分支；以及 Trie 适合/不适合哪些场景。</div>

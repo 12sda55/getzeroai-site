@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 7 章 · 逻辑与推理的边界：从弗雷格到哥德尔 | 哲学 × AI 学习指南</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="philosophy">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">哲</span>
+    <span>哲学 × AI 学习指南<small>把哲学变成工程判断力</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 哲学与 AI 的交界</option>
+    <option value="ch02.html">02 · 认识论 I</option>
+    <option value="ch03.html">03 · 认识论 II</option>
+    <option value="ch04.html">04 · 心灵哲学 I</option>
+    <option value="ch05.html">05 · 心灵哲学 II</option>
+    <option value="ch06.html">06 · 语言与意义</option>
+    <option value="ch07.html">07 · 逻辑与推理边界</option>
+    <option value="ch08.html">08 · 伦理学 I</option>
+    <option value="ch09.html">09 · 伦理学 II</option>
+    <option value="ch10.html">10 · 现象学与具身认知</option>
+    <option value="ch11.html">11 · 落地方法</option>
+    <option value="appendix.html">附录 · 书单与速查</option>
+  </select>
+  <a class="tb-link" href="appendix.html">书单</a>
+  <a class="tb-link" href="ch11.html">落地清单</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>哲学与 AI 的真实交界</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>认识论 I · 知识、信念与不确定性</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>认识论 II · 归纳与幻觉的根源</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>心灵哲学 I · 意识与中文房间</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>心灵哲学 II · 意向性与符号接地</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>语言与意义 · 从维特根斯坦到词向量</span></a>
+    <a class="sb-link active" href="ch07.html"><span class="num">7</span><span>逻辑与推理的边界</span></a>
+    <div class="sb-sub">
+      <a href="#s1">7.1 形式化：从亚里士多德到弗雷格</a>
+      <a href="#s2">7.2 罗素悖论与类型论</a>
+      <a href="#s3">7.3 哥德尔不完备定理</a>
+      <a href="#s4">7.4 图灵机与停机问题</a>
+      <a href="#s5">7.5 形式系统的三条限制</a>
+      <a href="#s6">7.6 CoT 是推理还是模仿推理</a>
+      <a href="#s7">7.7 神经符号为何回归</a>
+      <a href="#s8">7.8 推理基准上的失败说明什么</a>
+      <a href="#s9">7.9 动手练习</a>
+      <a href="#s10">7.10 自测题</a>
+    </div>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>伦理学 I · 三大框架与 AI 对齐</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>伦理学 II · 情感陪伴 AI 的伦理</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>现象学与具身认知 · 沉浸与 BCI</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>落地 · 把哲学变成工程决策</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 书单 / 术语 / 映射</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">哲学 × AI 指南</a> / 第 7 章</div>
+  <h1><span class="ch-tag">CH 07</span>逻辑与推理的边界：从弗雷格到哥德尔</h1>
+  <p class="lead">这一章回答一个直接影响你技术选型的问题：<strong>模型会推理吗？</strong>
+  答案不是「会」或「不会」，而是「要看你说的推理是哪一种，以及你用什么测试证明它」。
+  为了搞清这件事，我们要走一遍二十世纪最精彩的一段思想史——
+  从形式化的雄心，到哥德尔和图灵证明这条路有硬边界。
+  <strong>你不需要成为逻辑学家，但你需要知道这些边界在哪</strong>，因为它决定了哪些任务不该交给模型。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">理解形式系统的能力边界</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 3 章的可证伪性</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">一个小型推理测试集</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–5 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">7.1</span>形式化：从亚里士多德到弗雷格</h2>
+
+<p>「让推理变得可靠」是人类最古老的智力工程之一。这条路走了两千多年，值得你了解它的形状，
+因为你今天写的校验逻辑，和它面对的是同一类困难。</p>
+
+<table>
+  <thead><tr><th style="width:140px">阶段</th><th style="width:220px">贡献</th><th>局限</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>亚里士多德</strong><br>（约公元前 350）</td>
+      <td>三段论：把有效推理<strong>抽成形式</strong>。
+      「所有人都会死，苏格拉底是人，所以苏格拉底会死」——
+      有效性与<strong>具体内容无关</strong>，只与形式有关</td>
+      <td>只能处理「所有/有些 A 是 B」这类简单结构。
+      无法表达关系（「比…大」）、无法处理多重量化</td>
+    </tr>
+    <tr>
+      <td><strong>弗雷格</strong><br>（1879）</td>
+      <td>《概念文字》引入<strong>谓词逻辑</strong>：变量、量词、函数。
+      一举覆盖了关系、多重量化、嵌套结构。
+      <strong>现代逻辑与计算机科学的共同起点</strong></td>
+      <td>他试图用这套系统把算术建立在纯逻辑上——
+      这个计划二十多年后被罗素的一封信击穿（见 7.2）</td>
+    </tr>
+    <tr>
+      <td><strong>希尔伯特</strong><br>（1920 年代）</td>
+      <td>纲领：把全部数学形式化，然后用<strong>有穷的、可靠的方法</strong>
+      证明这个系统是<strong>一致的</strong>（不会推出矛盾）且<strong>完备的</strong>（所有真理都可证）</td>
+      <td>1931 年被哥德尔证明<strong>不可能</strong>（见 7.3）</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">形式化的核心思想</div>
+    <div class="ttl">把推理的有效性与内容分开</div>
+    <div class="txt">「所有人都死→苏格拉底死」之所以有效，与「人」「死」「苏格拉底」是什么<strong>无关</strong>，
+    只与<strong>形式</strong>有关。一旦形式被固定，推理就可以<strong>机械地检验</strong>——
+    这一步是「机器能推理」这个想法的源头。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">今天的对应</div>
+    <div class="ttl">结构化输出与 schema 校验</div>
+    <div class="txt">你要求模型输出符合某个 JSON schema，然后<strong>用代码校验</strong>——
+    这就是形式化的现代形态：<strong>把「格式正确」这件事从模型的语义能力里剥离出来，
+    交给一个可靠的机械检查</strong>。
+    <br><br>
+    <strong>这个思路值得推广</strong>：凡是能被机械检验的东西，就不要依赖模型的「注意」。
+    能用 schema 约束的，就别写在提示词里求它遵守。</div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">7.2</span>罗素悖论与类型论</h2>
+
+<p>弗雷格花了二十多年，试图把算术建立在逻辑之上。1902 年，就在他第二卷即将付印时，
+罗素给他写了一封信，指出系统里有一个悖论。</p>
+
+<div class="qbox">
+  <span class="qb-t">罗素悖论（1901）</span>
+  <p>考虑「<strong>所有不包含自身的集合</strong>」组成的集合，记为 R。</p>
+  <p><strong>问：R 包含自身吗？</strong></p>
+  <ul>
+    <li>如果 R 包含自身，那按定义它「不包含自身」——矛盾。</li>
+    <li>如果 R 不包含自身，那按定义它属于「不包含自身的集合」这一类，所以它应该包含自身——矛盾。</li>
+  </ul>
+  <p class="qb-q">两个方向都导致矛盾。<strong>所以这样的集合不能存在</strong>——
+  但弗雷格的系统允许构造它（因为「任意性质都能定义一个集合」这个原则被允许）。
+  这意味着<strong>整个系统是不一致的</strong>，而数学建立在它之上。</p>
+</div>
+
+<p>弗雷格的反应值得一读。他在第二卷附录里坦率地写了这件事（大意）：</p>
+
+<div class="quote">
+  <p>一位科学家不会遇到比这更不幸的事了：当他的工作即将完成时，<em>地基被动摇了</em>。
+  </p>
+  <span class="who">—— 弗雷格《算术基础》第二卷附录（1903）开头的大意</span>
+</div>
+
+<h3>罗素的解决方案：类型论</h3>
+
+<p>罗素提出的修补方式是<strong>分层</strong>：不允许一个集合包含自身，因为「集合」和「集合的集合」
+属于<strong>不同的类型</strong>，不同层次不能互相谈论。这就把悖论挡在门外。</p>
+
+<p>代价是：为了让数学能顺利进行，他不得不引入一些看起来<strong>不那么「纯逻辑」</strong>的公理
+（比如可化归公理）。这被很多人认为是<strong>为了避开麻烦而引入特设性假设</strong>——
+修补成功了，但失去了原本追求的「纯粹性」。</p>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">罗素悖论的教训</div>
+    <div class="ttl">允许自由构造，就会构造出矛盾</div>
+    <div class="txt">「任意性质都能定义一个对象」这条看起来很自然的规则，
+    <strong>会导致系统自毁</strong>。修复方式是<strong>加上分层/类型约束</strong>，
+    限制什么可以谈论什么。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">工程上的同构问题</div>
+    <div class="ttl">自我指涉是 bug 的高发区</div>
+    <div class="txt">任何允许系统<strong>把输入当代码执行</strong>的设计，都会遇到同类问题：
+    提示词注入、模板递归展开、配置引用自身、日志无限递归。
+    <br><br>
+    <strong>通用对策与类型论同构</strong>：
+    <strong>按来源分层，限制「一层能影响另一层」的权限</strong>。
+    比如：用户输入永远不能改变系统指令层；模型输出永远不能直接触发有副作用的操作。
+    <br><br>
+    <strong>这不是安全建议，这是「避免自毁」的结构性要求</strong>——和罗素当年面对的是同一件事。</div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">7.3</span>哥德尔不完备定理</h2>
+
+<p>1931 年，25 岁的哥德尔发表了两条定理，终结了希尔伯特纲领。
+这两条定理被引用得极多，也被<strong>误解得极多</strong>，所以这一节的重点是<strong>它到底说了什么、没说什么</strong>。</p>
+
+<h3>两条定理</h3>
+
+<div class="note">
+  <strong>第一不完备定理：</strong>任何<strong>足够强</strong>（能表达基本算术）、
+  <strong>一致</strong>（不推出矛盾）的<strong>形式系统</strong>，都存在这样的命题：
+  它<strong>为真，但在这个系统内无法被证明</strong>。
+  <br><br>
+  <strong>第二不完备定理：</strong>这样的系统<strong>不能证明自己的一致性</strong>。
+  <br><br>
+  <strong>哥德尔的关键技巧</strong>是让系统能够<strong>谈论自己</strong>——
+  通过把命题编码成数字，构造出一个「本命题不可证」的句子。
+  如果它可证，系统就不一致；如果它不可证，那它就是真的但不可证。
+</div>
+
+<h3>三个最常见的误用</h3>
+
+<p>这三条误用你可能都听过，识别它们是很实用的能力：</p>
+
+<div class="pit">
+  <ol style="margin-bottom:0">
+    <li>
+      <strong>❌「哥德尔定理证明了人类心智超越机器」</strong>
+      <br>这是<strong>最流行的误用</strong>。它需要额外前提（比如「人类能看出那个命题为真」，
+      而机器不能）——但人类能否可靠地「看出」这类命题为真，本身是有争议的。
+      而且这个论证对「机器能否有智能」这个一般问题<strong>没有直接推论</strong>。
+      <br><strong>哥德尔本人对这个问题持保留态度，并不支持这种推论。</strong>
+    </li>
+    <li>
+      <strong>❌「哥德尔定理说明数学不可靠 / 逻辑破产」</strong>
+      <br>恰恰相反。定理<strong>是一个数学结果</strong>，它被严格证明了。
+      它说明的是<strong>「完备性」这个目标无法达到</strong>，
+      而不是「逻辑不管用」。数学的可靠性没有被这个定理削弱。
+    </li>
+    <li>
+      <strong>❌「所以 AI 有永远学不会的东西，因为不完备」</strong>
+      <br>定理是关于<strong>形式系统的证明能力</strong>的，不是关于<strong>学习系统</strong>的。
+      一个统计学习系统不是「在某个固定公理系统内做证明」的东西——
+      这两者结构不同，定理不能直接套用。
+      <br><strong>把关于形式系统证明能力的结论，直接搬到神经网络上，是类型错误。</strong>
+    </li>
+  </ol>
+</div>
+
+<div class="tip">
+  <strong>一个识别技巧：</strong>当你看到有人用哥德尔定理论证关于 AI、意识、
+  或「人类特殊性」的结论时，<strong>问一句「你用到了哪条定理，以及从它到结论的中间步骤是什么」</strong>。
+  <br><br>
+  绝大多数这类论证在中间步骤会引入一个<strong>未被声明的假设</strong>（通常是关于「人类能力」或
+  「心智与形式系统的关系」）。<strong>这不是说那些结论一定错，而是说它们没有被哥德尔定理支持。</strong>
+  <br><br>
+  这个技巧可以推广到所有「用某个著名定理支撑宏大结论」的场合——
+  <strong>把一个领域的严格结果搬到另一个领域，必须补上跨越的论证。</strong>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">7.4</span>图灵机与停机问题</h2>
+
+<p>1936 年，图灵用另一种方式处理了「形式系统的能力边界」，而且他的方式<strong>直接催生了计算机</strong>。</p>
+
+<div class="note">
+  <strong>图灵的处理方式：定义一个抽象的机器。</strong>
+  一条无限长的纸带、一个读写头、一组状态转移规则。
+  它能执行任何<strong>可以按步骤机械执行</strong>的计算。
+  <br><br>
+  <strong>他还提出了「通用图灵机」</strong>：一台机器，能模拟任何其它图灵机——
+  只要你把后者的规则写在纸带上。<strong>这就是「存储程序计算机」的理论原型。</strong>
+</div>
+
+<h3>停机问题及其后果</h3>
+
+<div class="qbox">
+  <span class="qb-t">停机问题</span>
+  <p>问：给定任意一个程序 P 和输入 I，<strong>能不能存在一个算法，判定 P 在 I 上会不会停机？</strong></p>
+  <p>图灵的证明（大意）：假设存在这样的判定程序 H。然后构造一个程序 P，它的行为是——
+  <strong>用 H 判断「P 自己 + 自己的输入」会不会停机，然后做相反的事</strong>。
+  如果 H 说会停，P 就不停；如果 H 说不停，P 就停。</p>
+  <p>于是 H 对 P 的判断必然是错的。<strong>矛盾。所以 H 不存在。</strong></p>
+  <p class="qb-q">结论：<strong>「一个程序会不会停机」这个问题，不存在通用的算法判定方法。</strong>
+  这不是「还没找到」，是<strong>被证明不存在</strong>。</p>
+</div>
+
+<h3>图灵的工作与哥德尔的关系</h3>
+
+<table>
+  <thead><tr><th style="width:150px"></th><th>哥德尔（1931）</th><th>图灵（1936）</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>处理对象</strong></td>
+      <td>形式系统的<strong>证明能力</strong></td>
+      <td>计算的<strong>可计算性</strong></td>
+    </tr>
+    <tr>
+      <td><strong>构造方法</strong></td>
+      <td>把命题编码成数字，让系统谈论自己</td>
+      <td>构造一台机器，让它对自己的判定做相反的事</td>
+    </tr>
+    <tr>
+      <td><strong>核心技巧</strong></td>
+      <td>自我指涉</td>
+      <td>自我指涉</td>
+    </tr>
+    <tr>
+      <td><strong>结论</strong></td>
+      <td>存在真的但不可证的命题</td>
+      <td>存在不可判定的问题</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>注意第三行：<strong>两者都靠「自我指涉」</strong>。这不是巧合——它是这类边界结果的共同机制。
+这对你有实际意义：<strong>当你的系统需要「判断自己」时，就是这类困难出现的地方。</strong></p>
+
+<div class="warn">
+  <strong>对 AI 系统设计的直接启发：</strong>
+  <br><br>
+  如果你设计一个「自我评估」的机制——让模型检查自己的输出是否正确——
+  你面对的就是一个<strong>自我指涉</strong>结构。
+  <br><br>
+  这不是说它完全无效（实践中自我检查确实能提升效果），
+  而是说：<strong>不要指望它能保证正确性</strong>。它在统计上有效，
+  但不能构成证明。这就是为什么<strong>独立的验证器（另一套规则、外部工具、人工复核）
+  比「让模型再检查一遍」更可靠</strong>——
+  前者打破了自我指涉，后者没有。
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">7.5</span>形式系统的三条限制（以及该怎么理解它们）</h2>
+
+<p>把前面几节收束。形式化这条路有三道硬边界，它们的<strong>实际含义</strong>需要分清：</p>
+
+<table>
+  <thead><tr><th style="width:130px">限制</th><th style="width:250px">内容</th><th>实际含义（不是那些误读）</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 不完备</strong></td>
+      <td>足够强的系统内存在真的但不可证的命题</td>
+      <td>不是「数学不可靠」。是指<strong>「用一套固定规则覆盖全部真理」这个目标达不到</strong>。
+      对工程的含义：<strong>别指望一套规则能覆盖所有情况</strong>，要留例外处理的通道</td>
+    </tr>
+    <tr>
+      <td><strong>② 不可判定</strong></td>
+      <td>某些问题不存在通用判定算法（如停机问题）</td>
+      <td>不是「所有问题都不可判定」。绝大多数实际问题<strong>是</strong>可判定的。
+      含义是：<strong>要区分「我能解决的问题」和「我原则上解决不了的问题」</strong>，
+      对后者要设计降级策略而不是硬扛</td>
+    </tr>
+    <tr>
+      <td><strong>③ 复杂度</strong></td>
+      <td>即使可判定，也可能需要不现实的时间/空间（P vs NP 是否相等仍开放）</td>
+      <td><strong>这一条在工程上最常遇到。</strong>
+      「理论上可行」和「我们能做」是两回事——
+      别用理论可行性去否定现实的资源约束</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">三条边界的共同结构</div>
+    <div class="ttl">能力有边界，且边界是可论证的</div>
+    <div class="txt">二十世纪的逻辑学最重要的成就，
+    不是「找到了更强的系统」，而是<strong>证明了某些边界的必然性</strong>。
+    这让人能<strong>把力气花在能做的地方</strong>。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">这是你在 AI 项目里最需要的一种判断</div>
+    <div class="ttl">哪些目标该放弃，哪些该换形式</div>
+    <div class="txt">「让幻觉率为 0」——需要放弃（第 3 章）。
+    「让系统输出符合 schema」——可以做到，用机械校验而不是提示词。
+    「让模型判断自己是否正确」——不能作为保证，只能作为辅助信号。
+    <br><br>
+    <strong>区分这三类目标，比努力优化更决定项目成败</strong>——
+    因为把力气花在第一类上，是必然的浪费。</div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">7.6</span>【工程锚点】CoT 是推理还是模仿推理</h2>
+
+<p>现在到本章最实用的一节。思维链（Chain-of-Thought）到底是推理，还是<strong>长得像推理的文本模式</strong>？
+这不是纯学术问题——它决定了你<strong>能不能信任 CoT 作为可解释性工具</strong>。</p>
+
+<h3>先做两个极端测试</h3>
+
+<p>判断一个行为是不是「真的推理过程」，有两个很有效的检验方式：</p>
+
+<table>
+  <thead><tr><th style="width:170px">检验</th><th>做法</th><th>如果它是真推理</th><th>如果它是模式模仿</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>无关变量检验</strong></td>
+      <td>把问题里的具体数值换掉（保持结构不变），看推理步骤是否随之正确更新</td>
+      <td>步骤应该系统地跟着变</td>
+      <td><strong>步骤可能出现「沿用旧结论」的现象</strong></td>
+    </tr>
+    <tr>
+      <td><strong>因果检验</strong></td>
+      <td>看中间步骤<strong>是否真的导致</strong>了最终答案——
+      打断或改写某一步，答案应该相应改变</td>
+      <td>改动中间步骤会影响结果</td>
+      <td><strong>答案可能和中间步骤脱钩</strong>——
+      先有答案，再补一段看起来合理的推理</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="qbox">
+  <span class="qb-t">一个已被实验观察到的现象</span>
+  <p>研究者做过这样的测试：在提示词里加入一个<strong>暗示性的偏置</strong>（比如暗示答案是某个选项），
+  然后观察模型。</p>
+  <p>结果是：模型<strong>给出了被偏置的答案，同时生成了看起来支持这个答案的推理链</strong>——
+  而这条推理链在偏置不存在时是不会出现的。</p>
+  <p class="qb-q">这说明什么？<strong>推理链并不总是「计算过程的忠实记录」</strong>，
+  它可能是<strong>对已经形成的结论的事后合理化</strong>——
+  这与人类的「动机性推理」有相似之处。所以 CoT 作为<strong>可解释性证据</strong>是不可靠的，
+  即使它作为<strong>提升准确率的手段</strong>是有效的。</p>
+</div>
+
+<h3>两个必须分开的问题</h3>
+
+<p>这一节的实用价值在于把一个问题拆成两个，它们的答案不同：</p>
+
+<table>
+  <thead><tr><th style="width:230px">问题</th><th style="width:140px">答案</th><th>这意味着</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>CoT 能让模型更准吗？</strong></td>
+      <td>✅ 通常能</td>
+      <td>作为<strong>提升性能的技术</strong>，它有效。原因可能是它给了更多计算步骤、
+      也可能是它把问题分解成了更接近训练分布的形态。<strong>不需要真推理也能有效。</strong></td>
+    </tr>
+    <tr>
+      <td><strong>CoT 能作为「模型为什么会这样答」的证据吗？</strong></td>
+      <td>❌ 不可靠</td>
+      <td>作为<strong>可解释性工具</strong>，它不忠实。
+      <strong>用 CoT 做审计、做归因、做合规证明，是不成立的。</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pit">
+  <strong>这里有一个真实的风险场景。</strong>
+  <br><br>
+  如果你们团队用「检查模型的推理链」来确认它的判断是否可靠——
+  比如在风控、审核、医疗辅助里，人工抽查 CoT 来判断决策质量——
+  <strong>你抽查到的可能是事后编造的解释，而不是真实依据</strong>。
+  <br><br>
+  <strong>对策</strong>：需要可解释性证据时，用<strong>不依赖模型自述</strong>的方式：
+  <ul style="margin-bottom:0">
+    <li>要求<strong>引用来源</strong>，并<strong>用代码校验引用是否真实存在</strong>（这个可以自动化）</li>
+    <li>用<strong>探针</strong>检查内部表征（第 5 章的实验方法）</li>
+    <li>做<strong>扰动实验</strong>：改变输入，看输出是否按预期变化</li>
+    <li>关键决策<strong>用独立的验证通道</strong>（规则引擎、外部数据源、人工）</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">7.7</span>【工程锚点】神经符号为何回归</h2>
+
+<p>第 5.5 节讲了符号主义与连接主义之争没有胜负。工程上的现实是：
+<strong>成熟的系统越来越倾向于混合</strong>。这一节说清怎么混、混在哪。</p>
+
+<h3>为什么需要符号层</h3>
+
+<p>统计模型的三个结构性弱点是符号层能补的：</p>
+
+<table>
+  <thead><tr><th style="width:190px">统计模型的弱点</th><th style="width:250px">表现</th><th>符号层怎么补</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>无法保证硬约束</strong></td>
+      <td>「必须使用提供的材料」「金额必须 ≤ 限额」——
+      写在提示词里只是<strong>倾向</strong>，不是保证</td>
+      <td>输出后<strong>机械校验</strong>：schema 校验、范围检查、
+      引用存在性检查。违反就重试或降级</td>
+    </tr>
+    <tr>
+      <td><strong>精确计算不可靠</strong></td>
+      <td>算术、日期计算、单位换算——模型会算错，而且错得没有规律</td>
+      <td><strong>交给工具</strong>：计算器、日期库、单位换算代码。
+      模型的职责是<strong>决定调用什么</strong>，不是<strong>执行计算</strong></td>
+    </tr>
+    <tr>
+      <td><strong>多步约束组合容易出错</strong></td>
+      <td>同时满足 5 个约束的排班、规划、配置问题——
+      错误率随约束数量快速增长</td>
+      <td><strong>形式化求解</strong>：把约束翻译成求解器能处理的形式
+      （SAT/ILP/约束规划），让求解器找可行解</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">神经符号的分工</div>
+    <div class="ttl">语义归模型，约束归符号</div>
+    <div class="txt">模型擅长<strong>模糊、开放、需要常识</strong>的任务：
+    理解用户想说什么、从文本中抽取信息、生成自然的表达。
+    符号系统擅长<strong>精确、封闭、需要保证</strong>的任务：
+    校验、计算、约束满足。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">实践的架构模式</div>
+    <div class="ttl">「模型提议，符号校验」</div>
+    <div class="txt">这是最可靠的通用模式：
+    <strong>① 模型负责产出候选</strong>（自然语言理解、信息抽取、方案生成）<br>
+    <strong>② 符号层负责校验与执行</strong>（schema 校验、范围检查、约束求解）<br>
+    <strong>③ 校验失败则回退</strong>（重试、降级、转人工）
+    <br><br>
+    <strong>关键点：不要让模型成为最终权威</strong>。
+    它可以提议，但<strong>决定权在校验层</strong>。
+    这样模型的错误率不会直接变成系统的错误率。</div>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>一个简单的自查问题：</strong>在你的系统里，<strong>模型的输出直接决定后果了吗？</strong>
+  <br><br>
+  如果答案是「是」——比如它生成的文本直接发送给用户、它给出的数值直接入库、
+  它的判断直接触发操作——那你缺了一个符号校验层。
+  <br><br>
+  加这一层的成本通常不高（写一些校验代码），但它把<strong>「模型偶尔出错」</strong>
+  从<strong>「系统偶尔出事故」</strong>变成了<strong>「系统偶尔重试」</strong>。
+  这是投入产出比最高的改动之一。
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">7.8</span>【工程锚点】推理基准上的失败说明什么</h2>
+
+<p>你可能看过这类消息：「某模型在某推理基准上从 90% 掉到 60%」。
+怎么解读这类结果？这需要一点方法论。</p>
+
+<h3>先区分三种失败</h3>
+
+<table>
+  <thead><tr><th style="width:170px">失败类型</th><th style="width:240px">表现</th><th>诊断方法</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 表层变化</strong></td>
+      <td>改措辞、换格式、加无关内容就失败</td>
+      <td>做扰动测试。如果扰动导致大幅下降，
+      说明能力<strong>依赖表面模式</strong>而非结构</td>
+    </tr>
+    <tr>
+      <td><strong>② 组合深度</strong></td>
+      <td>单步能对，多步就断；步骤数增加时错误率快速上升</td>
+      <td>按推理步数分层统计准确率。看错误率随步数如何增长——
+      <strong>线性增长 vs 指数增长，含义完全不同</strong></td>
+    </tr>
+    <tr>
+      <td><strong>③ 训练分布外</strong></td>
+      <td>在<strong>新题型</strong>上失败，但在同类型上很好</td>
+      <td>对比「训练数据中类似的题」vs「全新结构的题」的表现差异</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>解读推理基准结果时最容易犯的错：把①当成③，或者把③当成①。</strong>
+  <br><br>
+  <strong>如果失败主要是①（表层变化）</strong>——说明它没有获得结构的稳定性，
+  这是<strong>能力问题</strong>，靠加数据可能缓解但难根治。
+  <br><br>
+  <strong>如果失败主要是③（分布外）</strong>——这<strong>恰恰是第 3 章讲的归纳边界</strong>，
+  是必然的。它不说明模型「不会推理」，只说明<strong>它的能力有明确的适用域</strong>。
+  <br><br>
+  <strong>这个区分决定了你该做什么</strong>：
+  ①要提升能力（难），③要明确边界（做产品设计）。
+  <strong>把它们混淆，你会把力气花在错误的目标上。</strong>
+</div>
+
+<h3>一个更根本的问题：「推理」需要被定义</h3>
+
+<p>回到本章开头的问题。<strong>「模型会推理吗」这个问题，如果不先定义「推理」，是无法回答的。</strong>
+下面这个拆解可以直接用于讨论：</p>
+
+<table>
+  <thead><tr><th style="width:170px">「推理」的含义</th><th style="width:230px">判据</th><th>当前状况</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>结果正确</strong></td>
+      <td>在推理题上给出正确答案</td>
+      <td>✅ 在多数标准题型上表现良好</td>
+    </tr>
+    <tr>
+      <td><strong>过程有效</strong></td>
+      <td>中间步骤在逻辑上确实支持结论</td>
+      <td>🟡 部分有效，但存在推理链与结论脱钩的情况</td>
+    </tr>
+    <tr>
+      <td><strong>过程忠实</strong></td>
+      <td>中间步骤反映了实际的计算过程</td>
+      <td>❌ 有实验证据表明不忠实（7.6）</td>
+    </tr>
+    <tr>
+      <td><strong>结构稳健</strong></td>
+      <td>对表层扰动保持能力，能组合迁移</td>
+      <td>🟡 有限。扰动测试通常会显示明显下降</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>实用建议：</strong>在团队讨论里，把「模型会推理吗」替换成
+  <strong>「在什么类型的题上、多少步之内、什么样的扰动下，它能保持正确？」</strong>
+  <br><br>
+  这个替换把你的问题变成了<strong>可测的问题</strong>，而且它的答案<strong>直接可用于产品设计</strong>——
+  你会知道该在什么情况下加校验、什么情况下可以放手。
+</div>
+
+<hr>
+
+<h2 id="s9"><span class="h2-num">7.9</span>动手练习</h2>
+
+<ol class="steps">
+  <li>
+    <strong>设计一个 10 题的多步推理测试集。</strong>要求：
+    ① 题目需要 3 步以上推理 ② 每题的答案可以被机械验证（数字、选项、可判定的结论）
+    ③ 覆盖你项目的真实场景。
+  </li>
+  <li>
+    <strong>做分层统计。</strong>把你的测试题按推理步数分成 2 步、3–4 步、5 步以上三组，
+    分别算准确率。<strong>看错误率随步数怎么增长</strong>——
+    如果是指数增长，说明多步组合是主要瓶颈，这直接影响你该把任务拆到多细。
+  </li>
+  <li>
+    <strong>做扰动测试。</strong>把你测试集里的题目做三种改动：
+    ① 改数字（保持结构） ② 改措辞（口语化） ③ 加一句无关信息。
+    分别重测。<strong>记录下降幅度</strong>——这是「结构稳健性」的直接度量。
+  </li>
+  <li>
+    <strong>做因果检验（针对 CoT）。</strong>从模型给出的推理链里，<strong>手工改掉中间的某一步</strong>，
+    看模型是否会据此改变结论。
+    <br><span class="hash">如果结论不跟着变，说明推理链对结论没有因果作用——它只是装饰。这个测试很能说明问题</span>
+  </li>
+  <li>
+    <strong>检查你的关键路径有没有校验层。</strong>列出所有「模型输出直接决定后果」的地方，
+    逐个加机械校验（schema、范围、引用存在性、约束满足）。
+    <br><span class="hash">产出：一份「模型提议 → 符号校验 → 执行」的改造清单</span>
+  </li>
+</ol>
+
+<hr>
+
+<h2 id="s10"><span class="h2-num">7.10</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 哥德尔第一不完备定理说了什么？它不说什么？</p>
+    <div class="qa-a">
+      <p><strong>说了什么</strong>：任何足够强（能表达基本算术）且一致的形式系统，
+      都存在为真但在该系统内不可证的命题。</p>
+      <p><strong>不说什么</strong>（三个常见误用）：</p>
+      <ul>
+        <li>❌ 不证明「人类心智超越机器」——那需要额外前提，且哥德尔本人不支持这种推论。</li>
+        <li>❌ 不说明「数学不可靠」——定理本身是一个严格的数学结果，
+        它只说明「完备性」这个目标达不到。</li>
+        <li>❌ 不直接适用于神经网络——定理是关于形式系统的<strong>证明能力</strong>的，
+        而学习系统不是在固定公理系统内做证明。直接套用是类型错误。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q2. 停机问题为什么「不可判定」？这个结论对系统设计有什么启发？</p>
+    <div class="qa-a">
+      <p><strong>为什么不可判定</strong>：假设存在判定程序 H，构造一个程序 P 让它对自己的判定做相反的事，
+      于是 H 对 P 必然判断错误，矛盾。所以 H 不存在。</p>
+      <p><strong>启发</strong>：这个证明依赖<strong>自我指涉</strong>。
+      所以当你的系统需要「判断自己」时（比如让模型检查自己的输出），
+      你面对的是同类结构——<strong>它在统计上可能有效，但不能构成保证</strong>。
+      <br><br>
+      <strong>因此</strong>：独立验证器（外部规则、工具、人工）比「让模型再检查一遍」更可靠，
+      因为前者打破了自我指涉。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q3. CoT 能提升准确率，为什么却不能作为可解释性证据？</p>
+    <div class="qa-a">
+      <p>因为这是<strong>两个不同的问题</strong>：</p>
+      <ul>
+        <li><strong>性能问题</strong>：CoT 能让模型更准——这已被广泛验证。原因是它给了更多计算步骤，
+        或把问题分解成了更接近训练分布的形态。<strong>不需要真推理也能有效。</strong></li>
+        <li><strong>忠实性问题</strong>：推理链是否反映了实际计算过程——实验证据显示<strong>不总是</strong>。
+        存在「先有结论、再补推理」的现象（尤其在被提示词偏置的情况下）。</li>
+      </ul>
+      <p>所以：<strong>做性能优化时可以用 CoT，做审计/归因/合规证明时不能依赖它</strong>。
+      需要可解释性证据时，用引用校验、探针分析、扰动实验、独立验证通道。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q4. 「神经符号」在实践中怎么分工？</p>
+    <div class="qa-a">
+      <p><strong>分工原则</strong>：语义归模型，约束归符号。</p>
+      <p><strong>架构模式</strong>：模型提议 → 符号校验 → 执行（失败则重试/降级/转人工）。</p>
+      <p><strong>具体对应</strong>：</p>
+      <ul>
+        <li>硬约束（必须用提供材料、金额范围）→ 输出后机械校验</li>
+        <li>精确计算（算术、日期、单位）→ 交给工具，模型只负责决定调用什么</li>
+        <li>多步约束组合（排班、规划）→ 交给求解器，模型负责把问题翻译成形式</li>
+      </ul>
+      <p><strong>关键原则</strong>：不要让模型成为最终权威。它可以提议，决定权在校验层——
+      这样模型的错误率不会直接变成系统的错误率。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】你在做合同审核辅助系统。老板说「让模型把不合理的条款标出来，直接生成审核意见，
+    效率能提高 5 倍」。你会怎么回应？</p>
+    <div class="qa-a">
+      <p><strong>先认可可行部分。</strong>「标出可疑条款」是合理的目标——
+      它属于<strong>召回导向</strong>的任务：宁可多标，由人筛。这个能力当前模型可以做到相当好的水平。
+      效率提升是真的。</p>
+      <p><strong>然后指出不可行的部分：直接生成审核意见。</strong>理由有三，都是本章和前面几章讲过的：</p>
+      <ul>
+        <li><strong>幻觉与忠实性</strong>（第 3 章）：模型可能生成合同里没有的条款解释，
+        而且这类补充往往<strong>符合行业惯例、看起来非常可信</strong>，最难被发现。</li>
+        <li><strong>责任问题</strong>（第 8 章会展开）：审核意见如果导致损失，
+        责任会落在出具意见的一方。<strong>「模型生成的」不是一个法律上有效的辩护</strong>。</li>
+        <li><strong>CoT 不可作为依据</strong>（7.6）：如果审核意见附了推理链，
+        人工复核时看到的可能是事后合理化，不是真实依据。</li>
+      </ul>
+      <p><strong>给出可落地的替代方案（这是关键）：</strong></p>
+      <table>
+        <thead><tr><th style="width:150px">环节</th><th>模型做什么</th><th>人做什么</th></tr></thead>
+        <tbody>
+          <tr><td>初筛</td><td>标记可疑条款 + <strong>给出引用原文位置</strong></td><td>——</td></tr>
+          <tr><td>校验</td><td>——</td><td>——（<strong>代码层</strong>：校验引用的段落真实存在且相关）</td></tr>
+          <tr><td>判断</td><td>提供相关法规、历史案例的检索结果</td><td><strong>人做最终判断</strong></td></tr>
+          <tr><td>出具</td><td>辅助起草草稿</td><td>人审阅、修改、签署</td></tr>
+        </tbody>
+      </table>
+      <p><strong>效率提升的测算</strong>：这个方案下，提升来自「人不用逐条通读全文，只需复核被标记的部分」
+      和「检索法规的时间被压缩」——这仍然可能是<strong>数倍的效率提升</strong>，
+      而且是<strong>可交付、可审计、责任清晰</strong>的。</p>
+      <p><strong>注意这个回应的结构</strong>：不否定老板的目标（提效），
+      而是把目标拆成「可以实现的部分」和「有硬风险的部分」，
+      然后给出一个<strong>同样能达成目标但风险可控的方案</strong>。
+      比直接说「这样不行，风险太高」有效得多——而且后者通常会被忽略。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能说出哥德尔两定理的内容，并识别出至少三种常见误用。</li>
+    <li>能解释停机问题的构造，并说明「自我指涉」为什么是这类困难的共同机制。</li>
+    <li>能分开回答「CoT 能提升性能吗」（能）和「CoT 能作为可解释性证据吗」（不能）。</li>
+    <li>完成一个小型推理测试集，并做了<strong>分层统计</strong>与<strong>扰动测试</strong>。</li>
+    <li>能说出你的系统里哪些地方缺少符号校验层，并给出改造清单。</li>
+    <li>能把「模型会推理吗」替换成<strong>可测的问题形式</strong>。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="ch06.html"><div class="dir-label">← 上一节</div><div class="dir-name">第 6 章 · 语言与意义：从维特根斯坦到词向量</div></a>
+  <a class="next" href="ch08.html"><div class="dir-label">下一节 →</div><div class="dir-name">第 8 章 · 伦理学 I：三大框架与 AI 对齐</div></a>
+</div>
+
+<div class="footer">哲学 × AI 学习指南 · 第 7 章 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

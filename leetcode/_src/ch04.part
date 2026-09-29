@@ -1,0 +1,461 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 04</div>
+  <h1><span class="ch-tag">专题 04</span>二分查找</h1>
+  <p class="lead">二分查找看着简单，却是面试里<strong>翻车率最高</strong>的基础算法——不是不会写，而是边界写错、死循环、左右边界搞混。
+  这一章先讲清一件事：<strong>二分不只是在有序数组里找数</strong>，它的本质是「在<em>单调的答案空间</em>上每次砍掉一半」。
+  把这个想通，旋转数组、第一个/最后一个位置这些「变体」都会变成同一棵树上的果子。模板只背一种（左闭右闭），
+  足以应付 99% 的题。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">理解二分本质、背熟左闭右闭模板、独立写 4 题</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 01 双指针、Java 数组与循环</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 道题的推导 + 可提交 Java 代码</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">5–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">4.1</span>二分的本质：单调性上的折半</h2>
+
+<p>多数初学者把二分理解成「在有序数组里找一个数」。这个理解<strong>太窄了</strong>，导致一遇到变形就懵。
+真正的本质是：</p>
+
+<div class="note">
+  <strong>二分的本质：</strong>只要某个「待求的东西」的取值空间具有<strong>单调性</strong>，并且你能<strong>在 O(1) 内判断「目标在左半还是右半」</strong>，
+  就能每次砍掉一半，得到 O(log n)。数组有序只是「单调性」最常见的一种表现，不是必要条件。
+</div>
+
+<h3>为什么说「不只是有序数组」</h3>
+
+<p>例子（先不写代码，建立直觉）：</p>
+
+<ul>
+  <li><strong>有序数组找数：</strong>下标空间单调，<code>nums[mid]</code> 与 <code>target</code> 比大小就能判断往哪走。</li>
+  <li><strong>找「第一个 ≥ target 的位置」：</strong>「某位置及之后都 ≥ target」这个性质，随下标增大从假变真，是单调的——也能二分。</li>
+  <li><strong>答案在 [1, n] 里、且「mid 满足条件 → 答案 ≤ mid」：</strong>比如「最少切几刀」「最小速度」，这也是单调的，能二分答案（叫「二分答案」技巧）。</li>
+</ul>
+
+<p><strong>核心判断：</strong>拿到题先问——「我要求的东西，能不能排成一列，使得『越往一边越满足某条件』？」
+能，就可以二分；不能（比如答案空间乱跳），二分就用不了。</p>
+
+<table>
+  <thead><tr><th style="width:240px">场景</th><th style="width:200px">单调的「轴」</th><th>判断 mid 往哪走</th></tr></thead>
+  <tbody>
+    <tr><td>有序数组找 target</td><td>数组下标</td><td>比 nums[mid] 与 target</td></tr>
+    <tr><td>第一个 ≥ target</td><td>下标（性质从假到真）</td><td>nums[mid] &gt;= target 则往左逼</td></tr>
+    <tr><td>旋转数组找数</td><td>下标（半边有序）</td><td>先判哪半有序，再比范围</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">4.2</span>三种边界写法，背一种就够</h2>
+
+<p>二分最容易乱的就是「区间怎么定义、循环条件写 <code>&lt;=</code> 还是 <code>&lt;</code>、mid 加减 1 怎么配」。
+其实<strong>三种写法都等价，挑一种背熟即可</strong>。本站统一用<strong>左闭右闭</strong>。</p>
+
+<h3>写法一（本站主推）：左闭右闭 <code>while (left &lt;= right)</code></h3>
+
+<p>初始 <code>left = 0, right = n - 1</code>，区间 <code>[left, right]</code> 两端都「包含」。因为包含右端，循环条件用 <code>&lt;=</code>（只剩一个元素时也还要查）；
+每次缩小都 <code>left = mid + 1</code> 或 <code>right = mid - 1</code>（mid 已查过，下次不再包含）。</p>
+
+<pre><code class="nohl">int left = 0, right = n - 1;   // [left, right] 闭区间
+while (left <= right) {        // 区间非空（含单元素）
+    int mid = left + (right - left) / 2;
+    if (nums[mid] == target) return mid;
+    else if (nums[mid] < target) left = mid + 1;
+    else right = mid - 1;
+}</code></pre>
+
+<h3>写法二：左闭右开 <code>while (left &lt; right)</code></h3>
+
+<p>初始 <code>right = n</code>（开区间，不含 n），循环条件 <code>&lt;</code>（左右相等时区间已空，停）。
+缩小右边界用 <code>right = mid</code>（因为 right 本就不含，mid 可能是答案，不能 -1）。常用于「找左边界」模板。</p>
+
+<pre><code class="nohl">int left = 0, right = n;        // [left, right) 左闭右开
+while (left < right) {
+    int mid = left + (right - left) / 2;   // 注意：这种写法 mid 取下整偏左
+    if (nums[mid] >= target) right = mid;  // 含 mid
+    else left = mid + 1;
+}</code></pre>
+
+<h3>写法三：找左/右边界的专门模板</h3>
+
+<p>就是 4.5 节要用的：把「== 就返回」改成「== 也继续逼向边界」。找左边界时遇到 <code>nums[mid] &gt;= target</code> 一律 <code>right = mid - 1</code>（往左逼）；
+找右边界时遇到 <code>nums[mid] &lt;= target</code> 一律 <code>left = mid + 1</code>（往右逼）。循环结束后，<code>left</code> / <code>right</code> 恰好停在边界上。</p>
+
+<div class="tip">
+  <strong>本站建议：</strong>初学只背<strong>写法一（左闭右闭）</strong>。它最直观：「区间里还有数就继续，mid 查过就把它踢出区间」。
+  写法二、三都是在写法一基础上微调，理解了单调性后自然能推导，不必死记。
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">4.3</span>二分查找（简单，力扣 704）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：左闭右闭主模板</span></p>
+
+<p><strong>题意：</strong>给定一个<strong>升序</strong>数组 <code>nums</code> 和目标值 <code>target</code>，若找到返回其下标，否则返回 -1。
+<strong>例：</strong><code>nums = [-1,0,3,5,9,12], target = 9</code> → 返回 <code>4</code>；<code>target = 2</code> → 返回 <code>-1</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，为什么能二分。</strong>数组升序，下标空间单调：<code>nums[mid]</code> 比 <code>target</code> 大，说明目标只可能在左边；小则在右边。
+每次比较能砍掉一半，O(log n)。</p>
+
+<p><strong>第二步，套主模板。</strong>左闭右闭区间，<code>mid</code> 用 <code>left + (right - left) / 2</code>（防溢出写法，见 4.7 节）。
+<code>nums[mid] == target</code> 直接返回；<code>&lt; target</code> 目标在右半，<code>left = mid + 1</code>；否则在左半，<code>right = mid - 1</code>。</p>
+
+<p><strong>第三步，退出循环意味着没找到。</strong>当 <code>left &gt; right</code>，说明「还可能存在 target 的区间」已空，返回 -1。注意这里<strong>没有额外特判</strong>，
+空数组 <code>right = -1</code> 时循环条件 <code>left &lt;= right</code> 直接为假，安全返回 -1。</p>
+
+<table>
+  <thead><tr><th style="width:120px">区间</th><th style="width:120px">mid</th><th style="width:100px">nums[mid]</th><th>动作</th></tr></thead>
+  <tbody>
+    <tr><td>[0,5]</td><td>2</td><td>3</td><td>3 &lt; 9，left=3</td></tr>
+    <tr><td>[3,5]</td><td>4</td><td>9</td><td>命中，返回 4</td></tr>
+  </tbody>
+</table>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;    // 左闭右闭区间 [left, right]
+        while (left <= right) {                   // 区间还有元素就继续
+            int mid = left + (right - left) / 2;  // 防溢出取中点
+            if (nums[mid] == target) return mid;  // 命中
+            else if (nums[mid] < target) left = mid + 1; // 目标在右半，mid 已查剔除
+            else right = mid - 1;                 // 目标在左半，mid 已查剔除
+        }
+        return -1;                                // 区间空了还没找到
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(log n) 时间（每次砍半），O(1) 空间。这是所有二分题的根模板。</p>
+
+<div class="warn">
+  <strong>易错点（死循环预防）：</strong>缩小区间必须 <code>left = mid + 1</code> / <code>right = mid - 1</code>（把 mid 踢出去）。
+  若写成 <code>left = mid</code> 或 <code>right = mid</code>，当区间缩到两个元素、mid 取左元素时，可能永远缩不动 → 死循环。
+  左闭右闭写法下，  <strong>「查过的 mid 一定要 ±1 移出去」</strong>是铁律。详见 <a href="ch04.html#s7">4.7 节</a>。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>搜索插入位置（力扣 35，简单）</strong>——与本题共用「左闭右闭主模板」；差异在找不到 target 时不返回 -1，而是返回循环结束后的 <code>left</code>（提示：left 左侧全是 &lt; target 的元素，left 停处即插入点）。</li>
+    <li><strong>在排序数组中查找元素的第一个和最后一个位置（力扣 34，中等）</strong>——与本题共用「二分主模板」；差异在重复元素需分别求左右边界，遇到 <code>==</code> 不立即返回而是继续逼向边界（提示：左边界 <code>right = mid - 1</code>，右边界 <code>left = mid + 1</code>）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">4.4</span>搜索插入位置（简单，力扣 35）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：找第一个 ≥ target 的位置</span></p>
+
+<p><strong>题意：</strong>给定升序数组 <code>nums</code> 和 <code>target</code>，若 <code>target</code> 存在返回其下标；
+若不存在，返回它<strong>应该被插入的位置</strong>（插入后数组仍升序）。
+<strong>例：</strong><code>nums = [1,3,5,6], target = 5</code> → <code>2</code>；<code>target = 2</code> → <code>1</code>；<code>target = 7</code> → <code>4</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，把问题翻译成二分。</strong>「插入位置」=「第一个 ≥ target 的下标」。如果 target 在数组里，这个位置恰好是它自己；
+如果不在，它就是「所有比 target 小的元素之后」的位置。两者用同一个二分就能拿到。</p>
+
+<p><strong>第二步，复用主模板，只改返回。</strong>还是左闭右闭二分；找到相等直接返回（插入位置就是它自己）。
+<strong>关键是没找到时：循环结束时 <code>left &gt; right</code>，此时 <code>left</code> 恰好指向「第一个大于 target 的位置」</strong>——正是插入点。
+所以直接 <code>return left;</code> 即可，不用任何额外逻辑。</p>
+
+<p><strong>第三步，为什么 left 就是插入点（直觉证明）。</strong>循环过程中，<code>left</code> 左边永远是「已确定 &lt; target」的区域，<code>right</code> 右边永远是「已确定 &gt; target」的区域。
+当两者交错（left 越过 right），<code>left</code> 落在「&gt; target 区域」的最左端，也就是该插入处。
+可以拿 <code>target = 7</code> 推：全程 <code>nums[mid] &lt; 7</code>，left 一直右移到 <code>n</code>，返回 <code>n</code>（插末尾）✓。</p>
+
+<table>
+  <thead><tr><th style="width:90px">target</th><th style="width:120px">退出时 left</th><th>含义</th></tr></thead>
+  <tbody>
+    <tr><td>5（存在）</td><td>2</td><td>nums[2]==5，命中返回 2</td></tr>
+    <tr><td>2（不存在）</td><td>1</td><td>插在 1 和 3 之间</td></tr>
+    <tr><td>7（不存在）</td><td>4</td><td>插在末尾</td></tr>
+    <tr><td>0（不存在）</td><td>0</td><td>插在开头</td></tr>
+  </tbody>
+</table>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public int searchInsert(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) return mid;        // 找到了，插入位置就是它
+            else if (nums[mid] < target) left = mid + 1;
+            else right = mid - 1;
+        }
+        return left;   // 没找到：left 停在「第一个大于 target」处，即插入位置
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(log n) 时间，O(1) 空间。本题是「左边界模板」的简化版（相等即返回，不等时 left 自然落在边界）。</p>
+
+<div class="tip">
+  <strong>和 4.3 的唯一差别：</strong>704 找不到返回 -1，35 找不到返回 <code>left</code>。记住「<strong>left 是二分结束后最有价值的那个位置</strong>」，
+  很多变形题的答案就藏在循环退出后的 <code>left</code> / <code>right</code> 上。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>在排序数组中查找元素的第一个和最后一个位置（力扣 34，中等）</strong>——与本题共用「左闭右闭二分 + 循环结束后利用 left 定位」的技巧；差异在需对重复元素分别求左右边界（提示：把「== 就返回」改成「== 也继续逼向边界」，左逼返回 left、右逼返回 right）。</li>
+    <li><strong>寻找旋转排序数组中的最小值（力扣 153，中等）</strong>——与本题共用「左闭右闭二分骨架」；差异在答案不在某元素下标、而在「断点最小值」，判断哪半有序后丢弃「全 &gt; 已知最小值」的那半（提示：用 <code>nums[right]</code> 作当前最小候选，左半有序且 <code>nums[left] &lt; 候选</code> 时丢弃左半）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">4.5</span>在排序数组中查找元素的第一个和最后一个位置（中等，力扣 34）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：左右边界模板组合</span></p>
+
+<p><strong>题意：</strong>给定<strong>升序</strong>且<strong>可能含重复</strong>的数组 <code>nums</code> 和 <code>target</code>，
+返回 target 出现的<strong>起始和结束下标</strong>（闭区间）；若未出现返回 <code>[-1, -1]</code>。
+<strong>例：</strong><code>nums = [5,7,7,8,8,10], target = 8</code> → <code>[3, 4]</code>；<code>target = 6</code> → <code>[-1, -1]</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，暴力 vs 二分。</strong>线性扫描 O(n)；但数组有序，重复元素必相邻，可以用两次二分分别定位「最左」和「最右」。</p>
+
+<p><strong>第二步，左边界模板。</strong>目标是「第一个 ≥ target 的位置」。把 704 的 <code>== 就返回</code> 改成「<code>nums[mid] &gt;= target</code> 时也往左逼」：
+<code>if (nums[mid] &gt;= target) right = mid - 1; else left = mid + 1;</code>。循环结束后 <code>left</code> 就是第一个 ≥ target 的下标。
+（它等于 target 才有效，否则说明数组里没有 target。）</p>
+
+<p><strong>第三步，右边界模板。</strong>目标是「最后一个 ≤ target 的位置」。对称地：<code>if (nums[mid] &lt;= target) left = mid + 1; else right = mid - 1;</code>。
+循环结束后 <code>right</code> 就是最后一个 ≤ target 的下标。</p>
+
+<p><strong>第四步，组合 + 判空。</strong>先求左边界 <code>start</code>；若 <code>start</code> 越界或 <code>nums[start] != target</code>，直接返回 <code>[-1,-1]</code>；
+否则求右边界 <code>end</code>，返回 <code>[start, end]</code>。两个子函数都复用左闭右闭骨架，区别只在「== 时往哪逼」。</p>
+
+<table>
+  <thead><tr><th style="width:140px">步骤</th><th style="width:200px">对 nums=[5,7,7,8,8,10], t=8</th><th>结果</th></tr></thead>
+  <tbody>
+    <tr><td>左边界</td><td>逼到第一个 ≥8 的位置</td><td>start = 3（nums[3]=8）</td></tr>
+    <tr><td>判存在</td><td>nums[3]==8 ✓</td><td>继续</td></tr>
+    <tr><td>右边界</td><td>逼到最后一个 ≤8 的位置</td><td>end = 4（nums[4]=8）</td></tr>
+  </tbody>
+</table>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        int start = leftBound(nums, target);
+        // start 越界 或 该位置不是 target → 说明数组里没有 target
+        if (start == nums.length || nums[start] != target) return new int[]{-1, -1};
+        int end = rightBound(nums, target);
+        return new int[]{start, end};
+    }
+    // 第一个 >= target 的位置
+    int leftBound(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] >= target) right = mid - 1; // 找到或偏大，继续往左逼
+            else left = mid + 1;
+        }
+        return left;
+    }
+    // 最后一个 <= target 的位置
+    int rightBound(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] <= target) left = mid + 1;  // 找到或偏小，继续往右逼
+            else right = mid - 1;
+        }
+        return right;
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(log n) 时间（两次二分），O(1) 空间。这是「边界模板」的标准组合，面试高频。</p>
+
+<div class="warn">
+  <strong>易错点：</strong>① 左边界返回 <code>left</code>、右边界返回 <code>right</code>，别写反（左逼结束 left 停边界、右逼结束 right 停边界）。
+  ② 必须先判 <code>nums[start] != target</code> 再求右边界——若数组没有 target，左边界会落在「第一个比 target 大」处，直接返回 <code>[-1,-1]</code> 即可，
+  否则右边界算出来会是个错的位置。  ③ 全相同数组如 <code>[8,8,8]</code> 仍能正确返回 <code>[0,2]</code>。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>搜索旋转排序数组（力扣 33，中等）</strong>——与本题共用「左闭右闭二分骨架」；差异在数组整体不单调，需先判「哪半有序」再在有序半里比范围（提示：<code>nums[left] &lt;= nums[mid]</code> 说明左半有序，据此决定丢弃哪整半）。</li>
+    <li><strong>寻找旋转排序数组中的最小值（力扣 153，中等）</strong>——与本题共用「二分 + 收缩时保留候选值」的技巧；差异在目标是「最小元素」而非某 target 的下标，用右端点作最小值候选逐步逼近（提示：左半有序时最小值在左半或就是 <code>nums[left]</code>，否则去右半）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">4.6</span>搜索旋转排序数组（中等，力扣 33）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：半边有序的判断法</span></p>
+
+<p><strong>题意：</strong>一个原本升序、但在<strong>某个未知下标</strong>处被「旋转」过的数组（例如 <code>[4,5,6,7,0,1,2]</code>），
+<strong>无重复元素</strong>。在 O(log n) 内找出 <code>target</code> 的下标，找不到返回 -1。
+<strong>例：</strong><code>nums = [4,5,6,7,0,1,2], target = 0</code> → 返回 <code>4</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，普通二分为什么不行。</strong>数组整体不升序（中间会「断」），直接比 <code>nums[mid]</code> 和 <code>target</code> 不能判断往哪走——
+因为不知道 target 在断点的哪一侧。</p>
+
+<p><strong>第二步，关键性质——至少有一半是有序的。</strong>取 <code>mid</code> 后，区间被分成 <code>[left, mid]</code> 和 <code>[mid, right]</code> 两半。
+因为只旋转了一次，<strong>这两半中必有一半是完全升序的</strong>。判断方法：若 <code>nums[left] &lt;= nums[mid]</code>，说明左半 <code>[left, mid]</code> 没越过断点、是有序的；否则断点在左半、右半有序。</p>
+
+<p><strong>第三步，在有序的那一半里判断 target 在不在。</strong>若左半有序：
+看 <code>target</code> 是否落在 <code>[nums[left], nums[mid])</code> 范围内——在，就只在左半继续二分（<code>right = mid - 1</code>）；
+不在，target 必在右半（<code>left = mid + 1</code>）。右半有序时对称处理。</p>
+
+<p><strong>第四步，为什么能砍掉一半。</strong>每一轮我们都<strong>确定了一整半是有序的</strong>，并在其中用「范围判断」决定丢弃哪一整半，所以每轮仍砍半，保持 O(log n)。</p>
+
+<table>
+  <thead><tr><th style="width:140px">状态</th><th style="width:240px">对 [4,5,6,7,0,1,2], t=0</th><th>动作</th></tr></thead>
+  <tbody>
+    <tr><td>left=0,right=6,mid=3</td><td>nums[3]=7；左半[4,5,6,7]有序；0 不在 [4,7)</td><td>left=4（去右半）</td></tr>
+    <tr><td>left=4,right=6,mid=5</td><td>nums[5]=1；左半[0,1]有序；0 在 [0,1)</td><td>right=4</td></tr>
+    <tr><td>left=4,right=4,mid=4</td><td>nums[4]=0 == target</td><td>返回 4</td></tr>
+  </tbody>
+</table>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) return mid;
+            if (nums[left] <= nums[mid]) {            // 左半 [left, mid] 有序
+                if (target >= nums[left] && target < nums[mid]) {
+                    right = mid - 1;                  // target 在左半范围内
+                } else {
+                    left = mid + 1;                   // 否则在右半
+                }
+            } else {                                   // 右半 [mid, right] 有序
+                if (target > nums[mid] && target <= nums[right]) {
+                    left = mid + 1;                   // target 在右半范围内
+                } else {
+                    right = mid - 1;                  // 否则在左半
+                }
+            }
+        }
+        return -1;
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(log n) 时间（每轮砍半），O(1) 空间。本题把「二分本质」体现得最充分：<strong>数组不整体单调，但局部单调就够用</strong>。</p>
+
+<div class="tip">
+  <strong>和 704 的区别只有一句：</strong>704 直接比 <code>nums[mid]</code> 与 <code>target</code> 决定方向；33 先判<strong>哪半有序</strong>，再在那个有序半里比范围。
+  模板骨架（左闭右闭、mid 防溢出、±1 收缩）完全一样。理解这一点，旋转数组变种（如找旋转点、含重复版）都能依样画葫芦。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>搜索旋转排序数组 II（力扣 81，中等）</strong>——与本题共用「先判哪半有序、再在有序半里比范围」的技巧；差异在数组<strong>含重复元素</strong>，<code>nums[left] == nums[mid]</code> 时无法判断哪半有序，需 <code>left++</code> 跳过（提示：遇到相等先把左边界收缩一格，退化成 O(n) 最坏但常见写法）。</li>
+    <li><strong>在排序数组中查找元素的第一个和最后一个位置（力扣 34，中等）</strong>——与本题共用「左闭右闭二分骨架」；差异在数组整体有序、不需判旋转，但要分别求左右边界（提示：左边界 <code>nums[mid] &gt;= target</code> 时 <code>right = mid - 1</code>，右边界对称）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">4.7</span>本专题常见坑：死循环</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>坑一：mid 取整方向与 left=mid 忘了 +1。</strong>左闭右闭写法下，<strong>每次缩小必须把 mid 踢出区间</strong>（<code>left = mid + 1</code> 或 <code>right = mid - 1</code>）。
+    若误写成 <code>left = mid</code>，当区间缩到 <code>[k, k+1]</code>、<code>mid</code> 取下整 = <code>k</code> 时，<code>left</code> 永远不前进 → 死循环。
+    本站主模板用 <code>mid + 1 / mid - 1</code>，天然避开此坑。</li>
+    <li><strong>坑二：整型溢出用 <code>(left + right) / 2</code>。</strong>当 <code>left + right</code> 超过 <code>Integer.MAX_VALUE</code> 时会溢出变负，mid 算错。
+    <strong>永远用 <code>left + (right - left) / 2</code></strong>（或 <code>(left + right) &gt;&gt;&gt; 1</code> 无符号右移）。这是力扣/面试的送分点，务必养成习惯。</li>
+    <li><strong>坑三：循环条件与收缩方式不匹配。</strong><code>while (left &lt;= right)</code> 必须配 <code>left = mid + 1 / right = mid - 1</code>；
+    若混用左闭右开的 <code>while (left &lt; right)</code> 却写了 <code>mid - 1</code>，可能漏掉答案或越界。
+    <strong>一套写法一套配，别交叉混用。</strong></li>
+    <li><strong>坑四：边界模板里 == 时往错的边逼。</strong>找左边界遇到 <code>nums[mid] == target</code> 还应 <code>right = mid - 1</code>（继续往左找更小的下标）；
+    找右边界应 <code>left = mid + 1</code>。若写成「== 就返回」，得到的是「任意一个」而不是「最左/最右」，34 题会 WA。</li>
+    <li><strong>坑五：旋转数组漏判空/单元素。</strong><code>nums.length == 0</code> 时 <code>right = -1</code>，主循环不进直接返回 -1，正确；但若有人先访问 <code>nums[0]</code> 会越界，记得先判空。</li>
+    <li><strong>坑六：把 right 初值写成 n 却用了 &lt;= 条件。</strong>左闭右闭 <code>right</code> 初值是 <code>n - 1</code>；若写成 <code>n</code> 又用 <code>&lt;=</code>，会访问越界。两种写法只差「right 初值」和「循环条件」这一组配对，别记串。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">4.8</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 二分的本质是不是「数组必须有序」？请举一个数组不整体有序但仍能用二分的例子。</p>
+    <div class="qa-a">
+      <p>不是。二分本质是<strong>「答案空间单调 + 能 O(1) 判断往哪半走」</strong>。数组有序只是最常见的单调表现。</p>
+      <p>例子：<strong>旋转排序数组（33 题）</strong>整体不升序，但每次都能找到「有序的一半」，在那一半里判断 target 范围，照样 O(log n) 二分。
+      另一个例子是「二分答案」：如「使所有书包重量 ≤ mid 能否用 k 次运完」，答案在 [1, sum] 单调，也能二分 mid 而不是二分数组。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q2. 搜索插入位置里，为什么循环结束后直接 return left 就是插入点？用 target=7 验证一下。</p>
+    <div class="qa-a">
+      <p>循环中 <code>left</code> 左侧永远是「已确认 &lt; target」区，<code>right</code> 右侧永远是「已确认 &gt; target」区。
+      当 <code>left &gt; right</code>（交错），<code>left</code> 落在「&gt; target 区」最左端，即该插入处。</p>
+      <p>验证 <code>nums=[1,3,5,6], target=7</code>：每步 <code>nums[mid] &lt; 7</code>，left 一直右移，最终 left=4（=n），返回 4=插在末尾 ✓。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q3. 34 题里，若先求左边界 start，且 nums[start]==target，还为什么要求右边界？直接返回 [start, start] 不行吗？</p>
+    <div class="qa-a">
+      <p>不行。start 只是「第一个」出现位置，数组可能含多个 target（如 <code>[5,7,7,8,8,10]</code> 中 8 出现两次）。
+      返回 <code>[start, start]</code> 会漏掉结束下标，正确应是 <code>[3, 4]</code>。</p>
+      <p>必须先判 <code>nums[start] == target</code> 确认存在（否则直接 <code>[-1,-1]</code>），再用右边界模板求「最后一个」位置 end。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q4. 旋转数组题里，「至少有一半有序」是怎么保证的？为什么 nums[left] &lt;= nums[mid] 就说明左半有序？</p>
+    <div class="qa-a">
+      <p>数组只在<strong>一个未知点</strong>断开（如 ...7 | 0...）。mid 把区间分成两半，断点最多落在其中一半，
+      因此<strong>另一半必然完整落在原升序段内、是有序的</strong>——所以「至少一半有序」必然成立。</p>
+      <p>若 <code>nums[left] &lt;= nums[mid]</code>，说明从 left 到 mid 没有越过断点（否则会出现「大→小」的逆序），故左半 <code>[left, mid]</code> 升序；
+      反之断点在左半，右半 <code>[mid, right]</code> 升序。据此选有序半做范围判断。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】不参考代码，写出「二分查找（704）」完整 Java 方法，并说明：若把 <code>left = mid + 1</code> 误写成 <code>left = mid</code>，
+    对输入 <code>nums = [1,3], target = 3</code> 会发生什么？如何避免？</p>
+    <div class="qa-a">
+      <p>方法见 <a href="ch04.html#s3">4.3 节</a>。若写成 <code>left = mid</code>：初始 left=0,right=1,mid=0，<code>nums[0]=1 &lt; 3</code> → <code>left = mid = 0</code>，
+      下一轮 left 仍=0、right 仍=1、mid 仍=0，<strong>无限循环（死循环）</strong>，永远退不出。</p>
+      <p>避免：左闭右闭写法下，<strong>mid 查过就必须 ±1 移出区间</strong>（<code>left = mid + 1</code> / <code>right = mid - 1</code>）。
+      同时 mid 用 <code>left + (right - left) / 2</code> 防溢出。写完后拿「两元素数组」过一遍边界，能立刻暴露这类死循环。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>学完这章，你应该能回答：</strong>
+  <ul style="margin-bottom:0">
+    <li>二分的本质是什么？为什么「数组有序」只是它的一个特例？</li>
+    <li>左闭右闭模板的四个要点（区间定义、循环条件、mid 防溢出、±1 收缩）能否默写？</li>
+    <li>搜索插入位置为什么 return left 就是答案？</li>
+    <li>34 题的左/右边界模板，== 时分别往哪边逼，结束后返回 left 还是 right？</li>
+    <li>33 题「至少一半有序」怎么判断、怎么据此丢弃一半？</li>
+    <li>能脱稿写出本章 4 道题中任意一道的 Java 代码，并通过空数组/单元素/全相同值等边界用例。</li>
+  </ul>
+</div>

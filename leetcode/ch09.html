@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 09 · 动态规划（入门） | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link active" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <div class="sb-sub">
+      <a href="#s1">9.1 DP 到底在干什么</a>
+      <a href="#s2">9.2 DP 五步法</a>
+      <a href="#s3">9.3 爬楼梯（简单）</a>
+      <a href="#s4">9.4 使用最小花费爬楼梯（简单）</a>
+      <a href="#s5">9.5 打家劫舍（中等）</a>
+      <a href="#s6">9.6 不同路径（中等）</a>
+      <a href="#s7">9.7 本专题常见坑</a>
+      <a href="#s8">9.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 09</div>
+  <h1><span class="ch-tag">专题 09</span>动态规划（入门）</h1>
+  <p class="lead">动态规划（Dynamic Programming，简称 DP）是面试里出现频率最高的专题之一，也是很多人「听得懂、写不出」的重灾区。
+  这一章不让你背任何状态转移方程，而是从你最熟悉的斐波那契数列出发，把 DP 的思维方式一点点拆开：
+  <strong>它到底在替我们省掉哪一部分重复计算，又为什么能把「暴力递归」变成「填表」。</strong>
+  学完这一章，你会建立一套通用的「五步法」，后面遇到大多数一维 DP 题都能照着套。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">建立状态转移思维，能独立定义 dp 数组</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">递归基础（专题 08）、数组与循环</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 道经典一维 DP 题的逐行代码</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">6–8 小时</div></div>
+</div>
+
+<hr>
+
+<h2 id="s1"><span class="h2-num">9.1</span>DP 到底在干什么：从斐波那契说起</h2>
+
+<p>很多教程一上来就说「DP 三要素：状态、转移、边界」，但这句话对初学者等于没说。
+  要理解 DP，最干净的办法是看一个你早就写过的例子——求斐波那契数列的第 n 项。</p>
+
+<p>斐波那契的递归定义你一定认识：</p>
+
+<pre><code class="nohl">f(0) = 0
+f(1) = 1
+f(n) = f(n-1) + f(n-2)      // n &gt;= 2</code></pre>
+
+<p>照着这个定义，最朴素的写法就是直接翻译：</p>
+
+<pre><code><span class="cm">// 暴力递归：完全照着数学定义翻译</span>
+<span class="kw">int</span> fib(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n == 0) <span class="kw">return</span> 0;
+    <span class="kw">if</span> (n == 1) <span class="kw">return</span> 1;
+    <span class="kw">return</span> fib(n - 1) + fib(n - 2);   <span class="cm">// 每个 n 都要往下拆两次</span>
+}</code></pre>
+
+<h3>为什么这个写法慢到离谱</h3>
+
+<p>你每次算 <code>fib(n)</code>，都要先算 <code>fib(n-1)</code> 和 <code>fib(n-2)</code>；而 <code>fib(n-1)</code> 自己又要把 <code>fib(n-2)</code> 和 <code>fib(n-3)</code> 各算一遍。
+  注意，<strong><code>fib(n-2)</code> 被算了两次</strong>——左边那棵子树算一次，右边那棵也算一次。随着 n 变大，这种重复呈指数爆炸：</p>
+
+<pre><code class="nohl">            fib(5)
+          /        \
+      fib(4)        fib(3)
+      /    \         /    \
+  fib(3)  fib(2)  fib(2)  fib(1)
+  /   \    /  \    /   \
+fib(2) ... 重复的子树越来越多</code></pre>
+
+<p>粗略地说，<code>fib(n)</code> 被调用的次数是指数级的（约为 2ⁿ 量级）。这正是 DP 要解决的第一个核心问题：
+  <strong>重叠子问题</strong>——同一个更小的子问题被反复求解。</p>
+
+<div class="tip">
+  <strong>一句话记住：</strong>只要一个问题能拆成「同样形式的小问题」，而且这些小问题会<strong>重复出现</strong>，
+  它就具备 DP 的第一个特征——<em>重叠子问题</em>。
+</div>
+
+<h3>第一步优化：记忆化（自顶向下）</h3>
+
+<p>既然 <code>fib(n-2)</code> 算过一次结果就是固定的，那我们算完把它存起来，下次直接取不就行了？这就是「记忆化搜索」：</p>
+
+<pre><code><span class="cm">// 记忆化：用一个数组把算过的答案缓存下来</span>
+<span class="kw">int</span>[] memo;
+
+<span class="kw">int</span> fib(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n == 0) <span class="kw">return</span> 0;
+    <span class="kw">if</span> (n == 1) <span class="kw">return</span> 1;
+    <span class="kw">if</span> (memo[n] != 0) <span class="kw">return</span> memo[n];          <span class="cm">// 算过就直接返回</span>
+    memo[n] = fib(n - 1) + fib(n - 2);         <span class="cm">// 没算过就计算并存好</span>
+    <span class="kw">return</span> memo[n];
+}</code></pre>
+
+<p>现在每个 <code>fib(k)</code> 最多被真正计算一次，整体复杂度从 2ⁿ 降到 <strong>O(n)</strong>。
+  思路没变（还是从大问题往小问题递归），只是「查表」替我们砍掉了重复计算。</p>
+
+<h3>第二步优化：自底向上填表（真正的 DP）</h3>
+
+<p>再退一步想：<code>fib(n)</code> 依赖 <code>fib(n-1)</code> 和 <code>fib(n-2)</code>，而这两个又依赖更小的。
+  与其从 n 往下递归，不如反过来——<strong>从 0、1 开始，一路往大里算，把每个结果填进数组</strong>：</p>
+
+<pre><code><span class="cm">// 自底向上：从最小的子问题开始，逐个填表</span>
+<span class="kw">int</span> fib(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n == 0) <span class="kw">return</span> 0;
+    <span class="kw">if</span> (n == 1) <span class="kw">return</span> 1;
+    <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="kw">int</span>[n + 1];   <span class="cm">// dp[i] 表示「斐波那契第 i 项」</span>
+    dp[0] = 0;
+    dp[1] = 1;
+    <span class="kw">for</span> (<span class="kw">int</span> i = 2; i &lt;= n; i++) {
+        dp[i] = dp[i - 1] + dp[i - 2];   <span class="cm">// 用已经算好的小问题，推出大问题</span>
+    }
+    <span class="kw">return</span> dp[n];
+}</code></pre>
+
+<p>这就是动态规划最典型的样子：</p>
+
+<table>
+  <thead><tr><th style="width:150px">写法</th><th style="width:120px">复杂度</th><th>本质</th></tr></thead>
+  <tbody>
+    <tr><td>暴力递归</td><td>O(2ⁿ)</td><td>重复计算大量相同子问题</td></tr>
+    <tr><td>记忆化搜索</td><td>O(n)</td><td>还是递归，但用缓存避免重复</td></tr>
+    <tr><td>自底向上 DP</td><td>O(n)</td><td>把递归「翻"过来」，用循环填表</td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>关键认知：</strong>DP <em>不是</em>「背一套神秘的状态转移方程」。
+  它只是把「暴力递归里重复的那部分计算」显式地存下来、按顺序算一遍。
+  你真正要训练的能力是：<strong>把一个大问题，描述成「同样形式的小问题」的组合</strong>——
+  这句话后面会反复出现。
+</div>
+
+<h3>DP 的第二个特征：最优子结构</h3>
+
+<p>斐波那契只是「计数」，还没涉及「最优」。DP 还有一类问题叫「求最值」，比如「爬楼梯最少花多少」「打家劫舍最多能偷多少」。
+  这类问题额外要求一个性质：<strong>大问题的最优解，能由小问题的最优解拼出来</strong>，这叫「最优子结构」。</p>
+
+<p>举个例子：如果你想知道「偷到最后一间房的最大收益」，而你已经知道了「偷到倒数第二间的最大收益」和「偷到倒数第三间的最大收益」，
+  那就能直接推出答案。也就是说，<strong>全局最优 = 局部最优的某种组合</strong>。
+  后面这几道题，全是在「定义清楚局部最优」这件事上做文章。</p>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>重叠子问题</strong>：同一个子问题被反复用到（决定「能不能用 DP 省时间」）。</li>
+    <li><strong>最优子结构</strong>：大问题的最优解能由小问题的最优解推出（决定「能不能用 DP 求最值」）。</li>
+    <li>两者同时满足，DP 就基本稳了；剩下的只是把「怎么组合」写成转移方程。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">9.2</span>DP 五步法：每次都照这个顺序想</h2>
+
+<p>面对任何一道 DP 题，不要急着写代码。按下面五步<strong>依次想清楚</strong>，能避免 90% 的 WA（Wrong Answer）。
+  这五步是本章的骨架，后面每道题我都会显式地走一遍。</p>
+
+<h3>第 1 步：定义状态（dp[i] 到底表示什么）</h3>
+
+<p>这是最关键也最容易被跳过的一步。你要给 <code>dp[i]</code> 一句<strong>人话解释</strong>，比如：</p>
+
+<ul>
+  <li>「dp[i] 表示：爬到第 i 级台阶有多少种方法」</li>
+  <li>「dp[i] 表示：偷到第 i 间房（含）为止，最多能偷到多少钱」</li>
+</ul>
+
+<p><strong>怎么判断这步做对了：</strong>你能否不假思索地用一句话说清 dp[i] 的含义，而且这句话里 i 的位置是明确的？
+  如果连你自己都说不清「dp[i] 是第 i 个还是前 i 个」，后面一定写错。很多 bug 的根源就是状态定义含糊。</p>
+
+<h3>第 2 步：写出状态转移方程</h3>
+
+<p>用大白话想：「要得到 dp[i]，我需要用到哪些更小的 dp 值？它们怎么组合？」</p>
+
+<p>比如爬楼梯：要到第 i 级，最后一步要么从第 i-1 级跨 1 步，要么从第 i-2 级跨 2 步。
+  所以「到第 i 级的方法数 = 到第 i-1 级的方法数 + 到第 i-2 级的方法数」。写成：<code>dp[i] = dp[i-1] + dp[i-2]</code>。</p>
+
+<p><strong>怎么判断这步做对了：</strong>拿一个具体的小数字代入，比如 i=3，手动算 dp[3] 看是否等于 dp[2]+dp[1]。</p>
+
+<h3>第 3 步：初始化</h3>
+
+<p>「最小的那些子问题」的值是什么？也就是 dp 数组最前面几个（或 dp[0]、dp[1]）该填什么。
+  这一步最容易被漏掉，导致后面全是错的基线。</p>
+
+<p><strong>怎么判断做对了：</strong>看「转移方程里用到的最小下标」是否都已经手动赋了值。
+  若转移用到 dp[i-2]，那 dp[0] 和 dp[1] 必须显式初始化。</p>
+
+<h3>第 4 步：确定遍历顺序</h3>
+
+<p>是从左往右、从右往左，还是二维里先行后列？顺序必须保证「算 dp[i] 时，它依赖的那些 dp 值已经算好了」。</p>
+
+<p><strong>怎么判断做对了：</strong>看转移方程右边用到的下标，是不是都排在 i 的前面（且已经算过）。</p>
+
+<h3>第 5 步：举例验证</h3>
+
+<p>用题目给的最小例子，在纸上把 dp 数组从头填到尾，看最后一个值是不是正确答案。
+  这步看似笨，却是 DP 防错的最后一道闸——很多人代码写完一提交才发现初始化就错了。</p>
+
+<div class="tip">
+  <strong>记忆口诀：</strong><em>「定状态、写转移、清初始化、排顺序、举例子」</em>。
+  顺序别乱：先定状态，再写转移；不要一上来就写循环。状态定义错了，后面全白费。
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">9.3</span>爬楼梯（简单，力扣 70）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：最朴素的状态转移</span></p>
+
+<p><strong>题意：</strong>你每次可以爬 1 级或 2 级台阶，问爬到第 n 级共有多少种不同的方法。
+  比如 n = 3，有 3 种走法：1+1+1、1+2、2+1；n = 2，有 2 种：1+1、2。</p>
+
+<h3>思路推导</h3>
+
+<p>我们先想暴力：要走到第 n 级，最后一步只可能是两种——</p>
+
+<ul>
+  <li>你刚从第 n-1 级跨了 1 步上来；</li>
+  <li>你刚从第 n-2 级跨了 2 步上来。</li>
+</ul>
+
+<p>而「到第 n-1 级的方法数」和「到第 n-2 级的方法数」是<strong>互不重叠</strong>的两类走法（最后一步步数不同），
+  所以总数就是把两者相加。于是我们自然地定义了：</p>
+
+<p><strong>状态：</strong>dp[i] = 爬到第 i 级台阶的方法总数。</p>
+<p><strong>转移：</strong>dp[i] = dp[i-1] + dp[i-2]。</p>
+<p><strong>初始化：</strong>dp[1] = 1（一级只有一种走法），dp[2] = 2（1+1、2）。为统一起见也可以设 dp[0] = 1 表示「地面」，这样 dp[2] = dp[1]+dp[0] = 2 也成立。</p>
+
+<p>遍历顺序很明显：从 i=3 一直算到 n，因为 dp[i] 依赖前面两项。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> climbStairs(<span class="kw">int</span> n) {
+        <span class="cm">// 边界：n 很小直接返回，避免数组越界</span>
+        <span class="kw">if</span> (n == 1) <span class="kw">return</span> 1;
+        <span class="kw">if</span> (n == 2) <span class="kw">return</span> 2;
+        <span class="cm">// dp[i] 表示爬到第 i 级台阶的方法数</span>
+        <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="kw">int</span>[n + 1];
+        dp[1] = 1;          <span class="cm">// 第 1 级：只有 1 种（走一步）</span>
+        dp[2] = 2;          <span class="cm">// 第 2 级：1+1 或 2，共 2 种</span>
+        <span class="cm">// 从第 3 级开始，每一级的方法数 = 前两级之和</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 3; i &lt;= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        <span class="kw">return</span> dp[n];
+    }
+}</code></pre>
+
+<p>空间还能再压：dp[i] 只用到前两项，所以只用两个变量滚动即可（滚动数组）：</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> climbStairs(<span class="kw">int</span> n) {
+        <span class="kw">if</span> (n == 1) <span class="kw">return</span> 1;
+        <span class="kw">if</span> (n == 2) <span class="kw">return</span> 2;
+        <span class="kw">int</span> prev2 = 1;   <span class="cm">// 相当于 dp[i-2]</span>
+        <span class="kw">int</span> prev1 = 2;   <span class="cm">// 相当于 dp[i-1]</span>
+        <span class="kw">int</span> cur = 0;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 3; i &lt;= n; i++) {
+            cur = prev1 + prev2;   <span class="cm">// dp[i] = dp[i-1] + dp[i-2]</span>
+            prev2 = prev1;         <span class="cm">// 滚动：原来的 dp[i-1] 变成下一轮的 dp[i-2]</span>
+            prev1 = cur;           <span class="cm">// 原来的 dp[i]   变成下一轮的 dp[i-1]</span>
+        }
+        <span class="kw">return</span> cur;
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(n)，每个 i 只算一次；空间 O(1)（滚动数组版）。n ≤ 45 在题目约束内，O(n) 完全够。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>这道题的转移方程和斐波那契一模一样，区别只在于初始两项。
+  如果你第一反应是「这不就是斐波那契吗」——对了，说明 9.1 的思路已经内化。
+  真正面试时，更常见的变形是「一次可以爬 1~k 级」，那转移就变成 dp[i] = dp[i-1]+...+dp[i-k]，思路完全不变。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>使用最小花费爬楼梯（力扣 746，简单）</strong>——与本题共用「dp[i] = dp[i-1] + dp[i-2] 同构滚动」技巧；差异在每踏上一级要额外付 cost[i]，且终点在数组外的楼顶（提示：dp[i] 定义为「踏上第 i 级的最小花费」= min(dp[i-1], dp[i-2]) + cost[i]，答案取 min(dp[n-1], dp[n-2])）。</li>
+    <li><strong>斐波那契数（力扣 509，简单）</strong>——与本题共用「前两项相加递推」技巧；差异在就是纯斐波那契定义，初始值 dp[0]=0、dp[1]=1（提示：直接照定义填表或用滚动变量，和爬楼梯只差初始两项）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">9.4</span>使用最小花费爬楼梯（简单，力扣 746）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：dp 数组长度的陷阱</span></p>
+
+<p><strong>题意：</strong>给你一个数组 cost，长度 n，cost[i] 表示<strong>踏上第 i 级台阶</strong>需要支付的费用。
+  你可以从下标 0 或下标 1 出发（起步不花钱），每步可以爬 1 级或 2 级，目标是到达「楼顶」（即下标 n，也就是数组<strong>之外</strong>的那一级）。
+  问最小总花费。例如 cost = [10,15,20]，从 1 出发直接跨 2 步到楼顶，花 15，是最优解。</p>
+
+<h3>思路推导</h3>
+
+<p>这道题比爬楼梯多了一个「花费」维度，而且藏着一个容易踩的坑：<strong>终点是下标 n，不是 n-1</strong>。
+  因为楼顶在数组之外，你从最后一级（n-1）再跨一步才到顶，而跨这最后一步本身<strong>不额外收费</strong>（收费只发生在「踏上某级」时）。</p>
+
+<p>先定义状态。自然地，我们让 dp[i] 表示「<strong>踏上第 i 级台阶的最小累计花费</strong>」。
+  那么要踏上第 i 级，你只能从第 i-1 级跨 1 步、或从 i-2 级跨 2 步上来，并且一旦踏上 i 就要付 cost[i]：</p>
+
+<pre><code class="nohl">dp[i] = min(dp[i-1], dp[i-2]) + cost[i]</code></pre>
+
+<p><strong>初始化：</strong>因为可以从 0 或 1 直接起步且不花钱，所以踏上第 0 级的最小花费就是 cost[0]，踏上第 1 级就是 cost[1]：</p>
+
+<pre><code class="nohl">dp[0] = cost[0]
+dp[1] = cost[1]</code></pre>
+
+<p><strong>终点：</strong>楼顶在 n，从 n-1 跨一步或 n-2 跨两步都能到，且到顶不再收费，所以答案 = min(dp[n-1], dp[n-2])。</p>
+
+<p>这里 dp 数组长度要开 n（下标 0..n-1），因为楼顶我们不存花费，只在最后取 min。
+  如果你把 dp 开成 n+1 并把 dp[n] 也作为状态存「到楼顶的花费」，也行，但容易和 cost 对齐错位——本解法用长度为 n 的数组更直观。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> minCostClimbingStairs(<span class="kw">int</span>[] cost) {
+        <span class="kw">int</span> n = cost.length;
+        <span class="cm">// dp[i] 表示「踏上第 i 级台阶」的最小累计花费</span>
+        <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="kw">int</span>[n];
+        dp[0] = cost[0];                 <span class="cm">// 从 0 起步，踏上 0 就花 cost[0]</span>
+        dp[1] = cost[1];                 <span class="cm">// 从 1 起步，踏上 1 就花 cost[1]</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 2; i &lt; n; i++) {
+            <span class="cm">// 踏上 i 要么从 i-1 来，要么从 i-2 来，取更便宜的，再付 cost[i]</span>
+            dp[i] = Math.min(dp[i - 1], dp[i - 2]) + cost[i];
+        }
+        <span class="cm">// 楼顶在下标 n：从 n-1 跨一步，或从 n-2 跨两步，到顶不再收费</span>
+        <span class="kw">return</span> Math.min(dp[n - 1], dp[n - 2]);
+    }
+}</code></pre>
+
+<p>同样可以滚动成 O(1) 空间：</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> minCostClimbingStairs(<span class="kw">int</span>[] cost) {
+        <span class="kw">int</span> n = cost.length;
+        <span class="kw">int</span> prev2 = cost[0];   <span class="cm">// dp[i-2]</span>
+        <span class="kw">int</span> prev1 = cost[1];   <span class="cm">// dp[i-1]</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 2; i &lt; n; i++) {
+            <span class="kw">int</span> cur = Math.min(prev1, prev2) + cost[i];
+            prev2 = prev1;
+            prev1 = cur;
+        }
+        <span class="kw">return</span> Math.min(prev1, prev2);
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(n)，空间 O(1)（滚动版）。n ≤ 1000，毫无压力。</p>
+
+<div class="warn">
+  <strong>关键坑：</strong>很多人把 dp 定义成「到第 i 级（不含踏上）」或把楼顶当成 cost[n]，结果和 cost 数组下标对不齐。
+  <em>先用人话把 dp[i] 讲清楚</em>——本题是「踏上第 i 级的最小花费」——终点再单独处理成 min(dp[n-1], dp[n-2])，就不会乱。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>打家劫舍（力扣 198，中等）</strong>——与本题共用「相邻格不能连选 + 滚动取最优」的转移思路；差异在 746 是「每级付最小花费」而 198 是「每间房偷最大钱」，约束从「不回头跨级」变成「不能偷相邻两间」（提示：dp[i] = max(dp[i-1], dp[i-2] + nums[i])，两种分支取较大，转移式结构与本题同构）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">9.5</span>打家劫舍（中等，力扣 198）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：「偷或不偷」的决策式转移</span></p>
+
+<p><strong>题意：</strong>一排房子，第 i 间有 nums[i] 的钱。你不能同时偷相邻两间（会触发报警）。问最多能偷到多少钱。
+  例如 nums = [2,7,9,3,1]，最优是偷第 1、3、5 间（下标 0、2、4），共 2+9+1 = 12。</p>
+
+<h3>思路推导</h3>
+
+<p>暴力想法是枚举所有「不相邻」的组合，那是指数级的。我们用 DP 把「到某一间为止的最优」算出来。</p>
+
+<p><strong>状态：</strong>dp[i] = 考虑前 i 间房（下标 0..i），在满足不相邻约束下，最多能偷到的钱。</p>
+
+<p>重点来了：站在第 i 间房门口，你只有两个选择——</p>
+
+<ul>
+  <li><strong>不偷第 i 间：</strong>那 dp[i] 就等于「前 i-1 间的最优」，即 dp[i-1]。</li>
+  <li><strong>偷第 i 间：</strong>那第 i-1 间不能偷，dp[i] = dp[i-2] + nums[i]。</li>
+</ul>
+
+<p>取两者较大者，就是到 i 为止的最优：</p>
+
+<pre><code class="nohl">dp[i] = max(dp[i-1], dp[i-2] + nums[i])</code></pre>
+
+<p>这就是典型的「<strong>决策型转移</strong>」——每一个状态都是「做 vs 不做」两种分支里取最优。
+  后面背包问题里你会反复见到这种二选一的结构。</p>
+
+<p><strong>初始化：</strong>dp[0] = nums[0]（只有一间，只能偷它）；dp[1] = max(nums[0], nums[1])（两间里挑钱多的）。
+  从 i=2 起用转移方程。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> rob(<span class="kw">int</span>[] nums) {
+        <span class="kw">int</span> n = nums.length;
+        <span class="kw">if</span> (n == 1) <span class="kw">return</span> nums[0];          <span class="cm">// 只有一间，直接偷</span>
+        <span class="cm">// dp[i] 表示考虑前 i+1 间（下标 0..i）能偷到的最大金额</span>
+        <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="kw">int</span>[n];
+        dp[0] = nums[0];                      <span class="cm">// 第一间：只能偷</span>
+        dp[1] = Math.max(nums[0], nums[1]);   <span class="cm">// 前两间：挑钱多的</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 2; i &lt; n; i++) {
+            <span class="cm">// 不偷第 i 间 -&gt; dp[i-1]；偷第 i 间 -&gt; dp[i-2] + nums[i]</span>
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);
+        }
+        <span class="kw">return</span> dp[n - 1];                     <span class="cm">// 考虑全部房间后的最优</span>
+    }
+}</code></pre>
+
+<p>滚动数组版本（只用到前两项）：</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> rob(<span class="kw">int</span>[] nums) {
+        <span class="kw">int</span> n = nums.length;
+        <span class="kw">if</span> (n == 1) <span class="kw">return</span> nums[0];
+        <span class="kw">int</span> prev2 = nums[0];                       <span class="cm">// 相当于 dp[i-2]</span>
+        <span class="kw">int</span> prev1 = Math.max(nums[0], nums[1]);    <span class="cm">// 相当于 dp[i-1]</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 2; i &lt; n; i++) {
+            <span class="kw">int</span> cur = Math.max(prev1, prev2 + nums[i]);
+            prev2 = prev1;
+            prev1 = cur;
+        }
+        <span class="kw">return</span> prev1;
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(n)，空间 O(1)（滚动版）。n ≤ 100，轻松通过。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>「偷或不偷」是 DP 里极常见的一类转移套路。
+  当你发现题目是「每个物品选或不选，且选了有约束（不能相邻 / 不能超重）」时，第一反应就该是这种二分支的 max/min 转移。
+  它和后面 10.4 的 01 背包本质是同一个思想。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>打家劫舍 II（力扣 213，中等）</strong>——与本题共用「偷或不偷」的二分支 max 转移；差异在房子围成一圈，首尾不能同时偷，要把环拆成「不偷首」和「不偷尾」两段分别跑一遍取较大（提示：对 nums[0..n-2] 和 nums[1..n-1] 各调用一次 rob，答案取两者 max）。</li>
+    <li><strong>删除并获得点数（力扣 740，中等）</strong>——与本题共用「相邻元素互斥」的 max 转移；差异在元素值可能重复，要先按值聚合（每个值的总和），相邻值不能都选（提示：统计每个数值的总和到数组，转化成「不能选相邻下标」的打家劫舍，再用本题转移式）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">9.6</span>不同路径（中等，力扣 62）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：二维 DP 入门</span></p>
+
+<p><strong>题意：</strong>一个 m 行 n 列的网格，机器人从左上角 (0,0) 出发，每次只能向右或向下走，问走到右下角 (m-1, n-1) 共有多少条不同路径。
+  例如 m=3, n=7，答案是 28；m=2, n=3，答案是 3。</p>
+
+<h3>思路推导</h3>
+
+<p>一维 DP 你会了，这道题把它升成二维。<strong>状态</strong>自然变成两个下标：</p>
+
+<p>dp[i][j] = 从起点走到格子 (i, j) 的路径数。</p>
+
+<p>要到达 (i, j)，最后一步只有两种来源：</p>
+
+<ul>
+  <li>从上方 (i-1, j) 向下走一步；</li>
+  <li>从左方 (i, j-1) 向右走一步。</li>
+</ul>
+
+<p>而且这两类路径互不重叠（最后一步方向不同），所以：</p>
+
+<pre><code class="nohl">dp[i][j] = dp[i-1][j] + dp[i][j-1]</code></pre>
+
+<p><strong>初始化：</strong>第一行所有格子只能一直向右走，所以 dp[0][j] = 1；第一列所有格子只能一直向下走，dp[i][0] = 1。
+  其余格子按转移方程从左往右、从上往下填。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> uniquePaths(<span class="kw">int</span> m, <span class="kw">int</span> n) {
+        <span class="cm">// dp[i][j] 表示走到 (i,j) 的路径数</span>
+        <span class="kw">int</span>[][] dp = <span class="kw">new</span> <span class="kw">int</span>[m][n];
+        <span class="cm">// 初始化第一行、第一列：都只有 1 条路（一直右 / 一直下）</span>
+        <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; n; j++) dp[0][j] = 1;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; m; i++) dp[i][0] = 1;
+        <span class="cm">// 逐行逐列填表</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt; m; i++) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = 1; j &lt; n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        <span class="kw">return</span> dp[m - 1][n - 1];
+    }
+}</code></pre>
+
+<p><strong>滚动数组优化（提一嘴）：</strong>dp[i][j] 只依赖「上一行同一列」和「本行左边」，所以可以用一维数组滚动——每一行从左到右更新时，
+  dp[j] = dp[j]（上一行的旧值，相当于 dp[i-1][j]）+ dp[j-1]（本行已更新的左边）。注意等号右边的 dp[j] 此时还是上一行的：</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> uniquePaths(<span class="kw">int</span> m, <span class="kw">int</span> n) {
+        <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="kw">int</span>[n];
+        <span class="cm">// 第一行全是 1</span>
+        <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; n; j++) dp[j] = 1;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt; m; i++) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = 1; j &lt; n; j++) {
+                <span class="cm">// dp[j] 左侧是上一轮值(=dp[i-1][j])，右侧 dp[j-1] 已是本行新值</span>
+                dp[j] = dp[j] + dp[j - 1];
+            }
+        }
+        <span class="kw">return</span> dp[n - 1];
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(m×n)，空间 O(n)（滚动版）或 O(m×n)（二维版）。m, n ≤ 100，都没问题。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>二维 DP 的遍历顺序要担保「算 dp[i][j] 时，dp[i-1][j] 和 dp[i][j-1] 都已就绪」——
+  标准写法就是「外层行、内层列，从左往右、从上往下」。一旦题目变成「有障碍物」（力扣 63），
+  只要把 obstacleGrid[i][j]==1 的格子 dp 置 0 即可，转移方程不变。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>不同路径 II（力扣 63，中等）</strong>——与本题共用「dp[i][j] = dp[i-1][j] + dp[i][j-1]」的二维填表；差异在网格里出现障碍物，障碍格不可达（提示：初始化和填表时遇到 obstacleGrid[i][j]==1 就把 dp 置 0，其余转移不变）。</li>
+    <li><strong>最小路径和（力扣 64，中等）</strong>——与本题共用「只能右/下走 + 二维 DP」框架；差异在求的是从起点到终点的<strong>路径数字之和最小</strong>而非路径条数（提示：dp[i][j] = min(dp[i-1][j], dp[i][j-1]) + grid[i][j]，注意第一行/列只能单向累加初始化）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">9.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>坑一：dp 含义说不清，导致转移写错。</strong>
+      最常见的是把「前 i 个」和「第 i 个」混用。写之前先用一句话钉死 dp[i] 的含义，
+      并在注释里写下来。含义漂移是 DP bug 的第一来源。</li>
+    <li><strong>坑二：初始化漏边界。</strong>
+      转移用到了 dp[i-2]，就必须保证 dp[0]、dp[1] 都已赋值；二维里第一列/第一行往往要单独初始化成 1 或 0。
+      漏了就会数组越界，或默认 0 把正确值「加没了」。</li>
+    <li><strong>坑三：遍历顺序与转移依赖矛盾。</strong>
+      如果 dp[i] 依赖 dp[i-1]，你却从右往左遍历，那用到的就是已经被覆盖的新值，结果全错。
+      记住铁律：<em>算 dp[i] 时，它依赖的下标必须已经算好</em>。</li>
+    <li><strong>坑四：把「答案」当成「最后一个 dp 值」。</strong>
+      像 9.4 那样，终点在数组之外，答案要单独取 min/max；还有「求最大子数组和」这类题，答案可能不在 dp[n-1] 而是全局最大值。
+      不要想当然 return dp[n-1]，先想清楚答案到底存在哪。</li>
+    <li><strong>坑五：下标从 0 还是 1 开始不统一。</strong>
+      有人 dp[1] 表示第一间，有人 dp[0] 表示第一间。选一种并在全篇保持一致，初始化和循环边界才不会错位。</li>
+  </ul>
+</div>
+
+<div class="warn">
+  <strong>自检清单：</strong>写完一道 DP 题，对着这五步过一遍——状态能说清吗？转移小例子验证过吗？
+  最小子问题初始化了吗？遍历方向对吗？答案取对地方了吗？五条全过，再提交。
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">9.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.【动手题】把「爬楼梯」改成「一次可以爬 1、2、3 级」，状态转移方程该怎么改？写出核心循环。</p>
+  <div class="qa-a">
+    <p>状态不变：dp[i] = 到第 i 级的方法数。最后一步可能从 i-1、i-2、i-3 跨上来，所以
+      <code>dp[i] = dp[i-1] + dp[i-2] + dp[i-3]</code>。初始化要补 dp[0]=1（地面）、dp[1]=1、dp[2]=2，从 i=3 起循环。
+      核心循环：<code>for (int i=3;i&lt;=n;i++) dp[i]=dp[i-1]+dp[i-2]+dp[i-3];</code></p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 打家劫舍里，如果 dp[i] 定义为「前 i 间（下标 0..i-1）的最优」，初始化和转移要怎么写？和本文定义有什么区别？</p>
+  <div class="qa-a">
+    <p>这种「前 i 间」定义下，dp[0]=0（0 间没得偷），dp[1]=nums[0]。转移：
+      <code>dp[i] = max(dp[i-1], dp[i-2] + nums[i-1])</code>。本质是下标整体偏移 1，
+      和本文「dp[i]=考虑下标 0..i」等价，只是边界和循环写法不同。两种都对，关键是<strong>全篇统一</strong>。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.【动手题】力扣 63「不同路径 II」：网格里有障碍物（1 表示障碍，0 表示可走），如何在本章代码上改？</p>
+  <div class="qa-a">
+    <p>转移方程不变。只加两条处理：(1) 初始化时若起点 obstacleGrid[0][0]==1，直接返回 0；
+      (2) 填表时若 obstacleGrid[i][j]==1，令 dp[i][j]=0（不可达）；
+      (3) 第一行/列遇到障碍后，后面全都不可达也要置 0（不能简单全填 1）。其余照常相加。</p>
+  </div>
+</div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「给你一道『到第 n 步 / 前 i 个物品』的计数或最值题，你怎么一步步推出 dp 数组和转移方程？」</em>
+  答案：按五步法——先用人话定义 dp[i] 的含义，再想「dp[i] 由哪几个更小的 dp 组合而来」写出转移，
+  手动初始化最小子问题，确认遍历顺序让依赖项先算好，最后用小例子验证。能脱稿走完这五步，就具备进
+  <a href="ch10.html#s1">专题 10 · DP 进阶</a> 的基础。
+</div>
+
+<div class="navfoot">
+  <a href="ch08.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 08 · 递归与回溯</div></a>
+  <a class="next" href="ch10.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 10 · 动态规划（进阶）：子序列与背包</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 9 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

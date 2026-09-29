@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 4 章 · 嵌入模型与向量数据库 | Spring AI 2.0 学习指南</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="springai">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">AI</span>
+    <span>Spring AI 2.0 学习指南<small>企业级智能应用开发实践</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与环境准备</option>
+    <option value="ch01.html">01 · Spring AI 入门</option>
+    <option value="ch02.html">02 · 提示词与对话</option>
+    <option value="ch03.html">03 · 结构化输出与 Advisors</option>
+    <option value="ch04.html">04 · 嵌入模型与向量数据库</option>
+    <option value="ch05.html">05 · RAG</option>
+    <option value="ch06.html">06 · 记忆与多模型</option>
+    <option value="ch07.html">07 · 工具调用</option>
+    <option value="ch08.html">08 · MCP</option>
+    <option value="ch09.html">09 · 智能体</option>
+    <option value="ch10.html">10 · 可观测性与评估</option>
+    <option value="ch11.html">11 · 综合项目</option>
+    <option value="appendix.html">附录 · 速查手册</option>
+  </select>
+  <a class="tb-link" href="index.html#env">环境准备</a>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>Spring AI 入门</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>提示词与对话</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>结构化输出与 Advisors</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>嵌入模型与向量数据库</span></a>
+    <div class="sb-sub">
+      <a href="#s1">4.1 Embedding 到底在做什么</a>
+      <a href="#s2">4.2 向量模型选型与维度</a>
+      <a href="#s3">4.3 相似度算法与索引</a>
+      <a href="#s4">4.4 EmbeddingModel API</a>
+      <a href="#s5">4.5 向量库选型与配置</a>
+      <a href="#s6">4.6 VectorStore 读写 API</a>
+      <a href="#s7">4.7 元数据过滤</a>
+      <a href="#s8">4.8 完整示例：文档向量索引</a>
+      <a href="#s9">4.9 常见坑排错</a>
+      <a href="#s10">4.10 自测题</a>
+    </div>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>RAG</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>记忆与多模型</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>工具调用</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>MCP</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>智能体</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>可观测性与评估</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>综合项目</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>速查手册 / 排错表</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">Spring AI 指南</a> / 第 4 章</div>
+  <h1><span class="ch-tag">CH 04</span>嵌入模型与向量数据库</h1>
+  <p class="lead">这一章是整门课<strong>唯一涉及数学概念</strong>的章节，但请放心——你不需要会推导公式，只需要建立一个直觉：
+  <em>把文本丢进一个函数，出来一串数字；语义相近的文本，出来的数字串也相近。</em>向量的本质就是「把意思变成坐标」。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">理解向量化与相似检索</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 1 章 + 已启动 pgvector</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">文档向量索引（可检索）</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–5 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">4.1</span>Embedding 到底在做什么：从「关键词匹配」到「语义匹配」</h2>
+
+<p>先看一个经典问题。用户问：<strong>「怎么把钱退回来？」</strong> 而你的知识库里写的是：<strong>「退款申请流程说明」</strong>。这两句话<strong>没有一个字相同</strong>，用传统的关键词检索（MySQL 的 <code>LIKE '%退款%'</code> 或 Elasticsearch 的倒排索引）都匹配不到。但人一眼就知道它们讲的是同一件事。</p>
+
+<p>Embedding（嵌入）就是把这种「人知道但机器不知道」的语义关系，变成机器能算的数字关系：</p>
+
+<div class="filetree">"怎么把钱退回来？"      ──▶ [0.021, -0.153, 0.887, ... ]   ← 1536 个浮点数
+"退款申请流程说明"        ──▶ [0.019, -0.148, 0.891, ... ]   ← 与上面非常接近！
+"如何配置数据库连接"      ──▶ [-0.611, 0.327, -0.045, ... ]  ← 与上面差很远
+
+             语义相似度 = 两个向量之间的距离（越近越相似）</div>
+
+<div class="note">
+  <strong>向量的每一维代表什么？</strong>没有任何一维能被单独解释成「情绪」「主题」。
+  它们是模型在大量语料上训练出来的<strong>抽象特征空间</strong>。
+  你只需要知道两件事：① <strong>维度必须和模型严格一致</strong>（换模型就得重新灌数据）；
+  ② <strong>同一个模型</strong>生成的向量才能互相比较（用 A 模型灌库、B 模型查询，结果全是噪音）。
+</div>
+
+<h3>为什么这决定了 RAG 的上限</h3>
+
+<p>第 5 章的 RAG 效果好不好，<strong>80% 取决于本节这一步</strong>。检索错了，后面的大模型再强也只能基于错误的资料胡说八道。
+所以本章不是「预备知识」，而是整个 RAG 的地基。</p>
+
+<h2 id="s2"><span class="h2-num">4.2</span>向量模型选型与维度对照</h2>
+
+<table>
+  <thead><tr><th style="width:230px">模型</th><th style="width:110px">维度</th><th style="width:120px">部署方式</th><th>特点与建议</th></tr></thead>
+  <tbody>
+    <tr><td><code>text-embedding-3-small</code></td><td>1536</td><td>OpenAI API</td><td>便宜、够用，<strong>课程默认</strong>（但需网络可达）</td></tr>
+    <tr><td><code>text-embedding-3-large</code></td><td>3072</td><td>OpenAI API</td><td>效果更好，成本和存储翻倍，中文场景提升有限</td></tr>
+    <tr><td><code>text-embedding-v3</code>（通义）</td><td>1024</td><td>DashScope API</td><td>国内可用性好，中文效果不错，<strong>推荐国内同学使用</strong></td></tr>
+    <tr><td><code>embedding-3</code>（智谱）</td><td>2048</td><td>API</td><td>国内可选，维度可自定义</td></tr>
+    <tr><td><code>nomic-embed-text</code></td><td>768</td><td>Ollama 本地</td><td><strong>完全离线、免费、中文尚可</strong>，教学/内网首选</td></tr>
+    <tr><td><code>BAAI/bge-large-zh-v1.5</code></td><td>1024</td><td>本地（ONNX/Transformers）</td><td>中文效果优秀，需要本地推理环境</td></tr>
+    <tr><td><code>BAAI/bge-m3</code></td><td>1024</td><td>本地 / 服务化</td><td>多语言 + 长文本，检索质量高，资源占用大</td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>三个必须记住的铁律：</strong>
+  <ol style="margin-bottom:0">
+    <li><strong>灌库和查询必须用同一个模型</strong>。换了模型，旧向量全部作废，必须整库重灌。这是 RAG 项目最常见的「换模型后检索全废」事故。</li>
+    <li><strong>建表时的维度必须等于模型输出维度</strong>。用 1536 建表却灌 1024 维向量，直接插入报错。</li>
+    <li><strong>dimensions 参数若被模型支持（如 text-embedding-3 系列可截断到 512/1024）</strong>，可以省存储、提速，但会略微损失精度。<strong>降维后同样要统一</strong>。</li>
+  </ol>
+</div>
+
+<h2 id="s3"><span class="h2-num">4.3</span>相似度算法与索引类型</h2>
+
+<h3>三种距离度量</h3>
+
+<table>
+  <thead><tr><th style="width:190px">算法</th><th style="width:170px">Spring AI 枚举</th><th>直觉理解</th><th style="width:130px">适用</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>余弦距离</strong></td>
+      <td><code>COSINE_DISTANCE</code></td>
+      <td>只看<strong>方向</strong>，忽略长度。文本检索的标准选择。</td>
+      <td>✅ <strong>默认用这个</strong></td>
+    </tr>
+    <tr>
+      <td>欧氏距离</td>
+      <td><code>EUCLIDEAN_DISTANCE</code></td>
+      <td>看<strong>绝对位置</strong>的远近。受向量长度影响大。</td>
+      <td>图像/数值向量</td>
+    </tr>
+    <tr>
+      <td>内积</td>
+      <td><code>NEGATIVE_INNER_PRODUCT</code></td>
+      <td>方向 + 长度。适合「长度本身有含义」的场景。</td>
+      <td>推荐系统</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>为什么文本检索几乎都用余弦？</strong>因为文本向量经过归一化，长度不携带语义信息，
+  用余弦可以避免「长文本天然距离更远」的偏差。选 COSINE 是最省心的默认值。
+</div>
+
+<h3>索引类型：为什么需要它</h3>
+
+<p>假设库里有 100 万条向量。用户查询一次，要对 100 万条逐一算余弦距离——这叫<strong>暴力检索（Flat / 精确检索）</strong>，准确率 100% 但慢得无法接受。</p>
+
+<p><strong>近似最近邻（ANN）</strong>索引通过牺牲一点点召回率，把复杂度从 O(n) 降到接近 O(log n)：</p>
+
+<table>
+  <thead><tr><th style="width:150px">索引类型</th><th>原理（一句话）</th><th style="width:150px">适用规模</th><th>调参要点</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>HNSW</code></td>
+      <td>构建多层「高速公路 + 小路」的图，查询时从高速逐层下降</td>
+      <td>10 万 ~ 千万级</td>
+      <td><code>m</code>（每节点连边数，默认 16）、<code>ef_construction</code>（构建精度，默认 64）。值越大越准越慢越占内存</td>
+    </tr>
+    <tr>
+      <td><code>IVF_FLAT</code></td>
+      <td>先把向量聚类成 N 个桶，查询时只搜最近的几个桶</td>
+      <td>百万级以上</td>
+      <td><code>nlist</code>（桶数）；查询时用 <code>nprobe</code> 控制搜几个桶</td>
+    </tr>
+    <tr>
+      <td><code>Flat / 暴力</code></td>
+      <td>全量精确计算，不做任何近似</td>
+      <td>&lt; 1 万条</td>
+      <td>无参数，<strong>教学和小数据量下推荐用</strong>（结果可复现，便于调试）</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>课程建议：</strong>数据量小于 1 万条时，<strong>用 Flat 精确检索</strong>。
+  这样你调试 RAG 时看到的「检索不到」问题，一定是「数据/切分/查询」本身的问题，
+  而不是被 ANN 的近似性干扰。等数据量上来，再切到 HNSW，并做一次「精确检索 vs ANN 检索」的召回率对比实验。
+</div>
+
+<h2 id="s4"><span class="h2-num">4.4</span>EmbeddingModel：把文本变成数字的 API</h2>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.embedding.EmbeddingModel;
+<span class="kw">import</span> org.springframework.ai.embedding.EmbeddingResponse;
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> EmbeddingDemoService {
+
+    <span class="kw">private final</span> EmbeddingModel embeddingModel;
+
+    <span class="kw">public</span> EmbeddingDemoService(EmbeddingModel embeddingModel) {
+        <span class="kw">this</span>.embeddingModel = embeddingModel;
+    }
+
+    <span class="cm">/** ① 单条文本 → float[] */</span>
+    <span class="kw">public float</span>[] embedOne(String text) {
+        <span class="kw">float</span>[] vector = embeddingModel.embed(text);
+        System.out.println(<span class="st">"维度 = "</span> + vector.length);   <span class="cm">// 1536 / 1024 / 768 …</span>
+        <span class="kw">return</span> vector;
+    }
+
+    <span class="cm">/** ② 批量 → 一次网络往返处理多条，比循环单条快得多（务必用这个） */</span>
+    <span class="kw">public</span> EmbeddingResponse embedBatch(List&lt;String&gt; texts) {
+        <span class="cm">// 注意：多数厂商单次批量上限为 10~100 条，超了要自己分片</span>
+        <span class="kw">return</span> embeddingModel.embedForResponse(texts);
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * ③ 手写一个"语义相似度比较器"，用来验证向量到底有没有用。</span>
+<span class="cm">     * 这是本章最重要的一个实验，强烈建议自己跑一遍。</span>
+<span class="cm">     */</span>
+    <span class="kw">public void</span> compare() {
+        String query = <span class="st">"怎么把钱退回来"</span>;
+        List&lt;String&gt; candidates = List.of(
+                <span class="st">"退款申请流程说明"</span>,       <span class="cm">// 语义相似，应排第 1</span>
+                <span class="st">"售后服务中心电话"</span>,       <span class="cm">// 弱相关</span>
+                <span class="st">"如何配置数据库连接池"</span>     <span class="cm">// 完全不相关</span>
+        );
+
+        <span class="kw">float</span>[] q = embeddingModel.embed(query);
+
+        <span class="kw">for</span> (String c : candidates) {
+            <span class="kw">float</span>[] v = embeddingModel.embed(c);
+            <span class="cm">// 余弦相似度 = 点积 / (模长乘积)，取值 [-1, 1]，越接近 1 越相似</span>
+            <span class="kw">double</span> cos = cosine(q, v);
+            System.out.printf(<span class="st">"%.4f  %s%n"</span>, cos, c);
+        }
+        <span class="cm">// 期望看到：退款申请流程说明 的分数明显最高（通常 0.75 以上）</span>
+    }
+
+    <span class="kw">private double</span> cosine(<span class="kw">float</span>[] a, <span class="kw">float</span>[] b) {
+        <span class="kw">double</span> dot = 0, na = 0, nb = 0;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; a.length; i++) {
+            dot += a[i] * b[i];
+            na  += a[i] * a[i];
+            nb  += b[i] * b[i];
+        }
+        <span class="kw">return</span> dot / (Math.sqrt(na) * Math.sqrt(nb));
+    }
+}</code></pre>
+
+<div class="note">
+  <strong>两个工程细节，很多人栽在这里：</strong>
+  ① <strong>批量一定要用 <code>embedForResponse</code></strong>。循环调用单条接口灌 1 万篇文档，会被限流且慢 10 倍以上。
+  ② <strong>注意各厂商的批量上限</strong>。OpenAI 单次最多 2048 条但受 Token 总量限制；通义 <code>text-embedding-v3</code> 单次上限较小。
+  灌库时务必自己分片，例如每 10 条一批。
+</div>
+
+<h2 id="s5"><span class="h2-num">4.5</span>向量数据库选型与配置</h2>
+
+<table>
+  <thead><tr><th style="width:170px">方案</th><th>优势</th><th>劣势</th><th style="width:150px">课程定位</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>pgvector</strong><br><span class="pill green">推荐入门</span></td>
+      <td>复用已有 PostgreSQL，运维成本极低；支持 SQL + 向量混合查询；支持元数据过滤与事务</td>
+      <td>千万级以上性能不如专用向量库</td>
+      <td>第 4、5、11 章的主用方案</td>
+    </tr>
+    <tr>
+      <td><strong>Milvus</strong></td>
+      <td>专为向量设计，十亿级规模，索引类型丰富，分布式可扩展</td>
+      <td>组件多（etcd + minio），资源占用大，运维复杂</td>
+      <td>用于理解「专用向量库」的差异</td>
+    </tr>
+    <tr>
+      <td>Redis（RedisSearch）</td>
+      <td>已有 Redis 就能用，速度快，适合做缓存层</td>
+      <td>持久化与大规模能力弱于前两者</td>
+      <td>延伸阅读</td>
+    </tr>
+    <tr>
+      <td>Elasticsearch / OpenSearch</td>
+      <td>可与 BM25 关键词检索做混合检索（Hybrid Search）</td>
+      <td>向量能力相对弱，集群重</td>
+      <td>混合检索章节提及</td>
+    </tr>
+    <tr>
+      <td>SimpleVectorStore（内存）</td>
+      <td>零依赖，写到内存里，启动即用</td>
+      <td>重启即丢，无法扩展</td>
+      <td>写单元测试时非常好用</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>pgvector 依赖与配置</h3>
+
+<pre><code><span class="cm">&lt;!-- pom.xml：pgvector 的 Spring AI starter（注意它会传递引入 postgresql 驱动） --&gt;</span>
+&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.ai&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-ai-starter-vector-store-pgvector&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+
+<pre><code><span class="cm"># application.yml —— pgvector 完整配置（每一项都有注释）</span>
+spring:
+  datasource:                              <span class="cm"># ★ VectorStore 用的就是这个数据源</span>
+    url: jdbc:postgresql://localhost:5432/vectordb
+    username: ai
+    password: ai123456
+    driver-class-name: org.postgresql.Driver
+
+  ai:
+    vectorstore:
+      pgvector:
+        <span class="cm"># 是否自动建表 / 建扩展。首次启动 true，后续可设 false 加快启动</span>
+        initialize-schema: true
+        <span class="cm"># 表名。默认为 vector_store，改这里要同步改 </span>
+        table-name: vector_store
+        <span class="cm"># 索引类型：HNSW（推荐）/ IVFFlat / NONE（精确检索）</span>
+        index-type: HNSW
+        <span class="cm"># 距离类型，必须与灌库时一致</span>
+        distance-type: COSINE_DISTANCE
+        <span class="cm"># ★★★ 维度必须等于 embedding 模型的输出维度，写错必报错</span>
+        dimensions: 1536
+        <span class="cm"># 单次批量写入上限，文档多时自动分批</span>
+        max-document-batch-size: 10000
+        <span class="cm"># 搜索时默认返回条数（可被 SearchRequest 覆盖）</span>
+        <span class="cm"># 若使用外部已建好的库，可关掉自动初始化：</span>
+        <span class="cm"># schema-validation: true</span>
+      <span class="cm"># 同时启用了 OpenAI embedding 时，会自动用 OpenAI 生成向量</span>
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: https://api.openai.com         <span class="cm"># embedding 建议用 OpenAI 或通义，DeepSeek 无此能力</span>
+      embedding:
+        options:
+          model: text-embedding-3-small        <span class="cm"># 输出 1536 维，与上面 dimensions 对应</span></code></pre>
+
+<div class="pit">
+  <strong>维度不匹配的报错长这样：</strong>
+  <code>ERROR: expected 1536 dimensions, not 1024</code>（pgvector）或
+  <code>Collection schema dimension mismatch</code>（Milvus）。
+  看到这个错误，不要改代码，先检查三处是否一致：<strong>建表维度、模型的输出维度、yml 里的 dimensions</strong>。
+</div>
+
+<h3>Milvus 配置（做对比实验时用）</h3>
+
+<pre><code><span class="cm">&lt;!-- 依赖：与 pgvector 可以同时存在，但要靠 @Qualifier 或 spring.ai.vectorstore.type 指定主用 --&gt;</span>
+&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.ai&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-ai-starter-vector-store-milvus&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+
+<pre><code>spring:
+  ai:
+    vectorstore:
+      milvus:
+        client:
+          host: localhost
+          port: 19530
+          <span class="cm"># 用户名密码（未开启鉴权可留空）</span>
+          username: root
+          password: milvus
+        database-name: default
+        collection-name: vector_store
+        <span class="cm"># ★ 同样必须与 embedding 维度一致</span>
+        embedding-dimension: 1536
+        <span class="cm"># 索引类型：IVF_FLAT / HNSW / FLAT</span>
+        index-type: IVF_FLAT
+        <span class="cm"># 距离度量：COSINE / L2 / IP</span>
+        metric-type: COSINE
+        <span class="cm"># 是否自动创建 collection</span>
+        initialize-schema: true</code></pre>
+
+<div class="note">
+  <strong>同时配置两个向量库怎么办？</strong>Spring AI 会注册多个 <code>VectorStore</code> bean，
+  按类型注入会歧义。解决办法：① 在需要的地方加 <code>@Qualifier("pgVectorStore")</code>；
+  ② 或者在 yml 里关闭自动装配（<code>spring.ai.vectorstore.<type>.enabled: false</code>），
+  再在配置类里手动 new。第 11 章会给出「主库 + 备库」的完整写法。
+</div>
+
+<h2 id="s6"><span class="h2-num">4.6</span>VectorStore：写入、删除、检索</h2>
+
+<h3>Document 与 metadata</h3>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.document.Document;
+
+<span class="cm">// Document = 文本内容 + 元数据 + 向量（向量由 VectorStore 自动生成，你不用管）</span>
+Document doc = <span class="kw">new</span> Document(
+        <span class="st">"退款申请需在订单完成后 7 天内提交，超期需联系客服人工审核。"</span>,   <span class="cm">// ① content：会被向量化的文本</span>
+        Map.of(                                                     <span class="cm">// ② metadata：不会向量化，但可用来过滤</span>
+                <span class="st">"source"</span>, <span class="st">"refund-policy.pdf"</span>,
+                <span class="st">"page"</span>, 3,
+                <span class="st">"category"</span>, <span class="st">"售后"</span>,
+                <span class="st">"version"</span>, <span class="st">"v2"</span>
+        )
+);
+
+<span class="cm">// 也可以自己生成文档 ID（默认是随机 UUID）</span>
+Document withId = <span class="kw">new</span> Document(
+        <span class="st">"doc-001"</span>,                  <span class="cm">// 显式指定 id，便于幂等更新</span>
+        <span class="st">"退款申请需在订单完成后 7 天内提交。"</span>,
+        Map.of(<span class="st">"category"</span>, <span class="st">"售后"</span>));
+
+<span class="cm">// 读取</span>
+doc.getText();          <span class="cm">// 正文</span>
+doc.getMetadata();      <span class="cm">// 元数据 Map</span>
+doc.getId();            <span class="cm">// id</span>
+doc.getScore();         <span class="cm">// ★ 检索返回的文档会带相似度分数，写入时为 null</span></code></pre>
+
+<h3>写入与删除</h3>
+
+<pre><code><span class="an">@Service</span>
+<span class="kw">public class</span> VectorStoreBasics {
+
+    <span class="kw">private final</span> VectorStore vectorStore;
+
+    <span class="kw">public</span> VectorStoreBasics(VectorStore vectorStore) {
+        <span class="kw">this</span>.vectorStore = vectorStore;
+    }
+
+    <span class="cm">/** 写入：内部会自动调用 EmbeddingModel 生成向量，再批量入库 */</span>
+    <span class="kw">public void</span> add(List&lt;Document&gt; docs) {
+        vectorStore.add(docs);
+        <span class="cm">// 注意：add 是"只增不改"。同一个 id 再 add 一次会怎样？</span>
+        <span class="cm">// 取决于实现：pgvector 用主键冲突会更新（upsert 行为），Milvus 可能抛错。</span>
+        <span class="cm">// 生产上建议：更新前先 delete(ids)，再 add，语义更清晰。</span>
+    }
+
+    <span class="cm">/** 按 id 删除 */</span>
+    <span class="kw">public void</span> deleteByIds(List&lt;String&gt; ids) {
+        vectorStore.delete(ids);
+    }
+
+    <span class="cm">/** 按条件删除：例如删除某个文档来源的全部向量（重建索引时用） */</span>
+    <span class="kw">public void</span> deleteBySource(String source) {
+        vectorStore.delete(<span class="st">"source == '"</span> + source + <span class="st">"'"</span>);
+    }
+
+    <span class="cm">/** 向量库的名字，多库共存时用于区分 */</span>
+    <span class="kw">public</span> String name() {
+        <span class="kw">return</span> vectorStore.getName();
+    }
+}</code></pre>
+
+<h3>检索：SearchRequest 详解（本章最重要的一段）</h3>
+
+<pre><code><span class="kw">import</span> org.springframework.ai.vectorstore.SearchRequest;
+<span class="kw">import</span> org.springframework.ai.vectorstore.VectorStore;
+
+<span class="cm">// 最简写法：默认 topK，无阈值过滤</span>
+List&lt;Document&gt; simple = vectorStore.similaritySearch(<span class="st">"退款要几天"</span>);
+
+<span class="cm">// 完整写法：所有参数都显式控制（推荐）</span>
+SearchRequest request = SearchRequest.builder()
+        .query(<span class="st">"退款要几天"</span>)              <span class="cm">// 查询文本，会被向量化后去比对</span>
+        .topK(5)                              <span class="cm">// 返回最相似的 5 条</span>
+        .similarityThreshold(0.5)             <span class="cm">// ★ 相似度低于 0.5 的直接丢弃（余弦下 0.5 约等于"弱相关"）</span>
+        .filterExpression(<span class="st">"category == '售后'"</span>)  <span class="cm">// 元数据过滤，见 4.7</span>
+        .build();
+
+List&lt;Document&gt; docs = vectorStore.similaritySearch(request);
+
+<span class="cm">for</span> (Document d : docs) {
+    System.out.printf(<span class="st">"分数=%.4f  来源=%s  内容=%s%n"</span>,
+            d.getScore(), d.getMetadata().get(<span class="st">"source"</span>), d.getText());
+}</code></pre>
+
+<table>
+  <thead><tr><th style="width:230px">参数</th><th style="width:110px">默认</th><th>怎么调</th></tr></thead>
+  <tbody>
+    <tr><td><code>topK</code></td><td>实现相关（常为 4~10）</td><td>太小会漏（检索不到关键资料），太大会引入噪音并浪费 Token。中文知识库建议 <strong>4~8</strong> 起步，用第 10 章的评测集调优</td></tr>
+    <tr><td><code>similarityThreshold</code></td><td>0.0（不过滤）</td><td><strong>强烈建议设 0.5~0.7</strong>。不设阈值的后果是：无论问什么，都会返回 topK 条「最像的」，哪怕它们完全不相关，模型就会基于垃圾资料胡说</td></tr>
+    <tr><td><code>filterExpression</code></td><td>无</td><td>用元数据缩小检索范围，能显著提升准确率（见 4.7）</td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>别迷信分数绝对值。</strong>不同模型、不同距离算法算出的分数不可直接比较。
+  正确做法是：在你自己的数据上跑几十个查询，观察「正确文档的分数分布」，再决定阈值。
+  这个动作第 10 章会系统化。
+</div>
+
+<h2 id="s7"><span class="h2-num">4.7</span>元数据过滤：把检索范围先缩小，再算相似度</h2>
+
+<p>这是提升 RAG 准确率<strong>性价比最高的一招</strong>。举例：公司有 5 个部门的知识库，用户是财务部的，问「报销标准是多少」。
+如果不加过滤，向量检索会在全公司 10 万条文档里找，很可能把销售部的差旅标准捞出来——语义上极其相似，但答案是错的。</p>
+
+<pre><code><span class="cm">// ---------- 支持的运算符（Spring AI 的过滤表达式 DSL）----------</span>
+<span class="cm">// 比较：  ==  !=  &gt;  &gt;=  &lt;  &lt;=</span>
+<span class="cm">// 逻辑：  and  or  ( )</span>
+<span class="cm">// 集合：  in</span>
+
+<span class="cm">// 精确匹配</span>
+<span class="st">"category == '售后'"</span>
+
+<span class="cm">// 数值比较（注意：数值型元数据不要加引号）</span>
+<span class="st">"page &gt;= 10"</span>
+
+<span class="cm">// 组合条件</span>
+<span class="st">"category == '售后' and version == 'v2'"</span>
+
+<span class="cm">// 集合包含</span>
+<span class="st">"source in ['refund-policy.pdf', 'aftersale.pdf']"</span>
+
+<span class="cm">// 实际用法</span>
+SearchRequest req = SearchRequest.builder()
+        .query(<span class="st">"报销标准是多少"</span>)
+        .topK(5)
+        .similarityThreshold(0.5)
+        .filterExpression(<span class="st">"dept == '财务部' and docType == '制度'"</span>)
+        .build();</code></pre>
+
+<div class="tip">
+  <strong>元数据设计决策，请在灌库前就想清楚。</strong>建议至少带上这几个字段：
+  <code>source</code>（文件路径）、<code>page</code>（页码，用于引用溯源）、<code>docType</code>（制度/手册/FAQ）、
+  <code>dept</code> 或 <code>tenantId</code>（多租户隔离，<strong>强烈建议</strong>）、<code>updatedAt</code>（用于时效性过滤）、
+  <code>version</code>（知识库版本）。<br>
+  一旦灌了几十万条数据再想补字段，就要整库重灌——这个坑本课程的学员踩过太多次了。
+</div>
+
+<div class="pit">
+  <strong>过滤语法易错点：</strong>
+  <ol style="margin-bottom:0">
+    <li>字符串<strong>必须用单引号</strong>，双引号会解析失败。</li>
+    <li>元数据字段值的类型要稳定。同一个字段有时写数字 3、有时写字符串 "3"，过滤时会漏结果。</li>
+    <li>过滤条件的字段如果是 <code>null</code> 或缺省，<code>==</code> 不会匹配到它（不是 SQL 的三值逻辑，各实现略有差异，建议灌库时给所有文档补齐元数据）。</li>
+  </ol>
+</div>
+
+<h2 id="s8"><span class="h2-num">4.8</span>完整示例：文档向量索引服务</h2>
+
+<p>目标：一个能「灌库 + 检索 + 统计」的最小可用服务。<strong>本节的代码第 5 章会直接复用</strong>。</p>
+
+<div class="filetree"><span class="dir">src/main/java/com/example/springai/ch04/</span>
+├── <span class="dir">dto/</span>
+│   ├── IndexRequest.java           <span class="desc"># 入参：文档标题、正文、来源、分类</span>
+│   └── SearchResult.java           <span class="desc"># 出参：内容 + 分数 + 来源</span>
+├── DocumentIndexService.java       <span class="desc"># 灌库 + 删除 + 重建</span>
+├── VectorSearchService.java        <span class="desc"># 检索（含阈值、过滤、格式化）</span>
+└── VectorApiController.java        <span class="desc"># HTTP 接口</span></div>
+
+<h3>① 灌库服务</h3>
+
+<pre><code><span class="kw">package</span> com.example.springai.ch04;
+
+<span class="kw">import</span> lombok.extern.slf4j.Slf4j;
+<span class="kw">import</span> org.springframework.ai.document.Document;
+<span class="kw">import</span> org.springframework.ai.vectorstore.VectorStore;
+<span class="kw">import</span> org.springframework.stereotype.Service;
+<span class="kw">import</span> java.time.LocalDateTime;
+<span class="kw">import</span> java.util.List;
+<span class="kw">import</span> java.util.Map;
+
+<span class="an">@Slf4j</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> DocumentIndexService {
+
+    <span class="cm">/** 单批写入条数。太大易触发厂商限流，太小效率低。10~50 是常见区间 */</span>
+    <span class="kw">private static final int</span> BATCH_SIZE = 20;
+
+    <span class="kw">private final</span> VectorStore vectorStore;
+
+    <span class="kw">public</span> DocumentIndexService(VectorStore vectorStore) {
+        <span class="kw">this</span>.vectorStore = vectorStore;
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 把一批文本（已切分好的片段）灌入向量库。</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param source 来源标识（如文件路径），用于后续按来源删除/过滤</span>
+<span class="cm">     * @param chunks 已切分的文本片段，每个片段会成为一条向量</span>
+<span class="cm">     */</span>
+    <span class="kw">public int</span> index(String source, String category, List&lt;String&gt; chunks) {
+        <span class="cm">// ★ 幂等：先删掉这个来源的旧数据，避免重复灌导致结果重复</span>
+        <span class="cm">//   这是"重建索引"最常见的做法</span>
+        deleteBySource(source);
+
+        <span class="kw">int</span> seq = 0;
+        <span class="kw">int</span> total = 0;
+
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; chunks.size(); i += BATCH_SIZE) {
+            List&lt;String&gt; batch = chunks.subList(i, Math.min(i + BATCH_SIZE, chunks.size()));
+
+            List&lt;Document&gt; docs = batch.stream()
+                    .map(text -&gt; <span class="kw">new</span> Document(text, buildMetadata(source, category, chunks.indexOf(text))))
+                    .toList();
+
+            vectorStore.add(docs);          <span class="cm">// 内部自动批量向量化 + 入库</span>
+            total += docs.size();
+            log.info(<span class="st">"已灌入 {}/{} 条"</span>, total, chunks.size());
+        }
+        <span class="kw">return</span> total;
+    }
+
+    <span class="cm">/** 元数据必须在灌库时一次性写全，后面补字段要整库重灌 */</span>
+    <span class="kw">private</span> Map&lt;String, Object&gt; buildMetadata(String source, String category, <span class="kw">int</span> chunkIndex) {
+        <span class="kw">return</span> Map.of(
+                <span class="st">"source"</span>,      source,
+                <span class="st">"category"</span>,    category,
+                <span class="st">"chunkIndex"</span>,  chunkIndex,
+                <span class="cm">// 注意：pgvector 的 JSON 元数据对 LocalDateTime 支持不一，</span>
+                <span class="cm">// 统一转成字符串更稳妥</span>
+                <span class="st">"indexedAt"</span>,   LocalDateTime.now().toString()
+        );
+    }
+
+    <span class="cm">/** 按来源删除：重建索引时先调它 */</span>
+    <span class="kw">public void</span> deleteBySource(String source) {
+        <span class="kw">try</span> {
+            vectorStore.delete(<span class="st">"source == '"</span> + source + <span class="st">"'"</span>);
+        } <span class="kw">catch</span> (Exception e) {
+            <span class="cm">// 表为空或字段不存在时可能抛异常，降级为打日志，不阻断主流程</span>
+            log.debug(<span class="st">"按来源删除失败（可能是首次灌库）：{}"</span>, e.getMessage());
+        }
+    }
+}</code></pre>
+
+<h3>② 检索服务</h3>
+
+<pre><code><span class="an">@Slf4j</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> VectorSearchService {
+
+    <span class="kw">private final</span> VectorStore vectorStore;
+
+    <span class="kw">public</span> VectorSearchService(VectorStore vectorStore) {
+        <span class="kw">this</span>.vectorStore = vectorStore;
+    }
+
+    <span class="cm">/**</span>
+<span class="cm">     * 语义检索。</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param query     用户问题</span>
+<span class="cm">     * @param topK      返回条数</span>
+<span class="cm">     * @param threshold 相似度阈值，低于它的结果丢弃</span>
+<span class="cm">     * @param category  分类过滤，可为 null</span>
+<span class="cm">     */</span>
+    <span class="kw">public</span> List&lt;SearchResult&gt; search(String query, <span class="kw">int</span> topK,
+                                      <span class="kw">double</span> threshold, String category) {
+
+        <span class="cm">// 过滤表达式按需拼接。注意：字符串值必须单引号</span>
+        String filter = (category == <span class="kw">null</span> || category.isBlank())
+                ? <span class="kw">null</span>
+                : <span class="st">"category == '"</span> + category + <span class="st">"'"</span>;
+
+        <span class="kw">var</span> builder = SearchRequest.builder()
+                .query(query)
+                .topK(topK)
+                .similarityThreshold(threshold);
+        <span class="kw">if</span> (filter != <span class="kw">null</span>) {
+            builder.filterExpression(filter);
+        }
+
+        List&lt;Document&gt; docs = vectorStore.similaritySearch(builder.build());
+        log.info(<span class="st">"检索「{}」命中 {} 条"</span>, query, docs.size());
+
+        <span class="cm">// 转成对外的 DTO，不要把 Document 直接暴露给前端（会带上内部元数据）</span>
+        <span class="kw">return</span> docs.stream()
+                .map(d -&gt; <span class="kw">new</span> SearchResult(
+                        d.getText(),
+                        d.getScore(),
+                        String.valueOf(d.getMetadata().get(<span class="st">"source"</span>)),
+                        String.valueOf(d.getMetadata().get(<span class="st">"category"</span>))))
+                .toList();
+    }
+}</code></pre>
+
+<h3>③ HTTP 接口与验证</h3>
+
+<pre><code><span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/v1/vector"</span>)
+<span class="kw">public class</span> VectorApiController {
+
+    <span class="kw">private final</span> DocumentIndexService indexService;
+    <span class="kw">private final</span> VectorSearchService searchService;
+
+    <span class="kw">public</span> VectorApiController(DocumentIndexService i, VectorSearchService s) {
+        <span class="kw">this</span>.indexService = i;
+        <span class="kw">this</span>.searchService = s;
+    }
+
+    <span class="cm">/** 灌库：先手工传几段文本，验证链路 */</span>
+    <span class="an">@PostMapping</span>(<span class="st">"/index"</span>)
+    <span class="kw">public</span> Map&lt;String, Object&gt; index(<span class="an">@RequestBody</span> IndexRequest req) {
+        <span class="kw">int</span> n = indexService.index(req.source(), req.category(), req.chunks());
+        <span class="kw">return</span> Map.of(<span class="st">"indexed"</span>, n, <span class="st">"source"</span>, req.source());
+    }
+
+    <span class="cm">/** 检索 */</span>
+    <span class="an">@GetMapping</span>(<span class="st">"/search"</span>)
+    <span class="kw">public</span> List&lt;SearchResult&gt; search(<span class="an">@RequestParam</span> String q,
+                                   <span class="an">@RequestParam</span>(defaultValue = <span class="st">"5"</span>) <span class="kw">int</span> topK,
+                                   <span class="an">@RequestParam</span>(defaultValue = <span class="st">"0.5"</span>) <span class="kw">double</span> threshold,
+                                   <span class="an">@RequestParam</span>(required = <span class="kw">false</span>) String category) {
+        <span class="kw">return</span> searchService.search(q, topK, threshold, category);
+    }
+
+    <span class="kw">public record</span> IndexRequest(String source, String category, List&lt;String&gt; chunks) {}
+    <span class="kw">public record</span> SearchResult(String content, Double score, String source, String category) {}
+}</code></pre>
+
+<p>验证步骤（三条命令走完整个闭环）：</p>
+
+<pre><code><span class="cm"># ① 灌库：三条售后知识</span>
+curl -X POST http://localhost:8080/api/v1/vector/index \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source":"refund-policy.md",
+    "category":"售后",
+    "chunks":[
+      "退款申请需在订单完成后 7 天内提交，超期需联系客服人工审核。",
+      "退款将在审核通过后 3 个工作日内退回原支付账户。",
+      "生鲜类商品一经签收不支持无理由退款。"
+    ]}'
+
+<span class="cm"># ② 灌库：三条技术文档（用来验证"不串味"）</span>
+curl -X POST http://localhost:8080/api/v1/vector/index \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source":"db-guide.md",
+    "category":"技术",
+    "chunks":[
+      "PostgreSQL 连接池建议 max_connections 不超过 200。",
+      "pgvector 的 HNSW 索引构建参数 m 默认为 16。"
+    ]}'
+
+<span class="cm"># ③ 语义检索：故意用"没有一个字相同"的问法</span>
+curl "http://localhost:8080/api/v1/vector/search?q=钱什么时候能到账&topK=3&threshold=0.4"
+
+<span class="cm"># 期望：第一条命中"退款将在审核通过后 3 个工作日内退回原支付账户"</span>
+<span class="cm">#       说明语义检索生效（关键词匹配是绝对做不到的）</span>
+
+<span class="cm"># ④ 加分类过滤，验证元数据过滤生效</span>
+curl "http://localhost:8080/api/v1/vector/search?q=钱什么时候能到账&topK=3&category=技术"
+
+<span class="cm"># 期望：返回结果全部来自 category=技术（很可能为空），</span>
+<span class="cm">#       证明过滤条件真的缩小了检索范围</span></code></pre>
+
+<div class="goal">
+  <strong>第 ③ 步是这个实验的灵魂。</strong>如果它没命中，说明向量模型的中文能力不足（换成
+  <code>text-embedding-v3</code> 或 <code>nomic-embed-text</code> 再试），
+  或者你的阈值设得太高。这一步跑通，第 5 章的 RAG 就是水到渠成。
+</div>
+
+<h2 id="s9"><span class="h2-num">4.9</span>常见坑排错</h2>
+
+<table>
+  <thead><tr><th style="width:340px">现象</th><th style="width:220px">原因</th><th>解决</th></tr></thead>
+  <tbody>
+    <tr><td><code>expected 1536 dimensions, not 1024</code></td><td>建表维度与模型输出维度不一致</td><td>改 yml 的 <code>dimensions</code> 与模型对齐；或换模型</td></tr>
+    <tr><td><code>relation "vector_store" does not exist</code></td><td>建表脚本没执行 / initialize-schema 为 false</td><td>设 <code>initialize-schema: true</code> 并重启；或手工执行 init SQL</td></tr>
+    <tr><td><code>extension "vector" is not available</code></td><td>pgvector 扩展没装（用了普通 postgres 镜像）</td><td>镜像必须用 <code>pgvector/pgvector:pg16</code>，并执行 <code>CREATE EXTENSION vector</code></td></tr>
+    <tr><td>检索结果永远为空</td><td>阈值太高，或查询语言与库内容语言不匹配</td><td>先把 threshold 设 0 看分数分布，再定阈值；确认中英文</td></tr>
+    <tr><td>检索结果重复很多条</td><td>重复灌库（没做幂等删除）</td><td>灌库前先 <code>deleteBySource</code>；或给 Document 指定稳定 id 并 upsert</td></tr>
+    <tr><td>灌库很慢 / 被限流 429</td><td>逐条调用 embedding，或批量太大</td><td>用 <code>add(List)</code> 批量接口，每批 10~50 条，必要时加退避重试</td></tr>
+    <tr><td>元数据过滤报语法错</td><td>字符串没用单引号，或字段类型不一致</td><td>字符串值用单引号；统一元数据类型</td></tr>
+    <tr><td><code>No qualifying bean of type VectorStore</code></td><td>没加 starter，或 datasource 配错</td><td>检查依赖与 <code>spring.datasource</code>；注意 pgvector 走的是标准 datasource</td></tr>
+    <tr><td>Milvus 连不上 / 一直重连</td><td>etcd、minio 没起来，或内存不足</td><td><code>docker compose logs milvus</code> 看日志；先只跑 pgvector</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s10"><span class="h2-num">4.10</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 为什么换了 Embedding 模型之后，整个向量库必须重灌？</p>
+    <div class="qa-a">
+      <p>因为不同模型构建的向量空间<strong>完全不同</strong>。同一个词在模型 A 和模型 B 里的坐标毫无可比性，
+      用 B 的向量去和 A 灌的数据算距离，得到的是噪音而非相似度。
+      另外维度可能不同，schema 层面也直接冲突。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q2. <code>similarityThreshold</code> 不设置会有什么后果？</p>
+    <div class="qa-a">
+      <p>无论用户问什么，都会返回「最相似的 topK 条」——即使这些内容完全不相关。
+      RAG 场景下模型会基于这些垃圾资料强行组织答案，产生幻觉。
+      这是「明明库里没这个知识，模型还是瞎编」的最主要原因之一。建议设 0.5~0.7 起步。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q3. 元数据（metadata）为什么不能等灌完库再补？</p>
+    <div class="qa-a">
+      <p>因为元数据是<strong>随文档一起写入向量库</strong>的，不是独立字段。
+      想给已存在的向量补一个字段，只能读出全部数据、补字段、重新写入——代价等同于整库重灌。
+      所以元数据 schema 必须在第一次灌库前设计好。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q4. 数据量只有 5000 条时，为什么建议先用 Flat（精确）检索？</p>
+    <div class="qa-a">
+      <p>5000 条的全量计算在现代 CPU 上是毫秒级，完全可接受。
+      用精确检索能保证「检索结果 100% 是真实的最近邻」，从而把调试焦点放在
+      <strong>切分质量、查询表述、阈值</strong>上，而不是被 ANN 的近似误差干扰。
+      等数据量上万、或延迟不达标时，再切换到 HNSW 并做召回率对比。</p>
+    </div>
+  </div>
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】写一段代码，把 1000 篇文章标题批量向量化并入库，要求：每批 20 条、失败自动重试 3 次、记录总耗时与成功条数。</p>
+    <div class="qa-a">
+      <p>要点：用 <code>Lists.partition(list, 20)</code> 分片；每片包 <code>try/catch</code>，
+      失败时 <code>Thread.sleep(backoff * attempt)</code> 做指数退避；用 <code>System.currentTimeMillis()</code> 或
+      <code>StopWatch</code> 计时；失败的分片收集起来最后统一重试，避免单条失败导致整批回滚。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能用自己的话说清 Embedding 在做什么，并解释「为什么关键词匹配做不到、语义匹配可以」。</li>
+    <li>能说出维度、距离算法、索引类型三个配置项的作用和相互约束。</li>
+    <li>三个 curl 实验全部通过，特别是「钱什么时候能到账」能命中退款条款。</li>
+    <li>能设计一份合格的元数据 schema（含 source / page / category / tenantId）。</li>
+    <li>知道「换模型必须重灌库」以及「阈值必须调」这两条铁律。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="ch03.html"><div class="dir-label">← 上一章</div><div class="dir-name">第 3 章 · 结构化输出与 Advisors</div></a>
+  <a class="next" href="ch05.html"><div class="dir-label">下一章 →</div><div class="dir-name">第 5 章 · RAG</div></a>
+</div>
+
+<div class="footer">Spring AI 2.0 学习指南 · 第 4 章 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+</main>
+</div>
+<script src="../assets/app.js"></script>
+</body>
+</html>

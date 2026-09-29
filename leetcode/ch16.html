@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 16 · 排序与分治 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link active" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <div class="sb-sub">
+      <a href="#s1">16.1 排序算法全景图</a>
+      <a href="#s2">16.2 Java 内置排序与自定义比较器</a>
+      <a href="#s3">16.3 合并区间：排序预处理（中等）</a>
+      <a href="#s4">16.4 第 K 个最大元素：快速选择（中等）</a>
+      <a href="#s5">16.5 颜色分类：三指针（中等）</a>
+      <a href="#s6">16.6 分治思想：归并与逆序对（选学）</a>
+      <a href="#s7">16.7 本专题常见坑</a>
+      <a href="#s8">16.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 16</div>
+  <h1><span class="ch-tag">专题 16</span>排序与分治</h1>
+  <p class="lead">很多学生觉得「排序我早就会了」——会调 <code>Arrays.sort</code> 不等于会排序题。面试里排序是<strong>前置技能</strong>：
+  合并区间、第 K 大、颜色分类……都先靠「排个序」把无序问题变成有序问题，再在有序结构上做文章。
+  这一章讲三件事：排序算法的<strong>性质地图</strong>（不要求手写，但必须懂性质）、<strong>自定义比较器</strong>（硬技能，坑最多）、以及排序背后的<strong>分治思想</strong>。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">能选对排序、写对比较器；掌握快速选择与三指针两个经典技巧</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 04 二分（快速选择与它同族）；递归基础</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">一张排序性质表 + 可默写的比较器写法 + O(n) 求第 K 大</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">3~4 小时（4 道题 + 巩固练习）</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">16.1</span>排序算法全景图</h2>
+
+<p>先给一张性质表。面试不要求手写这些排序（Java 内置的足够好），但<strong>性质题</strong>（「为什么 Arrays.sort 对对象用归并系而不是快排？」）和<strong>选型题</strong>（「这个场景该用什么排？」）常考：</p>
+
+<table>
+  <thead><tr><th style="width:110px">算法</th><th style="width:110px">平均时间</th><th style="width:120px">最坏时间</th><th style="width:90px">空间</th><th style="width:70px">稳定</th><th>一句话记忆</th></tr></thead>
+  <tbody>
+    <tr><td>冒泡 / 插入 / 选择</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>插入稳定</td><td>小数据、基本有序时插入排序反而快（TimSort 的底层件）</td></tr>
+    <tr><td>归并排序</td><td>O(n log n)</td><td><strong>O(n log n)</strong></td><td>O(n)</td><td><strong>稳定</strong></td><td>稳定且最坏有保障，代价是 O(n) 辅助空间</td></tr>
+    <tr><td>快速排序</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n)</td><td>不稳定</td><td>平均最快、常数小；选基准不好会退化</td></tr>
+    <tr><td>堆排序</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td><td>不稳定</td><td>空间最优；呼应堆专题的优先队列</td></tr>
+    <tr><td>计数 / 桶 / 基数</td><td>O(n + k)</td><td>O(n + k)</td><td>O(k)</td><td>可稳定</td><td>数据范围小（k 小）时的「作弊级」线性排序</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>「稳定」是什么：</strong>值相等的两个元素，排序后<strong>保持原来的先后顺序</strong>。什么时候在乎？多关键字排序——先按成绩排、再按班级排，
+  若第二步是稳定排序，同班级内部仍保持成绩序；不稳定排序会把这个信息搅乱。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">16.2</span>Java 内置排序与自定义比较器</h2>
+
+<p>力扣题里你几乎总要自定义比较器，这节是<strong>默写级</strong>内容：</p>
+
+<pre><code><span class="kw">import</span> java.util.*;
+
+<span class="cm">// 基本类型：只能升序，更快（双轴快排，无装箱）</span>
+<span class="kw">int</span>[] a = {3, 1, 2};
+Arrays.sort(a);                       <span class="cm">// a = [1, 2, 3]</span>
+
+<span class="cm">// 对象数组 / List：TimSort（归并系），稳定</span>
+Integer[] b = {3, 1, 2};
+Arrays.sort(b, (x, y) -&gt; x - y);      <span class="cm">// 升序：小的排前面</span>
+Arrays.sort(b, (x, y) -&gt; y - x);      <span class="cm">// 降序：大的排前面</span>
+
+<span class="cm">// 推荐写法：用 Integer.compare 防溢出（见下）</span>
+Arrays.sort(b, (x, y) -&gt; Integer.compare(x, y));
+
+<span class="cm">// 按二维数组的第 0 列升序，第 0 列相等时按第 1 列降序</span>
+<span class="kw">int</span>[][] intervals = {{1, 3}, {2, 2}};
+Arrays.sort(intervals, (p, q) -&gt; {
+    <span class="kw">if</span> (p[0] != q[0]) <span class="kw">return</span> Integer.compare(p[0], q[0]);
+    <span class="kw">return</span> Integer.compare(q[1], p[1]);   <span class="cm">// 降序：比较顺序反过来</span>
+});</code></pre>
+
+<div class="warn">
+  <strong>溢出坑（高频 WA）：</strong><code>(a, b) -&gt; a - b</code> 在 a、b 一正一负且绝对值大时会溢出——比如
+  a = Integer.MAX_VALUE，b = -1 时 a - b 溢出成负数，比较器反而认为 a 更小，排序结果错乱。
+  <strong>永远用 <code>Integer.compare(a, b)</code></strong>；降序就是 <code>Integer.compare(b, a)</code>。
+</div>
+
+<p>记忆口诀：<strong>比较器返回负数 = 第一个参数排在前面</strong>。升序「小的在前」→ compare(x, y)；降序「大的在前」→ compare(y, x)。</p>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">16.3</span>合并区间：排序预处理（中等，力扣 56）</h2>
+<p><span class="pill orange">中等</span> <span class="pill">核心：排序把无序变有序，问题瞬间变简单</span></p>
+
+<p><strong>题意。</strong>给一组区间，把所有有重叠的合并成一个。比如 [[1,3],[2,6],[8,10],[15,18]] → [[1,6],[8,10],[15,18]]（[1,3] 和 [2,6] 重叠）。</p>
+
+<p><strong>思路推导。</strong>不排序时，判断「哪两个区间重叠」要两两比较，合并后区间还可能和更远的区间重叠，越理越乱。
+<strong>先按左端点排序</strong>，观察排序后会发生什么：所有可能重叠的区间必然<strong>相邻</strong>——因为左端点单调不减，一旦当前区间的左端点大于已合并区间的右端点，
+它和之前所有区间都不可能重叠了。于是问题变成线性的「逐个看、能合就合」：</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span>[][] merge(<span class="kw">int</span>[][] intervals) {
+        <span class="cm">// 第一步：按左端点升序排序——一切的前提</span>
+        Arrays.sort(intervals, (p, q) -&gt; Integer.compare(p[0], q[0]));
+
+        List&lt;<span class="kw">int</span>[]&gt; merged = <span class="kw">new</span> ArrayList&lt;&gt;();
+        <span class="kw">for</span> (<span class="kw">int</span>[] cur : intervals) {
+            <span class="cm">// merged 的最后一个区间与新区间「不相邻重叠」：</span>
+            <span class="cm">// 新区间的左端点落在最后一个区间的右端点之内</span>
+            <span class="kw">if</span> (!merged.isEmpty() &amp;&amp; cur[0] &lt;= merged.get(merged.size() - 1)[1]) {
+                <span class="kw">int</span>[] last = merged.get(merged.size() - 1);
+                last[1] = Math.max(last[1], cur[1]);   <span class="cm">// 取右端点的较大者（可能完全被包含）</span>
+            } <span class="kw">else</span> {
+                merged.add(cur);                        <span class="cm">// 不重叠，开一个新区间</span>
+            }
+        }
+        <span class="kw">return</span> merged.toArray(<span class="kw">new</span> <span class="kw">int</span>[0][]);
+    }
+}</code></pre>
+
+<p>小例子走一遍：[[1,3],[2,6],[8,10]] → 2 ≤ 3 合并成 [1,6] → 8 &gt; 6 开新段 → [[1,6],[8,10]] ✓</p>
+
+<p><strong>复杂度。</strong>时间 O(n log n)（排序主导），空间 O(log n)（排序栈）+ O(n)（结果）。</p>
+
+<div class="tip"><strong>关键点：</strong>「排序让无序问题变相邻问题」是排序类题的通用起手式。合并时右端点必须取 <code>max</code>——因为 [1,10] 和 [2,3] 合并结果是 [1,10] 而不是 [1,3]。</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>插入区间（力扣 57，中等）</strong>——区间已排好序，插入新区间再合并；共用「逐段比较」框架，差异在三分段处理（提示：左边不重叠的直接收，中间重叠的并，右边不重叠的直接收）。</li>
+    <li><strong>用最少数量的箭引爆气球（力扣 452，中等）</strong>——贪心专题 11 的题，但它本质是「数重叠段数」，与本题共享排序 + 右端点比较（提示：箭位置取当前重叠区间的最小右端点）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">16.4</span>数组中的第 K 个最大元素：快速选择（中等，力扣 215）</h2>
+<p><span class="pill orange">中等</span> <span class="pill">核心：只递归一边，把 O(n log n) 砍成平均 O(n)</span></p>
+
+<p><strong>题意。</strong>在无序数组里找第 K 大的元素。比如 [3,2,1,5,6,4]，k=2 → 5。必须 O(n) 或接近，纯排序是 O(n log n)——能过但面试不够分。</p>
+
+<p><strong>思路推导。</strong>回想快排的分区（partition）：选一个基准，把小于它的放左边、大于它的放右边，返回基准的最终下标 p。
+此时<strong>基准已经处在它排序后的正确位置</strong>上。关键观察：如果 p 正好是「第 K 大的位置」（升序下标 n−k），答案就是它；
+如果 p 偏左，答案在右半边；偏右，在左半边——<strong>且只需要递归那一边</strong>。</p>
+
+<p>所以复杂度是 n + n/2 + n/4 + … ≈ 2n = <strong>平均 O(n)</strong>：每轮处理量减半，而排序必须两边都递归。这就是「分治只走一半」与「分治两边都走」的差别。</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> findKthLargest(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+        <span class="kw">int</span> target = nums.length - k;   <span class="cm">// 第 K 大 = 升序数组中下标 n-k 的元素</span>
+        <span class="kw">int</span> lo = 0, hi = nums.length - 1;
+        <span class="kw">while</span> (lo &lt; hi) {
+            <span class="kw">int</span> p = partition(nums, lo, hi);   <span class="cm">// 随机基准分区</span>
+            <span class="kw">if</span> (p == target) <span class="kw">return</span> nums[p];   <span class="cm">// 基准正好落在目标位置</span>
+            <span class="kw">else</span> <span class="kw">if</span> (p &lt; target) lo = p + 1;   <span class="cm">// 目标在右侧，只递归右边</span>
+            <span class="kw">else</span> hi = p - 1;                   <span class="cm">// 目标在左侧，只递归左边</span>
+        }
+        <span class="kw">return</span> nums[lo];
+    }
+
+    <span class="cm">// 随机化基准的分区：把 &lt; pivot 的换到左边，返回 pivot 最终下标</span>
+    <span class="kw">private</span> <span class="kw">int</span> partition(<span class="kw">int</span>[] nums, <span class="kw">int</span> lo, <span class="kw">int</span> hi) {
+        <span class="kw">int</span> r = lo + (<span class="kw">int</span>) (Math.random() * (hi - lo + 1));
+        <span class="kw">int</span> tmp = nums[r]; nums[r] = nums[hi]; nums[hi] = tmp;  <span class="cm">// 基准换到末尾</span>
+        <span class="kw">int</span> pivot = nums[hi];
+        <span class="kw">int</span> i = lo;                                   <span class="cm">// i 左侧全是 &lt; pivot 的</span>
+        <span class="kw">for</span> (<span class="kw">int</span> j = lo; j &lt; hi; j++) {
+            <span class="kw">if</span> (nums[j] &lt; pivot) {                    <span class="cm">// 遇到小的，换到左边</span>
+                tmp = nums[i]; nums[i] = nums[j]; nums[j] = tmp;
+                i++;
+            }
+        }
+        tmp = nums[i]; nums[i] = nums[hi]; nums[hi] = tmp;  <span class="cm">// 基准归位</span>
+        <span class="kw">return</span> i;
+    }
+}</code></pre>
+
+<p><strong>复杂度。</strong>平均时间 O(n)（n + n/2 + n/4 + …），最坏 O(n²)（基准总选到极值——随机化后概率可忽略）；空间 O(1)（迭代写法）。</p>
+
+<div class="tip"><strong>关键点：</strong>随机化不是可选的洁癖——<strong>已排序数组 + 固定取末尾基准 = 每轮只减少一个元素 = O(n²)</strong>，力扣的测试用例里就有这种数据。</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>前 K 个高频元素（力扣 347，中等）</strong>——堆专题 17 的主角，但快速选择同样能做：对「(频次, 数字)」按频次做第 K 大选择（提示：先哈希计数，再对频次数组 partition）。</li>
+    <li><strong>最小的 K 个数（剑指 Offer 40，简单）</strong>——把 target 从 n−k 改成 k−1，同一段代码直接复用（提示：只改一个下标）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">16.5</span>颜色分类：三指针（中等，力扣 75）</h2>
+<p><span class="pill orange">中等</span> <span class="pill">核心：一趟扫描 + O(1) 空间的分区</span></p>
+
+<p><strong>题意。</strong>数组里只有 0、1、2 三种值（红白蓝），<strong>原地</strong>把它们按 0、1、2 排好。要求：一趟扫描 + 常数空间（不许调 sort，不许数 0/1/2 再回填——那是两趟）。</p>
+
+<p><strong>思路推导。</strong>其实就是「三路分区」（荷兰国旗问题）：维护三个指针，把数组划成三段：</p>
+
+<pre><code class="nohl">[  全是 0  |  全是 1（未处理）  |  待定  |  全是 2  ]
+ 0      zero          i         two     n-1</code></pre>
+
+<p>规则：<code>i</code> 是当前扫描位置，<code>zero</code> 的左边全是 0，<code>two</code> 的右边全是 2。</p>
+<ul>
+  <li>nums[i] == 0：和 nums[zero] 交换，zero++、i++（换来的必然是 1，可以直接前进）；</li>
+  <li>nums[i] == 1：正是它该待的段，i++；</li>
+  <li>nums[i] == 2：和 nums[two] 交换，two--，<strong>i 不动</strong>——因为从右边换过来的值还没看过，下一轮继续判断它。</li>
+</ul>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">void</span> sortColors(<span class="kw">int</span>[] nums) {
+        <span class="kw">int</span> zero = 0;                   <span class="cm">// nums[0..zero-1] 全是 0</span>
+        <span class="kw">int</span> two = nums.length - 1;      <span class="cm">// nums[two+1..] 全是 2</span>
+        <span class="kw">int</span> i = 0;                      <span class="cm">// i 是当前待判断的元素</span>
+        <span class="kw">while</span> (i &lt;= two) {
+            <span class="kw">if</span> (nums[i] == 0) {
+                <span class="cm">// 和 zero 位交换：换过来的一定是 1（zero 与 i 之间全是 1），可以 i++</span>
+                <span class="kw">int</span> t = nums[zero]; nums[zero] = nums[i]; nums[i] = t;
+                zero++;
+                i++;
+            } <span class="kw">else</span> <span class="kw">if</span> (nums[i] == 1) {
+                i++;                    <span class="cm">// 1 就在中间段，直接过</span>
+            } <span class="kw">else</span> {
+                <span class="cm">// 和 two 位交换：右边换来的值没看过，i 原地不动再判一次</span>
+                <span class="kw">int</span> t = nums[two]; nums[two] = nums[i]; nums[i] = t;
+                two--;
+            }
+        }
+    }
+}</code></pre>
+
+<p><strong>复杂度。</strong>时间 O(n) 一趟扫描；空间 O(1)。</p>
+
+<div class="tip"><strong>关键点：</strong>「换过来的是谁」决定了 i 动不动。从 zero 换来的一定是 1（那段全被 1 占着），可放心前进；从 two 换来的身份未知，必须原地重判。理解这一句，比背代码有用。</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>移动零（力扣 283，简单）</strong>——专题 01 做过，用本题的三段视角重看它：非零段 / 零段的两路分区（提示：swap 换来的必是 0，两种写法都对）。</li>
+    <li><strong>按奇偶排序数组 II（力扣 922，简单）</strong>——两路分区变体：奇位放奇数、偶位放偶数（提示：两个指针分别找不匹配的位置交换）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">16.6</span>分治思想：归并排序与逆序对（选学）</h2>
+<p><span class="pill">选学</span> <span class="pill">核心：分治三步 + 「合并时顺便计数」</span></p>
+
+<p><strong>分治三步。</strong>把问题切成两半（分）→ 分别解决（治）→ 把两半的结果合并（合）。归并排序是教科书样本：切一半、各自排好、
+<strong>合并两个有序数组</strong>（O(n) 双指针，链表专题的 21 题就是它）。分治的复杂度规律：如果「分」和「合」都是 O(n)，总复杂度 O(n log n)——log n 层 × 每层 O(n)。</p>
+
+<p><strong>逆序对（选学，对应力扣 315 / 剑指 51）。</strong>逆序对 = 满足 i &lt; j 且 nums[i] &gt; nums[j] 的对数，暴力 O(n²)。
+排序后有序数组没有逆序对——所以「边归并边数」：合并左右两个有序半区时，若右半的元素先出队，说明它比左半<strong>所有剩余元素</strong>都小，
+一次性产生「左半剩余元素个数」个逆序对。一次归并顺带完成计数，总复杂度仍是 O(n log n)。</p>
+
+<pre><code><span class="cm">// 逆序对核心片段（完整题见力扣 493 / 剑指 Offer 51）</span>
+<span class="kw">private</span> <span class="kw">long</span> mergeCount(<span class="kw">int</span>[] nums, <span class="kw">int</span>[] tmp, <span class="kw">int</span> lo, <span class="kw">int</span> hi) {
+    <span class="kw">if</span> (lo &gt;= hi) <span class="kw">return</span> 0;                       <span class="cm">// 只剩一个元素，无逆序对</span>
+    <span class="kw">int</span> mid = (lo + hi) / 2;
+    <span class="kw">long</span> cnt = mergeCount(nums, tmp, lo, mid)     <span class="cm">// 分 + 治（左半）</span>
+             + mergeCount(nums, tmp, mid + 1, hi); <span class="cm">// 分 + 治（右半）</span>
+    <span class="cm">// 合并两个有序半区，顺便统计跨越左右的逆序对</span>
+    <span class="kw">int</span> i = lo, j = mid + 1, k = lo;
+    <span class="kw">while</span> (i &lt;= mid &amp;&amp; j &lt;= hi) {
+        <span class="kw">if</span> (nums[i] &lt;= nums[j]) {
+            tmp[k++] = nums[i++];                 <span class="cm">// 左半元素出队，不产生逆序对</span>
+        } <span class="kw">else</span> {
+            cnt += mid - i + 1;                   <span class="cm">// 右半先出队：左半剩余的都和它构成逆序对</span>
+            tmp[k++] = nums[j++];
+        }
+    }
+    <span class="kw">while</span> (i &lt;= mid) tmp[k++] = nums[i++];
+    <span class="kw">while</span> (j &lt;= hi)  tmp[k++] = nums[j++];
+    System.arraycopy(tmp, lo, nums, lo, hi - lo + 1);
+    <span class="kw">return</span> cnt;
+}</code></pre>
+
+<div class="tip"><strong>什么时候用得上：</strong>「统计满足 i &lt; j 且某大小关系的对数」且 n 到 10⁵ 级别时，先想「排序 + 归并计数」或「树状数组/线段树」（见专题 24 的概念介绍）。第一次学只要求看懂「为什么合并时能一次加一串」。</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">16.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul>
+    <li><strong>比较器溢出</strong>：<code>(a, b) -&gt; a - b</code> 在极端值上溢出导致排序错乱（且很难调试出来）。无条件用 <code>Integer.compare(a, b)</code>。</li>
+    <li><strong>快排固定基准</strong>：对已排序 / 大量重复元素的数组，固定取端点会退化 O(n²)。要么随机化，要么三路分区。</li>
+    <li><strong>三指针里 i 前进条件</strong>：和 two 交换后 i 不动（来的元素没判断过）；和 zero 交换后 i 要动（来的一定是 1）。写反了就死循环或漏判。</li>
+    <li><strong>合并区间忘取 max 右端点</strong>：[1,10] 合并 [2,3] 时直接覆盖成 [1,3]，正确是 [1,10]。</li>
+    <li><strong>以为 Arrays.sort(int[]) 能降序</strong>：基本类型重载没有 Comparator 版本；要降序先转 Integer[] 或排完再反转。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">16.8</span>自测题</h2>
+
+<div class="qa"><p class="qa-q">Q1. 为什么快速选择平均 O(n)，而快排是 O(n log n)？两者只差在哪一步？</p>
+<div class="qa-a">差在递归范围：快排两边都要递归（n + 2·n/2 + 4·n/4 + … = n·log n 层每层 n）；快速选择确认目标在哪一边后<strong>只递归一边</strong>（n + n/2 + n/4 + … ≈ 2n）。分区逻辑完全一样。</div></div>
+
+<div class="qa"><p class="qa-q">Q2. 颜色分类里从 two 位置换过来的元素，为什么不能 i++ 直接跳过？</p>
+<div class="qa-a">因为它原本属于「待定区」，值可能是 0、1、2 任何一个，还没被判断过。而从 zero 位置换来的元素一定是 1（zero 和 i 之间的区间被 1 填满），所以可以放心前进。</div></div>
+
+<div class="qa"><p class="qa-q">Q3. 稳定性什么时候真正影响结果？举一个力扣场景。</p>
+<div class="qa-a">多关键字排序：例如按左端点排序区间后希望同端点的按右端点<strong>降序</strong>（某些区间题防包含陷阱）。若第一步排序不稳定，同端点区间的相对顺序被破坏，第二步排序的语义就变了。Java 对对象排序的 TimSort 是稳定的，所以依赖这个性质是安全的。</div></div>
+
+<div class="qa"><p class="qa-q">Q4.【动手题】把 16.4 的快速选择改成返回「最小的 K 个数」（顺序不限），只允许改动一行以内的逻辑。</p>
+<div class="qa-a">把 target 从 nums.length - k 改成 k - 1（第 K 小即升序下标 k-1）。找到后答案就是 nums[0..k-1]。验证：[3,2,1,5,6,4], k=2 → partition 后能返回 1 和 2 的某个排列。</div></div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「拿到一道题，什么时候该想到『先排个序』？」</em>
+  答案：当「无序」是解题的主要障碍时——重叠/相邻判断（合并区间）、求排名相关量（第 K 大，用快速选择）、把两两比较降为相邻比较。
+  排序是 O(n log n) 的投资，换来的是之后每一步都只用看邻居。比较器一律 Integer.compare；随机化是快排系算法的默认动作。
+</div>
+
+<div class="navfoot">
+  <a href="ch15.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 15 · 数学与模拟</div></a>
+  <a class="next" href="ch17.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 17 · 堆（优先队列）</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 16 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

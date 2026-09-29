@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 3 章 · 认识论 II：归纳问题与幻觉的根源 | 哲学 × AI 学习指南</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="philosophy">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">哲</span>
+    <span>哲学 × AI 学习指南<small>把哲学变成工程判断力</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 哲学与 AI 的交界</option>
+    <option value="ch02.html">02 · 认识论 I</option>
+    <option value="ch03.html">03 · 认识论 II</option>
+    <option value="ch04.html">04 · 心灵哲学 I</option>
+    <option value="ch05.html">05 · 心灵哲学 II</option>
+    <option value="ch06.html">06 · 语言与意义</option>
+    <option value="ch07.html">07 · 逻辑与推理边界</option>
+    <option value="ch08.html">08 · 伦理学 I</option>
+    <option value="ch09.html">09 · 伦理学 II</option>
+    <option value="ch10.html">10 · 现象学与具身认知</option>
+    <option value="ch11.html">11 · 落地方法</option>
+    <option value="appendix.html">附录 · 书单与速查</option>
+  </select>
+  <a class="tb-link" href="appendix.html">书单</a>
+  <a class="tb-link" href="ch11.html">落地清单</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>哲学与 AI 的真实交界</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>认识论 I · 知识、信念与不确定性</span></a>
+    <a class="sb-link active" href="ch03.html"><span class="num">3</span><span>认识论 II · 归纳与幻觉的根源</span></a>
+    <div class="sb-sub">
+      <a href="#s1">3.1 休谟的归纳问题</a>
+      <a href="#s2">3.2 归纳为什么无法被证明</a>
+      <a href="#s3">3.3 绿蓝悖论：更狠的一刀</a>
+      <a href="#s4">3.4 波普尔与可证伪性</a>
+      <a href="#s5">3.5 泛化就是归纳</a>
+      <a href="#s6">3.6 分布外为何必然失败</a>
+      <a href="#s7">3.7 幻觉的哲学根源</a>
+      <a href="#s8">3.8 奥卡姆剃刀与模型选择</a>
+      <a href="#s9">3.9 动手练习</a>
+      <a href="#s10">3.10 自测题</a>
+    </div>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>心灵哲学 I · 意识与中文房间</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>心灵哲学 II · 意向性与符号接地</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>语言与意义 · 从维特根斯坦到词向量</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>逻辑与推理的边界</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>伦理学 I · 三大框架与 AI 对齐</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>伦理学 II · 情感陪伴 AI 的伦理</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>现象学与具身认知 · 沉浸与 BCI</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>落地 · 把哲学变成工程决策</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 书单 / 术语 / 映射</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">哲学 × AI 指南</a> / 第 3 章</div>
+  <h1><span class="ch-tag">CH 03</span>认识论 II：归纳问题与幻觉的根源</h1>
+  <p class="lead">上一章讲清了「知道」的判据，这一章讲<strong>「凭什么相信」</strong>。
+  核心结论先给你，它可能是全站最有用的一句话：<strong>机器学习做的是归纳，而归纳在哲学上从来没有被证明过</strong>——
+  它依赖一个无法被验证的假设（「未来会像过去」）。理解这一点，你就能提前预判<strong>模型会在哪里失效</strong>，
+  而不是等事故发生后写复盘。同时，这一章会解释<strong>幻觉为什么删不干净</strong>——不是工程没做好，是目标函数的性质决定的。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">理解泛化的哲学前提与失效点</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 2 章的校准概念</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">一份分布外风险清单</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–5 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">3.1</span>休谟的归纳问题</h2>
+
+<p>1739 年，26 岁的休谟在《人性论》里提出了一个至今没有公认解答的问题。
+它被公认为哲学史上最难的问题之一，而它<strong>恰好是机器学习的理论地基正在漏的那个洞</strong>。</p>
+
+<div class="quote">
+  <p>我们所有的推理都建立在因果关系上；而因果关系的全部知识都来自经验；
+  但经验只告诉我们<em>过去</em>如何，从不能告诉我们<em>未来</em>必然如何。</p>
+  <span class="who">—— 休谟《人性论》第一卷（大意）</span>
+</div>
+
+<p>拆成三步，一步步看它是怎么卡住的：</p>
+
+<ol class="steps">
+  <li>
+    <strong>我们的预测依赖因果规律。</strong>「加热水到 100°C 会沸腾」「下雨水会湿」——
+    你能做任何预测，都是因为假定了某种规律性的连接。
+  </li>
+  <li>
+    <strong>这些规律的知识只能来自经验。</strong>你没有先天地知道水会沸腾，你是<strong>观察</strong>到的。
+  </li>
+  <li>
+    <strong>但经验只覆盖过去。</strong>你观察了一万次水沸腾，这一万次都在过去。
+    你要断言「下一次也会沸腾」，<strong>就必须假定「未来会像过去一样」</strong>。
+  </li>
+</ol>
+
+<p>现在关键的一步来了——<strong>这个假定本身是怎么来的？</strong></p>
+
+<div class="qbox">
+  <span class="qb-t">归纳的循环</span>
+  <p>如果有人问：「你凭什么相信未来会像过去？」</p>
+  <p>你的回答只能是：「因为<strong>一直以来都是这样</strong>。」</p>
+  <p>但这个回答<strong>又是一个从经验出发的归纳推理</strong>——它已经预设了「未来会像过去」，而这一点正是要被证明的东西。</p>
+  <p class="qb-q">用归纳来证明归纳。<strong>这是一个循环论证</strong>。休谟的结论是：归纳没有理性根据，我们对它的信任是一种<strong>心理习惯</strong>，不是理性推论的结果。</p>
+</div>
+
+<h3>罗素的例子：那只被养肥的火鸡</h3>
+
+<p>常被归于罗素的一个例子，能让你一眼看出归纳的脆弱（这个例子常出现在讨论归纳的文献中）：</p>
+
+<div class="qbox">
+  <span class="qb-t">火鸡的归纳</span>
+  <p>一只火鸡被养在农场里。它每天观察：早上 9 点，人类会来喂食。</p>
+  <p>它做了大量观察——第 1 天、第 2 天、第 100 天、第 1000 天，无一例外。它甚至可以算出一个很漂亮的置信区间，
+  统计上非常显著。<strong>它归纳出结论：每天早上 9 点会有食物。</strong></p>
+  <p>然后感恩节到了。早上 9 点来的不是食物。</p>
+  <p class="qb-q">这只火鸡的错误不在于「观察得不够多」——它的样本量很大、规律很稳、统计上无懈可击。
+  它的错误在于<strong>前提</strong>：它假定了「一直如此」意味着「永远如此」，而这个假定<strong>本身就是归纳</strong>。</p>
+</div>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">哲学问题</div>
+    <div class="ttl">归纳没有理性根据</div>
+    <div class="txt">「过去如此 → 未来如此」这一步<strong>无法被理性证明</strong>，它只能作为<strong>假设</strong>被接受。休谟的答案是人类心理习惯。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">AI 里完全同构</div>
+    <div class="ttl">训练分布 → 部署分布</div>
+    <div class="txt">模型在训练集上学到「输入 X 对应输出 Y」，然后假定在部署时也成立。
+    <strong>这个假定在数学上没有保证</strong>，它只是一个假设：<em>部署数据与训练数据同分布</em>。
+    而这个假设通常<strong>既没被检验，也不完全成立</strong>。</div>
+  </div>
+</div>
+
+<div class="warn">
+  <strong>所以「泛化能力」这个说法本身要小心使用。</strong>它听起来像是模型拥有一种「从样本推出规律」的能力，
+  但实际上是<strong>我们在假设分布不变的前提下，观察到的模型在这类分布上的稳定表现</strong>。
+  一旦分布变了，这个「能力」会以远超直觉的速度崩掉——这不是 bug，这是归纳的本性。
+  <br><br>
+  工程含义：<strong>任何泛化性能报告都必须附带说明它在哪些分布变化下失效</strong>。
+  只报一个测试集分数，等于隐藏了全部风险。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">3.2</span>归纳为什么不可能被证明</h2>
+
+<p>你可能会想：「那我们用概率论上来证明它不就行了？」这条路被详细尝试过，卡在两个地方。</p>
+
+<h3>尝试一：用大数定律保证</h3>
+
+<p>有人会说：样本量足够大时，观察频率会趋近真实概率（大数定律），所以归纳可靠。</p>
+
+<div class="pit">
+  <strong>这里有两个问题。</strong>
+  <br><br>
+  <strong>① 大数定律本身也是从归纳中来的。</strong>它描述的是「如果过程满足某些条件，那么频率会收敛」——
+  而我们怎么知道未来会满足这些条件？又是归纳。
+  <br><br>
+  <strong>② 更致命的是：它管的是「频率」，管不了「性质」。</strong>火鸡的观察频率收敛得很好，
+  但它对「明天会发生什么<em>类型</em>的事」没有任何保证。
+  大数定律能告诉你「历史上 9 点喂食的比例」，不能告诉你「明天 9 点是否属于喂食这一类事件」。
+</div>
+
+<h3>尝试二：假设「自然齐一性」</h3>
+
+<p>这是密尔等人的思路：我们<strong>预设一条公理</strong>——「自然过程是齐一的」，
+即未来会遵循与过去相同的规律。有了这条公理，归纳就有效了。</p>
+
+<p><strong>但这只是把问题挪了个位置</strong>：这条公理本身怎么来的？还是从经验归纳来的。
+而且它是一个非常强的假设——它等于说「宇宙中不存在会改变规律的时刻」，
+这是一个我们无法从有限观察中证实的全称命题。</p>
+
+<div class="note">
+  <strong>休谟问题的真正难点在于：它不是「暂时没解决」，而是「原则上无法用理性解决」。</strong>
+  任何试图为归纳提供理性辩护的论证，都会用到归纳本身（或者用到比归纳更强的假设）。
+  这就是为什么它会成为哲学史上少数几个「公认无解」的问题之一。
+  <br><br>
+  <strong>对你的意义：</strong>既然归纳没有理性根据，那么<strong>模型的可靠性也不可能被证明</strong>，
+  只能被<strong>持续监测</strong>。这直接推出了工程上的一个硬要求：
+  <strong>上线后的分布监测不是可选项，而是认识论上的必需品</strong>。
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">3.3</span>古德曼的绿蓝悖论：更狠的一刀</h2>
+
+<p>休谟指出了归纳<strong>缺乏根据</strong>。1955 年，纳尔逊·古德曼在《事实、虚构与预测》里提出了一个更尖锐的问题：
+<strong>假设我们接受归纳，那么哪种归纳是合法的？</strong></p>
+
+<p>他构造了一个人造谓词来展示麻烦：</p>
+
+<div class="qbox">
+  <span class="qb-t">「绿蓝」（grue）的定义</span>
+  <p>定义一个新词 <strong>grue（绿蓝）</strong>：</p>
+  <p>一个对象是「绿蓝的」，当且仅当——<strong>它在某个未来时刻 T 之前被观察时是绿的，而在 T 之后被观察时是蓝的。</strong></p>
+  <p>现在，假设 T 定在 2030 年 1 月 1 日，而在那之前我们观察了一万颗翡翠，<strong>每一颗都是绿的</strong>。</p>
+  <p class="qb-q">这一万个观察，<strong>同时支持两个互相矛盾的结论</strong>：<br>
+  「所有翡翠都是<strong>绿的</strong>」——因为观察到的是绿。<br>
+  「所有翡翠都是<strong>绿蓝的</strong>」——因为它们在 T 之前被观察到，且都是绿的，完全符合 grue 的定义（并在 T 之后会是蓝的）。<br>
+  <strong>同一批证据，同等地支持两个未来预测完全相反的假设。</strong></p>
+</div>
+
+<p>关键问题：<strong>你凭什么说「绿」这个假设比「绿蓝」更合理？</strong></p>
+
+<p>直觉上你会说「绿蓝是人为构造的、不自然」。古德曼承认这点，但他指出——
+<strong>「自然」和「人为」的界线，本身需要被定义</strong>，而任何定义都要面对同样的问题。
+他最终的方案（用谓词的「稳固性」/entrenchment 来解释）也受到很多批评，至今没有公认的解答。</p>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">古德曼的问题</div>
+    <div class="ttl">同一批证据支持多个假设</div>
+    <div class="txt">归纳不只是「从数据推出规律」，而是要<strong>在无穷多个都与数据一致的规律中挑选一个</strong>。挑选依据是什么？这个问题没有公认答案。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">AI 里的等价问题</div>
+    <div class="ttl">训练数据无法唯一确定模型行为</div>
+    <div class="txt">给定训练数据，存在<strong>数量无限多的模型</strong>都能完美拟合它，但它们的泛化行为完全不同。
+    「归纳偏置」（inductive bias）机制——比如梯度下降的隐式偏好、网络架构、正则化——
+    做的正是「在无限多个候选里挑一个」这件事。
+    <strong>这就是现代 ML 理论里的「绿蓝问题」。</strong></div>
+  </div>
+</div>
+
+<h3>这个视角解释了你遇到过的一个现象</h3>
+
+<div class="note">
+  <strong>「为什么换个随机种子，模型表现能差好几个点？」</strong>
+  <br><br>
+  因为训练过程<strong>没有唯一解</strong>。损失函数降到最低只是必要条件，不是充分条件——
+  无数个参数配置都能达到相同的训练损失，而它们的泛化行为不同。
+  梯度下降 + 随机初始化选择落在哪一个，<strong>这里面天然带着任意性</strong>。
+  <br><br>
+  所以：<strong>模型的「能力」不是唯一确定的，它是一个分布。</strong>
+  报一个跑分而不报方差，等于隐藏了一半的信息。这也是为什么严格的评测报告必须包含多次运行的均值与方差。
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">3.4</span>波普尔与可证伪性</h2>
+
+<p>面对休谟的结论，二十世纪的波普尔给了一个完全不同的回应：
+<strong>他放弃了「证明」，转而主张科学的标志不是可证实，而是可证伪。</strong></p>
+
+<div class="quote">
+  <p>一个理论如果不能被任何可能的观察所反驳，那它就不是科学理论。</p>
+  <span class="who">—— 波普尔《猜想与反驳》的核心主张（大意）</span>
+</div>
+
+<p>波普尔的方案很漂亮：既然你无法证明「所有天鹅都是白的」，那就不去证明——
+改为<strong>积极地尝试推翻它</strong>。找到一个黑天鹅，「所有天鹅都是白的」就被推翻了。<strong>知识通过「猜想与反驳」增长，而不是通过累积证实。</strong></p>
+
+<table>
+  <thead><tr><th style="width:150px">对比</th><th>证实的逻辑</th><th>证伪的逻辑</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>方向</strong></td>
+      <td>积累正面证据，逐步加强信念</td>
+      <td>主动寻找反面证据，试图推翻</td>
+    </tr>
+    <tr>
+      <td><strong>逻辑强度</strong></td>
+      <td>弱：再多正面例子也不能证明全称命题</td>
+      <td><strong>强：一个反例就能推翻全称命题</strong></td>
+    </tr>
+    <tr>
+      <td><strong>实践含义</strong></td>
+      <td>「我们的系统在这些测试上都通过了」</td>
+      <td><strong>「我们尝试了这几种方式，都没能让它失败」</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>这是本章最可以直接搬进工作流程的一条。</strong>
+  「我们的测试都过了」是一句<strong>认识论上非常弱</strong>的话，因为测试是<strong>你自己设计的</strong>，
+  它天然倾向于覆盖你想到的情况。改成<strong>证伪导向</strong>的表述和做法：
+  <ul style="margin-bottom:0">
+    <li>不问「测试通过了吗」，问<strong>「我们尝试从哪些角度攻破它？攻破了几次？」</strong></li>
+    <li>专门建一个<strong>「对抗集」</strong>：由尽力想让它出错的案例组成，而不是由典型case组成。</li>
+    <li>如果一轮下来一个失败案例都没找到，<strong>这本身是个警报信号</strong>——说明攻击强度不够，不是系统完美。</li>
+  </ul>
+</div>
+
+<div class="warn">
+  <strong>波普尔的方案也有代价，需要注意：</strong>
+  <ul style="margin-bottom:0">
+    <li><strong>它适用于全称命题，不适用于概率性主张。</strong>「这个模型 95% 的情况下正确」很难被单个反例证伪——
+    5% 的失败本来就是它的一部分。所以对 ML 系统，证伪需要<strong>统计意义上的</strong>证伪（失败率显著高于声称值）。</li>
+    <li><strong>它不告诉你哪个理论更好。</strong>两个都没被证伪的理论，无法据此排序。
+    这一点对工程很重要：<strong>「两种方案都没被推翻」不等于它们等价</strong>，你仍需要别的判据。</li>
+    <li><strong>现实中很难干净地证伪。</strong>当一个模型失败时，你可以归因于「数据不好」而不是「方法错」；
+    加上辅助假设（训练方式、超参、提示词），理论总能被保住。
+    <strong>这就是为什么「失败复盘」常常变成互相甩锅——它在结构上允许无限推迟证伪。</strong></li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">3.5</span>【工程锚点】泛化就是归纳</h2>
+
+<p>现在把上面的东西全部落到实践。这张表你应该贴在团队墙上：</p>
+
+<table>
+  <thead><tr><th style="width:210px">归纳问题里的概念</th><th style="width:230px">ML 工程里的对应物</th><th>它什么时候背叛你</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>「未来会像过去」</td>
+      <td>「部署分布 = 训练分布」</td>
+      <td>用户群体变了、业务场景扩展了、上游数据源改了格式</td>
+    </tr>
+    <tr>
+      <td>归纳依赖观察到的<strong>规律</strong></td>
+      <td>模型学到的统计相关性</td>
+      <td>相关性存在但因果链断裂时（这也是<strong>虚假相关</strong>的根源）</td>
+    </tr>
+    <tr>
+      <td>证据支持多个假设（绿蓝）</td>
+      <td>多个模型都能拟合训练数据</td>
+      <td>你会误以为「效果就是这样」，其实只是「这次随机的效果」</td>
+    </tr>
+    <tr>
+      <td>无法用理性证明，只能假设</td>
+      <td>没有理论保证的泛化</td>
+      <td>任何时候。它一直是个假设，不是保证</td>
+    </tr>
+    <tr>
+      <td>火鸡的样本量很大却错了</td>
+      <td>测试集很大也不代表安全</td>
+      <td><strong>测试集与部署环境同样偏离时</strong>——你会拥有一份很漂亮的分数和一堆线上事故</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>测试集为什么不能作为「安全证明」</h3>
+
+<p>很多人把测试集分数当作「系统能工作」的证据。用归纳问题的视角看，这里有<strong>三重漏洞</strong>：</p>
+
+<div class="pit">
+  <ol style="margin-bottom:0">
+    <li><strong>测试集是同分布的。</strong>标准做法是从同一批数据里切分出测试集。
+    这保证了「测试集与训练集同分布」，但<strong>完全没有保证「测试集与部署环境同分布」</strong>——
+    而后者才是你真正需要的那个保证。</li>
+    <li><strong>测试集被反复使用。</strong>你用它调参、选模型、做决策，几十轮之后它<strong>实质上已经变成了训练集的一部分</strong>。
+    这在方法论上是「信息泄漏」，而且是极难避免的——这就是「测试集过拟合」。</li>
+    <li><strong>测试集是你自己选的。</strong>你选择了问题类型、标注标准、评估指标。
+    <strong>它测量的是「你关心并想到的那些维度」</strong>——而事故往往来自你没想到的维度。</li>
+  </ol>
+</div>
+
+<div class="tip">
+  <strong>三个可操作的补救措施：</strong>
+  <ul style="margin-bottom:0">
+    <li><strong>保留一个「冷冻测试集」</strong>：从创建之日起就锁起来，只在重大版本发布前使用一次，
+    用完即废弃并重建。这是防止测试集过拟合最有效的办法。</li>
+    <li><strong>建一个「真实环境集」</strong>：从生产环境采样真实的、未经清洗的输入。
+    它通常比干净的测试集难看很多，也<strong>更能预测真实表现</strong>。</li>
+    <li><strong>报告要写成范围而不是单值</strong>：「准确率 87%–92%（5 次运行，不同随机种子）」比「准确率 90%」诚实得多。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">3.6</span>【工程锚点】分布外为什么必然失败</h2>
+
+<p>「分布外」（OOD）这个词常被当作一个待解决的技术难题。
+但从归纳问题的角度，它<strong>不是难题，是边界条件</strong>——它不是「还没做好」，而是「本质上做不到」。</p>
+
+<div class="note">
+  <strong>论证很简单：</strong>模型的全部知识来自训练分布上的规律。
+  当输入落在训练分布外时，<strong>模型在该区域的输出没有任何训练依据</strong>。
+  但模型<strong>仍然会输出一个东西</strong>——因为它是一个函数，对任何输入都返回一个值。
+  <br><br>
+  关键在于：<strong>这个输出既不是「对的」也不是「错的」，而是「无意义的」</strong>——
+  它只是函数在该点的取值，没有任何经验基础的支撑。但因为输出看起来像一个正常答案，
+  你会把它当成一个有根据的回答。
+</div>
+
+<h3>四种分布偏移，危险程度不同</h3>
+
+<table>
+  <thead><tr><th style="width:150px">类型</th><th style="width:250px">表现</th><th style="width:90px">可检测性</th><th>危险度</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>协变量偏移</strong></td>
+      <td>输入分布变了，但输入到输出的关系没变</td>
+      <td>✅ 较高</td>
+      <td>🟡 可以检测输入特征分布，据此重训</td>
+    </tr>
+    <tr>
+      <td><strong>标签偏移</strong></td>
+      <td>各类别的比例变了，但每个类别内的特征规律没变</td>
+      <td>🟡 中</td>
+      <td>🟠 需要监控输出分布</td>
+    </tr>
+    <tr>
+      <td><strong>概念漂移</strong></td>
+      <td>输入到输出的<strong>关系本身变了</strong>（比如用户偏好、行业术语含义变化）</td>
+      <td>🔴 难</td>
+      <td>🔴 高：输入分布可能完全正常，但答案已经错了</td>
+    </tr>
+    <tr>
+      <td><strong>对抗性输入</strong></td>
+      <td>人为构造的、专门触发错误模型的输入</td>
+      <td>🔴 极难</td>
+      <td>🔴 高：必要时需专门防御手段</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>第三行最需要警惕。<strong>概念漂移的输入看起来完全正常</strong>——
+用户问的问题和以前一模一样，措辞一样，格式一样。<strong>但正确的答案变了。</strong>
+你的输入分布监控不会报警，因为你监控的是输入；你需要的是<strong>输出质量监控</strong>，
+而这通常最贵、最难、也最容易被省略。</p>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">归纳的边界</div>
+    <div class="ttl">未来可能不像过去</div>
+    <div class="txt">归纳问题的核心：没有任何逻辑能保证规律持续。
+    「规律会变」不是小概率异常，而是需要被<strong>主动假设掉</strong>的那个前提。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">工程上的必然结论</div>
+    <div class="ttl">监控是必需品，不是可选项</div>
+    <div class="txt">既然可靠性无法被证明、只能被持续验证，那么：
+    <strong>输入分布监控 + 输出质量抽检 + 定期重训</strong>这三件事，
+    是这个系统能否长期存在的组成部分，不是「以后再说」的优化项。
+    没有它们的 AI 系统，本质上是一个<strong>不知道什么时候会静默失效</strong>的系统。</div>
+  </div>
+</div>
+
+<h3>一个反直觉的设计原则</h3>
+
+<p>既然分布外必然失败，那么产品设计的目标就不应该是「杜绝失败」——那是做不到的。
+目标应该是：<strong>让失败以可检测、可恢复的方式发生。</strong></p>
+
+<table>
+  <thead><tr><th style="width:210px">设计选择</th><th>糟糕的做法</th><th>更好的做法</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>输出形式</td>
+      <td>直接给结论</td>
+      <td>给结论 + 依据来源 + 不确定提示</td>
+    </tr>
+    <tr>
+      <td>失败可见性</td>
+      <td>模型默默给出错误答案</td>
+      <td>低置信时显式降级（「我不确定，请核实」）</td>
+    </tr>
+    <tr>
+      <td>可恢复性</td>
+      <td>错误答案直接进入下游流程</td>
+      <td>关键动作前需要人工确认</td>
+    </tr>
+    <tr>
+      <td>可检测性</td>
+      <td>无日志、无监控</td>
+      <td>记录输入特征、输出、置信度，支持回溯分析</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">3.7</span>【工程锚点】幻觉的哲学根源</h2>
+
+<p>这一节是全站最重要的内容之一。结论是：<strong>幻觉不是实现缺陷，是当前训练目标的必然后果。</strong>
+理解这一点，你就不会再把「消灭幻觉」当成一个可以排期的目标，而会去设计<strong>与幻觉共存的产品</strong>。</p>
+
+<h3>根源一：模型的学习目标是「像人类文本」，不是「说真话」</h3>
+
+<div class="note">
+  语言模型的训练目标，本质是<strong>在给定前文的情况下，预测最可能出现的下一个 token</strong>。
+  <br><br>
+  这个目标奖励的是什么？是<strong>「生成在人类语料里常见的、通顺的、连贯的文本」</strong>。
+  它<strong>不奖励</strong>「符合事实」——因为训练信号里没有「事实」这个变量，只有「下一个 token 是什么」。
+  <br><br>
+  <strong>所以在目标函数的层面上，「说真话」和「说得像真的」是没有区别的。</strong>
+  后者甚至更容易达成，因为有时候编造一个流畅的细节比承认不确定更「像」训练数据里的文本
+  （真实语料里，人们通常直接给出答案，而不是说「我不确定」）。
+</div>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">认识论的老区分</div>
+    <div class="ttl">「看起来可信」与「确实为真」</div>
+    <div class="txt">柏拉图就已经区分了<strong>说服力</strong>和<strong>真理</strong>——
+    修辞可以制造高度可信但虚假的陈述。这个区分是整个认识论传统的起点。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">在模型里的具体形态</div>
+    <div class="ttl">流畅性是副产品，不是可靠性指标</div>
+    <div class="txt">模型输出<strong>越流畅、越具体、越自信</strong>，越容易被当作可靠的——而这恰恰是训练目标优化的方向。
+    <strong>「看起来对」和「实际对」在模型里系统性地脱钩，而人类恰好对前者最敏感。</strong></div>
+  </div>
+</div>
+
+<h3>根源二：模型没有「不知道」这个状态</h3>
+
+<p>这是一个经常被忽略的结构性问题。人类认知里有一个明确的内部状态：「我不知道」。
+当你被问一个不了解的问题时，<strong>你能感觉到那个空缺</strong>。</p>
+
+<p>但模型是一个函数——<strong>它没有「空缺」这个状态</strong>。
+对任何输入，它都会给出分布，然后采样。<strong>「不知道」对它来说不是一个状态，而只能是另一个输出。</strong></p>
+
+<div class="warn">
+  <strong>这解释了为什么「教模型说不知道」效果有限。</strong>
+  你可以用训练让它<strong>更倾向于输出</strong>「我不知道」这句话，但那是<strong>行为层面的统计倾向</strong>，
+  不是它真的检测到了知识空缺。表现就是：它的拒答边界<strong>不稳定</strong>——
+  在相似的问题上，有时拒答有时编造，而且拒答的触发条件与「是否真的知道」<strong>相关性不高</strong>。
+  <br><br>
+  这跟人类完全不同：人类说「我不知道」通常是真的不知道，
+  模型说「我不知道」和它是否知道之间<strong>没有稳定的因果关系</strong>。
+</div>
+
+<h3>两类幻觉，需要完全不同的对策</h3>
+
+<table>
+  <thead><tr><th style="width:170px">类型</th><th style="width:250px">定义</th><th>对策</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>事实性幻觉</strong><br><span class="pill orange">与世界的偏差</span></td>
+      <td>输出与客观事实不符（编造人名、事件、数字）</td>
+      <td>检索增强（RAG）、工具调用核实、引用强制、事实抽检。
+      <strong>本质是用外部验证来补足模型缺失的验证机制。</strong></td>
+    </tr>
+    <tr>
+      <td><strong>忠实性幻觉</strong><br><span class="pill purple">与上下文的偏差</span></td>
+      <td>输出与<strong>你提供的材料</strong>不符——你说「根据下列文档回答」，它却加了文档里没有的内容</td>
+      <td>更严格的结构化输出约束、逐句引用要求、答案与来源的自动一致性检查。
+      <strong>这类幻觉更隐蔽</strong>，因为它在事实上可能正确，只是<strong>没有依据</strong>。</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pit">
+  <strong>忠实性幻觉是最容易被低估的风险。</strong>
+  <br><br>
+  举例：你做了一个制度问答助手，把公司规章喂进去。用户问「年假几天」，
+  文档里写「工作满一年 5 天，满三年 10 天」，而模型回答「工作满一年 5 天，满三年 10 天，满五年 15 天」——
+  最后一句文档里没有，它自己补的。<strong>而且恰好符合行业惯例，所以看起来非常可信。</strong>
+  <br><br>
+  <strong>为什么会这样？</strong>因为模型的世界知识里「年假随工龄阶梯增长」是高度常见的模式，
+  它在补全一个「更完整」的答案。从训练目标看，这个补充<strong>提高了文本的通顺度和完整性</strong>。
+  <br><br>
+  <strong>对策</strong>：不要只检查「答案对不对」，要检查<strong>「答案的每一句能不能在材料里找到出处」</strong>。
+  这是可以自动化的：把答案拆成句子，逐句做「与来源材料的相关性验证」，低于阈值的标红。
+</div>
+
+<h3>为什么幻觉率降到一定程度就降不动了</h3>
+
+<p>这解释了一个普遍的工程现象：幻觉率从 20% 降到 3% 相对容易（加检索、加约束、加校验），
+但从 3% 降到 0.3% 极其困难，而且<strong>每一点下降都要付出不成比例的代价</strong>。原因有三层：</p>
+
+<ol class="steps">
+  <li><strong>目标函数层面</strong>：只要训练目标是「生成像人类文本的内容」，「生成看似合理的内容」就永远是低成本的，
+  而「承认不知道」是高成本的（偏离训练分布）。这个张力无法被完全消除。</li>
+  <li><strong>验证机制层面</strong>：模型没有内置验证器。你只能<strong>外挂</strong>验证（检索、工具、人工）——
+  而外挂验证的覆盖率永远不完整，总有它覆盖不到的情况。</li>
+  <li><strong>长尾层面</strong>：剩下的 3% 往往集中在<strong>罕见、复杂、或本身存在分歧</strong>的问题上。
+  这些问题更难解决，而且解决它们需要的成本更高、收益更低。</li>
+</ol>
+
+<div class="tip">
+  <strong>所以正确的产品目标不是「幻觉率为 0」，而是：</strong>
+  <ul style="margin-bottom:0">
+    <li><strong>在高风险场景，把幻觉的后果挡住</strong>——不用「让它更准」,而用「让它出错时不造成损害」：
+    加人工确认、加硬约束、加下游校验。</li>
+    <li><strong>让幻觉可被发现</strong>——要求引用、标注不确定、提供来源链接。</li>
+    <li><strong>把「拒答正确率」当作一等指标</strong>——参考上一章的四指标体系。</li>
+    <li><strong>诚实告知能力边界</strong>——在界面上说明「本系统基于 X 资料，超出范围的回答可能不准确」。
+    这不是免责声明，这是<strong>帮助用户正确使用工具的必要信息</strong>。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">3.8</span>奥卡姆剃刀与模型选择</h2>
+
+<p>「如无必要，勿增实体」——奥卡姆剃刀大概是流传最广的哲学原则，也是<strong>被误用最多的一条</strong>。
+在 AI 语境下它经常被用来支持「小模型更好」或「简单方案更优」，但这么用是有问题的。</p>
+
+<h3>它原本在说什么</h3>
+
+<div class="quote">
+  <p>在<em>解释力相同</em>的情况下，应当选择假设更少的理论。</p>
+  <span class="who">—— 奥卡姆剃刀的常见表述（注意「解释力相同」这个前提）</span>
+</div>
+
+<p>两个关键限制：</p>
+
+<table>
+  <thead><tr><th style="width:150px">限制</th><th>含义</th><th>在 AI 里意味着什么</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 前置条件</strong></td>
+      <td>必须在<strong>解释力相同</strong>时才谈得上「更简单」。</td>
+      <td>如果小模型做不到大模型能做的事，它们<strong>不构成「解释力相同」</strong>，
+      奥卡姆剃刀对此<strong>没有发言权</strong>。不能用它论证「应该用小模型」。</td>
+    </tr>
+    <tr>
+      <td><strong>② 「简单」没有唯一定义</strong></td>
+      <td>参数更少算简单？还是假设更少算简单？还是描述长度更短算简单？</td>
+      <td>一个参数量小的模型可能隐含了更多<strong>人为设计的归纳偏置</strong>（架构先验），
+      从「假设数量」的角度它反而<strong>更复杂</strong>。<strong>「简单」的度量不同，结论会反转。</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">奥卡姆剃刀的真实用途</div>
+    <div class="ttl">在等价解释之间打破平局</div>
+    <div class="txt">它是一条<strong>节省原则</strong>，不是一个<strong>能力判据</strong>。
+    它告诉你「别引入无用的假设」，不告诉你「哪个方案更强」。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">正确的工程用法</div>
+    <div class="ttl">先比能力，再比复杂度</div>
+    <div class="txt">正确顺序：<strong>① 先测能力</strong>（能不能达到需求）→
+    <strong>② 在达标方案中比成本</strong>（延迟、费用、维护复杂度）→
+    选成本最低的。<strong>颠倒这个顺序，你会用「简单」为能力不足辩护。</strong>
+    反过来，用「能力强」为不必要的高成本辩护，也是错的。</div>
+  </div>
+</div>
+
+<div class="warn">
+  <strong>一个常见的错误推论：</strong>
+  「大模型只是记住了训练数据，本质上是查表，所以不可能是真智能；真正的方法是更简洁的算法。」
+  <br><br>
+  这个推论的问题在于：<strong>「记住」和「泛化」不是二选一</strong>。
+  一个系统可以同时表现出记忆和泛化，而<strong>区分两者需要实验，不能靠「简洁性直觉」</strong>。
+  凡是试图<strong>从「复杂/简单」直接推出「不智能/智能」</strong>的论证，都跳过了必要的实证步骤。
+</div>
+
+<hr>
+
+<h2 id="s9"><span class="h2-num">3.9</span>动手练习</h2>
+
+<ol class="steps">
+  <li>
+    <strong>列出你的「火鸡假设」。</strong>写下你的项目赖以成立、但从未被验证的三个前提。
+    它们通常长得像这样：「用户的提问方式和我们现在假设的一样」、
+    「上游数据的格式不会变」、「用户的偏好不会因为我们的产品而改变」。
+    <br><span class="hash">产出：三个前提 + 每个前提「如果被推翻，系统会怎样」</span>
+  </li>
+  <li>
+    <strong>做一次证伪式测试。</strong>不要去跑标准测试集，改为<strong>主动构造 20 个「我认为最可能让它出错」的案例</strong>，
+    然后跑一遍。记录失败率。
+    <br><span class="hash">如果失败率为 0，请反思：是你系统太强，还是你的攻击太弱？</span>
+  </li>
+  <li>
+    <strong>检查你报告里的方差。</strong>找一份你之前的评测结果，看它是不是单次运行的数字。
+    如果是，用 3–5 个不同随机种子重跑，算出范围。
+    <br><span class="hash">这个动作几乎总能揭示之前被忽略的不确定性</span>
+  </li>
+  <li>
+    <strong>给你的 RAG 加一个忠实性检查。</strong>把模型答案拆成句子，
+    逐句检查能否在当前检索到的材料中找到支持。凡是找不到支持的句子，标记出来。
+    <br><span class="hash">这一步能抓出大量「事实正确但无依据」的补充内容</span>
+  </li>
+  <li>
+    <strong>写一段「能力边界说明」。</strong>用用户能理解的语言，说明你的系统的适用范围和已知局限。
+    写完后自问：<strong>如果你是一个用户，读了这段说明，你的期望会变吗？</strong>
+    <br><span class="hash">如果答案是「不会」，那说明说明写得太模糊，需要更具体</span>
+  </li>
+</ol>
+
+<hr>
+
+<h2 id="s10"><span class="h2-num">3.10</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 用三句话复述休谟的归纳问题，并说明它为什么无法被解决。</p>
+    <div class="qa-a">
+      <p>① 我们的一切预测都依赖「未来会像过去」这个假定。<br>
+      ② 这个假定只能来自经验，而经验只覆盖过去。<br>
+      ③ 因此我们无法用理性为它提供辩护。</p>
+      <p><strong>为什么无法解决</strong>：任何试图证明它的论证，要么本身就用到了归纳（循环），
+      要么需要引入一个比归纳更强的假设（如「自然齐一性」），而那个假设同样无法被证实。
+      这不是「暂时没做到」，而是这类问题的结构决定的。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q2. 古德曼的绿蓝悖论比休谟的问题「更狠」在哪里？</p>
+    <div class="qa-a">
+      <p>休谟指出归纳<strong>缺乏根据</strong>（没理由）。古德曼指出：即使你接受归纳，
+      你仍然面对<strong>「该选哪一个归纳」</strong>的问题——同一批证据同等地支持多个预测完全相反的假设。</p>
+      <p>所以问题从「凭什么相信」变成了更棘手的「<strong>怎么在无限多个都与数据一致的假设中挑选</strong>」。
+      现代 ML 用「归纳偏置」来回答这个问题，但归纳偏置本身也是人为选择的，
+      所以它把问题<strong>前移</strong>而不是<strong>解决</strong>了。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q3. 为什么幻觉无法被彻底消除？至少说出三个层次的原因。</p>
+    <div class="qa-a">
+      <p><strong>① 目标函数层</strong>：训练目标是「生成像人类文本的下一个 token」，
+      它奖励流畅与完整，<strong>不奖励真实性</strong>。「说真话」和「说得像真的」在目标函数上不可区分。</p>
+      <p><strong>② 结构层</strong>：模型没有「不知道」这个内部状态。「不知道」对它只能是一个<strong>输出</strong>，
+      不能是一个<strong>状态</strong>。所以拒答行为与「是否真知道」之间没有稳定因果。</p>
+      <p><strong>③ 验证层</strong>：模型没有内置验证机制，只能外挂（检索、工具、人工）。
+      外挂验证的覆盖率永远不完整，总有覆盖不到的情况，而残差集中在最难的长尾上。</p>
+      <p>三层叠加的结果：<strong>降到个位数百分比可以，降到 0 不可能。</strong>
+      所以正确的目标是在高风险场景<strong>阻断后果</strong>，并让幻觉<strong>可被检测</strong>。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q4. 你的测试集准确率 95%，为什么不能作为「系统可靠」的证据？</p>
+    <div class="qa-a">
+      <p>三个漏洞：</p>
+      <p><strong>① 同分布问题</strong>：测试集与训练集同分布，但不保证与部署环境同分布。
+      你需要的是后者。</p>
+      <p><strong>② 反复使用导致过拟合</strong>：用它调参、选模型几十轮之后，它实质上已经变成了训练数据的一部分。</p>
+      <p><strong>③ 选择性偏差</strong>：测试集的问题类型、标注标准、指标都是你选的，
+      测的是「你想到并关心的维度」，而事故来自没想到的维度。</p>
+      <p>补救：冷冻测试集、真实环境集、报告范围而非单值。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】你的团队说「我们的 RAG 系统幻觉率已经降到 2% 了，可以上线」。
+    你会问哪三个问题？</p>
+    <div class="qa-a">
+      <p><strong>问题一：这个 2% 是怎么测的？测试集从哪来？</strong>
+      如果测试集是你们自己按典型场景写的，那它<strong>天然避开了长尾</strong>，
+      真实环境下的幻觉率会显著更高。要问清楚有没有从生产环境采样、有没有覆盖边界情况。</p>
+      <p><strong>问题二：这 2% 里，事实性幻觉和忠实性幻觉的比例是多少？</strong>
+      两者的严重程度不同。忠实性幻觉（答案里补了材料中没有的内容）更隐蔽，
+      在制度、医疗、法律类场景中可能<strong>比明显的事实错误更危险</strong>，
+      因为它看起来完全合规、符合常识。如果这个 2% 里大部分是忠实性幻觉，那不能简单认为「比事实幻觉好」。</p>
+      <p><strong>问题三：出错的时候，用户会发现吗？后果能不能被阻断？</strong>
+      这是最关键的一问。2% 能不能接受<strong>不取决于数字本身，取决于错误的后果</strong>：
+      <ul>
+        <li>如果这是一个给学生查资料的辅助工具，错误答案会被学生<strong>交叉核对</strong>，2% 可能可以接受。</li>
+        <li>如果这是自动生成合同条款、或者给患者提供用药参考，<strong>2% 完全不可接受</strong>，
+        无论投入多少成本都要加人工复核。</li>
+      </ul>
+      <p>如果团队回答不出第三问，说明<strong>他们还没想清楚这个系统出错时谁受损</strong>——
+      而这个问题不解决，讨论「2% 够不够」是没有意义的。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能不看笔记复述休谟的归纳问题，并说明它为什么无法用理性解决。</li>
+    <li>能解释「泛化就是归纳」，并说出你的项目依赖了哪三个未经验证的前提。</li>
+    <li>能区分事实性幻觉与忠实性幻觉，并说明为什么后者可能更危险。</li>
+    <li>能说出幻觉无法彻底消除的至少三个层次的原因。</li>
+    <li>能正确使用奥卡姆剃刀——<strong>先比能力，再比复杂度</strong>，不倒置顺序。</li>
+    <li>完成一次<strong>证伪式测试</strong>，得到一份真实的失败案例清单。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="ch02.html"><div class="dir-label">← 上一节</div><div class="dir-name">第 2 章 · 认识论 I：知识、信念与不确定性</div></a>
+  <a class="next" href="ch04.html"><div class="dir-label">下一节 →</div><div class="dir-name">第 4 章 · 心灵哲学 I：意识、功能主义与中文房间</div></a>
+</div>
+
+<div class="footer">哲学 × AI 学习指南 · 第 3 章 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>页面不存在 | getzeroai 学习站</title>
+<!-- 样式必须内联：404 页会在任意路径层级被命中，
+     用相对路径 assets/style.css 会被解析成 /foo/assets/style.css 造成二次 404。
+     链接用站点根绝对路径 —— 前提是站点部署在域名根目录。 -->
+<style>
+  :root {
+    --bg: #f7f8fa; --surface: #fff; --border: #e3e8ef;
+    --text: #1f2733; --text-soft: #5b6675; --text-mute: #8a94a3;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+            "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    --mono: "JetBrains Mono", Consolas, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--sans); color: var(--text); background: var(--bg);
+    padding: 24px; line-height: 1.8;
+  }
+  .box { max-width: 640px; width: 100%; }
+  .code {
+    font-family: var(--mono); font-size: 13px; letter-spacing: .1em;
+    color: #5b47d6; font-weight: 700;
+  }
+  h1 { font-size: 26px; margin: 8px 0 14px; font-weight: 750; letter-spacing: -.01em; }
+  p { margin: 10px 0; color: var(--text-soft); font-size: 15px; }
+  .quote {
+    margin: 20px 0; padding: 14px 20px 14px 22px;
+    background: #fbfaff; border-left: 3px solid #5b47d6;
+    border-radius: 0 10px 10px 0; font-size: 14.5px; color: #33405a;
+  }
+  .quote .who { display: block; margin-top: 6px; font-size: 12.5px; color: var(--text-mute); }
+  .links { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .links a {
+    flex: 1 1 170px; text-decoration: none;
+    border: 1px solid var(--border); background: var(--surface);
+    border-radius: 10px; padding: 12px 14px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 4px 14px rgba(16,24,40,.05);
+    transition: border-color .14s, transform .14s;
+  }
+  .links a:hover { border-color: #5b47d6; transform: translateY(-2px); }
+  .links .k { font-size: 11px; color: var(--text-mute); font-weight: 700; letter-spacing: .05em; }
+  .links .v { font-size: 14px; font-weight: 650; color: var(--text); margin-top: 3px; }
+  .ver { margin-top: 30px; font-size: 12.5px; color: var(--text-mute); }
+</style>
+</head>
+<body data-tut="home">
+<div class="box">
+  <div class="code">404 ／ 页面不存在</div>
+  <h1>这个页面上没有你要找的东西</h1>
+  <p>不过这个问题本身倒是很像一个哲学问题：<strong>当你说「这个页面不存在」时，
+  你指的是「它从未存在」，还是「我找不到它」？</strong>
+  前者是关于世界的判断，后者是关于你自己的判断。如果只是打错了网址，那属于后者，比较容易解决。</p>
+
+  <div class="quote">
+    <p>我知道我一无所知。</p>
+    <span class="who">—— 常被归于苏格拉底。但严格说，这是柏拉图在《申辩篇》里对他立场的转述</span>
+  </div>
+
+  <p style="font-size:14px">从下面任一入口重新开始：</p>
+  <div class="links">
+    <a href="/"><div class="k">索引</div><div class="v">全部教程</div></a>
+    <a href="/springai/index.html"><div class="k">技术</div><div class="v">Spring AI 2.0 学习指南</div></a>
+    <a href="/philosophy/index.html"><div class="k">思维</div><div class="v">哲学 × AI 学习指南</div></a>
+    <a href="/leetcode/index.html"><div class="k">算法</div><div class="v">力扣算法专题解析</div></a>
+  </div>
+
+  <div class="ver">getzeroai 学习站 · 内容版本 2026-09-28 16:30</div>
+</div>
+</body>
+</html>

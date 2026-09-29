@@ -1,0 +1,32 @@
+# ======================================================================
+# 第 1 章 · 应用配置（与教程 ch01 完全一致）
+# ======================================================================
+spring:
+  application:
+    name: springai-lab
+  ai:
+    openai:
+      # 从环境变量读；冒号后为空表示"没有也要启动"，避免本地没配就起不来
+      api-key: ${OPENAI_API_KEY:}
+      # ★ 换厂商的核心开关：只改这一行 + model，Java 代码一行不动
+      #   DeepSeek : https://api.deepseek.com          模型 deepseek-chat
+      #   智谱     : https://open.bigmodel.cn/api/paas/v4  模型 glm-4-plus
+      #   （都兼容 OpenAI 协议，所以统一用 openai 这个 starter）
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.7        # 越高越随机，0 = 尽量确定
+          max-tokens: 2048        # 单次回答的最大长度
+        # 超时设置：大模型首字延迟经常 2~10 秒，读超时要给足
+        connect-timeout: 30s
+        read-timeout: 120s
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.example.springai: debug
+    # 打开后能看到发给模型的完整请求体，调提示词时必开
+    org.springframework.ai.chat.client: debug

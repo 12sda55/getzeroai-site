@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 20 · 并查集 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link active" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <div class="sb-sub">
+      <a href="#s1">20.1 并查集解决什么：动态连通性</a>
+      <a href="#s2">20.2 模板：find + union</a>
+      <a href="#s3">20.3 省份数量（中等）</a>
+      <a href="#s4">20.4 冗余连接（中等）</a>
+      <a href="#s5">20.5 等式方程的可满足性（中等）</a>
+      <a href="#s6">20.6 岛屿数量的并查集视角</a>
+      <a href="#s7">20.7 本专题常见坑</a>
+      <a href="#s8">20.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 20</div>
+  <h1><span class="ch-tag">专题 20</span>并查集（Disjoint Set Union）：动态连通性利器</h1>
+  <p class="lead">有一类问题画风很固定：<strong>「把 A 和 B 分到一组」「问 A 和 C 是不是同组」</strong>，并且分组操作是<em>边给边查</em>的。
+  用 DFS 也能判断连通性（<a href="ch12.html">专题 12</a> 讲过），但 DFS 是「静态」的——图一旦建好就定死。
+  如果连线是一条条动态加进来的，每次都重跑 DFS 太慢。并查集（DSU）专门解决这种<strong>动态连通性</strong>：合并两组、查询两点是否同组，都能做到近乎 O(1)。
+  本章先给你一个带路径压缩 + 按秩合并的完整模板，再用 4 道题把它用熟，并讲清「什么时候该用并查集、什么时候 DFS 更顺手」。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握并查集模板与选型</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">Java 基础 · 专题 12 DFS/BFS</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 道 Hot 题 + 选型思维</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">20.1</span>并查集解决什么：动态连通性</h2>
+
+<p>并查集管理的是若干个<strong>互不相交的集合</strong>，支持两个操作：</p>
+
+<ul>
+  <li><strong>union(a, b)</strong>：把 a 所在的集合和 b 所在的集合合并成一个；</li>
+  <li><strong>find(a)</strong>：返回 a 所在集合的「代表元」（根），用它来判断两点是否同组——<code>find(a) == find(b)</code> 即同组。</li>
+</ul>
+
+<p>一个好懂的类比：把每个人看成节点，一开始人人「单干」（各自是一个集合）。union 就是「结拜」——两人拜把子后属于同一个帮派；帮派用「老大（根）」来标识。问「A 和 B 是不是一伙的」，只要看两人的老大是不是同一个。</p>
+
+<pre><code class="nohl">初始：1  2  3  4  5   （5 个独立集合，各自是自己的根）
+union(1,2)：1 和 2 同帮，老大设为 1
+union(3,4)：3 和 4 同帮，老大设为 3
+union(2,3)：2 的老大是 1，3 的老大是 3 → 把 1 和 3 合并，老大统一
+现在 find(1)==find(4) → true（1-2-3-4 一伙）
+find(5) 还是单独 → 与 1 不同伙
+</code></pre>
+
+<p>和 DFS 连通性的区别：DFS 是「图建好后一次性判断」，并查集支持<strong>边加边查</strong>——每来一条新边就 union，每来一个提问就 find，全程 Online，均摊 O(1)。</p>
+
+<div class="tip">
+  <strong>一句话：</strong>并查集 = 动态版的「谁和谁连通」。凡是「合并两组 / 问两人是否同组」且操作是流式到来的，优先想它；一次性静态图连通性（如岛屿数量）DFS 往往更顺手（见 <a href="ch20.html#s6">20.6</a>）。
+</div>
+
+<h3>一个直觉：并查集 vs 拉帮结派</h3>
+
+<p>把并查集想象成校园里的「社团合并」：</p>
+
+<table>
+  <thead>
+    <tr><th>现实操作</th><th>并查集对应</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>新生入学，各自独立</td><td>初始化 <code>parent[i]=i</code></td></tr>
+    <tr><td>两个社团联谊合并</td><td><code>union(a, b)</code></td></tr>
+    <tr><td>问「小明和小红是不是一个社团」</td><td><code>find(a) == find(b)</code></td></tr>
+    <tr><td>社团用「社长」标识身份</td><td>根节点 root 是集合代表</td></tr>
+    <tr><td>小社团并入大社团，避免管理链过长</td><td>按秩合并（矮挂高）</td></tr>
+    <tr><td>每次问话顺手记住直属上级，下次直接找社长</td><td>路径压缩</td></tr>
+  </tbody>
+</table>
+
+<p>正因为「问话时顺手压缩路径」「合并时小并大」，所以无论社团怎么分合，每次查询都接近 O(1)——这正是并查集快的核心。</p>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">20.2</span>模板：find + union</h2>
+
+<p>最关键的优化有两个，缺一不可，否则会退化：</p>
+
+<ul>
+  <li><strong>路径压缩（Path Compression）：</strong>find 时顺手把沿途节点的父指针直接指向根，下次再 find 就一步到位；</li>
+  <li><strong>按秩合并（Union by Rank）：</strong>合并时把「较矮的树」挂到「较高的树」下面，避免树被拉成链。</li>
+</ul>
+
+<p>两个优化一起上，单次 find/union 的<strong>均摊时间复杂度近似 O(1)</strong>（严格说是反阿克曼函数 α(n)，增长极慢，可当常数）。</p>
+
+<h3>参考代码（通用模板）</h3>
+
+<pre><code><span class="kw">class</span> DSU {
+    <span class="kw">int</span>[] parent;   <span class="cm">// parent[i] = i 所在树的根的父（根指向自己）</span>
+    <span class="kw">int</span>[] rank;     <span class="cm">// rank[i] = 以 i 为根的树的高度上界（用于按秩合并）</span>
+
+    <span class="kw">public</span> DSU(<span class="kw">int</span> n) {
+        parent = <span class="kw">new</span> <span class="kw">int</span>[n];
+        rank = <span class="kw">new</span> <span class="kw">int</span>[n];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) {
+            parent[i] = i;   <span class="cm">// 初始：每个人自立门户</span>
+            rank[i] = 0;     <span class="cm">// 高度从 0 起</span>
+        }
+    }
+
+    <span class="cm">// 找根 + 路径压缩：沿途节点的父都直接指向根</span>
+    <span class="kw">public</span> <span class="kw">int</span> find(<span class="kw">int</span> x) {
+        <span class="kw">if</span> (parent[x] != x) {
+            parent[x] = find(parent[x]);  <span class="cm">// 递归压缩，把 x 的父改成根</span>
+        }
+        <span class="kw">return</span> parent[x];
+    }
+
+    <span class="cm">// 合并两集合：按秩合并，矮树挂到高树底下</span>
+    <span class="kw">public</span> <span class="kw">void</span> union(<span class="kw">int</span> x, <span class="kw">int</span> y) {
+        <span class="kw">int</span> rx = find(x);
+        <span class="kw">int</span> ry = find(y);
+        <span class="kw">if</span> (rx == ry) <span class="kw">return</span>;     <span class="cm">// 已经同根，无需合并</span>
+        <span class="kw">if</span> (rank[rx] &lt; rank[ry]) {
+            parent[rx] = ry;      <span class="cm">// rx 较矮，挂到 ry 下</span>
+        } <span class="kw">else</span> <span class="kw">if</span> (rank[rx] &gt; rank[ry]) {
+            parent[ry] = rx;      <span class="cm">// ry 较矮，挂到 rx 下</span>
+        } <span class="kw">else</span> {
+            parent[ry] = rx;      <span class="cm">// 一样高，任选其一，rx 高度 +1</span>
+            rank[rx]++;
+        }
+    }
+
+    <span class="cm">// 判同组</span>
+    <span class="kw">public</span> <span class="kw">boolean</span> connected(<span class="kw">int</span> x, <span class="kw">int</span> y) {
+        <span class="kw">return</span> find(x) == find(y);
+    }
+}
+</code></pre>
+
+<div class="tip">
+  <strong>容易漏的点：</strong>union 里<strong>先 find 出两个根再判断</strong>。常见错误是直接 <code>parent[a] = b</code>，这会破坏已有的树结构。另外路径压缩后 <code>rank</code> 只是上界估计，不用精确维护高度，按秩合并仍然有效。
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">20.3</span>省份数量（中等，力扣 547）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：对称矩阵建集合，数根个数</span></p>
+
+<p><strong>题意：</strong>有 n 个城市，给一个 n×n 的矩阵 <code>isConnected</code>，<code>isConnected[i][j] = 1</code> 表示城市 i 和城市 j 直接相连（矩阵对称，i=j 为 1）。
+「省份」是<strong>连通的城市组成的集合</strong>（直接或间接相连都算一省）。返回省份数量。</p>
+
+<h3>思路推导：每个连通块 = 一个集合</h3>
+
+<p>这题本质是「无向图的连通分量计数」。并查集视角：每个城市是节点，<code>isConnected[i][j]=1</code> 就 <code>union(i, j)</code>。全部边 union 完后，<strong>有多少个「根节点」（parent[x]==x 的 x）就有多少个省份</strong>。</p>
+
+<pre><code class="nohl">isConnected = [[1,1,0],[1,1,0],[0,0,1]]
+城市 0-1 相连 → union(0,1)
+城市 2 独立
+集合：{0,1}, {2} → 2 个省份
+根节点是 0 和 2（parent[x]==x 的个数 = 2）
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">public</span> <span class="kw">int</span> findCircleNum(<span class="kw">int</span>[][] isConnected) {
+    <span class="kw">int</span> n = isConnected.length;
+    DSU dsu = <span class="kw">new</span> DSU(n);
+    <span class="cm">// 只扫上三角（矩阵对称，避免重复 union）</span>
+    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) {
+        <span class="kw">for</span> (<span class="kw">int</span> j = i + 1; j &lt; n; j++) {
+            <span class="kw">if</span> (isConnected[i][j] == 1) {
+                dsu.union(i, j);   <span class="cm">// 相连就合并</span>
+            }
+        }
+    }
+    <span class="cm">// 数根：parent[x] == x 的就是一个省份的代表</span>
+    <span class="kw">int</span> count = 0;
+    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) {
+        <span class="kw">if</span> (dsu.parent[i] == i) count++;
+    }
+    <span class="kw">return</span> count;
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>建图遍历矩阵 O(n²)，每次 union/find 近似 O(1)；总 O(n²)。空间 O(n)（DSU 数组）。边界：n=1 返回 1；全 0 矩阵（除对角）返回 n 个独立省份。</p>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>岛屿数量（力扣 200，中等）</strong>——连通分量计数，但用 DFS 更顺手（提示：详见 <a href="ch20.html#s6">20.6</a>，静态图一次查询 DFS 即可，本题若强制并查集也可套本模板把相邻陆地 union）。</li>
+    <li><strong>账户合并（力扣 721，中等）</strong>——与本题同「邮箱 union 成组」思想；差异在节点是邮箱字符串而非整数编号，需用 HashMap 把字符串映射到并查集下标（提示：email→id 的映射表）。</li>
+    <li><strong>等式方程的可满足性（力扣 990，中等）</strong>——先合并所有 ==，再查 !=（提示：见 <a href="ch20.html#s5">20.5</a>）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">20.4</span>冗余连接（中等，力扣 684）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：逐条加边，第一次成环的边即答案</span></p>
+
+<p><strong>题意：</strong>给你一棵树（本应 n 个节点 n-1 条边，连通无环），但被多加了一条边变成 n 个节点 n 条边，于是出现<strong>一个环</strong>。
+给你这 n 条边（顺序给出），找出<strong>那条导致成环的冗余边</strong>返回（若有多种答案，返回在输入里<strong>最后出现</strong>的那条）。</p>
+
+<h3>思路推导：边加边，第一次「已经连通」的就是环</h3>
+
+<p>树的性质：n 个节点、连通、无环，则恰有 n-1 条边。现在多一条，多出的那条必然让某两个<strong>已经连通</strong>的点又连了一次——也就是形成了环。
+于是做法很直接：<strong>按输入顺序逐条 union 两端点</strong>。对当前边 (u, v)，如果 <code>find(u) == find(v)</code> 说明 u 和 v 在加这条边之前就已经同组（已经连通），那这条边就是「多余的那条」，记下它。继续处理后续边，保留最后一条触发连通的边即可。</p>
+
+<pre><code class="nohl">边按顺序： [[1,2],[2,3],[3,4],[1,4],[1,5]]
+union(1,2): 1-2
+union(2,3): 1-2-3
+union(3,4): 1-2-3-4
+union(1,4): find(1)==find(4) 已连通！→ 这条 [1,4] 是冗余
+union(1,5): 接上 5（它不构成环，不记）
+答案 [1,4]
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">public</span> <span class="kw">int</span>[] findRedundantConnection(<span class="kw">int</span>[][] edges) {
+    <span class="kw">int</span> n = edges.length;        <span class="cm">// 节点编号 1..n</span>
+    DSU dsu = <span class="kw">new</span> DSU(n + 1);    <span class="cm">// 下标从 1 开始，多开一位</span>
+    <span class="kw">for</span> (<span class="kw">int</span>[] e : edges) {
+        <span class="kw">int</span> u = e[0], v = e[1];
+        <span class="kw">if</span> (dsu.connected(u, v)) {
+            <span class="kw">return</span> e;   <span class="cm">// 已连通却还来一条边 → 冗余，直接返回</span>
+        }
+        dsu.union(u, v);   <span class="cm">// 否则正常合并</span>
+    }
+    <span class="kw">return</span> <span class="kw">new</span> <span class="kw">int</span>[]{};
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>遍历边 O(n)，每次 find/union 近似 O(1)，总 O(n)。空间 O(n)。边界：题目保证有解，所以循环内必 return；节点从 1 编号，DSU 开 n+1 避免下标错位。</p>
+
+<div class="tip">
+  「环出现」的直觉：把边看成在连绳子，当一条新绳子两端已经通过别的绳子连在一起时，这条就是多余的——并查集的 <code>connected</code> 正好回答「两端是否已连通」。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>冗余连接 II（力扣 685，困难）</strong>——本题升级版，图是有向树+一条冗余边，需区分「入度=2」和「成环」两种情况（提示：先找入度为 2 的节点，尝试删它的某条入边后检测是否成树）。</li>
+    <li><strong>等式方程的可满足性（力扣 990，中等）</strong>——先合并 == 边，再查 != 边是否同根（提示：见 <a href="ch20.html#s5">20.5</a>）。</li>
+    <li><strong>省份数量（力扣 547，中等）</strong>——并查集建连通块后数根（提示：见 <a href="ch20.html#s3">20.3</a>）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">20.5</span>等式方程的可满足性（中等，力扣 990）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：先合并所有 ==，再检查 !=</span></p>
+
+<p><strong>题意：</strong>给一组字符串方程，形如 <code>"a==b"</code> 或 <code>"a!=b"</code>，每个方程用一个小写字母变量。问<strong>这些方程能否同时成立</strong>（存在一种变量赋值让所有方程都满足）。</p>
+
+<h3>思路推导：两遍扫描，顺序不能反</h3>
+
+<p><code>==</code> 表示「必须相等」，把相等的变量合并成一个集合（并查集 union）。
+<code>!=</code> 表示「必须不等」，即<strong>不能在同一集合</strong>。关键洞察：先做所有 <code>==</code> 合并，把「被迫相等」的关系全部落实；再扫描 <code>!=</code>，如果某条 <code>!=</code> 的两端已经被合并到同一集合（说明它们被迫相等），矛盾，返回 false。</p>
+
+<p>为什么顺序不能反？因为 <code>==</code> 是「合并约束」，必须<strong>全部收集完</strong>才能知道谁和谁最终同组；如果边扫 == 边查 !=，可能漏掉后续 == 把本应相等的再合并。所以：<strong>第一遍只 union 所有 ==，第二遍才 check 所有 !=</strong>。</p>
+
+<pre><code class="nohl">方程： ["a==b","b==c","a==c","b!=c"]
+第一遍 union：a-b, b-c, a-c → a,b,c 同组（根为 a）
+第二遍 check：b!=c → find(b)==find(c) 同组！矛盾 → false
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">public</span> <span class="kw">boolean</span> equationsPossible(String[] equations) {
+    DSU dsu = <span class="kw">new</span> DSU(26);   <span class="cm">// 变量只有 a~z，26 个</span>
+    <span class="cm">// 第一遍：只合并所有 ==</span>
+    <span class="kw">for</span> (String eq : equations) {
+        <span class="kw">if</span> (eq.charAt(1) == <span class="st">'='</span>) {        <span class="cm">// "a==b"</span>
+            <span class="kw">int</span> x = eq.charAt(0) - <span class="st">'a'</span>;
+            <span class="kw">int</span> y = eq.charAt(3) - <span class="st">'a'</span>;
+            dsu.union(x, y);
+        }
+    }
+    <span class="cm">// 第二遍：检查所有 !=</span>
+    <span class="kw">for</span> (String eq : equations) {
+        <span class="kw">if</span> (eq.charAt(1) == <span class="st">'!'</span>) {        <span class="cm">// "a!=b"</span>
+            <span class="kw">int</span> x = eq.charAt(0) - <span class="st">'a'</span>;
+            <span class="kw">int</span> y = eq.charAt(3) - <span class="st">'a'</span>;
+            <span class="kw">if</span> (dsu.connected(x, y)) {    <span class="cm">// 本应不等却同组 → 矛盾</span>
+                <span class="kw">return</span> <span class="kw">false</span>;
+            }
+        }
+    }
+    <span class="kw">return</span> <span class="kw">true</span>;
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>两遍扫描各 O(m)（m 是方程数），每次 find/union 近似 O(1)，总 O(m)。空间 O(26)=O(1)。边界：只有 == 或只有 != 都正常；单变量自比较如 "a==a" 自然通过。</p>
+
+<div class="tip">
+  这题把并查集从「图节点」抽象成「等价类」：== 是合并等价类，!= 是跨类冲突检查。这种「先收集同类、再检测跨类冲突」的套路在「分组一致性」问题中很常见。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>冗余连接（力扣 684，中等）</strong>——并查集检测成环（提示：见 <a href="ch20.html#s4">20.4</a>，边加边查连通）。</li>
+    <li><strong>连通网络的操作次数（力扣 1319，困难）</strong>——与本题同并查集建连通块；差异在算「还需要几根线把若干连通块连成一棵」（提示：连通块数-1 就是所需额外连线，前提是有足够空闲线）。</li>
+    <li><strong>账户合并（力扣 721，中等）</strong>——等价类合并，字符串节点（提示：email→id 映射后套模板）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">20.6</span>岛屿数量的并查集视角</h2>
+
+<p><a href="ch12.html">专题 12</a> 里我们用 DFS 解了「岛屿数量」：对每个陆地格子 DFS 把整块连通陆地淹掉，统计 DFS 启动次数。
+那并查集能不能做？能，但要想清楚<strong>什么时候该用哪个</strong>。</p>
+
+<h3>两种解法对比</h3>
+
+<table>
+  <thead>
+    <tr><th>维度</th><th>DFS（专题 12）</th><th>并查集（本章）</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>适用场景</td><td>静态图，一次问「有几块连通」</td><td>动态加边/删边，边给边查</td></tr>
+    <tr><td>岛屿数量写法</td><td>遍历格子，遇陆地 DFS 标记，计数</td><td>把所有相邻陆地 union，最后数根</td></tr>
+    <tr><td>优势</td><td>代码直观、不需额外结构、常数小</td><td>支持「边加陆地边问连通块数」</td></tr>
+  </tbody>
+</table>
+
+<p><strong>选型思维：</strong>如果题目是「给一张固定的图，问连通块数」，DFS 更顺手——它直接原地标记，不用维护 parent 数组。但如果题目变成「每次新增一块陆地，实时返回当前岛屿数」（力扣 305 岛屿数量 II），DFS 每次重算就太慢，<strong>必须用并查集</strong>：每加一块新陆地，把它和上下左右已有的陆地 union，并查集 O(1) 维护。</p>
+
+<pre><code class="nohl">一句话选型：
+  图是死的、只问一次   → DFS / BFS（专题 12）
+  边加边查、动态连通   → 并查集（本章）
+</code></pre>
+
+<h3>动态版岛屿数量（力扣 305）的并查集写法骨架</h3>
+
+<p>为了让你更直观感受「动态」为何必须用并查集，这里给「每次加一块陆地实时返回岛屿数」的骨架：</p>
+
+<pre><code><span class="cm">// 关键思路：维护并查集 + 当前岛屿数 count</span>
+<span class="cm">// 每加一块陆地 (r,c)：</span>
+<span class="cm">//   先把它当新岛屿，count++</span>
+<span class="cm">//   看上下左右四个邻居，若已是陆地且不在同一集合 → union，并 count--</span>
+<span class="cm">//   （union 成功说明两个岛屿合体，岛屿数减一）</span>
+<span class="cm">// 返回 count 即可。</span>
+<span class="cm">// 这样每次加地都是 O(1) 级操作，而 DFS 版本每次要重扫全图 O(mn)。</span>
+</code></pre>
+
+<p>对比之下，静态题（专题 12 的原版岛屿数量）用 DFS 逐个淹掉连通块，代码更短、不需维护 parent 数组，是更省心的选择。所以工具没有绝对优劣，看问题是否「动态」。</p>
+
+<div class="tip">
+  面试常考「为什么这题用并查集而不是 DFS」——答案就是「动态性」。能讲清这点，比背模板更加分。
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">20.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul>
+    <li><strong>find 忘路径压缩，退化成链。</strong>不写 <code>parent[x] = find(parent[x])</code> 的话，树可能被拉成一条长链，find 退化到 O(n)。务必压缩。</li>
+    <li><strong>union 忘判根，直接 <code>parent[a] = b</code> 破坏集合。</strong>必须先 <code>find</code> 出两个根 rx、ry，若相等直接 return；再把一个根挂到另一个下。直接改父指针会切断原有树。</li>
+    <li><strong>数根时数了非根节点。</strong>统计连通块/省份数必须数 <code>parent[x] == x</code> 的节点；若数错成「数调用 find 后相等的」或漏判根，结果会偏小或偏大。</li>
+    <li><strong>下标从 1 还是 0 没对齐。</strong>冗余连接节点从 1 编号，DSU 要开 n+1 并直接用 1 下标；等式方程用 <code>c-'a'</code> 得 0~25。下标错位会导致数组越界或逻辑错。</li>
+    <li><strong>按秩合并的 rank 维护错。</strong>只在「两树等高」合并时才 <code>rank[root]++</code>，不等高时不要动 rank（矮的挂高的，高树高度不变）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">20.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.（概念题）并查集的「路径压缩」和「按秩合并」分别解决什么问题？都加上后单次操作复杂度是多少？</p>
+  <div class="qa-a">路径压缩让 find 时把沿途节点直接指向根，避免树退化成链；按秩合并让矮树挂高树，控制树高。两者叠加，单次 find/union 均摊近似 O(1)（严格为反阿克曼函数 α(n)，增长极慢）。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2.（概念题）岛屿数量题，什么时候该用并查集而不是 DFS？两者的本质区别？</p>
+  <div class="qa-a">静态图只问一次连通块数，DFS 原地标记更顺手；若边加陆地边问连通块数（动态），必须并查集。本质区别：并查集支持 Online 动态合并与查询，DFS 是静态一次性。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.（动手题）用并查集数省份数量：给定 n 个城市、边列表 edges，union 所有边后，怎么数连通块数？写出计数那几行。</p>
+  <div class="qa-a">初始化 DSU(n)，遍历 edges 每条 union(u,v)；最后 <code>int cnt=0; for(int i=0;i&lt;n;i++) if(dsu.parent[i]==i) cnt++;</code> 数 root 个数即省份数。详见 <a href="ch20.html#s3">20.3</a>。</div>
+</div>
+
+<div class="goal">学完这章，你应该能回答：并查集解决什么（动态连通性）、find+union 模板怎么写、路径压缩与按秩合并为何必要；能用它解省份数量/冗余连接/等式方程；并清楚「并查集 vs DFS」的选型边界。</div>
+
+<div class="navfoot">
+  <a href="ch19.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 19 · Trie 前缀树</div></a>
+  <a class="next" href="ch21.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 21 · 字符串算法</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 20 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

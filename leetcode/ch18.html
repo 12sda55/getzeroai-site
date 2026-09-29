@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 18 · 二叉搜索树 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link active" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <div class="sb-sub">
+      <a href="#s1">18.1 BST 的性质：中序遍历即有序</a>
+      <a href="#s2">18.2 验证二叉搜索树（中等）</a>
+      <a href="#s3">18.3 二叉搜索树中的搜索（简单）</a>
+      <a href="#s4">18.4 将有序数组转换为二叉搜索树（简单）</a>
+      <a href="#s5">18.5 二叉搜索树中第 K 小的元素（中等）</a>
+      <a href="#s6">18.6 删除二叉搜索树中的节点（中等）</a>
+      <a href="#s7">18.7 本专题常见坑</a>
+      <a href="#s8">18.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 18</div>
+  <h1><span class="ch-tag">专题 18</span>二叉搜索树：有序性带来的降维打击</h1>
+  <p class="lead">在<a href="ch07.html">专题 07</a>里你已经学会了用「分解式」思考普通的二叉树：让左右子树干完活把结果递上来。
+  但普通二叉树结构太自由，想找某个值只能老老实实遍历整棵树。
+  <strong>二叉搜索树（Binary Search Tree，简称 BST）给二叉树加了一条铁律，换来了「任意查找只要走一条单边」的超级能力</strong>。
+  这条铁律就是「左 ≤ 根 ≤ 右」。本章先讲清楚 BST 的两大武器，再用 5 道高频题把「验证 / 搜索 / 构建 / 计数 / 删除」五套动作练熟——你会发现，
+  它们背后都是同一句话：<strong>别辜负这棵已经排好序的树</strong>。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握 BST 两大武器与 5 道经典题</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">Java 基础 · 专题 07 二叉树（分解式）</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">5 道 Hot 题 + 验证/删除套路</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">5–7 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">18.1</span>BST 的性质：中序遍历即有序</h2>
+
+<p>很多同学第一次听说 BST 会想：「不就是棵树吗，凭什么它比普通二叉树高级？」答案就在它的<strong>一条定义</strong>上。一棵合法的二叉搜索树要求：<strong>对于树上任意一个节点，它的左子树里所有节点的值都严格小于它，右子树里所有节点的值都严格大于它</strong>（有些教材允许等于，力扣默认不允许重复值，用严格不等）。换句话说，整棵树满足「左 ≤ 根 ≤ 右」的全局秩序。</p>
+
+<pre><code class="nohl">一棵合法的 BST 长这样（数值已标好）：
+        8
+      /   \
+     3     10
+    / \      \
+   1   6      14
+      / \     /
+     4   7   13
+
+随手抽查几个节点都满足「左边全小、右边全大」：
+  - 根 8：左边 3/1/6/4/7 全 &lt; 8；右边 10/14/13 全 &gt; 8 ✓
+  - 节点 3：左边 1 &lt; 3；右边 6/4/7 全 &gt; 3 ✓
+  - 节点 10：右边 14/13 全 &gt; 10；左边没有，默认满足 ✓
+</code></pre>
+
+<h3>两大武器，记住这八个字就够</h3>
+
+<p>BST 之所以好用，是因为这条秩序带来了两件普通二叉树没有的「外挂」：</p>
+
+<ul>
+  <li><strong>武器一：中序遍历 = 升序数组。</strong>「左 → 根 → 右」的访问顺序，刚好就是「小的先访问、大的后访问」，于是 BST 的中序遍历结果天然是一个<strong>从小到大排好序的序列</strong>。这招在「第 K 小」「判断是否合法」「转成有序结构」等题里反复救场。</li>
+  <li><strong>武器二：查找只需走单边，复杂度 O(h)。</strong>要找某个值 val，从根开始：val 比当前节点小就只走左边，大就只走右边。每一步都砍掉一半子树，完全不用回头。最坏情况退化成链时是 O(n)，平衡 BST 是 O(log n)（h 是树高）。</li>
+</ul>
+
+<pre><code class="nohl">用武器二在上面的树里找 7：
+  8 → 7&lt;8 走左 → 到 3
+  3 → 7&gt;3 走右 → 到 6
+  6 → 7&gt;6 走右 → 到 7，命中！
+只走了 4 步，根本没碰右边的 10/14/13。这就是「走单边」的威力。
+</code></pre>
+
+<div class="tip">
+  <strong>一句话记忆：</strong>BST 是一棵「已经替你排好序的树」。凡是题目说「给你一棵二叉搜索树」，你第一反应就应该是——能不能借「中序有序」或「走单边」把复杂度从 O(n) 降下来。后面 5 道题全是这两个想法的变体。
+</div>
+
+<h3>节点定义（后面所有题都基于它）</h3>
+
+<p>力扣里树节点就长这样，和<a href="ch07.html">专题 07</a>完全一致，这里再贴一遍方便对照：</p>
+
+<pre><code class="nohl">public class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode() {}
+    TreeNode(int val) { this.val = val; }
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
+}
+</code></pre>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">18.2</span>验证二叉搜索树（中等，力扣 98）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：递归时把「上下界」一路传下去</span></p>
+
+<p><strong>题意：</strong>给你一棵二叉树，判断它是不是一棵<strong>有效的二叉搜索树</strong>。有效 BST 的定义前面讲过：每个节点的左子树全部小于它、右子树全部大于它，且左右子树自身也得是 BST；空树算合法。例如 <code>[2,1,3]</code> 是 BST，<code>[5,1,4,null,null,3,6]</code> 不是。</p>
+
+<h3>思路推导：为什么「只比较父子」是错的</h3>
+
+<p>最直觉的写法：遍历每个节点，只要它比左孩子大、比右孩子小就放心。代码大概是：</p>
+
+<pre><code class="nohl">错误思路（伪代码）：
+boolean check(TreeNode node):
+    if node == null: return true
+    if node.left  != null &amp;&amp; node.left.val  &gt;= node.val: return false
+    if node.right != null &amp;&amp; node.right.val &lt;= node.val: return false
+    return check(node.left) &amp;&amp; check(node.right)
+</code></pre>
+
+<p>这个写法<strong>只看节点和它的直接孩子</strong>，漏掉了对「祖先」的约束。力扣 98 官方给的经典反例 <code>[5,1,4,null,null,3,6]</code> 在根节点就露馅（右孩子 4 比根 5 还小）；但更隐蔽的是下面这棵，父子比较全部通过，却<strong>仍然不是 BST</strong>：</p>
+
+<pre><code class="nohl">        10
+       /  \
+      5   15
+          /
+         6
+父子检查：10 比 5 大、比 15 小 ✓；15 比 6 大 ✓；5、6 都没孩子 ✓
+看似全过，但 6 在 10 的右子树里，按 BST 铁律必须 &gt; 10，而 6 &lt; 10 → 非法！
+「只比父子」完全没发现这个矛盾，因为它忘了：6 身上还压着「祖先 10 定下的下界」。
+</code></pre>
+
+<p>所以正确的思路是：<strong>每个节点都必须落在一个由祖先不断收窄的区间 (lower, upper) 里</strong>。当你从左孩子下来，说明当前节点必须比父节点小，于是它的上界 upper 收紧成父节点的值；从右孩子下来，下界 lower 抬升成父节点的值。把这对上下界<strong>一路递归传下去</strong>，任何一次越界就说明不合法。</p>
+
+<pre><code class="nohl">把 (lower, upper) 传下去的过程（用上面 6 的反例）：
+  根 10：区间 (-∞, +∞)，10 在里 ✓
+    左 5：区间 (-∞, 10)，5 在里 ✓
+    右 15：区间 (10, +∞)，15 在里 ✓
+      15 的左 6：区间 (10, +∞)（继承了祖先 10 定的下界！），但 6 &lt; 10 → 越界，判非法 ✓
+看，把祖先的界传下来，6 立刻被抓住。
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">boolean</span> isValidBST(TreeNode root) {
+        <span class="cm">// 初始区间用 Long 的边界，因为节点值可能正好踩到 Integer 的边界（详见 18.7）</span>
+        <span class="kw">return</span> dfs(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    <span class="cm">// lower / upper 是「当前节点允许取值的开区间」</span>
+    <span class="kw">private</span> <span class="kw">boolean</span> dfs(TreeNode node, <span class="kw">long</span> lower, <span class="kw">long</span> upper) {
+        <span class="kw">if</span> (node == <span class="kw">null</span>) <span class="kw">return</span> <span class="kw">true</span>;          <span class="cm">// 空子树永远是合法 BST</span>
+        <span class="cm">// 当前节点必须严格落在 (lower, upper)，等于也不行（力扣默认无重复值）</span>
+        <span class="kw">if</span> (node.val &lt;= lower || node.val &gt;= upper) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="cm">// 左子树：上界收紧为 node.val；右子树：下界抬升为 node.val</span>
+        <span class="kw">return</span> dfs(node.left, lower, node.val)
+            &amp;&amp; dfs(node.right, node.val, upper);
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>每个节点只访问一次，每次 O(1) 比较，时间 <strong>O(n)</strong>，空间是递归栈 O(h)（h 为树高，最坏退化 O(n)）。这比「先中序遍历再检查是否升序」的 O(n) 额外数组空间更省，且能提前剪枝。</p>
+
+<div class="tip">
+  另一种经典写法：跑一遍中序遍历，把节点值依次存进列表，最后检查列表是否<strong>严格递增</strong>。思路也对，但要多开一个数组。面试时两种都能讲，但「传上下界」更能体现你对 BST 定义的理解，且能提前返回，更受面试官青睐。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>恢复二叉搜索树（力扣 99，困难）</strong>——与本题共用「BST 中序必有序」的认知；差异在已知恰好有两个节点被交换，你要从中序序列里找出这两个逆序对并换回来（提示：中序遍历时记录第一次下降的 prev、val 和最后一次下降的节点，交换二者即可，不用完全重建）。</li>
+    <li><strong>二叉搜索树迭代器（力扣 173，中等）</strong>——与本题共用「受控中序」思想；差异在题目要求你实现一个 <code>next()</code> 每次返回下一个最小元素、<code>hasNext()</code> 判断是否有，且要求均摊 O(1)（提示：用栈模拟中序，每次只压到「最左」就停，弹出时再处理右子树）。</li>
+    <li><strong>二叉搜索树中的插入操作（力扣 701，中等）</strong>——与本题共用「走单边定位」动作；差异在插入不用动老结构，沿 BST 性质找到空位挂上即可（提示：递归或循环，比 val 小走左、大走右，遇到 null 就 new 一个节点接上）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">18.3</span>二叉搜索树中的搜索（简单，力扣 700）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：利用有序性，每步砍掉一半</span></p>
+
+<p><strong>题意：</strong>给定一棵二叉搜索树的根 <code>root</code> 和一个目标值 <code>val</code>，请你在树里找到值为 <code>val</code> 的节点并返回它的子树；找不到就返回 <code>null</code>。例如树 <code>[4,2,7,1,3]</code> 找 <code>2</code>，返回以 2 为根的子树（包含 1 和 3）。</p>
+
+<h3>思路推导：别遍历，要「二分」</h3>
+
+<p>如果这是一棵普通二叉树，你只能老老实实遍历所有节点，O(n)。但这是 BST！回忆武器二：<strong>val 比当前节点小，目标一定在左子树；大，一定在右子树</strong>。所以每一步都直接决定往哪边走，另一半根本不用看——这就是树上的「二分查找」。</p>
+
+<p>用递归还是循环？两者都行。递归就是「把走单边」这句话翻译成代码；循环则更省栈空间、更好写。下面用循环写，思路更直白：从根出发，比大小决定下一脚踩左边还是右边，碰到 null 说明这条路走到头了，树里没有 val。</p>
+
+<pre><code class="nohl">在 [4,2,7,1,3] 里找 7：
+  4 → 7&gt;4 走右 → 到 7，命中，返回以 7 为根的子树
+在 [4,2,7,1,3] 里找 5：
+  4 → 5&gt;4 走右 → 7 → 5&lt;7 走左 → 左是 null → 没找到，返回 null
+</code></pre>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> TreeNode searchBST(TreeNode root, <span class="kw">int</span> val) {
+        TreeNode cur = root;
+        <span class="kw">while</span> (cur != <span class="kw">null</span>) {
+            <span class="kw">if</span> (cur.val == val) <span class="kw">return</span> cur;     <span class="cm">// 找到了，返回整棵子树</span>
+            <span class="kw">if</span> (val &lt; cur.val) cur = cur.left;  <span class="cm">// 目标更小，只走左边</span>
+            <span class="kw">else</span> cur = cur.right;               <span class="cm">// 目标更大，只走右边</span>
+        }
+        <span class="kw">return</span> <span class="kw">null</span>;                            <span class="cm">// 走到叶子还没碰到，说明不存在</span>
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>每步砍掉一半子树，最多走树高 h 步，时间 <strong>O(h)</strong>（平衡树 O(log n)，最坏退化 O(n)），空间 O(1)。这就是 BST 查找相比普通树的降维优势。</p>
+
+<div class="tip">
+  对比普通二叉树找值（必须遍历 O(n)），这道题的「简单」全靠 BST 的有序性。记住：<strong>只要题目明确说「二叉搜索树」，先想能不能走单边</strong>，别一上来就无脑 DFS。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>二叉搜索树中的插入操作（力扣 701，中等）</strong>——与本题共用「走单边定位」；差异在找到空位后要把新节点挂上去，且需要把路径上的父指针接回（提示：递归写法最省事，<code>root.left = insert(root.left, val)</code> 一路把子树接回）。</li>
+    <li><strong>二叉搜索树的最近公共祖先（力扣 235，简单）</strong>——与本题共用「利用有序性剪枝」；差异在给定两节点 p、q，利用 BST 性质：若 p、q 分居当前节点两侧则当前节点即 LCA，否则往同一侧继续走（提示：不用像普通树那样后序汇报，直接边走边判断）。</li>
+    <li><strong>二叉搜索树与双向链表（剑指 Offer 36，中等）</strong>——与本题共用「中序有序」；差异在把中序遍历得到的升序序列改成循环双向链表（提示：中序遍历时维护一个 prev 指针，边遍历边把 prev.right=cur、cur.left=prev 串起来，首尾再相连）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">18.4</span>将有序数组转换为二叉搜索树（简单，力扣 108）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：取中点当根，左右半边各建子树</span></p>
+
+<p><strong>题意：</strong>给你一个<strong>升序排列</strong>的整数数组 <code>nums</code>，请你把它转换成一棵「高度平衡」的二叉搜索树，并返回根节点。高度平衡指每个节点的左右子树高度差不超过 1。例如 <code>nums = [-10,-3,0,5,9]</code>，一种合法答案是 <code>[0,-3,9,-10,null,5]</code>。</p>
+
+<h3>思路推导：从「数组有序」想到「BST 中序有序」</h3>
+
+<p>已知两件事：(1) 数组是升序的；(2) BST 的中序遍历也是升序的。那是不是「数组就是某棵 BST 的中序序列」？是的！问题于是变成：<strong>已知中序序列，怎么还原出一棵树，而且还要平衡？</strong></p>
+
+<p>中序序列决定了「谁在谁左边、谁在谁右边」，但没决定「谁是根」。根选哪里，整棵树的形状就由哪里切开。要让树<strong>平衡</strong>，最自然的切法就是<strong>每次取中点当根</strong>：</p>
+
+<ul>
+  <li>中点左边的所有元素都比它小 → 天然构成左子树的中序序列；</li>
+  <li>中点右边的所有元素都比它大 → 天然构成右子树的中序序列；</li>
+  <li>左右半边长度几乎相等，所以递归下去左右子树高度差不超过 1，自动平衡。</li>
+</ul>
+
+<pre><code class="nohl">nums = [-10, -3, 0, 5, 9]，长度 5，中点下标 2 = 0 当根：
+        0
+      /   \
+  左半[-10,-3]  右半[5,9]
+  左半中点 -3 当根，左挂 -10 →   右半中点 9 当根，左挂 5 →
+        0
+      /   \
+    -3     9
+    /     /
+  -10    5
+中序走一遍：-10,-3,0,5,9 正好是原数组，且左右高度差 ≤ 1 ✓
+</code></pre>
+
+<p><strong>为什么中点能保证平衡？</strong>因为每次把区间从正中间劈成两半，左右子树分到的元素数量最多差 1，递归深度自然就是 log n 级别，不会退化成链。注意中点可以「偏左」或「偏右」（比如区间长度偶数时有两个候选中点），两种都合法，题目也接受任意一种。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> TreeNode sortedArrayToBST(<span class="kw">int</span>[] nums) {
+        <span class="kw">return</span> build(nums, 0, nums.length - 1);
+    }
+
+    <span class="cm">// 用闭区间 [lo, hi] 表示「当前要建的子树对应的数组片段」</span>
+    <span class="kw">private</span> TreeNode build(<span class="kw">int</span>[] nums, <span class="kw">int</span> lo, <span class="kw">int</span> hi) {
+        <span class="kw">if</span> (lo &gt; hi) <span class="kw">return</span> <span class="kw">null</span>;                 <span class="cm">// 区间为空，返回空树</span>
+        <span class="kw">int</span> mid = lo + (hi - lo) / 2;             <span class="cm">// 中点当根（这样写防 (lo+hi) 溢出）</span>
+        TreeNode root = <span class="kw">new</span> TreeNode(nums[mid]);
+        root.left = build(nums, lo, mid - 1);     <span class="cm">// 左半边是左子树</span>
+        root.right = build(nums, mid + 1, hi);    <span class="cm">// 右半边是右子树</span>
+        <span class="kw">return</span> root;
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>每个数组元素恰好当一次根，建树 O(n)；递归栈深度为树高 O(log n)（平衡）。返回的就是高度平衡的 BST，满足题目要求。</p>
+
+<div class="tip">
+  如果题目给的是<strong>普通二叉树</strong>要变平衡（力扣 1382），思路完全对称：先中序遍历把节点收集成有序数组，再用本题的「取中点建树」还原——本质是「中序展平 → 中点重建」。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>有序链表转换二叉搜索树（力扣 109，中等）</strong>——与本题共用「取中点当根」；差异在输入是<strong>单向链表</strong>不能随机访问下标，得用<strong>快慢指针</strong>找中点，或先转成数组再复用本题（提示：快慢指针找到中点后断开链表，递归左右；注意断开前记录 mid.next 再置 null）。</li>
+    <li><strong>将二叉搜索树变平衡（力扣 1382，中等）</strong>——与本题共用「中序展平 + 中点重建」；差异在先对原 BST 中序遍历得到有序节点列表，再调用本题的 build 逻辑重建（提示：中序收集时直接存 TreeNode 引用，重建时重新连 left/right）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">18.5</span>二叉搜索树中第 K 小的元素（中等，力扣 230）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：中序遍历数到第 K 个</span></p>
+
+<p><strong>题意：</strong>给定一棵二叉搜索树的根和一个整数 <code>k</code>，返回树中<strong>第 k 小的元素</strong>（1-based）。例如树 <code>[3,1,4,null,2]</code>，中序是 <code>[1,2,3,4]</code>，k=1 返回 1，k=3 返回 3。</p>
+
+<h3>思路推导：中序第 K 个 = 第 K 小</h3>
+
+<p>普通无序数组找第 k 小，得排序或快选（见<a href="ch16.html">专题 16</a>）。但这是 BST！武器一告诉我们：<strong>BST 的中序遍历天然升序</strong>。升序序列里的第 k 个，不就是第 k 小吗？所以这条路简直是量身定做——</p>
+
+<p>顺着中序顺序（左 → 根 → 右）走，每访问一个节点就计数 +1，数到 k 的瞬间，那个节点的值就是答案。不需要把整棵树都遍历完，数到了就可以停（提前返回能省时间，尤其 k 很小时）。</p>
+
+<pre><code class="nohl">树 [3,1,4,null,2]，中序访问顺序：1(计数1) → 2(计数2) → 3(计数3) → 4(计数4)
+k=3：数到第三个节点是 3，直接返回，不用再访问 4。
+</code></pre>
+
+<p>为什么不用「先收集成数组再取 arr[k-1]」？那样空间 O(n)。用递归计数 + 提前返回，空间只有栈 O(h)，更优雅。两种都能过，下面给「计数 + 提前停」的写法。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">private</span> <span class="kw">int</span> count;     <span class="cm">// 已经中序访问了多少个节点</span>
+    <span class="kw">private</span> <span class="kw">int</span> ans;       <span class="cm">// 第 k 小的答案</span>
+
+    <span class="kw">public</span> <span class="kw">int</span> kthSmallest(TreeNode root, <span class="kw">int</span> k) {
+        count = 0;
+        inorder(root, k);
+        <span class="kw">return</span> ans;
+    }
+
+    <span class="kw">private</span> <span class="kw">void</span> inorder(TreeNode node, <span class="kw">int</span> k) {
+        <span class="kw">if</span> (node == <span class="kw">null</span> || count &gt;= k) <span class="kw">return</span>;   <span class="cm">// 空 或 已经数够就别再走了</span>
+        inorder(node.left, k);                    <span class="cm">// 先左</span>
+        count++;                                  <span class="cm">// 访问当前（根）</span>
+        <span class="kw">if</span> (count == k) { ans = node.val; <span class="kw">return</span>; } <span class="cm">// 正好第 k 个，记下并停</span>
+        inorder(node.right, k);                   <span class="cm">// 再右</span>
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>平均访问 k 个节点就停，时间约 O(h + k)（h 是到目标节点的深度）；最坏 k=n 时 O(n)。空间 O(h) 递归栈。比「全收集再取」省空间，且提前返回更快。</p>
+
+<div class="tip">
+  想问「第 k <strong>大</strong>」怎么办？对称地做<strong>逆中序遍历</strong>（右 → 根 → 左），数到第 k 个就是从大到小第 k 个。剑指 Offer 54 就是这题的另一面。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>两数之和 IV - 输入 BST（力扣 653，简单）</strong>——与本题共用「BST 中序有序」；差异在问是否存在两个节点值之和等于 k，可中序收集成有序数组后双指针，或边遍历边用 HashSet 查 complement（提示：遍历时看 <code>k - node.val</code> 是否已在集合里，在就找到）。</li>
+    <li><strong>二叉搜索树的第 k 大节点（剑指 Offer 54，中等）</strong>——与本题共用「中序数数」；差异在用逆中序（右→根→左）数到第 k 个（提示：把 18.5 的左右访问顺序反过来即可）。</li>
+    <li><strong>恢复二叉搜索树（力扣 99，困难）</strong>——与本题共用「中序有序」视角；差异在中序里找两处逆序（prev &gt; cur）定位被交换的两个节点再交换值（提示：第一次下降记 prev，第二次下降记 cur，交换这两个节点的 val）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">18.6</span>删除二叉搜索树中的节点（中等，力扣 450）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：删完用「中序后继」顶替，保住 BST 性质</span></p>
+
+<p><strong>题意：</strong>给定一棵 BST 的根和一个值 <code>key</code>，删掉值为 key 的节点，并且<strong>保证删除后仍然是一棵合法的 BST</strong>，返回新的根。例如 <code>[5,3,6,2,4,null,7]</code> 删 3，返回 <code>[5,4,6,2,null,null,7]</code> 之类（删法不唯一但都合法）。</p>
+
+<h3>思路推导：删除的难处在「别破坏秩序」</h3>
+
+<p>查找很简单（走单边，见 18.3）。真正的麻烦是：删掉一个节点后，它下面的子树怎么接回去，才能<strong>不破坏「左小右大」</strong>？按「要删节点的孩子情况」分三种：</p>
+
+<ul>
+  <li><strong>情况一：没有左孩子。</strong>很省事，直接用右孩子（可能也是 null）顶替当前位置即可，右边本来就都比当前大，接上去仍合法。</li>
+  <li><strong>情况二：没有右孩子。</strong>对称，用左孩子顶替。</li>
+  <li><strong>情况三：左右孩子都有（最棘手）。</strong>你不能随便用左孩子或右孩子顶，因为那样会丢掉另一半子树。正确做法是：找一个「值最合适」的节点来替代当前节点，让它同时满足「比左子树都大、比右子树都小」。谁是这个人选？<strong>中序后继（in-order successor）</strong>——也就是右子树里<strong>最左边</strong>的那个节点，它是右子树里最小的值，自然大于左子树全部、小于右子树剩余部分。</li>
+</ul>
+
+<pre><code class="nohl">删 5（左右都有）的例子：
+        5
+      /   \
+     3     8
+    / \   / \
+   2   4 6   9
+右子树最左下是 6（右子树里最小的），用 6 顶替 5：
+        6
+      /   \
+     3     8
+    / \   / \
+   2   4 7   9      （原 6 被抽走，6 的右孩子 7 接回 8 的左）
+为什么是 6？因为 6 是「大于左子树(2,3,4)、小于右子树其余(7,8,9)」的唯一值，顶上后仍合法。
+</code></pre>
+
+<p><strong>为什么「用中序后继顶替」能保持 BST 性质？</strong>因为中序后继是右子树的最小值，它满足：大于当前节点的所有左后代、小于右子树里除它以外的所有节点。把它的值复制到当前节点，再递归地把「后继」从右子树里删掉（后继至多只有一个右孩子，落回情况一/二很好处理），整棵树秩序纹丝不动。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> TreeNode deleteNode(TreeNode root, <span class="kw">int</span> key) {
+        <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span> <span class="kw">null</span>;            <span class="cm">// 没找到，原样返回</span>
+        <span class="kw">if</span> (key &lt; root.val) {
+            root.left = deleteNode(root.left, key);     <span class="cm">// 去左子树删</span>
+        } <span class="kw">else</span> <span class="kw">if</span> (key &gt; root.val) {
+            root.right = deleteNode(root.right, key);   <span class="cm">// 去右子树删</span>
+        } <span class="kw">else</span> {
+            <span class="cm">// 找到要删的节点就是 root，分三种情况</span>
+            <span class="kw">if</span> (root.left == <span class="kw">null</span>) <span class="kw">return</span> root.right;   <span class="cm">// 情况一：无左，右孩子顶</span>
+            <span class="kw">if</span> (root.right == <span class="kw">null</span>) <span class="kw">return</span> root.left;   <span class="cm">// 情况二：无右，左孩子顶</span>
+            <span class="cm">// 情况三：左右都有，找中序后继（右子树最左节点）</span>
+            TreeNode succ = root.right;
+            <span class="kw">while</span> (succ.left != <span class="kw">null</span>) succ = succ.left;
+            root.val = succ.val;                        <span class="cm">// 用后继的值覆盖当前</span>
+            <span class="cm">// 删掉后继本身（它至多有一个右孩子，递归会落回情况一/二）</span>
+            root.right = deleteNode(root.right, succ.val);
+        }
+        <span class="kw">return</span> root;                                    <span class="cm">// 把接好的子树交回上层</span>
+    }
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>查找要删节点走单边 O(h)；找后继沿右子树最左走也是 O(h)；总复杂度 <strong>O(h)</strong>（h 为树高）。空间 O(h) 递归栈。关键点在于「递归地把子树重新接回」——这正是<a href="ch07.html">专题 07</a>分解式思想的体现：左右子树干完删除，把结果交回给我。</p>
+
+<div class="warn">
+  <strong>最容易写错的点：</strong>情况三里，有人用「前驱」（左子树最右节点）顶替也完全可以，但你<strong>必须删掉被复制走的那个后继/前驱节点本身</strong>，否则树上会出现两个相同值、且结构混乱。代码里 <code>root.right = deleteNode(root.right, succ.val)</code> 这一步就是在删后继，绝不能漏。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>二叉搜索树中的插入操作（力扣 701，中等）</strong>——与本题共用「走单边定位 + 递归接回子树」；差异在插入不用处理三种情况，找到空位 new 一个节点挂上即可（提示：<code>root.left = insert(root.left, val)</code> 把新子树接回）。</li>
+    <li><strong>修剪二叉搜索树（力扣 669，中等）</strong>——与本题共用「递归重建 BST」；差异在给定区间 [low, high]，把不在区间里的节点整棵剪掉（提示：当前节点 &lt; low 就丢掉它、返回修剪后的右子树；&gt; high 同理返回左子树；在区间内则递归修剪左右）。</li>
+    <li><strong>不同的二叉搜索树 II（力扣 95，中等）</strong>——与本题共用「BST 由中序区间决定形状」；差异在给定 1~n，枚举所有合法的 BST 形态（提示：对每个候选根 i，左用 [1,i-1]、右用 [i+1,n] 递归生成，左右结果两两组合）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">18.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul>
+    <li><strong>验证 BST 时「只比较父子」。</strong>如 18.2 所讲，必须沿祖先把上下界 (lower, upper) 一路传下去。只比当前节点和左右孩子，会放过「孙辈越界」的非法树（例如 10 的右子树里藏着 6）。</li>
+    <li><strong>Integer 边界值误伤（最隐蔽）。</strong>验证 BST 时若用 <code>Integer.MIN_VALUE</code> / <code>Integer.MAX_VALUE</code> 当初始上下界，一旦节点值正好等于 <code>Integer.MIN_VALUE</code>，<code>node.val &gt;= lower</code> 这个「等于」判断会把它误判成非法（因为 MIN_VALUE 不允许再小，但你的下界就是它自己）。<strong>解决：初始界用 <code>Long.MIN_VALUE</code> / <code>Long.MAX_VALUE</code></strong>，或比较时用更谨慎的写法。</li>
+    <li><strong>删除节点后忘了把子树接回去。</strong>18.6 三种情况里，每一次 <code>root.left = deleteNode(...)</code> / <code>root.right = ...</code> 都是在「把处理好的子树重新连上」。漏写赋值、或只写 <code>deleteNode(root.left, key)</code> 不接回，树就断了。</li>
+    <li><strong>把 BST 当普通树无脑遍历。</strong>题目白纸黑字写了「二叉搜索树」，还写个 BFS/DFS 全扫来找值、计数，白白浪费 O(log n) 的武器。先想「走单边」和「中序有序」。</li>
+    <li><strong>中序遍历的「第 k 小」没提前停。</strong>数到 k 应立刻返回，而不是傻傻遍历完整棵树再取 —— 尤其 k 很小或树很大时差别明显。</li>
+    <li><strong>构建平衡 BST 时中点下标写法溢出。</strong><code>mid = (lo + hi) / 2</code> 在 lo+hi 很大时可能整数溢出，写成 <code>lo + (hi - lo) / 2</code> 更安全。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">18.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.（概念题）为什么验证 BST 不能只比较「每个节点和它的左右孩子」，而要递归传递上下界？请举一个父子和睦但整体非法的例子。</p>
+  <div class="qa-a">因为 BST 要求「某节点的所有左后代都小、所有右后代都大」，约束来自整条祖先链，不只是直接父亲。例子：根 10，左 5，右 15，而 15 的左孩子是 6。父子比较全过（10&gt;5、10&lt;15、15&gt;6），但 6 位于 10 的右子树却小于 10，违反 BST 铁律。只有把祖先 10 定的下界 (10, +∞) 一路传给 6，才能发现 6 &lt; 10 越界。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2.（概念题）删除 BST 节点时，为什么用「中序后继（右子树最左节点）」顶替能保持 BST 性质？能不能用「前驱」？</p>
+  <div class="qa-a">中序后继是右子树里最小的值，它必然大于被删节点的全部左后代、且小于右子树里其余所有节点，所以复制到被删位置后整棵树仍满足左小右大。完全可以用「前驱」（左子树最右节点，即左子树最大值），效果对称。无论用哪个，记得最后要把那个被复制走的继任节点本身从树中删掉（它至多有一个孩子，递归落回情况一/二）。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.（动手题）不用额外数组，写一个函数：输入一棵 BST 的根，返回它的<strong>第 k 大</strong>元素（注意是第 k 大，不是第 k 小）。先说思路再写核心递归。</p>
+  <div class="qa-a">思路：BST 升序中序是「小→大」，要做「第 k 大」就走<strong>逆中序（右→根→左）</strong>，这样访问顺序是「大→小」，数到第 k 个就是第 k 大。核心：<code>void rev(TreeNode n, int k){ if(n==null||c&gt;=k) return; rev(n.right,k); c++; if(c==k){ans=n.val;return;} rev(n.left,k); }</code>，初始 c=0，调用 <code>rev(root, k)</code> 后返回 ans。与 18.5 的写法仅左右访问顺序相反。</div>
+</div>
+
+<div class="goal">学完这章，你应该能回答：BST 的两大武器是什么；为什么验证 BST 要传上下界、初始界为什么用 Long；搜索/构建如何借「走单边」和「中序有序」；删除节点的三种情况尤其是「中序后继顶替」为什么保秩序；以及第 k 小为什么等于中序第 k 个。</div>
+
+<div class="navfoot">
+  <a href="ch17.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 17 · 堆（优先队列）</div></a>
+  <a class="next" href="ch19.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 19 · Trie 前缀树</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 18 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

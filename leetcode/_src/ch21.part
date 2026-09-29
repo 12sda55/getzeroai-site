@@ -1,0 +1,397 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 21</div>
+  <h1><span class="ch-tag">专题 21</span>字符串算法</h1>
+  <p class="lead">字符串是算法题里永不退场的主角。前面你已经用过「双指针 / 滑动窗口」（专题 01、03）和「哈希计数」（专题 02）去解决不少字符串题，
+  比如无重复字符的最长子串、字母异位词。这一章我们把武器库补齐最后两块——<strong>中心扩展与回文</strong>、<strong>字符串模拟（拼接 / 反转 / 进位）</strong>，
+  顺带给好奇的同学一个「选学」彩蛋：KMP 和 Manacher 这两个竞赛向的提速神器。
+  学完本章，你手里处理字符串的「四种武器」就齐了，绝大多数面试 / 中等题都能对号入座。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握中心扩展、大数模拟、原地反转</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 01 双指针、专题 02 哈希、专题 03 滑窗</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 道经典题 Java 代码 + KMP 完整模板</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">7–9 小时</div></div>
+</div>
+
+<hr>
+
+<h2 id="s1"><span class="h2-num">21.1</span>字符串题的四种武器</h2>
+
+<p>在动手写代码前，先把「这类题我该掏哪把刀」想清楚，能省下大量试错时间。字符串题翻来覆去就这四类套路，前两种你早就会了，后两种是本章新补的：</p>
+
+<table>
+  <thead><tr><th style="width:200px">武器</th><th style="width:200px">适用信号</th><th>典型题</th></tr></thead>
+  <tbody>
+    <tr><td><strong>双指针 / 滑窗</strong><br>（专题 01 / 03）</td><td>连续子串、找「满足某条件的子段」</td><td>无重复子串、最小覆盖子串</td></tr>
+    <tr><td><strong>哈希计数</strong><br>（专题 02）</td><td>频次统计、异位词、字符种类</td><td>字母异位词、字符串中的第一个唯一字符</td></tr>
+    <tr><td><strong>中心扩展与回文</strong><br>（本章新补）</td><td>「回文」「对称」「最长对称子串」</td><td>最长回文子串、分割回文串</td></tr>
+    <tr><td><strong>字符串模拟</strong><br>（本章新补）</td><td>「大数相加 / 乘」「反转」「进位」</td><td>字符串相加、反转字符串里的单词</td></tr>
+  </tbody>
+</table>
+
+<h3>为什么回文和模拟要单列出来</h3>
+
+<p>回文问题有个特点：它天然「对称」，但<strong>对称的中心可能是字符，也可能是两个字符中间的空隙</strong>。这种「奇偶两种中心」的细节，用滑窗很难干净地表达，所以单独给一套「中心扩展」的打法。</p>
+
+<p>模拟类题（比如两个字符串形式的大数相加）则反过来——它没有任何巧妙算法，考的就是你<strong>能不能把小学竖式一丝不苟地翻译成代码</strong>：末位对齐、逐位加、处理进位、处理长度不等。这类题「暴力就是最优解」，拼的是细心。</p>
+
+<div class="tip">
+  <strong>本章定位：</strong>中心扩展（s2）、字符串相加（s3）、反转单词（s4）是主线，面试高频，必须会写。
+  KMP（s5）和 Manacher（s6）标了「选学」——它们把某些问题的复杂度从 O(n²) 压到 O(n)，是竞赛利器，但第一次学只要<strong>看懂思想</strong>即可，不必死磕代码。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">21.2</span>最长回文子串：中心扩展（中等，力扣 5）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：枚举 2n-1 个中心 · 奇偶统一</span></p>
+
+<p><strong>题意：</strong>给你一个字符串 <code>s</code>，找出其中的<strong>最长回文子串</strong>（回文 = 正读反读一样的串，如 <code>"aba"</code>、<code>"bb"</code>），返回它。
+<strong>例：</strong><code>s = "babad"</code> → 最长回文是 <code>"bab"</code>（或 <code>"aba"</code>，返回哪个都算对）；<code>s = "cbbd"</code> → <code>"bb"</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，暴力。</strong>枚举所有子串（O(n²) 个），每个判断是不是回文（O(n)），总 O(n³)。太慢，但给了我们一个正确性的底线。</p>
+
+<p><strong>第二步，换个角度：从「中心」往外扩。</strong>任何一段回文，都<strong>围绕某个中心左右对称</strong>。比如 <code>"aba"</code> 以中间的 <code>'b'</code> 为中心，<code>"bb"</code> 以两个 <code>'b'</code> 中间的「空隙」为中心。
+如果我们<strong>枚举每一个可能的中心，从它开始向两边比对</strong>，一旦左右字符不相等就停，那么从当前中心能扩出的最长回文就找到了。把每个中心的结果取最大，就是答案。</p>
+
+<p><strong>第三步，奇偶中心怎么统一。</strong>这是最容易漏的点：</p>
+<ul>
+  <li>长度为奇数的回文（如 <code>"aba"</code>），中心是<strong>一个字符</strong>；</li>
+  <li>长度为偶数的回文（如 <code>"bb"</code>），中心是<strong>两个字符之间的空隙</strong>。</li>
+</ul>
+<p>如果只枚举「字符」当中心，会漏掉所有偶数长度回文。怎么办？把中心数从 n 个扩成 <code>2n-1</code> 个：把每个「字符」和每对「相邻字符的空隙」都当作中心。
+代码上最干净的做法是写一个辅助函数 <code>expand(left, right)</code>，传两个起点：</p>
+<pre><code class="nohl">中心 i（奇数长度）：expand(i, i)       // 左右从同一个字符出发
+中心 i 与 i+1 之间（偶数）：expand(i, i+1)   // 左右从相邻两个字符出发</code></pre>
+
+<p><strong>第四步，为什么不用 DP？</strong>最长回文子串也能用区间 DP：<code>dp[i][j]</code> 表示 <code>s[i..j]</code> 是否回文，根据 <code>s[i]==s[j]</code> 和 <code>dp[i+1][j-1]</code> 转移，时间 O(n²)、<strong>空间 O(n²)</strong>。
+中心扩展同样是 O(n²) 时间，但<strong>空间只要 O(1)</strong>（只用了几个指针）。在「只求一个最长」的场景下，中心扩展又省空间又好写，所以优先用它；DP 版本的价值在于——它正是下一章 <a href="ch23.html#s2">23.2 节</a>「最长回文<em>子序列</em>」的铺垫，那里子序列不连续，中心扩展就不灵了。</p>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() < 2) return s;   // 空或单字符，本身即回文
+        int start = 0, maxLen = 1;                    // 记录最长回文的起点和长度
+        for (int i = 0; i < s.length(); i++) {
+            int len1 = expand(s, i, i);               // 以 i 为中心（奇数长度）
+            int len2 = expand(s, i, i + 1);           // 以 i 与 i+1 间为中心（偶数长度）
+            int len = Math.max(len1, len2);
+            if (len > maxLen) {                        // 发现更长的，更新记录
+                maxLen = len;
+                start = i - (len - 1) / 2;            // 反推回文起点
+            }
+        }
+        return s.substring(start, start + maxLen);    // 右开区间，含 start+maxLen 前一个
+    }
+
+    // 从 (left, right) 向两边扩，返回以之为中心的最长回文长度
+    private int expand(String s, int left, int right) {
+        while (left >= 0 && right < s.length()
+               && s.charAt(left) == s.charAt(right)) {
+            left--;                                   // 左右相等，继续往外扩
+            right++;
+        }
+        // 退出时 s[left]!=s[right] 或越界，回文长度为 (right-1)-(left+1)+1 = right-left-1
+        return right - left - 1;
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(n²) 时间（2n-1 个中心，每个最多扩 n 步），O(1) 空间（只用了常数个指针）。这是面试里关于「最长回文子串」的标准写法。</p>
+
+<div class="tip">
+  <strong>边界自查：</strong>① 单字符 <code>"a"</code> → 直接返回，正确。② 全部相同 <code>"aaaa"</code> → 偶数中心 <code>expand(1,2)</code> 扩到长度 4，正确。
+  ③ 起点反推公式 <code>start = i - (len-1)/2</code>：当 len 为偶数，如 i=1、len=4，(4-1)/2=1，start=0，覆盖 <code>s[0..3]</code>，正确。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>回文子串（力扣 647，中等）</strong>——与本题共用「中心扩展」技巧；差异在<strong>统计所有回文子串的个数</strong>而不是只找最长的（提示：每个中心向外扩，每遇到一次 <code>left==right</code> 就计数 +1，最后把奇数、偶数中心的计数都累加）。</li>
+    <li><strong>最长回文串（力扣 409，简单）</strong>——同为回文但不再「子串」，而是用字符频次<strong>拼</strong>一个最长回文（提示：偶数频次全取、奇数频次取偶数部分，最多留一个奇数频次字符放正中心）。</li>
+    <li><strong>最短回文串（力扣 214，困难）</strong>——和本题共享「回文 + KMP 思想」；差异在用 next 数组找<strong>最长回文前缀</strong>，把前面非回文部分反转补到末尾（提示：构造 <code>s + "#" + reverse(s)</code>，求其 next 数组末值即得最长回文前缀长度）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">21.3</span>字符串相加：大数模拟（简单，力扣 415）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：末位对齐 · 逐位加 · 进位</span></p>
+
+<p><strong>题意：</strong>给定两个<strong>非负整数</strong>的字符串 <code>num1</code>、<code>num2</code>（长度可能极大，大到 <code>int</code> 装不下），返回它们<strong>和的字符串</strong>（也不能用库函数直接转大数）。
+<strong>例：</strong><code>num1 = "11", num2 = "123"</code> → <code>"134"</code>；<code>num1 = "0", num2 = "0"</code> → <code>"0"</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，明确为什么不能直接转。</strong>这是本题最关键的提醒：<code>Integer.parseInt("12345678901234567890")</code> 会直接溢出抛异常，因为 64 位 <code>long</code> 也才约 9×10¹⁸。题目给的「字符串」就是用来<strong>绕开数值类型上限</strong>的，所以必须<strong>按位模拟竖式加法</strong>。</p>
+
+<p><strong>第二步，回忆小学竖式。</strong>我们从两个数字的<strong>最右（个位）开始</strong>，一位一位往左加，每位产生一个「和」与一个「进位」：</p>
+<pre><code class="nohl">    1 2 3
+  +   1 1
+  -------
+    1 3 4     个位 3+1=4 无进位；十位 2+1=3；百位 1 落下</code></pre>
+
+<p><strong>第三步，用双指针 + carry 翻译。</strong>设 <code>i</code> 指向 <code>num1</code> 末尾、<code>j</code> 指向 <code>num2</code> 末尾，<code>carry</code> 初始为 0。每一步：</p>
+<ul>
+  <li>取 <code>digit1 = i>=0 ? num1[i]-'0' : 0</code>（<code>num1</code> 用完了就补 0）；<code>digit2</code> 同理；</li>
+  <li><code>sum = digit1 + digit2 + carry</code>；</li>
+  <li>当前位结果 = <code>sum % 10</code>，新进位 <code>carry = sum / 10</code>；</li>
+  <li>两个指针都左移一位，直到两者都越界<strong>且 carry 也为 0</strong>。</li>
+</ul>
+
+<p><strong>第四步，注意结果顺序。</strong>我们从个位往高位算，得到的是「低位在前」的片段，最后要<strong>反转</strong>一下才是正常数字顺序。用 <code>StringBuilder</code> 拼接后 <code>reverse()</code> 即可。</p>
+
+<h3>参考代码</h3>
+
+<pre><code>class Solution {
+    public String addStrings(String num1, String num2) {
+        int i = num1.length() - 1;          // 指向 num1 个位
+        int j = num2.length() - 1;          // 指向 num2 个位
+        int carry = 0;                       // 进位
+        StringBuilder sb = new StringBuilder();
+        while (i >= 0 || j >= 0 || carry != 0) {
+            int d1 = i >= 0 ? num1.charAt(i) - '0' : 0;  // 用完补 0
+            int d2 = j >= 0 ? num2.charAt(j) - '0' : 0;
+            int sum = d1 + d2 + carry;
+            sb.append(sum % 10);             // 当前位（低位先放）
+            carry = sum / 10;                // 进位留给下一轮
+            i--; j--;
+        }
+        return sb.reverse().toString();      // 反转成正常高位在前的顺序
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(max(n, m)) 时间（两个串各走一遍），O(max(n, m)) 空间（结果串长度）。这是「大数加法」的骨架，<strong>乘法、减法同一套路</strong>。</p>
+
+<div class="tip">
+  <strong>字符转数字的小技巧：</strong><code>num1.charAt(i) - '0'</code> 利用 ASCII 码差值把字符 <code>'7'</code> 变成整数 <code>7</code>。千万别写 <code>Integer.parseInt(Character.toString(ch))</code>，既慢又啰嗦。详见 <a href="ch21.html#s7">21.7 节</a>坑一。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>字符串相乘（力扣 43，中等）</strong>——同是大数模拟，但升级成「乘」；差异在<strong>逐位相乘再加进位、错位累加</strong>（提示：用 <code>int[]</code> 存结果，<code>num1[i]*num2[j]</code> 累加到 <code>res[i+j]</code> 与 <code>res[i+j+1]</code>，最后统一处理进位）。</li>
+    <li><strong>加一（力扣 66，简单）</strong>——末尾加 1 的进位版；差异在<strong>从个位 +1，遇 9 变 0 继续向前进</strong>（提示：从末位往前，若为 9 置 0 继续，否则 +1 返回；全 9 则新建长度 +1 的数组，首位填 1）。</li>
+    <li><strong>二进制求和（力扣 67，简单）</strong>——与本题几乎一模一样，只是<strong>基数是 2</strong>（提示：双指针从末位，<code>carry = sum/2</code>、<code>当前位 = sum%2</code>，逻辑完全一致）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">21.4</span>反转字符串里的单词（中等，力扣 151）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：trim + 从后往前拼 · 两次反转</span></p>
+
+<p><strong>题意：</strong>给你一个字符串 <code>s</code>，把其中<strong>单词的顺序反转</strong>，并去掉多余空格（单词间只留一个空格，首尾无空格）。
+<strong>例：</strong><code>s = "  the sky  is blue  "</code> → <code>"blue is sky the"</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，暴力直观法：分割再逆序。</strong>用 <code>split(" +")</code> 按空格切开，反转数组，再拼回去。能过，但面试官通常想看你会不会<strong>不依赖库函数、且 O(1) 额外空间</strong>地做。</p>
+
+<p><strong>第二步，从后往前直接拼（推荐）。</strong>既然要反转单词顺序，那就<strong>逆着读</strong>：用指针 <code>i</code> 从末尾往前扫，遇到单词就收集，遇到空格就跳过。收集一个单词后补一个空格，最后再 <code>trim</code> 掉末尾多余空格。这样一遍扫描就搞定，且只用 O(1) 额外变量（除了结果串）。</p>
+
+<p><strong>第三步，「原地 O(1) 空间」的两次反转技巧（提一嘴）。</strong>如果题目<strong>严格限制不能开新大数组</strong>，可以用「原地反转」三步法：</p>
+<ol>
+  <li>先<strong>去掉多余空格</strong>（双指针把有效字符前移，压实）；</li>
+  <li><strong>整个字符串整体反转</strong>一遍（单词顺序被反过来，但每个单词内部也被反了）；</li>
+  <li>再<strong>逐个单词内部反转</strong>回来。</li>
+</ol>
+<p>例：<code>"the sky"</code> → 压实 → 整体反转 <code>"yks eht"</code> → 单词内反转 <code>"sky the"</code>。两次反转互为抵消，巧妙地只用了几个指针变量就完成。本题我们用更直观的「从后往前拼」即可，但要知道这个技巧存在。</p>
+
+<h3>参考代码（从后往前拼，易读版）</h3>
+
+<pre><code>class Solution {
+    public String reverseWords(String s) {
+        int i = s.length() - 1;             // 从末尾开始
+        StringBuilder sb = new StringBuilder();
+        while (i >= 0) {
+            // ① 跳过尾部空格
+            while (i >= 0 && s.charAt(i) == ' ') i--;
+            if (i < 0) break;               // 全是空格，结束
+            // ② 收集一个单词（从右往左读）
+            int j = i;
+            while (j >= 0 && s.charAt(j) != ' ') j--;
+            // 此时 s[j+1 .. i] 是一个单词，按顺序加入结果
+            sb.append(s.substring(j + 1, i + 1));
+            sb.append(' ');                 // 单词间补一个空格
+            i = j;                          // 继续往前
+        }
+        // 去掉最后一个多余空格（若存在）并返回
+        return sb.length() == 0 ? "" : sb.substring(0, sb.length() - 1);
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(n) 时间（每个字符最多被访问一两次），O(n) 空间（<code>StringBuilder</code> 存结果）。如果要严格 O(1) 额外空间，则用上面的「两次反转」原地做法。</p>
+
+<div class="tip">
+  <strong><code>substring(a, b)</code> 是右开区间：</strong>它取的是 <code>[a, b)</code>，即包含 <code>a</code>、<strong>不包含</strong> <code>b</code>。所以单词 <code>s[j+1..i]</code> 要写成 <code>substring(j+1, i+1)</code>。这个右开特性几乎每个字符串题都会踩，详见 <a href="ch21.html#s7">21.7 节</a>坑二。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>反转字符串（力扣 344，简单）</strong>——本题的基石；差异在<strong>只整体反转、不管单词</strong>（提示：首尾双指针，交换后往中间收，直到相遇）。</li>
+    <li><strong>反转字符串中的单词 III（力扣 557，简单）</strong>——单词<strong>内部</strong>反转、单词顺序不变；差异在定位每个单词边界后逆序其字符（提示：遇空格就处理前一个单词，反转它再接上）。</li>
+    <li><strong>反转字符串里的单词 II（力扣 186，中等）</strong>——就是本题的原地版；差异在<strong>不许开新串、用两次反转</strong>（提示：先整体反转，再逐单词内部反转回来）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">21.5</span>KMP：next 数组怎么来的（中等，力扣 28，选学）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：主串指针不回退</span> <span class="pill">选学</span></p>
+
+<p><strong>题意：</strong>在字符串 <code>haystack</code> 中找出 <code>needle</code> 第一次出现的位置（返回下标），找不到返回 -1。
+<strong>例：</strong><code>haystack = "aabaabaaf", needle = "aabaaf"</code> → 出现在下标 <code>3</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，朴素做法为什么慢。</strong>最直白：<code>i</code> 扫主串、<code>j</code> 扫模式串，一旦 <code>haystack[i]!=needle[j]</code> 就令 <code>i</code> 退回「本次起点 +1」、<code>j</code> 归零重来。最坏 O(n·m)。慢在哪？<strong>主串指针 <code>i</code> 反复回退</strong>。</p>
+
+<p><strong>第二步，核心思想：主串指针永不回退。</strong>既然匹配失败时已经比过了前面一段字符，那<strong>前面这段里藏着的信息能不能让我们不从头比</strong>？可以。关键观察：模式串自己<strong>前缀和后缀的重合</strong>，决定了「失败后能跳多远」。这就是 KMP 的全部动机。</p>
+
+<p><strong>第三步，next 数组 = 最长相等前后缀长度。</strong>对模式串的每个位置 <code>i</code>，定义 <code>next[i]</code> 为「<code>needle[0..i]</code> 这个前缀里，<strong>最长的、相等的前缀和后缀的长度</strong>」。
+以前缀 <code>ababc</code>（假设模式 <code>ababc...</code> 的前 5 个字符）为例，逐位算：</p>
+
+<pre><code class="nohl">模式:  a  b  a  b  c
+下标:  0  1  2  3  4
+next:  0  0  1  2  0
+
+解释：
+ i=0 'a'      : 单字符，前后缀无真重叠 → 0
+ i=1 'ab'     : 前缀{a} 后缀{b} 不等 → 0
+ i=2 'aba'    : 前缀{a} 后缀{a} 相等，长 1 → 1
+ i=3 'abab'   : 前缀{ab} 后缀{ab} 相等，长 2 → 2
+ i=4 'ababc'  : 前缀里没有以 c 结尾的等于后缀 c 的部分 → 0</code></pre>
+
+<p><strong>第四步，怎么用 next 跳。</strong>匹配时 <code>j</code> 是模式串指针：若 <code>haystack[i]==needle[j]</code> 则两指针同进；一旦失配，<strong>不让 j 归零，而是 <code>j = next[j-1]</code></strong>（利用已匹配部分的最长重合前缀），<code>i</code> 不动。这样主串 <code>i</code> 只增不减，整体 O(n+m)。</p>
+
+<p><strong>第五步，next 数组本身怎么求（自匹配）。</strong>用「模式串匹配自己」来填：<code>len</code> 表示当前已匹配的前后缀长度，<code>i</code> 从 1 走：
+若 <code>needle[i]==needle[len]</code> 则 <code>len++</code>、<code>next[i]=len</code>；否则 <code>len = next[len-1]</code> 回退（<code>len==0</code> 时填 0）。</p>
+
+<h3>参考代码（完整版，第一次学只要求看懂思想）</h3>
+
+<pre><code>class Solution {
+    public int strStr(String haystack, String needle) {
+        if (needle.length() == 0) return 0;
+        int n = haystack.length(), m = needle.length();
+        int[] next = buildNext(needle);     // 先算 next
+        int j = 0;                           // 模式串指针
+        for (int i = 0; i < n; i++) {
+            // 失配就利用 next 回退 j（主串 i 不回退）
+            while (j > 0 && haystack.charAt(i) != needle.charAt(j)) {
+                j = next[j - 1];
+            }
+            if (haystack.charAt(i) == needle.charAt(j)) {
+                j++;                         // 匹配上，j 前进
+            }
+            if (j == m) return i - m + 1;    // 整段匹配完，返回起点
+        }
+        return -1;
+    }
+
+    // 求 next 数组：next[i] = needle[0..i] 最长相等前后缀长度
+    private int[] buildNext(String p) {
+        int m = p.length();
+        int[] next = new int[m];
+        int len = 0;                         // 当前最长前后缀长度
+        for (int i = 1; i < m; i++) {
+            while (len > 0 && p.charAt(i) != p.charAt(len)) {
+                len = next[len - 1];         // 回退到更短的可行前后缀
+            }
+            if (p.charAt(i) == p.charAt(len)) {
+                len++;                       // 延长
+            }
+            next[i] = len;
+        }
+        return next;
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>建 next 数组 O(m)，匹配 O(n)，总 O(n+m) 时间，O(m) 空间。比朴素 O(n·m) 在长串上快非常多。</p>
+
+<div class="warn">
+  <strong>选学定位：</strong>第一次学只要理解「<em>主串指针不回退、靠 next 跳</em>」这个思想即可，不必能默写。面试中「实现 strStr」用朴素或上面的 KMP 都行；但 next 数组的<strong>下标偏移</strong>（是 <code>next[j-1]</code> 还是 <code>next[j]</code>）是经典写错点，见 <a href="ch21.html#s7">21.7 节</a>坑三。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>重复的子字符串（力扣 459，简单）</strong>——直接吃 next 数组的性质；差异在<strong>判断能否由子串重复构成</strong>（提示：若 <code>n % (n - next[n-1]) == 0</code> 且 <code>next[n-1] > 0</code>，则可由前面那段重复拼成）。</li>
+    <li><strong>旋转字符串（力扣 796，简单）</strong>——巧用子串包含；差异在于<strong>把原串拼自己判断是否含目标</strong>（提示：若 <code>s+s</code> 包含 <code>goal</code> 且等长，则 goal 是 s 的旋转）。</li>
+    <li><strong>最短回文串（力扣 214，困难）</strong>——回文前缀 + KMP；差异在构造 <code>s+"#"+reverse(s)</code> 求 next 找最长回文前缀（提示：next 数组末值即最长回文前缀长度，把非回文后缀反转补到前面）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">21.6</span>Manacher 速览（概念，选学）</h2>
+
+<p><span class="pill">选学</span> <span class="pill">核心：线性求最长回文</span></p>
+
+<p><strong>它解决什么：</strong>和 <a href="ch21.html#s2">21.2 节</a>同一个问题——求最长回文子串，但中心扩展是 O(n²)，<strong>Manacher 把它压到 O(n)</strong>。当你面对超长字符串（10⁵ 级）时，O(n²) 直接超时，才需要它。</p>
+
+<h3>两个关键直觉</h3>
+
+<p><strong>① 用 '#' 统一奇偶。</strong>前面说过奇偶中心麻烦。Manacher 的预处理是：在原串每个字符<strong>之间和首尾都插入一个不会出现的字符</strong>（如 <code>'#'</code>）。
+<code>"aba"</code> 变成 <code>"#a#b#a#"</code>，无论原来奇偶，处理后的回文<strong>一定以 '#' 为中心、长度必为奇数</strong>，中心数从 2n-1 简化成 n+1 个统一处理。</p>
+
+<p><strong>② 利用已算回文的「镜像」避免重复扩。</strong>这是精髓。维护一个已经到达的<strong>最右边界 <code>R</code></strong> 及其对应的中心 <code>C</code>。当处理新中心 <code>i</code> 时：</p>
+<ul>
+  <li>若 <code>i</code> 在 <code>R</code> 内，则其关于 <code>C</code> 的<strong>镜像点 <code>i'</code></strong> 的回文半径「至少」可以借用——不用从 1 重新开始扩，直接以镜像半径和「到右边界的距离」的较小值为起点继续扩；</li>
+  <li>扩完后若越过 <code>R</code>，更新 <code>C=i</code>、<code>R=新右界</code>。</li>
+</ul>
+<p>因为每次扩都让 <code>R</code> 单调右移、且借用镜像省掉了内部重复扩展，总步数线性。</p>
+
+<div class="tip">
+  <strong>面试够用版本：</strong>知道 Manacher 干三件事——插入 '#' 统一奇偶、用 <code>R/C</code> 和镜像半径<strong>跳过已确定的部分</strong>、每个位置记录回文半径数组 <code>P[]</code>。<strong>不要求写完整代码</strong>，能说出「它靠镜像复用把 O(n²) 降到 O(n)」就已经是加分项。多数面试用中心扩展（O(n²)，n≤2000 足够）就能过。
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">21.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul>
+    <li><strong>坑一：<code>s.charAt(i) - '0'</code> 的数字转换。</strong>把字符变数字必须用 <code>- '0'</code>，不是减 0 也不是 <code>Integer.parseInt</code>。同样，数字变字符是 <code>(char)(digit + '0')</code>。忘写 <code>'0'</code> 会得到完全错的 ASCII 码值。</li>
+    <li><strong>坑二：<code>substring(a, b)</code> 是右开区间。</strong>取 <code>[a, b)</code>，包含 a、不含 b。反转单词里单词 <code>s[j+1..i]</code> 必须写 <code>substring(j+1, i+1)</code>；写 <code>substring(j+1, i)</code> 会丢掉最后一个字符。笔试里这个 bug 极隐蔽。</li>
+    <li><strong>坑三：KMP next 数组下标偏移。</strong>失配回退写 <code>j = next[j-1]</code> 还是 <code>next[j]</code>，取决于 next 的定义（本书记为「前 j 个字符的最长相等前后缀长」，故用 <code>j-1</code>）。混用会越界或死循环。配上时一定用「ababc」手算一遍交叉验证，见 <a href="ch21.html#s5">21.5 节</a>。</li>
+    <li><strong>坑四：大数模拟忘处理「两个串都读完但还有进位」。</strong>如 <code>"99"+"1"</code>，循环条件必须是 <code>i>=0 || j>=0 || carry!=0</code>，漏掉 <code>carry!=0</code> 会得到 <code>"90"</code> 而非 <code>"100"</code>。</li>
+    <li><strong>坑五：中心扩展只枚举字符中心。</strong>会漏掉所有偶数长度回文（如 <code>"bb"</code>）。必须同时枚举 <code>expand(i, i)</code> 与 <code>expand(i, i+1)</code> 两种。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">21.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.【动手题】只用中心扩展，写出求「字符串里所有回文子串个数」的函数签名与核心循环（不要求编译，但要写出 expand 被调用的次数与计数位置）。</p>
+  <div class="qa-a">共枚举 <code>2n-1</code> 个中心：对每个 <code>i</code> 调一次 <code>expand(i,i)</code> 和一次 <code>expand(i,i+1)</code>。计数放在 expand 内部——每当 <code>s[left]==s[right]</code> 成立就 <code>count++</code> 并继续外扩，遇不等或越界停止。把所有中心的计数累加即答案（即力扣 647）。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 为什么最长回文子串「中心扩展」比「区间 DP」更受面试青睐？请给出两者的时空复杂度对比。</p>
+  <div class="qa-a">中心扩展时间 O(n²)、空间 O(1)；区间 DP 时间 O(n²)、空间 O(n²)。两者时间相同，但中心扩展几乎不占额外空间且代码更短，故优先。DP 的价值在下一章「最长回文<em>子序列</em>」（子序列不连续，中心扩展失效）。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.【选学】一句话说明 KMP 为什么比朴素匹配快。</p>
+  <div class="qa-a">因为它利用模式串自身的「最长相等前后缀」（next 数组），在失配时让<strong>主串指针不回退</strong>、只把模式串指针跳到合适位置，从而把 O(n·m) 降到 O(n+m)。</div>
+</div>
+
+<div class="goal">学完这章，你应该能回答：① 给你一个字符串，能否立刻判断该用「中心扩展」还是「滑窗 + 哈希」？② 两个超大整数相加为什么不能直接转 int，并手写逐位加 + 进位？③ 反转单词时 substring 的右开区间如何影响边界？④（选学）说出 KMP 与 Manacher 各自把什么问题从 O(n²) 降到了 O(n)。</div>

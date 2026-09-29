@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 8 章 · 伦理学 I：三大框架与 AI 对齐 | 哲学 × AI 学习指南</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="philosophy">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">哲</span>
+    <span>哲学 × AI 学习指南<small>把哲学变成工程判断力</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 哲学与 AI 的交界</option>
+    <option value="ch02.html">02 · 认识论 I</option>
+    <option value="ch03.html">03 · 认识论 II</option>
+    <option value="ch04.html">04 · 心灵哲学 I</option>
+    <option value="ch05.html">05 · 心灵哲学 II</option>
+    <option value="ch06.html">06 · 语言与意义</option>
+    <option value="ch07.html">07 · 逻辑与推理边界</option>
+    <option value="ch08.html">08 · 伦理学 I</option>
+    <option value="ch09.html">09 · 伦理学 II</option>
+    <option value="ch10.html">10 · 现象学与具身认知</option>
+    <option value="ch11.html">11 · 落地方法</option>
+    <option value="appendix.html">附录 · 书单与速查</option>
+  </select>
+  <a class="tb-link" href="appendix.html">书单</a>
+  <a class="tb-link" href="ch11.html">落地清单</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>哲学与 AI 的真实交界</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>认识论 I · 知识、信念与不确定性</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>认识论 II · 归纳与幻觉的根源</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>心灵哲学 I · 意识与中文房间</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>心灵哲学 II · 意向性与符号接地</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>语言与意义 · 从维特根斯坦到词向量</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>逻辑与推理的边界</span></a>
+    <a class="sb-link active" href="ch08.html"><span class="num">8</span><span>伦理学 I · 三大框架与 AI 对齐</span></a>
+    <div class="sb-sub">
+      <a href="#s1">8.1 规范伦理学的三大框架</a>
+      <a href="#s2">8.2 后果论：只看结果</a>
+      <a href="#s3">8.3 义务论：有些事不能做</a>
+      <a href="#s4">8.4 德性论：你是什么样的人</a>
+      <a href="#s5">8.5 电车难题到底有什么用</a>
+      <a href="#s6">8.6 价值对齐的哲学根源</a>
+      <a href="#s7">8.7 三种对齐路线的哲学假设</a>
+      <a href="#s8">8.8 价值观不是单一的</a>
+      <a href="#s9">8.9 责任归属</a>
+      <a href="#s10">8.10 动手练习</a>
+      <a href="#s11">8.11 自测题</a>
+    </div>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>伦理学 II · 情感陪伴 AI 的伦理</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>现象学与具身认知 · 沉浸与 BCI</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>落地 · 把哲学变成工程决策</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 书单 / 术语 / 映射</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">哲学 × AI 指南</a> / 第 8 章</div>
+  <h1><span class="ch-tag">CH 08</span>伦理学 I：三大框架与 AI 对齐</h1>
+  <p class="lead">前七章都在讲「是不是、能不能」，这一章转向<strong>「该不该」</strong>。
+  AI 领域最热的词之一「价值对齐」——<strong>它是一个伦理学问题，而不是技术问题</strong>，
+  而且它撞上了一个两百多年前就被提出的哲学难题：<strong>从「是什么」推不出「应该是什么」</strong>。
+  这一章教你三套伦理框架，不是为了让你评判别人，而是为了让你<strong>在团队争论时能说出「我们在用哪套标准」</strong>——
+  大部分「该不该做这个功能」的争论，卡住的原因都是双方在用不同的框架而不自知。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握三套伦理分析框架</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 1 章的立场自觉</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">三框架对照分析</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">5–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">8.1</span>规范伦理学的三大框架</h2>
+
+<p>规范伦理学要回答的问题是：<strong>什么使一个行为在道德上正确？</strong>
+两百年来最主流的答案分成三大家族，它们关注的焦点完全不同。</p>
+
+<table>
+  <thead><tr><th style="width:120px">框架</th><th style="width:180px">核心问题</th><th style="width:150px">判断依据</th><th>代表</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>后果论</strong></td>
+      <td>这个行为产生了什么结果？</td>
+      <td>结果的好坏</td>
+      <td>边沁、密尔</td>
+    </tr>
+    <tr>
+      <td><strong>义务论</strong></td>
+      <td>这个行为本身是否可被允许？</td>
+      <td>行为是否符合规则/义务</td>
+      <td>康德</td>
+    </tr>
+    <tr>
+      <td><strong>德性论</strong></td>
+      <td>这样做的人是什么样的人？</td>
+      <td>行为者的品格</td>
+      <td>亚里士多德</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>为什么你必须掌握全部三套，而不是选一套？</strong>
+  <br><br>
+  因为它们会给出<strong>不同的结论</strong>，而真实决策需要在看到差异之后才能做。
+  如果你只掌握一套，你会把「按这套框架看是这样」当成「理所当然」，
+  于是看不到另外两个视角提出的真实风险。
+  <br><br>
+  <strong>三套框架的正确用法是：分别过一遍，找出结论不同的地方，然后明确选择并说明代价。</strong>
+  这和 1.2 节那把尺子是同一套方法论。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">8.2</span>后果论：只看结果</h2>
+
+<div class="quote">
+  <p>行为的对错，完全取决于它产生的后果。能够带来最大总体幸福的行为，就是正确的行为。</p>
+  <span class="who">—— 功利主义（边沁、密尔）的核心主张（大意）</span>
+</div>
+
+<p>它的吸引力在于<strong>可计算</strong>：把各种后果的效用加起来比较，就能得到答案。
+这也正是它在 AI 领域受欢迎的原因——它<strong>看起来可以被形式化成优化目标</strong>。</p>
+
+<h3>两个常见变体</h3>
+
+<table>
+  <thead><tr><th style="width:170px">变体</th><th style="width:260px">主张</th><th>区别在哪</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>行为功利主义</strong></td>
+      <td>每一个具体行为都要单独评估后果</td>
+      <td>更灵活，但实际决策中无法对每个行为都做完整计算</td>
+    </tr>
+    <tr>
+      <td><strong>规则功利主义</strong></td>
+      <td>遵守那些<strong>总体上</strong>能带来最大效用的规则</td>
+      <td>更接近直觉，且承认规则的价值——但规则冲突时仍需回到后果判断</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>三个必须知道的难题</h3>
+
+<div class="pit">
+  <ol style="margin-bottom:0">
+    <li>
+      <strong>效用无法被可靠度量，更无法跨主体相加。</strong>
+      「用户的便利」和「用户的安全」怎么换算成同一个尺度？
+      不同人的偏好怎么加总？<strong>这个「如何加总」的问题没有公认答案</strong>——
+      而且它在数学上不是技术难点，是<strong>价值问题</strong>。
+    </li>
+    <li>
+      <strong>它可能为牺牲少数人辩护。</strong>
+      如果让 1000 个人获得极小便利、让 1 个人承受巨大损害在效用总和上「更优」，
+      后果论会支持这个选择。这<strong>违反大量人的道德直觉</strong>，
+      而且在实际产品里，这类决策往往由<strong>不知道具体是谁</strong>的人做出，
+      代价由具体的人承担。
+    </li>
+    <li>
+      <strong>可预测性问题。</strong>后果论要求比较「各种选择的后果」，
+      但复杂系统的长期后果<strong>本质上无法预测</strong>（第 3 章的归纳边界）。
+      所以后果论在实际操作中会退化成<strong>「优化短期可测量的指标」</strong>——
+      这正是很多 AI 产品出问题的根源。
+    </li>
+  </ol>
+</div>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">后果论</div>
+    <div class="ttl">看结果，最大化总体效用</div>
+    <div class="txt">优点是可操作、可比较；风险是可能牺牲少数、且依赖对后果的预测能力。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">它在 AI 里的实际形态</div>
+    <div class="ttl">指标驱动的优化</div>
+    <div class="txt"><strong>几乎每一个用 A/B 测试驱动决策的团队，在事实上都在用后果论</strong>——
+    以某个可测量的效用指标（留存、点击、满意度）来判定「好坏」。
+    <br><br>
+    这不是坏事，但要意识到它的代价：
+    <strong>① 只有被测量的东西才被优化</strong>（未被测的价值会被牺牲）；
+    <strong>② 长期后果常被短期指标替代</strong>；
+    <strong>③ 「总体效用」掩盖了分配问题</strong>——总量上升不代表每个用户都变好了。
+    <br><br>
+    <strong>对策是在指标之上加不可协商的底线</strong>——这就进入了义务论的地盘。</div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">8.3</span>义务论：有些事不能做</h2>
+
+<p>康德的立场与后果论正相反：<strong>某些行为的对错与后果无关</strong>。
+有些事无论结果多好都不能做。</p>
+
+<h3>定言命令的两种表述</h3>
+
+<div class="quote">
+  <p><strong>普遍化原则：</strong>只按照那些你同时愿意它成为普遍法则的准则行动。</p>
+  <span class="who">—— 康德《道德形而上学奠基》（1785），第一个表述的大意</span>
+</div>
+
+<div class="quote">
+  <p><strong>人是目的：</strong>永远不要仅仅把人当作手段，而要同时把人当作目的。</p>
+  <span class="who">—— 同上，第二个表述的大意。这一条对 AI 产品尤其重要</span>
+</div>
+
+<p>第二个表述值得你特别注意，因为它是<strong>几乎所有 AI 伦理讨论的隐含依据</strong>：</p>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">「人是目的」</div>
+    <div class="ttl">不能被仅仅当作达成他人目的的工具</div>
+    <div class="txt">人有<strong>内在价值</strong>，不能只被当作实现某个目标的资源。
+    这个要求约束的是<strong>对待人的方式</strong>，与是否产生了好的结果无关。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">在 AI 产品里的直接推论</div>
+    <div class="ttl">用户的哪些东西不能被当作资源</div>
+    <div class="txt">按这个框架，下面这些做法有问题，<strong>即使它们提升了指标</strong>：
+    <ul style="margin-bottom:0">
+      <li>把用户的情绪脆弱期当作<strong>提高使用时长</strong>的机会</li>
+      <li>用用户的情感投入作为<strong>提高迁移成本</strong>的手段</li>
+      <li>让用户误以为系统有感受，以<strong>提升留存</strong></li>
+      <li>把用户数据当作<strong>可无限使用的资源</strong>，不问他是否同意这种用途</li>
+    </ul>
+    <br>
+    <strong>注意这些都是「用用户来达成产品目标」的结构。</strong>
+    义务论要求：<strong>用户本身也是目的，不能只是手段</strong>。</div>
+  </div>
+</div>
+
+<h3>它的难题</h3>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>义务冲突时怎么办？</strong>「不撒谎」和「不伤害他人」在某些极端情况下会冲突，义务论没有给出公认的优先级规则。</li>
+    <li><strong>僵化风险。</strong>严格按规则走，可能在具体情境中造成明显更坏的后果（这就是「把纳粹士兵问犹太人藏在哪里」这个经典反例的用途）。</li>
+    <li><strong>「人是目的」的边界不清。</strong>什么是「仅仅当作手段」？推荐系统把用户当作流量是不是？支付系统把用户当作交易方呢？边界很难划。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">8.4</span>德性论：你是什么样的人</h2>
+
+<p>亚里士多德的思路完全不同。他不问「该做什么」，而问<strong>「该成为什么样的人」</strong>。</p>
+
+<div class="quote">
+  <p>德性是<em>中道</em>——在过度和不及之间。勇敢在鲁莽和怯懦之间，慷慨在挥霍和吝啬之间。
+  而判断具体情境中的中道在哪，需要<em>实践智慧</em>。</p>
+  <span class="who">—— 亚里士多德《尼各马可伦理学》的核心框架（大意）</span>
+</div>
+
+<table>
+  <thead><tr><th style="width:150px">概念</th><th>含义</th><th>在 AI 实践里的对应</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>中道</strong></td>
+      <td>德性是两个极端之间的恰当位置</td>
+      <td>「对模型能力的信心」上——过度自信与过度保守都是缺陷，恰当的位置取决于场景</td>
+    </tr>
+    <tr>
+      <td><strong>实践智慧</strong></td>
+      <td>在具体情境中判断该怎么做，无法被还原成规则</td>
+      <td>这正是工程判断力的定义：<strong>没有规则能告诉你什么时候该加校验、什么时候可以放手</strong></td>
+    </tr>
+    <tr>
+      <td><strong>品格</strong></td>
+      <td>关注行为者的稳定倾向，而非单个行为</td>
+      <td>「这个团队一贯怎么处理用户数据」比「这次处理得对不对」更有预测力</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">德性论</div>
+    <div class="ttl">关注行为者的品格与素养</div>
+    <div class="txt">它不给你行动清单，而是问：<strong>一个诚实、负责、有分寸的从业者，在这个情境下会怎么做？</strong></div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">为什么它对工程团队特别有用</div>
+    <div class="ttl">它处理「规则覆盖不到的地方」</div>
+    <div class="txt">规则和指标永远覆盖不完所有情况。
+    在那些<strong>没有规定、没人监督、做了也查不出来</strong>的地方，
+    决定行为的是<strong>人（和团队）的品格</strong>，不是流程。
+    <br><br>
+    <strong>具体体现</strong>：一个新功能「数据用途不完全透明但能提升效果」，
+    一个 bug「影响很小但如实披露会难看」，
+    一个指标「能被优化但不反映真实价值」——
+    <strong>这些地方的判断，取决于团队在乎什么。</strong>
+    <br><br>
+    <strong>它的局限也要知道</strong>：无法给出行动指导，可能被滥用为「凭直觉做事」的借口。
+    所以它是<strong>补充</strong>，不是替代。</div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">8.5</span>电车难题到底有什么用</h2>
+
+<p>电车难题被过度使用，以至于很多人对它有生理性反感。但它有一个<strong>正确的用法</strong>，
+而那个用法恰好对你做产品评审有用。</p>
+
+<div class="qbox">
+  <span class="qb-t">电车难题及其变体</span>
+  <p><strong>原版</strong>（常归于福特，1967）：一辆失控电车将撞死轨道上的五个人。
+  你可以扳动道岔，让电车转向另一条轨道，那里有一个人。<strong>你扳吗？</strong>
+  大多数人说不扳（或说扳）——倾向于牺牲一个人救五个。</p>
+  <p><strong>变体</strong>（汤姆森，1976）：同样是五个人会被撞死，但这次你站在桥上，
+  身边有一个胖子。把胖子推下去能挡住电车，救五个人。<strong>你推吗？</strong>
+  大多数人不推。</p>
+  <p class="qb-q"><strong>关键点在于：两个情形的「后果」几乎一样</strong>——都是死一个救五个。
+  但直觉给出的答案相反。这说明<strong>我们的道德直觉不只是基于后果</strong>，
+  它还包含「我是否直接伤害了某人」「我是否把人当作工具」这类考量。</p>
+</div>
+
+<h3>它的正确用途：暴露直觉的不一致</h3>
+
+<div class="note">
+  <strong>电车难题的价值不在于「给出答案」，而在于「暴露你的直觉在不同情形下不一致」。</strong>
+  <br><br>
+  这种不一致是<strong>有用的信息</strong>：它说明你的判断标准里有一个你没意识到的变量
+  （在电车案例里是「作为还是不作为」「是否把人当作手段」）。
+  <strong>找到那个变量，你才真正知道自己在乎什么。</strong>
+</div>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">思想实验的方法</div>
+    <div class="ttl">构造两个只差一个变量的情形，比较直觉</div>
+    <div class="txt">如果两个情形在结论上应该相同（按某套框架看），但你的直觉不同，
+    说明<strong>你实际在用的标准不是那套框架</strong>，或者还有隐藏变量。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">拿它做产品评审</div>
+    <div class="ttl">暴露团队的价值分歧</div>
+    <div class="txt"><strong>在评审会上用「对照情形」代替抽象原则</strong>，效果好得多：
+    <br><br>
+    「如果系统自动拒绝了 A 用户的合理请求，让他损失 500 元，但同时避免了 50 个用户的每人损失 20 元，
+    我们做不做？」
+    <br>
+    「如果这 50 个人里有一个是我们的付费大客户呢？」
+    <br>
+    「如果那个损失 500 元的人是未成年人呢？」
+    <br><br>
+    <strong>这些具体情形能让抽象的「用户体验优先」变成明确的取舍判断。</strong>
+    而且你会立刻看到团队的分歧点在哪——那才是真正需要讨论的东西。</div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">8.6</span>【工程锚点】价值对齐的哲学根源</h2>
+
+<p>「对齐」（alignment）是 AI 领域最重要的议题之一。要理解它为什么难，
+需要先知道一个两百多年前的哲学难题。</p>
+
+<h3>休谟的「是—应该」问题</h3>
+
+<div class="quote">
+  <p>从「是什么」的陈述中，推不出「应该是什么」的结论。</p>
+  <span class="who">—— 休谟在《人性论》（1739）中提出的观察，现在被称为「休谟断头台」或事实与价值的鸿沟</span>
+</div>
+
+<p>举例说明这个鸿沟：</p>
+
+<table>
+  <thead><tr><th style="width:250px">事实陈述（是什么）</th><th style="width:230px">规范陈述（应该是什么）</th><th>鸿沟在哪</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>「90% 的用户会继续使用这个功能」</td>
+      <td>「这个功能应该继续做」</td>
+      <td>从「多数人喜欢」推不出「应该做」——
+      <strong>除非你预设了「多数人的偏好就是应该被满足的」</strong>，
+      而这个预设本身是价值判断</td>
+    </tr>
+    <tr>
+      <td>「这个功能使用户时长增加了 40%」</td>
+      <td>「这是一个好结果」</td>
+      <td>时长增加可能是好的（用户更满意），也可能是坏的（用户更依赖）。
+      <strong>哪个是真的，取决于你用什么价值标准</strong></td>
+    </tr>
+    <tr>
+      <td>「模型在这个问题上给出的答案与人类专家一致率高」</td>
+      <td>「模型的答案是正确的」</td>
+      <td>「与专家一致」是事实，「正确」是规范判断。
+      <strong>专家也可能错，或者专家的判断本身反映了某种价值立场</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>这个鸿沟对「对齐」的直接后果：</strong>
+  <br><br>
+  <strong>你无法从数据中「学出」价值。</strong>
+  因为数据里只有「是什么」（人们的偏好、行为、判断），没有「应该是什么」。
+  从数据中学习，必然要<strong>先注入一个关于「应该」的假设</strong>——
+  比如「人类标注者的偏好就是应该被满足的」。
+  <br><br>
+  <strong>所以对齐不是「让模型学会人类价值」这个技术问题，而是「我们选择哪个价值标准」这个伦理问题。</strong>
+  技术只能实现你选的那个标准，不能替你选。
+  <br><br>
+  <strong>这就是为什么本书反复强调：把关键词的操作定义写清楚，比优化模型更重要。</strong>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">8.7</span>【工程锚点】三种对齐路线的哲学假设</h2>
+
+<p>现在看当前主流的三种对齐方法，以及<strong>它们各自暗含了什么伦理立场</strong>。
+这个分析对你有实际价值：它让你知道每种方法的天花板在哪。</p>
+
+<table>
+  <thead><tr><th style="width:150px">路线</th><th style="width:200px">基本做法</th><th style="width:170px">暗含的伦理立场</th><th>它的天花板</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>人类反馈强化学习</strong></td>
+      <td>让人类对模型输出排序打分，用这些偏好训练模型</td>
+      <td><strong>偏好功利主义</strong>：
+      「人类偏好」是价值的可靠来源，满足更多偏好 = 更好</td>
+      <td>偏好可能是<strong>被塑造的、短视的、或有害的</strong>。
+      让人上瘾的内容也有高偏好。而且标注者群体<strong>不能代表全部用户</strong>——
+      标注者的价值观会被系统性地编码进去</td>
+    </tr>
+    <tr>
+      <td><strong>原则约束式</strong></td>
+      <td>给出一套成文原则，让模型按原则自我批评、自我修正</td>
+      <td><strong>义务论</strong>：
+      存在一些规则，遵守它们本身就是对的</td>
+      <td>原则<strong>从哪来</strong>？谁有权限定？原则冲突时怎么办？
+      而且成文原则必然<strong>覆盖不到所有情况</strong>，
+      模型在遇到原则没覆盖的情形时行为不可预测</td>
+    </tr>
+    <tr>
+      <td><strong>可扩展监督</strong></td>
+      <td>让 AI 之间互相辩论/审查，人类做裁判员</td>
+      <td>混合：假设<strong>「辩论能暴露真相」</strong>（认识论假设）
+      + 人类裁判的判断是最终的</td>
+      <td><strong>递归信任问题</strong>：
+      如果 AI 的论证能力超过人类裁判的理解能力，裁判就无法有效判断。
+      这时人类是「看着两个高手辩论的外行」，
+      <strong>他的裁决有很可能是基于表面说服力，而不是正确性</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>实用的结论：三条路线都需要「外部锚点」，只靠自身不闭合。</strong>
+  <ul style="margin-bottom:0">
+    <li>偏好学习需要<strong>明确哪些偏好不该被满足</strong>（否则会上瘾性优化）。</li>
+    <li>原则约束需要<strong>明确原则的来源和冲突裁决机制</strong>。</li>
+    <li>可扩展监督需要<strong>保证裁判具备判断能力</strong>，或把判断范围限制在人类能理解的层次内。</li>
+  </ul>
+  <br>
+  <strong>这个「外部锚点」不是技术能提供的，它必须由人来指定。</strong>
+  所以任何声称「对齐问题可以由技术自动解决」的说法，都跳过了一个必须由人做的价值选择。
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">8.8</span>价值观不是单一的：跨文化对齐</h2>
+
+<p>假设你已经接受了「需要人来指定价值标准」。下一个问题立刻出现：
+<strong>谁的标准？</strong></p>
+
+<h3>两种立场的对立</h3>
+
+<table>
+  <thead><tr><th style="width:170px">立场</th><th style="width:250px">主张</th><th>它的问题</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>道德普遍主义</strong></td>
+      <td>存在跨文化的、普遍有效的道德原则（如「不无故伤害他人」）</td>
+      <td>具体到哪里算「原则」、哪里算「文化偏好」，很难划界。
+      历史上「普遍」经常是<strong>强势文化把自己的标准当成了普遍</strong></td>
+    </tr>
+    <tr>
+      <td><strong>道德相对主义</strong></td>
+      <td>道德标准相对于文化/个体，没有跨文化的评判标准</td>
+      <td>会导致<strong>无法批评任何做法</strong>——包括明显有害的做法。
+      而且「什么算一个文化」本身无法清晰界定</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>实践上的处理方式：分层。</strong>
+  不在这两个极端里选，而是区分「不可协商的底线」和「可配置的偏好」。
+  <br><br>
+  <strong>分层的前提是承认：划这条线本身就是一个价值选择</strong>，
+  不可能不涉及争议。但把线<strong>明确划出来并公开</strong>，
+  比含糊地声称「我们代表普遍价值」要诚实得多，也更容易被检验。
+</div>
+
+<h3>一个可用的分层模板</h3>
+
+<table>
+  <thead><tr><th style="width:170px">层级</th><th style="width:260px">内容</th><th>特性</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>第一层：硬底线</strong></td>
+      <td>不造成直接人身伤害；不协助违法行为；
+      不对未成年人造成伤害；不欺骗性地获取数据</td>
+      <td><strong>不可配置、不可协商</strong>。
+      无论用户在什么地区、什么偏好设置下，都成立</td>
+    </tr>
+    <tr>
+      <td><strong>第二层：可配置的偏好</strong></td>
+      <td>语言风格、直率程度、话题开放度、
+      对敏感话题的处理方式（回避 / 中立陈述 / 呈现多种观点）</td>
+      <td>可由用户或部署方配置。
+      <strong>但配置的边界受第一层约束</strong></td>
+    </tr>
+    <tr>
+      <td><strong>第三层：产品策略</strong></td>
+      <td>具体功能的取舍、默认行为、提示方式的强弱</td>
+      <td>由产品决定，但需要<strong>说明理由并记录</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">价值观冲突</div>
+    <div class="ttl">「谁的价值观」没有非争议的答案</div>
+    <div class="txt">普遍主义和相对主义都有难以接受的后果。
+    实际可行的做法是<strong>分层 + 明确划界 + 公开理由</strong>。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">在产品里怎么落地</div>
+    <div class="ttl">把「不可协商」和「可配置」分开写进文档</div>
+    <div class="txt">这样做的直接好处：<strong>当有人要求你为某个用户的偏好改变行为时，
+    你有明确的依据回答「这个可以调，那个不行」</strong>。
+    <br><br>
+    没有这份文档时，每一次这类要求都会变成<strong>临时的、无依据的争论</strong>——
+    而且压力大的一方容易赢（通常是提要求的那一方）。
+    <br><br>
+    <strong>这份文档是保护你的产品判断力的工具，不只是「合规材料」。</strong></div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s9"><span class="h2-num">8.9</span>责任归属：出事了谁负责</h2>
+
+<p>这是本章最后一节，也是最实际的一节。AI 系统出错时，「谁的责任」往往比「为什么出错」更难回答。</p>
+
+<h3>责任鸿沟</h3>
+
+<div class="note">
+  <strong>责任鸿沟</strong>指的是这种情况：
+  AI 系统产生了某个后果，但<strong>没有任何一个环节的人能够被合理地追究责任</strong>——
+  因为系统的行为<strong>不可预测</strong>（行为从训练中涌现，连开发者也无法预知具体情形下的输出），
+  或者<strong>责任被分散</strong>到太多环节（数据提供者、模型训练者、微调者、
+  应用开发者、部署方、使用者）导致每一环都只承担一点点。
+  <br><br>
+  <strong>这个鸿沟的危险不在于「没人负责」这件事本身</strong>，
+  而在于它会<strong>系统性地削弱所有安全激励</strong>：
+  如果做坏了也不用负责，那就没有人在事前认真评估风险。
+</div>
+
+<h3>责任链上的四个角色</h3>
+
+<table>
+  <thead><tr><th style="width:140px">角色</th><th style="width:230px">通常能控制的</th><th>容易被忽略的责任</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>模型提供方</strong></td>
+      <td>基础能力、通用安全措施、使用条款</td>
+      <td>对<strong>下游具体用途</strong>的了解不足；
+      容易用「用户自行负责」回避对已知滥用场景的防范</td>
+    </tr>
+    <tr>
+      <td><strong>应用开发者</strong><br><span class="pill blue">通常是你</span></td>
+      <td>产品形态、提示词、工具权限、防护措施、用户交互设计</td>
+      <td><strong>「是模型自己这么说的」不能作为免责理由</strong>——
+      你选择了这个模型、设计了这套交互、决定了这些权限</td>
+    </tr>
+    <tr>
+      <td><strong>部署方</strong></td>
+      <td>谁可以使用、什么场景、有没有人工监督</td>
+      <td>把系统用在<strong>超出设计范围</strong>的场景，是部署方最常见的责任疏漏</td>
+    </tr>
+    <tr>
+      <td><strong>使用者</strong></td>
+      <td>如何使用、是否核实、是否越权操作</td>
+      <td>「以为是准确的就直接用了」——但在很多领域，
+      <strong>专业人士有核实的义务</strong>，不能以「工具说的」为由免于专业判断</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pit">
+  <strong>一个非常常见的错误归因：</strong>
+  「这是算法决策的结果，我们只是提供了工具。」
+  <br><br>
+  <strong>这个说法在伦理上是站不住的</strong>，理由很简单：
+  <strong>工具的选择、设计、部署都是人的决定</strong>。
+  你选择了用这个系统、选择了在这些场景用它、
+  选择了不加人工复核、选择了这样设计交互——
+  <strong>这些全都是人类的决策，每一个都可以被追问理由。</strong>
+  <br><br>
+  <strong>更实际的原因是</strong>：当事故发生时，这个说法<strong>不会保护你</strong>。
+  责任最终会沿着决策链回溯到能做出不同选择的人——
+  而应用开发者通常是其中最容易识别的那个。
+</div>
+
+<h3>可操作的责任矩阵</h3>
+
+<p>下面这个表建议每个 AI 功能都填一份。它的作用不是「分锅」，
+而是<strong>在事前就把「谁会受损、谁该决定、谁该复核」写清楚</strong>。</p>
+
+<table>
+  <thead><tr><th style="width:170px">项目</th><th>要填什么</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>出错时谁受损</strong></td>
+      <td>不是「用户」这种笼统答案。要具体到：如果这个功能错了，
+      是用户损失金钱、时间、隐私，还是第三方的什么？</td>
+    </tr>
+    <tr>
+      <td><strong>损害可逆吗</strong></td>
+      <td>能撤销 / 有可能挽回 / 不可逆。这决定了需要多严格的防护</td>
+    </tr>
+    <tr>
+      <td><strong>谁有权决定</strong></td>
+      <td>这个功能要不要做、怎么做，谁做的决定？有记录吗？</td>
+    </tr>
+    <tr>
+      <td><strong>谁负责复核</strong></td>
+      <td>如果加人工复核——<strong>具体是谁</strong>？
+      他们的判断依据是什么？他们有能力看出问题吗？</td>
+    </tr>
+    <tr>
+      <td><strong>出事后的第一动作</strong></td>
+      <td>谁能关停？怎么通知受影响的人？有没有留痕可以排查？</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>「谁受损」这一栏是最有诊断价值的。</strong>
+  如果你填不出具体的受损方，通常意味着两种情况之一：
+  ① 这个功能确实风险很低（那就简单记录即可）；
+  ② <strong>你还没想清楚它在真实世界里会发生什么</strong>——
+  这在功能涉及真实的人、真实的需求时，是个需要警惕的信号。
+</div>
+
+<hr>
+
+<h2 id="s10"><span class="h2-num">8.10</span>动手练习</h2>
+
+<ol class="steps">
+  <li>
+    <strong>三框架对照分析。</strong>选你项目里的一个功能，分别用后果论、义务论、德性论分析一遍。
+    <br><span class="hash">产出：三种框架下结论一致的地方，以及结论不同的地方</span>
+    <br><span class="hash">不同的地方才是关键——它指出了你的真实取舍点在哪</span>
+  </li>
+  <li>
+    <strong>找一条「事实 → 应该」的跳跃。</strong>回顾你们团队最近的决策，
+    找出一个从「数据显示 X」直接跳到「所以应该做 Y」的例子。
+    <br><span class="hash">问：中间那个「为什么 X 意味着该做 Y」的假设是什么？它是谁定的？</span>
+  </li>
+  <li>
+    <strong>画出你的责任链。</strong>列出你这个系统从数据到用户中间的<strong>全部环节</strong>，
+    标注每个环节谁在做决定。然后问：<strong>如果中间某一环出了问题，会被发现吗？由谁发现？</strong>
+  </li>
+  <li>
+    <strong>填一份责任矩阵。</strong>用 8.9 节的五栏表格，给你最主要的一个功能填一遍。
+    特别关注「谁受损」和「谁负责复核」两行。
+  </li>
+  <li>
+    <strong>做一次分层。</strong>用 8.8 节的三层模板，写出你产品的：
+    ① 不可协商的硬底线 ② 可配置的偏好 ③ 产品策略。
+    <br><span class="hash">这份文档可以直接用于第 11 章的伦理设计文档</span>
+  </li>
+</ol>
+
+<hr>
+
+<h2 id="s11"><span class="h2-num">8.11</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 三套伦理框架各自关注什么？为什么必须同时掌握？</p>
+    <div class="qa-a">
+      <p><strong>后果论</strong>关注结果（行为产生了什么）；<br>
+      <strong>义务论</strong>关注行为本身是否可被允许（有些事不能做，与后果无关）；<br>
+      <strong>德性论</strong>关注行为者的品格（这样做的人是什么样的人）。</p>
+      <p><strong>为什么都要掌握</strong>：因为它们会给出<strong>不同的结论</strong>，
+      而这些差异<strong>正是需要被看见的取舍点</strong>。
+      只掌握一套，你会把「按这套看是这样」当成理所当然，
+      于是看不到另外两个视角提出的真实风险。</p>
+      <p><strong>正确用法</strong>：分别过一遍，找出结论不同的地方，明确选择并说明代价。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q2. 为什么说「用 A/B 测试驱动决策」实际上是在用后果论？它的代价是什么？</p>
+    <div class="qa-a">
+      <p>因为 A/B 测试判定「好」的依据是<strong>某个可测量的效用指标</strong>
+      （留存、点击、满意度）——这正是后果论的结构：以结果的好坏判定行为的对错。</p>
+      <p><strong>三个代价</strong>：</p>
+      <ul>
+        <li><strong>只有被测量的东西才被优化。</strong>未被纳入指标的价值会被系统性牺牲。</li>
+        <li><strong>长期后果被短期指标替代。</strong>因为长期后果难以测量，实际操作中会退化成优化短期可测量值。</li>
+        <li><strong>「总体效用」掩盖分配问题。</strong>总量上升不代表每个用户都变好了——
+        可能是取悦了多数人、损害了少数人。</li>
+      </ul>
+      <p><strong>对策</strong>：在指标之上加<strong>不可协商的底线</strong>（这就进入了义务论的地盘）。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q3. 休谟的「是—应该」问题为什么是「价值对齐」的核心困难？</p>
+    <div class="qa-a">
+      <p>因为它说明：<strong>你无法从数据中「学出」价值</strong>。
+      数据里只有「是什么」（人们的偏好、行为、判断），没有「应该是什么」。</p>
+      <p>所以任何从数据学习的方法，都必须<strong>先注入一个关于「应该」的假设</strong>——
+      比如「人类标注者的偏好就是应该被满足的」。这个假设<strong>不能被技术验证</strong>，
+      因为它是价值判断，不是事实命题。</p>
+      <p><strong>结论</strong>：对齐不是「让模型学会人类价值」这个技术问题，
+      而是「我们选择哪个价值标准」这个伦理问题。
+      <strong>技术只能实现你选的标准，不能替你选。</strong></p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q4. 三种主流对齐路线各自的天花板在哪？</p>
+    <div class="qa-a">
+      <p><strong>人类反馈学习</strong>（偏好功利主义倾向）：
+      偏好可能是被塑造的、短视的、有害的（让人上瘾的内容也有高偏好）；
+      标注者群体不能代表全部用户，其价值观会被系统性编码进去。</p>
+      <p><strong>原则约束式</strong>（义务论倾向）：
+      原则从哪来、谁有权定、冲突时怎么办都不清楚；
+      且成文原则必然覆盖不到所有情况，遇到未覆盖情形时行为不可预测。</p>
+      <p><strong>可扩展监督</strong>：
+      递归信任问题——如果 AI 的论证能力超过人类裁判的理解能力，
+      裁判的裁决可能基于表面说服力而非正确性。</p>
+      <p><strong>共同结论</strong>：三条路线都需要<strong>外部锚点</strong>，只靠自身不闭合，
+      而这个锚点必须由人来指定。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】有人主张「应该把价值观选择权完全交给用户，让每个用户自己配置 AI 的行为标准」。
+    你怎么评价这个方案？</p>
+    <div class="qa-a">
+      <p><strong>先肯定它的合理内核</strong>：它承认了价值观的多样性（8.8 节），
+      避免了一个团队把自己的标准当成普遍标准强加给所有人。这是对的。</p>
+      <p><strong>然后指出它不可行的地方：完全配置化会导致三个问题。</strong></p>
+      <ul>
+        <li><strong>配置无法覆盖未预见的情况。</strong>用户能配置的只有他想到的维度。
+        而价值冲突恰恰<strong>常常出现在想不到的地方</strong>——
+        用户配置了「语言风格」，但没配置「当我表达自伤念头时你该怎么办」。
+        这时系统行为由<strong>默认值</strong>决定，而默认值仍然是产品方选定的价值。</li>
+        <li><strong>存在不可协商的底线。</strong>有些事无论用户怎么配置都不应该做——
+        协助违法、伤害他人、对未成年人造成伤害。
+        这部分<strong>不能交给配置</strong>，否则等于产品方放弃了责任。</li>
+        <li><strong>配置本身需要被引导。</strong>大多数用户不会去调这些设置，
+        或者不知道自己调的是什么。这意味着<strong>「让用户选择」在实践上常常等于「维持默认值」</strong>——
+        而默认值是你的选择，责任仍在你这。</li>
+      </ul>
+      <p><strong>给出更好的方案：分层。</strong></p>
+      <ul>
+        <li><strong>第一层（不可协商）</strong>：硬底线，任何配置都改不了。</li>
+        <li><strong>第二层（可配置）</strong>：风格、话题开放度、表达方式。
+        这一层<strong>把选择权确实交给用户</strong>。</li>
+        <li><strong>第三层（策略）</strong>：产品默认值。<strong>需要说明理由并记录</strong>，
+        因为大多数人用的是这一层。</li>
+      </ul>
+      <p><strong>关键点</strong>：这个方案既尊重了多样性（第二层确实给用户自主权），
+      又没有逃避责任（第一层不可协商，第三层有据可查）。
+      <br><br>
+      <strong>而「完全交给用户」这个方案，表面上最尊重用户，实际上让产品方在关键问题上免责</strong>——
+      这是一种责任回避的修辞，不是真的尊重用户。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能说出三套伦理框架各自的核心判据，并说明它们何时会给出不同结论。</li>
+    <li>能解释休谟的「是—应该」问题，以及它为什么使「对齐」成为伦理问题而非纯技术问题。</li>
+    <li>能说出三种对齐路线各自暗含的伦理立场和天花板。</li>
+    <li>完成一份<strong>三层价值分层</strong>（硬底线 / 可配置 / 产品策略）。</li>
+    <li>完成一份<strong>责任矩阵</strong>，其中「谁受损」和「谁负责复核」两栏填得具体。</li>
+    <li>能识别并反驳「这是算法决策，我们只是提供工具」这类责任回避说法。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="ch07.html"><div class="dir-label">← 上一节</div><div class="dir-name">第 7 章 · 逻辑与推理的边界：从弗雷格到哥德尔</div></a>
+  <a class="next" href="ch09.html"><div class="dir-label">下一节 →</div><div class="dir-name">第 9 章 · 伦理学 II：情感陪伴 AI 的伦理</div></a>
+</div>
+
+<div class="footer">哲学 × AI 学习指南 · 第 8 章 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

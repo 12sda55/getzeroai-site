@@ -1,0 +1,215 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 总览</div>
+  <h1><span class="ch-tag">总览</span>算法学习路线与刷题方法</h1>
+  <p class="lead">这份解析回答一个很实际的问题：<strong>学生党时间不多，怎么把力扣刷出效果。</strong>
+  我们不按「题目编号」讲，也不搞题海——而是按<strong>二十四个算法专题</strong>组织，
+  覆盖力扣所有主流算法方向：每个专题先讲透一个核心思想，再挑这个专题里最经典的几道题，
+  把<strong>「为什么想到这个解法」的推理过程</strong>写出来，配上逐行注释的 Java 代码。
+  每道题讲完还紧跟一节<strong>「巩固练习」</strong>——告诉你接着刷哪几道同技巧的题，趁热打铁。
+  题不贪多，吃透为止。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">适合谁</div><div class="v">刚刷力扣 / 面试 / 蓝桥杯·天梯赛备赛</div></div>
+  <div class="meta-card"><div class="k">语言</div><div class="v">Java（核心语法即可，无需框架）</div></div>
+  <div class="meta-card"><div class="k">题目来源</div><div class="v">力扣 Hot 100 精选约 70 题 · 每题配巩固练习</div></div>
+  <div class="meta-card"><div class="k">建议节奏</div><div class="v">每天 1 题 · 一个专题约 1 周</div></div>
+</div>
+
+<h2 id="howto"><span class="h2-num">0.1</span>怎么用这份解析</h2>
+
+<p>每个专题页的固定结构，看一遍你就知道每一块该拿它干什么：</p>
+
+<table>
+  <thead><tr><th style="width:170px">板块</th><th>怎么用</th></tr></thead>
+  <tbody>
+    <tr><td><strong>核心思想</strong>（s1）</td><td>先用大白话把这个专题「为什么存在」讲清楚。先读它，再做题——否则你只是在背题。</td></tr>
+    <tr><td><strong>通用模板</strong></td><td>这类题 80% 都长一个骨架。模板要<strong>默写级掌握</strong>，不是看懂级。</td></tr>
+    <tr><td><strong>精选题目</strong>（每专题 4 题左右）</td><td>先自己想 15 分钟 → 看思路推导 → 自己写一遍 → 对比参考代码。顺序不能反。</td></tr>
+    <tr><td><strong>常见坑</strong></td><td>每专题总结该类题最高频的 WA / TLE 原因。写完题过一遍，比自己调试省一半时间。</td></tr>
+    <tr><td><strong>巩固练习</strong>（每题末尾）</td><td>讲完一道题，立刻给你 2~3 道<strong>同技巧的相关题目</strong>。别跳过——刚建立的思路只有马上再练一次才会变成自己的。</td></tr>
+    <tr><td><strong>自测题</strong></td><td>可折叠的问答。能独立答出来，这个专题才算过关。</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>建议环境：</strong>代码全部是 Java（JDK 17+ 语法，含 <code>var</code> 和 <code>record</code> 的少量使用）。
+  边看边在<strong>力扣的在线编辑器</strong>里敲一遍——复制粘贴不算刷过题，指法也是肌肉记忆的一部分。
+</div>
+
+<hr>
+
+<h2 id="order"><span class="h2-num">0.2</span>二十四个专题的推荐顺序</h2>
+
+<p>专题之间有依赖关系，<strong>不要乱序刷</strong>。下面是推荐路线，标 ★ 的是面试出现频率最高的四个；
+13~24 号专题在前 12 个学完后按方向选学，全部覆盖力扣主流算法标签：</p>
+
+<table>
+  <thead><tr><th style="width:60px">顺序</th><th style="width:180px">专题</th><th style="width:90px">难度曲线</th><th>为什么排在这里</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><a href="ch01.html">数组与双指针 ★</a></td><td>易 → 中</td><td>数组是一切数据结构的载体；双指针是最基础的「降复杂度」思想。</td></tr>
+    <tr><td>2</td><td><a href="ch02.html">哈希表 ★</a></td><td>易 → 中</td><td>学会用 O(1) 查找换掉一层循环——几乎每道中等题都会用到。</td></tr>
+    <tr><td>3</td><td><a href="ch03.html">滑动窗口</a></td><td>中</td><td>双指针 + 哈希的组合拳。不学前两章直接看会懵。</td></tr>
+    <tr><td>4</td><td><a href="ch04.html">二分查找 ★</a></td><td>易 → 中</td><td>看似简单，边界处理是重灾区。模板必须默写级。</td></tr>
+    <tr><td>5</td><td><a href="ch05.html">链表</a></td><td>易 → 中</td><td>纯指针操作，考的是细心。虚拟头节点一招吃遍大半链表题。</td></tr>
+    <tr><td>6</td><td><a href="ch06.html">栈与队列</a></td><td>易 → 中</td><td>引入「单调栈」这个新武器，为后面的图遍历做铺垫。</td></tr>
+    <tr><td>7</td><td><a href="ch07.html">二叉树 ★</a></td><td>易 → 中</td><td>递归思维的主战场。树学不会，回溯和 DP 都悬。</td></tr>
+    <tr><td>8</td><td><a href="ch08.html">递归与回溯</a></td><td>中</td><td>有了树的递归基础，回溯只是「多了一步撤销」。</td></tr>
+    <tr><td>9</td><td><a href="ch09.html">动态规划（入门）</a></td><td>中</td><td>从「斐波那契直觉」入手，重点建立状态转移的思维。</td></tr>
+    <tr><td>10</td><td><a href="ch10.html">动态规划（进阶）</a></td><td>中 → 难</td><td>子序列与背包两大主线。DP 面试的天花板都在这两类。</td></tr>
+    <tr><td>11</td><td><a href="ch11.html">贪心算法</a></td><td>中</td><td>需要 DP 作对比，才知道「贪心为什么敢贪」。</td></tr>
+    <tr><td>12</td><td><a href="ch12.html">图论入门</a></td><td>中</td><td>BFS / DFS 在矩阵题里的形态，拓扑排序收尾。够用即可，不是图论课。</td></tr>
+    <tr><td>13</td><td><a href="ch13.html">前缀和与差分</a></td><td>易 → 中</td><td>「一次减法换掉一层循环」。区间和、区间改量的题见一个拿一个。</td></tr>
+    <tr><td>14</td><td><a href="ch14.html">位运算</a></td><td>易</td><td>几个固定技巧背下来，性价比最高的一章。只出现一次的数字系列是常客。</td></tr>
+    <tr><td>15</td><td><a href="ch15.html">数学与模拟</a></td><td>易 → 中</td><td>没有套路、考观察与实现。训练「把想法准确写成代码」的基本功。</td></tr>
+    <tr><td>16</td><td><a href="ch16.html">排序与分治</a></td><td>易 → 中</td><td>自定义比较器是硬技能；快速选择、归并求逆序对体现分治思想。</td></tr>
+    <tr><td>17</td><td><a href="ch17.html">堆（优先队列）</a></td><td>中</td><td>Top K 类题的标准答案。Java 的 PriorityQueue 用法一次讲清。</td></tr>
+    <tr><td>18</td><td><a href="ch18.html">二叉搜索树</a></td><td>中</td><td>承接专题 07：抓住「中序遍历即有序」这一条性质，多数 BST 题就通了。</td></tr>
+    <tr><td>19</td><td><a href="ch19.html">Trie 前缀树</a></td><td>中</td><td>前缀查询专用结构，模板固定。搜索单词类题目的基础设施。</td></tr>
+    <tr><td>20</td><td><a href="ch20.html">并查集</a></td><td>中</td><td>动态连通性专用武器：模板 30 行，却能把一批「分组」难题变简单。</td></tr>
+    <tr><td>21</td><td><a href="ch21.html">字符串算法</a></td><td>中</td><td>中心扩展、大数模拟是必修；KMP / Manacher 标注选学，第一次可跳。</td></tr>
+    <tr><td>22</td><td><a href="ch22.html">最短路与最小生成树</a></td><td>中 → 难</td><td>承接专题 12 与 20：Dijkstra、Bellman-Ford、Kruskal 三板斧。</td></tr>
+    <tr><td>23</td><td><a href="ch23.html">DP 高阶</a></td><td>难</td><td>区间 / 树形 / 状态压缩 DP。DP 面试的真正天花板在这里。</td></tr>
+    <tr><td>24</td><td><a href="ch24.html">进阶速览</a></td><td>难 · 选学</td><td>单调队列、LRU 缓存、蓄水池抽样、树状数组——大厂常客，一次见全。</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>时间紧的最低配置：</strong>只刷 4 个 ★ 专题（数组双指针、哈希、二分、树）+ DP 入门，
+  大约 20 题，应付多数校招一面够了。其余专题按面试方向补；13~24 号专题也可以只看「核心思想 + 模板」过一遍，
+  见到题知道往哪个专题想，就已经赢过大多数裸面的人。
+</div>
+
+<hr>
+
+<h2 id="method"><span class="h2-num">0.3</span>一道题的正确刷法：五步法</h2>
+
+<p>同样一道题，「刷完」和「刷会」差别巨大。按这五步走，一道顶三道：</p>
+
+<table>
+  <thead><tr><th style="width:60px">步骤</th><th style="width:190px">做什么</th><th>怎么判断这步过关了</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>1. 读题</strong></td>
+      <td>圈出数据范围和约束</td>
+      <td>能说出：「数据量 n ≤ 10⁵，所以 O(n²) 会超时，目标复杂度 O(n) 或 O(n log n)」。</td>
+    </tr>
+    <tr>
+      <td><strong>2. 硬想</strong></td>
+      <td>15 分钟内不看任何资料</td>
+      <td>哪怕只想出暴力解也写下来。暴力解是优化的起点，不是丢人的东西。</td>
+    </tr>
+    <tr>
+      <td><strong>3. 对思路</strong></td>
+      <td>看本站该题的「思路推导」部分</td>
+      <td>合上页面，能用自己的话复述「为什么这个解法可行」，而不是背代码。</td>
+    </tr>
+    <tr>
+      <td><strong>4. 手写</strong></td>
+      <td>不看参考代码，自己写完整并提交</td>
+      <td>通过所有用例。卡住了允许看一眼，然后<strong>从头再写一遍</strong>。</td>
+    </tr>
+    <tr>
+      <td><strong>5. 复盘</strong></td>
+      <td>第二天脱稿重写一遍</td>
+      <td>一次通过。写不出来，说明第 3 步是假懂，回到思路推导。</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>最重要的一条：</strong>第 2 步的 15 分钟<strong>不能省</strong>。
+  直接看题解的舒适感，会杀死你建立「解题直觉」的唯一机会。题解的价值在于<strong>印证和纠偏</strong>，
+  不在于替代思考。
+</div>
+
+<hr>
+
+<h2 id="complexity"><span class="h2-num">0.4</span>复杂度：面试官其实在问什么</h2>
+
+<p>「说说你这个解法的复杂度」不是背公式，是在问你一件事：<strong>你知道你的代码在数据变大时会慢成什么样吗。</strong></p>
+
+<h3>一秒钟到底能跑多少次运算</h3>
+
+<p>力扣判题机大约每秒执行 10⁷ ~ 10⁸ 次简单操作。拿这个数和<strong>题目给的数据范围</strong>一比，
+你能在写代码之前就知道自己的解法会不会超时：</p>
+
+<table>
+  <thead><tr><th style="width:150px">n 的范围</th><th style="width:220px">可接受的最高复杂度</th><th>对应的典型算法</th></tr></thead>
+  <tbody>
+    <tr><td>n ≤ 20</td><td>O(2ⁿ)</td><td>回溯、状态压缩枚举</td></tr>
+    <tr><td>n ≤ 500</td><td>O(n³)</td><td>三层循环的区间 DP</td></tr>
+    <tr><td>n ≤ 5000</td><td>O(n²)</td><td>两层循环、朴素 DP</td></tr>
+    <tr><td>n ≤ 10⁵</td><td>O(n log n)</td><td>排序、二分、堆</td></tr>
+    <tr><td>n ≤ 10⁶</td><td>O(n)</td><td>双指针、滑动窗口、线性 DP</td></tr>
+    <tr><td>n 更大 / 10⁹</td><td>O(log n) 或 O(1)</td><td>二分、数学公式</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>实用结论：</strong>拿到题先看 n 的范围。n ≤ 10⁵ 而你想到了两层循环？直接放弃，
+  往双指针 / 哈希 / 二分 / DP 方向想——这本身就是一种解题线索。
+</div>
+
+<hr>
+
+<h2 id="mistake"><span class="h2-num">0.5</span>大多数人的三个误区</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>误区一：按题号顺序从第 1 题刷起。</strong>力扣前几百题没有难度和专题的规律，
+    你会在「随机难度」里来回受挫。正确做法是按<strong>专题</strong>刷——同一类题连着做，
+    思路会互相强化（本站二十四个专题就是这个目的）。</li>
+    <li><strong>误区二：看得懂 = 会了。</strong>看题解时「哦这么简单」的感觉是错觉。
+    检验标准只有一个：<strong>三天后脱稿重写一次通过</strong>。这是本站每个自测题都在帮你验证的事。</li>
+    <li><strong>误区三：追求数量。</strong>刷 300 道但每道都看题解，不如 60 道每道都走完五步法。
+    面试官考的是「现场推理」，不是「见过多少题」——当然，高频题该见还是得见（见附录的 90 天路线）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="faq"><span class="h2-num">0.6</span>常见疑问</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1. 用 Java 刷题会不会比 C++ / Python 吃亏？要不要换语言？</p>
+  <div class="qa-a">
+    <p>不会。力扣判题对 Java 有 2~3 倍的宽松时限，常规题完全够用。Java 的 <code>Deque</code>、
+    <code>PriorityQueue</code>、<code>Arrays.sort</code> 覆盖了 95% 的场景（常用 API 见附录 A.2）。
+    <strong>用最熟的语言，把时间花在算法本身</strong>——除非你面试的公司明确要求某语言。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 每天没时间，一天一道够吗？</p>
+  <div class="qa-a">
+    <p>够，但必须是「走完五步法的一道」，而不是「看过答案的一道」。90 天 ≈ 70~80 道有效题，
+    覆盖 Hot 100 的核心（路线见附录 A.4）。周末可以加量，但<strong>连续性比单日强度重要得多</strong>——
+    断一周，手感归零。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3. 困难题（比如 N 皇后、最小覆盖子串）要不要跳过？</p>
+  <div class="qa-a">
+    <p>本站保留的少数困难题（如 N 皇后、最小覆盖子串）都是<strong>某类模板的「完整形态」</strong>——
+    中等题只是它的简化版。时间紧可以先跳过，学完该专题的中等题再回头看，
+    这时你会发现困难题只是「模板 + 更多细节」。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q4. 这份解析和直接看力扣官方题解有什么区别？</p>
+  <div class="qa-a">
+    <p>官方题解默认你「已经知道该往哪个方向想」，往往直接给最优解。
+    本站把<strong>从暴力解到最优解的每一步「为什么」</strong>补上了：为什么暴力会超时、
+    哪一层循环是多余的、怎么发现它多余。思路推导部分就是为「看完题解还是不会写」的处境准备的。</p>
+  </div>
+</div>
+
+<div class="goal">
+  开始之前，你应该能回答：<em>「n = 10⁵ 的题，两层循环为什么大概率超时？该往哪几个方向想？」</em>
+  答案：判题机一秒约 10⁷~10⁸ 次操作，10⁵ 的平方是 10¹⁰，必超时；
+  该往双指针、哈希、滑动窗口、二分、DP 方向想，把复杂度压到 O(n log n) 以内。
+  能答上来，就可以进 <a href="ch01.html">专题 01 · 数组与双指针</a> 了。
+</div>

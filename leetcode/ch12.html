@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 12 · 图论入门：BFS、DFS 与拓扑排序 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link active" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <div class="sb-sub">
+      <a href="#s1">12.1 图题只需要三块积木</a>
+      <a href="#s2">12.2 岛屿数量：DFS 洪水填充（中等）</a>
+      <a href="#s3">12.3 腐烂的橘子：多源 BFS（中等）</a>
+      <a href="#s4">12.4 课程表：拓扑排序（中等）</a>
+      <a href="#s5">12.5 BFS / DFS 怎么选</a>
+      <a href="#s6">12.6 本专题常见坑</a>
+      <a href="#s7">12.7 自测题</a>
+    </div>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 12</div>
+  <h1><span class="ch-tag">专题 12</span>图论入门：BFS、DFS 与拓扑排序</h1>
+  <p class="lead">这是基础十二个专题的最后一站。好消息是：图论题的表面花样很多，但底层只需要<strong>三块积木</strong>——
+  访问标记、遍历方式（BFS 或 DFS）、以及承载遍历的队列/递归。绝大多数「矩阵/网格」题本质上是<strong>隐式图</strong>，
+  你甚至不需要真的建一个图的数据结构。本章用 3 道经典题把 BFS、DFS、拓扑排序各讲透一道，最后给你一张「BFS 还是 DFS」的选择表。
+  学完这一章，你的力扣 Hot 100 主干就通了。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握网格 BFS/DFS 与拓扑排序</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">递归（专题 08）、队列基础</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">3 道图论题（岛屿/橘子/课程表）</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">6–8 小时</div></div>
+</div>
+
+<hr>
+
+<h2 id="s1"><span class="h2-num">12.1</span>图题只需要三块积木</h2>
+
+<p>很多人被「图论」二字吓到，以为要学邻接矩阵、最短路、并查集一大堆。其实力扣里 90% 的图题，骨架都一样：</p>
+
+<table>
+  <thead><tr><th style="width:150px">积木</th><th>作用</th></tr></thead>
+  <tbody>
+    <tr><td><strong>visited 标记</strong></td><td>记录哪些点已经处理过，防止重复访问、死循环</td></tr>
+    <tr><td><strong>遍历（BFS / DFS）</strong></td><td>从某点出发，按规则走到相邻点</td></tr>
+    <tr><td><strong>队列 / 递归栈</strong></td><td>BFS 用队列（一层层扩散）；DFS 用递归（一条路走到底）</td></tr>
+  </tbody>
+</table>
+
+<h3>网格题 = 隐式图</h3>
+
+<p>最常见的一类是「二维字符网格」题（岛屿、橘子、迷宫）。这时<strong>每个格子就是图的一个节点</strong>，相邻格子（上下左右）就是边。
+  你不需要 new 一个 Graph 类——<code>grid[i][j]</code> 本身就是节点，四方向偏移就是邻边：</p>
+
+<pre><code><span class="cm">// 四方向偏移：上、右、下、左（顺序随意，统一即可）</span>
+<span class="kw">int</span>[][] dirs = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+
+<span class="cm">// 从 (x, y) 出发，枚举四个邻居</span>
+<span class="kw">for</span> (<span class="kw">int</span>[] d : dirs) {
+    <span class="kw">int</span> nx = x + d[0];
+    <span class="kw">int</span> ny = y + d[1];
+    <span class="cm">// 先判断越界，再判断是否可走 / 未访问</span>
+    <span class="kw">if</span> (nx &gt;= 0 &amp;&amp; nx &lt; m &amp;&amp; ny &gt;= 0 &amp;&amp; ny &lt; n) {
+        <span class="cm">// (nx, ny) 是一个合法邻居</span>
+    }
+}</code></pre>
+
+<div class="tip">
+  <strong>记住这两行：</strong><code>int[][] dirs = {{-1,0},{0,1},{1,0},{0,-1}};</code> 是网格题的万能起手式。
+  每遇到一个新格子，就套这个循环枚举邻居，再判越界、判是否该访问。几乎每道网格题都从它开始。
+</div>
+
+<h3>visited 的两种存法</h3>
+
+<ul>
+  <li><strong>另开一个 boolean[][] visited</strong>：最直观，和原网格分开，适合「原网格还要保留值」的情况。</li>
+  <li><strong>直接改原网格</strong>：比如把访问过的陆地改成海洋（'0'）、把新鲜橘子改成腐烂。省空间，但前提是原题不再需要原值（见 12.2「沉岛」技巧）。</li>
+</ul>
+
+<p>下面三道题，就是这三块积木的不同组合：DFS 洪水填充（岛屿）、多源 BFS（橘子）、入度表 + 队列（课程表拓扑排序）。</p>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">12.2</span>岛屿数量：DFS 洪水填充（中等，力扣 200）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：遍历格点 + 沉岛</span></p>
+
+<p><strong>题意：</strong>给你一个 '1'（陆地）和 '0'（水）的二维网格，相连的陆地（上下左右）组成一个岛。求岛屿个数。
+  例如下方有 3 个岛：</p>
+
+<pre><code class="nohl">1 1 0 0 0
+1 0 0 1 1
+0 0 0 1 1
+（左上的 1 是一个岛，右下的四个 1 是另一个岛，共 2 个）</code></pre>
+
+<h3>思路推导</h3>
+
+<p>岛屿是「连成一片的陆地」。思考方式：<strong>每发现一块没访问过的陆地，它一定属于某个岛；从这个点出发，把所有和它相连的陆地都「标记掉」，岛数 +1</strong>。</p>
+
+<p>怎么把「相连的陆地都标记掉」？这就是<strong>洪水填充（flood fill）</strong>——从一个陆地格出发，DFS 四个方向：碰到陆地就继续深入，碰到水/边界/已访问就停。一次 DFS 能「淹掉」一整座岛（把所有陆地改成 '0'，即「沉岛」，顺便充当 visited）。
+  整张网格扫一遍，每遇到一个仍是 '1' 的格，就是一座新岛的起点，触发一次 DFS。</p>
+
+<p>为什么用 DFS 而不是 BFS？这里只关心「连通性」（一座岛算一个），不关心距离/层数，DFS 用递归写最简洁。换成 BFS 也完全正确，只是代码稍长。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="cm">// 四方向：上、右、下、左</span>
+    <span class="kw">int</span>[][] dirs = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+
+    <span class="kw">public</span> <span class="kw">int</span> numIslands(<span class="kw">char</span>[][] grid) {
+        <span class="kw">int</span> m = grid.length, n = grid[0].length;
+        <span class="kw">int</span> count = 0;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; m; i++) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; n; j++) {
+                <span class="kw">if</span> (grid[i][j] == <span class="st">'1'</span>) {     <span class="cm">// 发现一座未访问的岛</span>
+                    count++;
+                    dfs(grid, i, j);         <span class="cm">// 一次性淹掉整座岛</span>
+                }
+            }
+        }
+        <span class="kw">return</span> count;
+    }
+
+    <span class="cm">// 洪水填充：把 (i,j) 连通的所有陆地都改成 '0'（沉岛=标记已访问）</span>
+    <span class="kw">private</span> <span class="kw">void</span> dfs(<span class="kw">char</span>[][] grid, <span class="kw">int</span> i, <span class="kw">int</span> j) {
+        <span class="cm">// 越界 或 不是陆地（已是水/已沉），直接返回</span>
+        <span class="kw">if</span> (i &lt; 0 || i &gt;= grid.length || j &lt; 0 || j &gt;= grid[0].length
+                || grid[i][j] != <span class="st">'1'</span>) {
+            <span class="kw">return</span>;
+        }
+        grid[i][j] = <span class="st">'0'</span>;                    <span class="cm">// 沉岛：标记当前陆地已访问</span>
+        <span class="kw">for</span> (<span class="kw">int</span>[] d : dirs) {               <span class="cm">// 向四个方向扩散</span>
+            dfs(grid, i + d[0], j + d[1]);
+        }
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(m×n)，每个格子最多被访问一次（沉岛后不会再进 DFS）；空间 O(m×n)（最坏递归深度等于格子总数，如全陆地时一条斜线递归）。</p>
+
+<h3>亲手走一遍：grid = [[1,1,0],[1,0,0],[0,0,1]]</h3>
+
+<pre><code class="nohl">初始扫描：
+(0,0)='1' -&gt; 触发 DFS，开始沉岛
+  dfs(0,0): 沉(0,0)；邻居(0,1),(1,0) 是'1'继续沉
+    dfs(0,1): 沉(0,1)；邻居(0,0)已沉、(0,2)='0'停、(1,1)='0'停
+    dfs(1,0): 沉(1,0)；邻居(0,0)已沉、(2,0)='0'停、(1,1)='0'停
+  这次 DFS 把左上角三块陆地全沉了 -&gt; count=1
+继续扫描：
+(0,1)(1,0) 已是'0'跳过；(2,2)='1' -&gt; 触发第二次 DFS，沉掉它 -&gt; count=2
+最终 count = 2（左上岛 + 右下角单独一块）。</code></pre>
+
+<p>可以看到：一次从 (0,0) 出发的 DFS，顺着连通性把整座左上岛「淹」光了，count 只 +1；
+  之后扫描遇到右下角孤立的 (2,2) 是另一座岛，再 +1。这正是「每发现一个未访问陆地就数一座岛、并沉掉整座」的体现。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>「沉岛」是这道题最妙的地方——直接改原网格当 visited，既省空间又不用额外布尔数组。
+  但前提是你<strong>不再需要原网格的值</strong>；若题目要求保留原网格，就改用一个 <code>boolean[][] visited</code>。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>岛屿的最大面积（力扣 695，中等）</strong>——与本题共用「DFS 洪水填充 + 沉岛/visited」技巧；差异在数的是「一座岛包含多少陆地格」而非岛的个数，DFS 时累加面积（提示：把 dfs 改成返回连通陆地格数，每次递归 +1，主循环里对每个新岛累加其面积）。</li>
+    <li><strong>岛屿的周长（力扣 463，简单）</strong>——与本题共用「网格遍历 + 四方向邻居」框架；差异在求的是陆地格「临水/临边」的边数之和，不用沉岛，遇到越界或水就给周长 +1（提示：DFS/BFS 走到每个陆地格，对每个方向判「出界或格子是水」就计一条边）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">12.3</span>腐烂的橘子：多源 BFS（中等，力扣 994）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：多个起点同时入队，层数 = 分钟数</span></p>
+
+<p><strong>题意：</strong>网格里 2 表示腐烂橘子、1 表示新鲜橘子、0 表示空格。每分钟，每个腐烂橘子会把它<strong>上下左右相邻</strong>的新鲜橘子传染腐烂。
+  求多少分钟后所有橘子都烂；若不可能（有新鲜橘子永远接触不到腐烂橘子），返回 -1。
+  例如 [[2,1,1],[1,1,0],[0,1,1]]，需要 4 分钟。</p>
+
+<h3>思路推导</h3>
+
+<p>这道题和岛屿的区别：岛屿只数「连通块个数」，不关心距离；这里关心「<strong>几分钟</strong>」，也就是距离/层数。
+  一提到「扩散 + 层数/最短时间」就该想到 <strong>BFS</strong>——BFS 天然一层层扩散，层数就是时间。</p>
+
+<p>关键在「多个起点」：初始时<strong>可能不止一个腐烂橘子</strong>。如果只从一个腐烂橘子 BFS，会漏掉别的源头。
+  正确做法：<strong>把所有初始腐烂橘子同时入队</strong>（多源 BFS），第 0 层就是它们全体。
+  然后正常 BFS：每出队一个腐烂橘子，把它相邻的新鲜橘子变腐烂并入队，同时记录「这一层处理完代表过了 1 分钟」。</p>
+
+<p>怎么数分钟？用一个「层」的概念：每开始处理新一层前，记下当前队列大小 sz，把这 sz 个节点（同一分钟的）全处理完，分钟数 +1。
+  或者用 <code>int[] 存坐标+分钟</code> 入队也行。处理完后，<strong>再扫一遍网格</strong>：若还有新鲜橘子（'1'）残留，说明有橘子永远烂不到，返回 -1。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">int</span>[][] dirs = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+
+    <span class="kw">public</span> <span class="kw">int</span> orangesRotting(<span class="kw">int</span>[][] grid) {
+        <span class="kw">int</span> m = grid.length, n = grid[0].length;
+        Queue&lt;<span class="kw">int</span>[]&gt; q = <span class="kw">new</span> LinkedList&lt;&gt;();
+        <span class="kw">int</span> fresh = 0;                       <span class="cm">// 统计新鲜橘子总数</span>
+        <span class="cm">// 把所有初始腐烂橘子入队（多源起点），并数新鲜橘子</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; m; i++) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; n; j++) {
+                <span class="kw">if</span> (grid[i][j] == 2) q.offer(<span class="kw">new</span> <span class="kw">int</span>[]{i, j});
+                <span class="kw">if</span> (grid[i][j] == 1) fresh++;
+            }
+        }
+        <span class="kw">if</span> (fresh == 0) <span class="kw">return</span> 0;            <span class="cm">// 本来就没新鲜橘子，0 分钟</span>
+
+        <span class="kw">int</span> minutes = 0;
+        <span class="kw">while</span> (!q.isEmpty()) {
+            <span class="kw">int</span> sz = q.size();               <span class="cm">// 当前层的节点数（同一分钟的腐烂橘子）</span>
+            <span class="kw">boolean</span> changed = <span class="kw">false</span>;         <span class="cm">// 这一层是否真的传染了</span>
+            <span class="kw">for</span> (<span class="kw">int</span> k = 0; k &lt; sz; k++) {
+                <span class="kw">int</span>[] cur = q.poll();
+                <span class="kw">for</span> (<span class="kw">int</span>[] d : dirs) {
+                    <span class="kw">int</span> nx = cur[0] + d[0], ny = cur[1] + d[1];
+                    <span class="kw">if</span> (nx &gt;= 0 &amp;&amp; nx &lt; m &amp;&amp; ny &gt;= 0 &amp;&amp; ny &lt; n
+                            &amp;&amp; grid[nx][ny] == 1) {      <span class="cm">// 相邻的新鲜橘子</span>
+                        grid[nx][ny] = 2;               <span class="cm">// 传染腐烂</span>
+                        fresh--;                        <span class="cm">// 新鲜数 -1</span>
+                        changed = <span class="kw">true</span>;
+                        q.offer(<span class="kw">new</span> <span class="kw">int</span>[]{nx, ny});     <span class="cm">// 新腐烂的入队，下一层再扩散</span>
+                    }
+                }
+            }
+            <span class="kw">if</span> (changed) minutes++;          <span class="cm">// 这一层确实传染了，才计 1 分钟</span>
+        }
+        <span class="cm">// 若还有新鲜橘子残留，说明永远烂不到</span>
+        <span class="kw">return</span> fresh == 0 ? minutes : -1;
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(m×n)（每个橘子最多入队一次），空间 O(m×n)（队列最坏存所有橘子）。</p>
+
+<h3>亲手走一遍：grid = [[2,1,1],[1,1,0],[0,1,1]]</h3>
+
+<p>初始：腐烂点 (0,0) 入队；新鲜橘子共 6 个（(0,1)(0,2)(1,0)(1,1)(2,1)(2,2)，fresh=6）。</p>
+
+<pre><code class="nohl">第 0 层（mins=0）：队列=[(0,0)]，sz=1
+  处理(0,0)：传染(0,1)、(1,0) -&gt; 变2，fresh=4，入队
+  changed=true -&gt; minutes=1
+
+第 1 层（mins=1）：队列=[(0,1),(1,0)]，sz=2
+  处理(0,1)：传染(0,2) -&gt; 变2，fresh=3
+  处理(1,0)：邻居(1,1)仍是新鲜 -&gt; 变2，fresh=2
+  入队(0,2),(1,1)；changed=true -&gt; minutes=2
+
+第 2 层（mins=2）：队列=[(0,2),(1,1)]，sz=2
+  处理(0,2)：四周皆0/已烂，无新传染
+  处理(1,1)：传染(2,1) -&gt; 变2，fresh=1，入队(2,1)
+  changed=true -&gt; minutes=3
+
+第 3 层（mins=3）：队列=[(2,1)]，sz=1
+  处理(2,1)：传染(2,2) -&gt; 变2，fresh=0，入队(2,2)
+  changed=true -&gt; minutes=4
+
+第 4 层（mins=4）：队列=[(2,2)]，sz=1
+  处理(2,2)：四周无新鲜，无传染；changed=false（分钟不+1）
+队列空。fresh=0 == 0 -&gt; 返回 4 分钟。</code></pre>
+
+<p>逐层数下来，新鲜橘子 6 个被分 4 层全部传染完，返回 4。注意「changed 才加分钟」：最后一层若没真传染，不会多算。
+  若把某个新鲜橘子改成永远接触不到腐烂点（比如左上角孤立一块 1），fresh 就减不到 0，最终返回 -1。</p>
+
+<div class="warn">
+  <strong>多源 BFS 的两个易错点：</strong>(1) <em>必须一开始把所有源点都入队</em>，不能只入第一个腐烂橘子，否则别的源头扩散不到；
+  (2) 最后要<em>扫一遍检查是否还有新鲜橘子</em>，否则「有橘子烂不到」的情况会误报成正常分钟数。
+  另外 minutes 只在「这一层真传染了」时才 +1，避免空转多算。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>二进制矩阵中的最短路径（力扣 1091，中等）</strong>——与本题共用「网格 BFS + 每步扩散求最短距离」技巧；差异在每步走的是<strong>八方向</strong>（含斜向）且 0 可走 1 不可走，求左上到右下的最少步（提示：把 dirs 扩成 8 个方向，BFS 层数即步数，首次到达终点即答案）。</li>
+    <li><strong>地图中的最高点（力扣 1765，中等）</strong>——与本题共用「多源 BFS」框架；差异在初始所有水域（值 0）同时入队，BFS 逐层向上抬高相邻陆地高度（提示：水格全部初始入队，每层把邻居高度设为「当前高度+1」，等价于从所有水源向外一圈圈涨）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">12.4</span>课程表：拓扑排序（中等，力扣 207）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：入度表 + 邻接表 + 队列</span></p>
+
+<p><strong>题意：</strong>numCourses 门课，prerequisites[i] = [a, b] 表示要选 a 必须先选 b（b 是 a 的先修）。问能否学完所有课（即是否存在一个合法选课顺序，无环）。
+  例如 numCourses=2, prerequisites=[[1,0]]，先修 0 再选 1，可以，返回 true；若有 [1,0] 和 [0,1] 互相先修，则 false。</p>
+
+<h3>思路推导</h3>
+
+<p>这是标准的<strong>拓扑排序</strong>问题：把课看成节点，先修关系看成有向边 b → a（b 指向 a，表示 b 要先完成）。
+  能学完所有课 ⇔ 图里<strong>没有环</strong>。拓扑排序就是「把节点排成一条线，让所有边都从前指向后」；若存在环，就排不出。</p>
+
+<p>怎么做？用<strong>入度表 + 队列</strong>的 BFS 写法（Kahn 算法）：</p>
+
+<ul>
+  <li><strong>入度（indegree）</strong>：一门课有多少门先修课。indegree[a] 表示有几门课是 a 的前置。</li>
+  <li><strong>邻接表（graph）</strong>：graph[b] 存「b 完成后能解锁的课」（即所有以 b 为先修的课）。</li>
+  <li>把所有<strong>入度为 0</strong> 的课（没有先修、可以直接学的）入队。</li>
+  <li>每次出队一门课 u，就「学完」它；遍历 graph[u]，把 u 解锁的每门课 v 的入度 -1。
+    当某门 v 的入度减到 0，说明它的先修都学完了，v 入队。</li>
+  <li>最终若学完的课数 == 总课数，说明无环、能学完（true）；否则有环（false）。</li>
+</ul>
+
+<p><strong>「入度归零 = 先修课都完成」</strong>是这题的核心直觉：一门课的入度就是它还没完成的先修数量，归零意味着前置全部就绪，可以学了。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">boolean</span> canFinish(<span class="kw">int</span> numCourses, <span class="kw">int</span>[][] prerequisites) {
+        <span class="cm">// indegree[i]：第 i 门课还有几门先修没完成</span>
+        <span class="kw">int</span>[] indegree = <span class="kw">new</span> <span class="kw">int</span>[numCourses];
+        <span class="cm">// graph[i]：学完 i 后，能解锁哪些课（i 是它们的先修）</span>
+        List&lt;Integer&gt;[] graph = <span class="kw">new</span> List[numCourses];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; numCourses; i++) graph[i] = <span class="kw">new</span> ArrayList&lt;&gt;();
+
+        <span class="kw">for</span> (<span class="kw">int</span>[] p : prerequisites) {
+            <span class="kw">int</span> a = p[0], b = p[1];          <span class="cm">// 学 a 要先学 b</span>
+            graph[b].add(a);                 <span class="cm">// b 完成后解锁 a</span>
+            indegree[a]++;                   <span class="cm">// a 的先修数 +1</span>
+        }
+
+        <span class="cm">// 所有入度为 0 的课（无先修）先入队</span>
+        Queue&lt;Integer&gt; q = <span class="kw">new</span> LinkedList&lt;&gt;();
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; numCourses; i++) {
+            <span class="kw">if</span> (indegree[i] == 0) q.offer(i);
+        }
+
+        <span class="kw">int</span> learned = 0;                     <span class="cm">// 已学完的课数</span>
+        <span class="kw">while</span> (!q.isEmpty()) {
+            <span class="kw">int</span> u = q.poll();
+            learned++;                       <span class="cm">// 学完 u</span>
+            <span class="kw">for</span> (<span class="kw">int</span> v : graph[u]) {         <span class="cm">// u 解锁的每门课 v</span>
+                indegree[v]--;               <span class="cm">// v 的一个先修已完成</span>
+                <span class="kw">if</span> (indegree[v] == 0) {      <span class="cm">// v 的先修全部完成</span>
+                    q.offer(v);
+                }
+            }
+        }
+        <span class="cm">// 学完的课数 == 总课数 才说明无环、能全部学完</span>
+        <span class="kw">return</span> learned == numCourses;
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(V + E)（V 门课、E 条先修边，每点每边各处理一次），空间 O(V + E)（邻接表 + 入度数组）。</p>
+
+<h3>亲手走一遍：numCourses=4, prerequisites=[[1,0],[2,0],[3,1],[3,2]]</h3>
+
+<p>含义：1 需先 0、2 需先 0、3 需先 1、3 需先 2。即 0 是 1 和 2 的先修，1 和 2 是 3 的先修。</p>
+
+<pre><code class="nohl">建表：
+  graph[0]=[1,2]   indegree[1]=1
+  graph[1]=[3]     indegree[2]=1
+  graph[2]=[3]     indegree[3]=2
+  graph[3]=[]      indegree[0]=0
+入度为 0 的：只有 0 -&gt; 队列=[0]
+
+出队 0：learned=1；解锁 graph[0]=[1,2]
+  indegree[1]:1-&gt;0 -&gt; 入队；indegree[2]:1-&gt;0 -&gt; 入队。队列=[1,2]
+出队 1：learned=2；解锁 graph[1]=[3]
+  indegree[3]:2-&gt;1（还没到0，不入队）。队列=[2]
+出队 2：learned=3；解锁 graph[2]=[3]
+  indegree[3]:1-&gt;0 -&gt; 入队。队列=[3]
+出队 3：learned=4；graph[3]=[] 无解锁。队列空。
+
+learned(4) == numCourses(4) -&gt; 无环，返回 true。
+合法顺序之一：0 -&gt; 1 -&gt; 2 -&gt; 3（或 0 -&gt; 2 -&gt; 1 -&gt; 3）。</code></pre>
+
+<p>对比有环的情形：prerequisites=[[1,0],[0,1]]。建表后 indegree[0]=1、indegree[1]=1，<strong>没有任何入度为 0 的课能入队</strong>，
+  队列一开始就空，learned=0 ≠ 2，返回 false——环被准确识别。这就是「入度归零 = 先修全完成」的威力。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>拓扑排序的「判环」本质就是「能否把所有点都入队并出队一次」。
+  有环时，环上的课入度永远减不到 0，永远进不了队，learned 就小于总数。
+  若题目还要你<strong>输出一个合法顺序</strong>（力扣 210），只要把每次出队的 u 加进结果列表即可。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>课程表 II（力扣 210，中等）</strong>——与本题共用「入度表 + 邻接表 + 队列的拓扑排序」技巧；差异在不仅判能否学完，还要<strong>输出一种合法顺序</strong>（提示：每次出队的课加入结果列表，最后若结果长度 == 总课数则返回该顺序，否则返回空列表）。</li>
+    <li><strong>找到最终的安全状态（力扣 802，中等）</strong>——与本题共用「拓扑排序判环」思想；差异在要找所有「不会走到环里」的节点，需<strong>反向建图</strong>从出度为 0 的点反向拓扑（提示：把边方向反过来，从原出度为 0 的节点入队，能一路减度到 0 的节点即安全，收集这些节点）。</li>
+  </ul>
+</div>
+
+<h3>补充：拓扑排序还有「DFS 三色标记」写法</h3>
+
+<p>除了上面的 BFS（Kahn）写法，拓扑排序也能用 DFS 做：给每个节点标三种颜色——</p>
+
+<ul>
+  <li><strong>白色（0）：</strong>还没访问过；</li>
+  <li><strong>灰色（1）：</strong>正在当前 DFS 路径上（已入栈、还没回溯完）；</li>
+  <li><strong>黑色（2）：</strong>已经完全处理完（出栈）。</li>
+</ul>
+
+<p>DFS 时若遇到<strong>灰色</strong>节点，说明「从它出发又走回它自己」，即存在<strong>后向边 = 有环</strong>，直接返回 false；遇到黑色说明之前已安全处理过，跳过；白色则继续递归。
+  这种写法在「判断有向图是否 DAG」时很常用，但面试里 BFS（Kahn）因为「顺手能输出顺序、入度表直观」而更推荐首选。
+  两种方法本质等价，知道有这一支即可，不必强背。</p>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">12.5</span>BFS / DFS 怎么选</h2>
+
+<p>这两兄弟都是遍历，但适用场景不同。一张表记清：</p>
+
+<table>
+  <thead><tr><th style="width:110px">需求</th><th style="width:130px">选哪个</th><th>原因</th></tr></thead>
+  <tbody>
+    <tr><td>最短路径 / 最少步数 / 层数</td><td><strong>BFS</strong></td><td>一层层扩散，第一次到达即最短</td></tr>
+    <tr><td>多源同时扩散（如腐烂橘子）</td><td><strong>BFS</strong></td><td>所有源点同时入队，天然按层</td></tr>
+    <tr><td>连通块 / 连通性（岛屿）</td><td>两者皆可，DFS 更简</td><td>不关心距离，DFS 递归最省代码</td></tr>
+    <tr><td>枚举所有路径 / 回溯</td><td><strong>DFS</strong></td><td>递归天然适合「一条路走到底再回退」</td></tr>
+    <tr><td>环检测 / 拓扑排序</td><td><strong>BFS</strong>（Kahn）</td><td>入度队列写法直观；DFS 三色标记也可</td></tr>
+    <tr><td>图很深、怕栈溢出</td><td><strong>BFS</strong></td><td>DFS 递归深度大时可能 StackOverflow</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>速记：</strong><em>「问距离用 BFS，问连通用 DFS，问顺序/环用拓扑(BFS)」</em>。
+  一句话判断：答案和「第几层 / 走几步」有关 → BFS；只关心「在不在一起 / 达不达得到」→ DFS 也行。
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">12.6</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>坑一：visited 忘标记导致死循环 / 重复入队。</strong>
+      不管是 BFS 还是 DFS，进入一个节点<strong>第一件事</strong>就是标记已访问（或沉岛）。漏了就会在相邻节点间来回跳，TLE 或栈溢出。</li>
+    <li><strong>坑二：BFS 在「入队时」就标记，而不是「出队时」标记。</strong>
+      这是本题最高频的一个坑：应在<strong>节点入队那一刻</strong>就把它标为 visited。否则同一节点可能被多个邻居先后发现、重复入队多次，
+      队列爆炸。理由：入队即代表「已安排处理」，出队才标记会让它又被别的邻居加进来。</li>
+    <li><strong>坑三：多源 BFS 忘了把所有源点先入队。</strong>
+      像腐烂橘子，初始有多个腐烂点，必须<strong>一次性全部入队</strong>。只入第一个，其他源头的扩散范围就漏了，答案偏小。</li>
+    <li><strong>坑四：越界判断顺序错。</strong>
+      先判 <code>nx>=0 && nx<m && ny>=0 && ny<n</code> 再访问 grid[nx][ny]，否则数组越界。别写成先访问再判。</li>
+    <li><strong>坑五：拓扑排序入度/邻接表建反。</strong>
+      prerequisites=[a,b] 是「b→a」（b 先），adjacency 里应是 graph[b].add(a)、indegree[a]++。建反了（a→b）整个拓扑就错。</li>
+    <li><strong>坑六：腐烂橘子漏了「最后检查残留新鲜」。</strong>
+      有新鲜橘子永远烂不到时，要返回 -1 而不是分钟数；另外新鲜橘子为 0 时直接返回 0，别进 BFS。</li>
+  </ul>
+</div>
+
+<div class="warn">
+  <strong>关于坑二再强调：</strong>「入队即标记」和「出队才标记」在<em>单源最短路</em>里结果可能一样，但在<em>多源 / 会重复发现同一节点</em>的场景下差异巨大。
+  养成习惯：<code>if (未访问) { 标记已访问; 入队; }</code> —— 标记和入队写在一起，永远不出错。
+</div>
+
+<h3>附带提醒：坐标偏移的方向顺序无关紧要</h3>
+
+<p>前面所有题我都用 <code>{{-1,0},{0,1},{1,0},{0,-1}}</code>（上右下左）。其实四个方向的<strong>顺序完全无所谓</strong>——
+  BFS/DFS 只要把四个邻居都枚举到就行，顺序只影响遍历的「先后」，不影响最终正确性（岛屿数、分钟数、能否学完都不变）。
+  唯一要小心的：写偏移时别把 <code>d[0]</code> 和 <code>d[1]</code> 搞反（行偏移加在 x/行上，列偏移加在 y/列上），以及别漏掉某个方向（只写两个就会漏边）。
+  新人常犯的错误是把方向数组写成 <code>{{0,1},{1,0}}</code> 只有两个方向，导致只往右和下扩散，连通性判断出错。</p>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">12.7</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.【动手题】岛屿数量那题，如果<strong>不允许修改原网格</strong>（题目还要保留地图），该怎么改代码？写出关键差异。</p>
+  <div class="qa-a">
+    <p>另开一个 <code>boolean[][] visited = new boolean[m][n]</code>。DFS 开头判断条件改成
+      <code>if (越界 || visited[i][j] || grid[i][j]!='1') return;</code>，进入后先 <code>visited[i][j]=true;</code> 再扩散。
+      主循环里也要先判 <code>grid[i][j]=='1' && !visited[i][j]</code> 才触发 DFS。沉岛那行删掉，逻辑完全等价。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 腐烂橘子为什么「入队时标记」比「出队时标记」更安全？用两个腐烂橘子相邻的情形推一下。</p>
+  <div class="qa-a">
+    <p>假设腐烂橘子 A、B 相邻且都初始入队。若出队才标记：处理 A 时把相邻 B 发现并（因 B 还没出队、未标记）再次入队，
+      B 被重复入队一次，队列里多一份。虽然本题 B 已是腐烂值、不会重复传染，但如果是「求最短距离」类题，
+      重复入队会让同一节点被多次松弛、甚至多算层数。入队即标记能保证每个节点最多进队一次，最稳。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.【动手题】力扣 207 若要求<strong>输出一种合法选课顺序</strong>（即力扣 210），在本题代码上改哪几行？</p>
+  <div class="qa-a">
+    <p>把 learned 换成结果列表 <code>List<Integer> order</code>；每次 <code>int u = q.poll();</code> 后执行 <code>order.add(u);</code>。
+      最后若 <code>order.size() == numCourses</code> 返回 order，否则返回空列表（有环）。其余入度/邻接/减度逻辑一字不改。</p>
+  </div>
+</div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「网格题本质是什么？BFS 和 DFS 分别什么时候用？拓扑排序怎么判环？」</em>
+  答案：网格题是隐式图，每个格子是节点、四方向是边，靠 dirs 遍历；求<strong>最短/层数/多源</strong>用 BFS（队列、入队即标记），
+  求<strong>连通性</strong>用 DFS（递归、沉岛当 visited）；拓扑排序用<strong>入度表 + 邻接表 + 队列</strong>，能全部出队即无环。
+  这十二个基础专题到此收官——13~24 号进阶专题按面试方向选学；回到 <a href="index.html">总览</a> 的复杂度表与 90 天路线，开始你的刷题循环吧。
+</div>
+
+<div class="navfoot">
+  <a href="ch11.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 11 · 贪心算法</div></a>
+  <a class="next" href="ch13.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 13 · 前缀和与差分</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 12 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

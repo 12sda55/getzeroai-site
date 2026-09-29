@@ -1,0 +1,386 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 17</div>
+  <h1><span class="ch-tag">专题 17</span>堆（优先队列）：永远快速拿到最值</h1>
+  <p class="lead">如果说哈希表解决了「快速查某个值存不存在」，那<strong>堆解决的是另一类常见问题：「快速拿到当前最大/最小的那个」</strong>。
+  比如「最大的 K 个数」「K 个有序链表怎么合并成一个有序链表」「数据流里实时维护中位数」。
+  这一章先把堆的物理结构讲清楚（它就是一棵特殊的完全二叉树），再带你用 4 道经典题把套路练熟，最后给你一张「Top K 到底选哪种解法」的选型表。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握堆的三种典型用法</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">Java 基础 · 专题 05 链表 · 专题 07 二叉树</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 道 Hot 题 + TopK 选型表</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">17.1</span>堆是什么，Java 里怎么用</h2>
+
+<p>堆（Heap）本质是一棵<strong>完全二叉树</strong>，并且满足一个关键性质：<strong>父节点的值 ≤ 子节点的值</strong>（小顶堆）；反过来如果父 ≥ 子，就叫<strong>大顶堆</strong>。
+「完全二叉树」的意思是：除了最后一层，上面各层都填满，最后一层从左往右排，中间不空。这个形状保证它可以用数组紧凑存储，不需要真的去建一棵链式树。</p>
+
+<p>为什么这个性质有用？因为「父 ≤ 子」意味着<strong>整棵树最小的那个元素一定在根</strong>。所以无论是插一个元素还是删一个元素，只要维护好「堆性质」，我们就能在 O(log n) 时间拿到最值，而不用像数组那样扫一遍 O(n)。</p>
+
+<pre><code class="nohl">小顶堆（父 ≤ 子）的样子：
+        1
+      /   \
+     3     2
+    / \   / \
+   5   4 6   7
+堆顶（根）= 1，永远是整棵树最小。
+
+用数组存（下标从 0 开始，左孩子 2i+1，右孩子 2i+2，父亲 (i-1)/2）：
+  [1, 3, 2, 5, 4, 6, 7]
+   i=0  1  2  3  4  5  6
+
+关键点：堆只保证「根是最值」，不保证整体有序！
+        比如 3 和 2 谁大堆不管，只管 1 比它们都小。
+</code></pre>
+
+<h3>Java 里怎么用：PriorityQueue</h3>
+
+<p>Java 标准库没有叫「Heap」的类，但 <code>PriorityQueue</code> 就是堆（优先队列）的实现。它默认是<strong>小顶堆</strong>（队头是最小元素）。常用三个操作：</p>
+
+<ul>
+  <li><code>add(x)</code> / <code>offer(x)</code>：插入元素，内部自动上浮维持堆性质，O(log n)；</li>
+  <li><code>poll()</code>：弹出堆顶（最值），内部自动把最后一个元素移到根再下沉，O(log n)；</li>
+  <li><code>peek()</code>：只看堆顶不删除，O(1)。</li>
+</ul>
+
+<pre><code>// 默认小顶堆：peek() 永远是最小元素
+PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+minHeap.add(5); minHeap.add(1); minHeap.add(3);
+System.out.println(minHeap.peek()); // 输出 1
+
+// 想要大顶堆：传入比较器，让「大的」排到前面
+// 写法一：lambda (a,b)->b-a（注意整数溢出风险，见 17.7）
+PriorityQueue<Integer> maxHeap1 = new PriorityQueue<>((a, b) -> b - a);
+// 写法二：更安全的 Comparator.reverseOrder()
+PriorityQueue<Integer> maxHeap2 = new PriorityQueue<>(Comparator.reverseOrder());
+maxHeap2.add(5); maxHeap2.add(1); maxHeap2.add(3);
+System.out.println(maxHeap2.peek()); // 输出 5
+</code></pre>
+
+<div class="tip">
+  <strong>记忆法：</strong>堆就像一个「自动排序的候车室」——你随便塞人进去，它永远把最快上车的（最值）摆在门口。
+  <code>poll()</code> 就是放走门口那个人，<code>peek()</code> 是探头看一眼门口是谁，<code>add()</code> 是塞个人进去它自己排好位。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">17.2</span>堆的三种典型用法</h2>
+
+<p>刷题时堆几乎只干三件事，认准这三类你就知道该不该用堆：</p>
+
+<h3>① Top K 问题：维护一个固定大小为 K 的堆</h3>
+
+<p>比如「前 K 个最大的数」。思路是：建一个大小为 K 的堆，扫一遍数组，把元素往里塞；堆满了就弹出最值，最后堆里剩下的就是 Top K。
+具体用大顶还是小顶，取决于你要「最大」还是「第 K 大」——这个最容易想反，<a href="ch17.html#s3">17.3</a> 会专门讲。</p>
+
+<h3>② 多路归并：K 个有序序列合并</h3>
+
+<p>比如 K 个已经排好序的链表/数组，要把它们合成一个有序序列。每次只需要从「K 个序列当前的头」里挑最小的接上去。
+用堆装这 K 个头，poll 最小的，再把那个序列的下一个头补进来，循环即可。<a href="ch17.html#s5">17.5</a> 合并 K 个升序链表就是典型。</p>
+
+<h3>③ 动态最值：边进边出</h3>
+
+<p>数据流场景——元素不是一次性给你，而是一边来一边走，你随时要回答「当前最大值是多少」「中位数多少」。
+堆能 O(log n) 维护最值，所以特别适合这种「持续变化、随时查询」的场景（如 <a href="ch17.html#s4">347</a> 的频次统计、703 数据流第 K 大等）。</p>
+
+<pre><code class="nohl">三类用法一句话区分：
+  Top K      —— 我只要「最突出的那几个」，其余不要
+  多路归并   —— 好几路都排好序了，我要把它们「缝」成一路
+  动态最值   —— 数据像水龙头一样流进来，我随时问「现在最值是谁」
+</code></pre>
+
+<div class="tip">
+  <strong>选型一句话：</strong>只要题目里出现「最大的 K 个」「前 K 个」「随时拿最值」「多个有序序列合并」，优先想堆。
+  但注意：如果数据范围很小（比如分数只有 0~100），<a href="ch17.html#s6">17.6</a> 会告诉你计数排序可能更快。
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">17.3</span>数组中的第 K 个最大元素：堆解法（中等，力扣 215）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：维护大小为 K 的小顶堆</span></p>
+
+<p><strong>题意：</strong>给你一个整数数组 <code>nums</code> 和整数 <code>k</code>，返回数组中<strong>第 k 个最大的元素</strong>。
+例如 <code>nums = [3,2,1,5,6,4]</code>，<code>k = 2</code>，排序后是 <code>[1,2,3,4,5,6]</code>，第 2 大是 <code>5</code>。注意不要求整体排序，只问第 k 大。</p>
+
+<h3>思路推导：为什么是小顶堆，而不是大顶堆？</h3>
+
+<p>最直觉的暴力：把数组排序，取倒数第 k 个，O(n log n)。能不能更好？堆可以做到 O(n log k)。</p>
+
+<p>关键问题是：<strong>要第 k 大，应该维护什么堆？</strong>很多人第一反应是「维护大顶堆，弹出 k-1 次最大的，堆顶就是第 k 大」。这能 work，但要弹出 k-1 次，而且堆里其实装了所有 n 个元素。</p>
+
+<p>更省空间、更优雅的写法是：<strong>维护一个大小为 k 的小顶堆</strong>。推理如下——</p>
+
+<ul>
+  <li>我们想保留「目前见过的最大的 k 个数」。这 k 个数里最小的那一个，恰好就是「候选的第 k 大」；</li>
+  <li>所以堆里放「当前最大的 k 个数」，用<strong>小顶堆</strong>，堆顶就是这 k 个数里最小的，也就是第 k 大的候选；</li>
+  <li>每来一个新数，如果它比堆顶（当前第 k 大候选）还大，说明旧的堆顶不再是前 k 大，把它 poll 掉，新数入堆；</li>
+  <li>遍历结束，堆里正好是最大的 k 个数，堆顶（最小的那个）= 第 k 大。</li>
+</ul>
+
+<pre><code class="nohl">例子 nums=[3,2,1,5,6,4], k=2，维护大小为 2 的小顶堆：
+  看 3：堆空，入 → [3]
+  看 2：2<堆顶3，不换（还不够格进前2大）→ [3]   其实要入堆再弹，这里堆未满直接入 [3,2]
+  看 1：堆满(2个)，1<堆顶2 → 不入，跳过
+  看 5：5>堆顶2 → 弹2入5 → [3,5]
+  看 6：6>堆顶3 → 弹3入6 → [5,6]
+  看 4：4<堆顶5 → 不入
+  结束，堆=[5,6]，堆顶=5 = 第2大 ✓
+</code></pre>
+
+<p>为什么是小顶而不是大顶？因为我们要找「前 k 大里最小的那个」，小顶堆的堆顶正好暴露这个最小值，方便和后面元素比较淘汰。若用大顶堆，堆顶是最大的，你没法知道「第 k 大」是谁。</p>
+
+<h3>参考代码</h3>
+
+<pre><code>public int findKthLargest(int[] nums, int k) {
+    // 小顶堆：堆顶是当前堆里最小的，也就是「前 k 大里最小的」
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+    for (int num : nums) {
+        minHeap.add(num);            // 先无条件入堆
+        if (minHeap.size() > k) {    // 超过 k 个，把最小的（堆顶）扔掉
+            minHeap.poll();          // 留下的始终是最大的 k 个数
+        }
+    }
+    return minHeap.peek();           // 堆顶 = 第 k 大
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>遍历 n 个元素，每个 <code>add</code> 和 <code>poll</code> 都是 O(log k)（堆大小始终 ≤ k），所以总时间 <strong>O(n log k)</strong>，空间 O(k)。比排序的 O(n log n) 在 k 远小于 n 时更优。</p>
+
+<div class="tip">
+  也可以反过来用<strong>大小为 n-k+1 的大顶堆</strong>保留「最小的若干」，但最通用的记法是「求第 k 大用大小为 k 的小顶堆」。题目若改成「第 k 小」，对称地<strong>用大小为 k 的大顶堆</strong>即可。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>前 K 个高频元素（力扣 347，中等）</strong>——与本题共用「大小为 k 的小顶堆」技巧；差异在堆里放的不是数字本身，而是「数字+频次」的对象，比较器按频次比（提示：用 <code>int[]</code> 或自定义类，<code>(a,b)-&gt;Integer.compare(a[1], b[1])</code>）。</li>
+    <li><strong>数据流中的第 K 大元素（力扣 703，简单）</strong>——动态版堆：<code>add()</code> 每次来一个数就按本题逻辑维护大小为 k 的小顶堆，返回堆顶（提示：把本题循环改成类里持有一个 heap 成员，add 时执行同样逻辑）。</li>
+    <li><strong>最接近原点的 K 个点（力扣 973，中等）</strong>——与本题同框架；差异在「大小」的度量变成欧氏距离，比较器按距离比（提示：堆里放 <code>int[]</code> 点坐标，距离是 <code>x*x+y*y</code>）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">17.4</span>前 K 个高频元素（中等，力扣 347）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：哈希计数 + 按频次排序的堆</span></p>
+
+<p><strong>题意：</strong>给你一个整数数组 <code>nums</code> 和一个整数 <code>k</code>，返回出现频率<strong>前 k 高</strong>的元素。
+例如 <code>nums = [1,1,1,2,2,3]</code>，<code>k = 2</code>，频次是 1→3 次、2→2 次、3→1 次，前 2 高频是 <code>[1,2]</code>（顺序不限）。</p>
+
+<h3>思路推导：两步拆开想</h3>
+
+<p>这道题其实是两个子问题的组合，拆开反而简单：</p>
+
+<ul>
+  <li><strong>第一步：统计频次。</strong>谁出现了几次？用哈希表 <code>HashMap&lt;Integer, Integer&gt;</code> 扫一遍数组，key 是数、value 是次数。O(n)。</li>
+  <li><strong>第二步：从「频次」里找前 k 大。</strong>这不就是 <a href="ch17.html#s3">17.3</a> 的「第 k 大」吗？只不过比较的不是数字大小，而是频次大小。</li>
+</ul>
+
+<p>所以做法：把每个「数+频次」塞进一个<strong>大小为 k 的小顶堆</strong>，比较器按频次（不是按数）比。堆满就弹频次最小的，最后堆里就是前 k 高频。</p>
+
+<h3>参考代码</h3>
+
+<pre><code>public int[] topKFrequent(int[] nums, int k) {
+    // 第一步：哈希计数
+    Map<Integer, Integer> freq = new HashMap<>();
+    for (int num : nums) {
+        freq.put(num, freq.getOrDefault(num, 0) + 1);
+    }
+    // 第二步：大小为 k 的小顶堆，按「频次」比较
+    // 堆里放 int[]{数值, 频次}，比较器比频次
+    PriorityQueue<int[]> minHeap = new PriorityQueue<>(
+        (a, b) -> Integer.compare(a[1], b[1])   // 频次小的在堆顶
+    );
+    for (Map.Entry<Integer, Integer> e : freq.entrySet()) {
+        minHeap.add(new int[]{e.getKey(), e.getValue()});
+        if (minHeap.size() > k) {
+            minHeap.poll();   // 弹掉频次最小的，留下前 k 高频
+        }
+    }
+    // 取出结果
+    int[] res = new int[k];
+    for (int i = 0; i < k; i++) {
+        res[i] = minHeap.poll()[0];   // 这里顺序无所谓
+    }
+    return res;
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>计数 O(n)；建堆时最多 n 个不同数，每个插入 O(log k)，O(n log k)；总 <strong>O(n log k)</strong>，空间 O(n+k)。</p>
+
+<div class="tip">
+  <strong>另一种 O(n) 解法：桶排序。</strong>频次最大不超过 n，用 <code>List&lt;Integer&gt;[] buckets</code> 下标当频次，把数按频次丢进对应桶，再从高频桶往低频次取满 k 个。因为只扫桶不比较，能到 O(n)。但堆写法更通用好记，面试优先写堆。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>根据字符出现频率排序（力扣 451，中等）</strong>——与本题共用「哈希计数 + 堆/桶按频次排序」技巧；差异在输出是把字符按频次从高到低拼成字符串（提示：堆里放 <code>char</code> 和频次，poll 时重复 append 频次次）。</li>
+    <li><strong>前 K 个高频单词（力扣 692，中等）</strong>——同理但堆里是字符串，比较器先比频次、频次相同按字典序（提示：<code>(a,b)-&gt;a[1]!=b[1]? a[1]-b[1] : b[0].compareTo(a[0])</code> 注意字典序小的反而优先）。</li>
+    <li><strong>数据流中的第 K 大元素（力扣 703，简单）</strong>——复用 17.3 堆框架，频次的变体（提示：无频次，直接按数值维护小顶堆）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">17.5</span>合并 K 个升序链表（困难，力扣 23）</h2>
+
+<p><span class="pill purple">困难</span> <span class="pill">核心：K 路归并，堆里放各链表的当前头</span></p>
+
+<p><strong>题意：</strong>给你一个含 k 个链表的数组，每个链表都已<strong>升序排列</strong>，请你把它们合并成一个升序链表并返回其头节点。
+例如 <code>lists = [[1,4,5],[1,3,4],[2,6]]</code>，合并后是 <code>[1,1,2,3,4,4,5,6]</code>。</p>
+
+<h3>思路推导：从「逐个合并」到「一起合并」</h3>
+
+<p>最容易想到的暴力：先合并第 1 和第 2 条成一条，再拿结果和第 3 条合并……这叫<strong>顺序合并</strong>。
+假设每条平均 n 个节点，合并两条是 O(n)；第 i 次合并要扫前面所有已合并的 i·n 个节点，总复杂度约 O(k²·n)，很慢。</p>
+
+<p>优化思路——<strong>多路归并（K 路归并）</strong>：想象 k 个指针分别指向 k 条链表的头，每一步我们只要在「这 k 个当前头」里挑最小的接上去，然后把那个指针往后挪一位。
+「从 k 个数里反复挑最小」正是堆的强项！用一个小顶堆（按节点值比较）装这 k 个当前头：</p>
+
+<ul>
+  <li>初始：把 k 条链表的头节点（非 null 的）都入堆；</li>
+  <li>循环：poll 出最小的节点接到结果尾巴上；如果该节点还有 <code>next</code>，把它的 <code>next</code> 入堆（补上这一路的新头）；</li>
+  <li>直到堆空，所有节点都接完了。</li>
+</ul>
+
+<pre><code class="nohl">lists = [[1,4,5],[1,3,4],[2,6]]，堆按节点值小顶：
+初始化堆：[1(链1), 1(链2), 2(链3)]   括号标来自哪条
+poll 1(链1) → 结果[1]，补链1的next=4 → 堆[1(链2),2(链3),4(链1)]
+poll 1(链2) → 结果[1,1]，补链2的next=3 → 堆[2(链3),3(链2),4(链1)]
+poll 2(链3) → 结果[1,1,2]，补链3的next=6 → 堆[3,4,6]
+poll 3 → 补4(链2) → 堆[4(链1),4(链2),6]
+poll 4(链1) → 补5 → 堆[4(链2),5,6]
+poll 4(链2) → 补null(不入) → 堆[5,6]
+poll 5 → 补null → 堆[6]
+poll 6 → 补null → 堆空
+结果：[1,1,2,3,4,4,5,6] ✓
+</code></pre>
+
+<p>每个节点进堆出堆各一次，每次 O(log k)，总 O(n log k)，比 O(k²n) 好太多。注意用 <a href="ch05.html#s2">专题 05</a> 学的虚拟头节点（dummy）统一边界。</p>
+
+<h3>参考代码</h3>
+
+<pre><code>public ListNode mergeKLists(ListNode[] lists) {
+    if (lists == null || lists.length == 0) return null;
+    // 小顶堆：堆里放节点，按节点值比较谁小谁在堆顶
+    PriorityQueue<ListNode> minHeap = new PriorityQueue<>(
+        (a, b) -> Integer.compare(a.val, b.val)
+    );
+    // 1. 把每条链表的头（非 null）入堆
+    for (ListNode head : lists) {
+        if (head != null) minHeap.add(head);
+    }
+    ListNode dummy = new ListNode(0);   // 虚拟头，统一边界
+    ListNode tail = dummy;
+    // 2. 循环取最小，补 next
+    while (!minHeap.isEmpty()) {
+        ListNode cur = minHeap.poll();  // 当前最小节点
+        tail.next = cur;                // 接结果尾巴
+        tail = tail.next;
+        if (cur.next != null) {         // 这一路还有后续，补进来
+            minHeap.add(cur.next);
+        }
+    }
+    return dummy.next;
+}
+</code></pre>
+
+<h3>复杂度</h3>
+
+<p>共 n 个节点（n 为所有链表节点总数），每个节点入堆出堆 O(log k)，时间 <strong>O(n log k)</strong>。空间 O(k)（堆里最多 k 个节点）。边界：lists 为空返回 null；某条链表为空要跳过（代码已处理）。</p>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>合并两个有序链表（力扣 21，简单）</strong>——本题的 k=2 退化版，其实不用堆，双指针即可（提示：理解 K 路归并后，k=2 时直接两个指针比大小接即可，复杂度 O(n) 比堆的 O(n log 2) 还省）。</li>
+    <li><strong>合并 K 个升序数组（力扣 632，困难）</strong>——与本题同框架，把链表节点换成数组下标；差异在堆里要记录「值来自第几个数组、第几个下标」（提示：堆里放 <code>int[]{数组索引, 元素下标, 值}</code>）。</li>
+    <li><strong>数据流的中位数（力扣 295，困难）</strong>——动态维护两堆（大顶+小顶），是堆在多路/动态最值的延伸（提示：左半用大顶堆、右半用小顶堆，平衡两堆大小）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">17.6</span>Top K 三种解法对比</h2>
+
+<p>「前 K 大/高频」这类题，至少有三种解法都能做，面试时该选哪个？一张表讲清：</p>
+
+<table>
+  <thead>
+    <tr><th>解法</th><th>时间复杂度</th><th>适用场景</th><th>优缺点</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>堆</strong>（大小为 k 的小顶堆）</td>
+      <td>O(n log k)</td>
+      <td>通用，尤其 n 很大、k 较小；数据流场景</td>
+      <td>逻辑清晰好写，空间 O(k)；比快排慢一点常数</td>
+    </tr>
+    <tr>
+      <td><strong>快速选择</strong>（quickselect）</td>
+      <td>平均 O(n)，最坏 O(n²)</td>
+      <td>只要「第 k 个」不要求前 k 个全列出</td>
+      <td>平均最快，但最坏退化要注意随机化 pivot（见 <a href="ch16.html#s4">专题 16</a>）</td>
+    </tr>
+    <tr>
+      <td><strong>计数/桶排序</strong></td>
+      <td>O(n + 值域)</td>
+      <td>数据范围很小（如分数 0~100、字符 a~z）</td>
+      <td>值域小的时候最优 O(n)；值域大则爆内存</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code class="nohl">选型口诀：
+  数据范围小 + 要全列前 k 个  → 桶排序（最快，O(n)）
+  只问「第 k 个是谁」         → 快速选择（平均最快）
+  通用 / 数据流 / 值域未知     → 堆（最稳，永远能写）
+</code></pre>
+
+<div class="tip">
+  <strong>面试建议：</strong>堆解法是最「不会翻车」的默认选项，先写出来保证能过；如果面试官追问「还能更快吗」，再补快速选择或桶排序。不要一上来就炫快排导致 pivot 写错。
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">17.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul>
+    <li><strong>比较器写反（大顶写成小顶）。</strong>「求第 k 大」要用小顶堆，很多人记成「大」就用大顶，结果堆顶是最大不是第 k 大。记住：堆顶暴露的是「你用来淘汰的基准」，求第 k 大时基准是「前 k 大里最小的」→ 小顶。</li>
+    <li><strong><code>(a,b)-&gt;b-a</code> 的整型溢出。</strong>当 a、b 接近 <code>Integer</code> 边界（如 <code>a=-2^31, b=1</code>），<code>b-a</code> 会溢出变成正数，比较器结果错乱。务必用 <code>Integer.compare(a, b)</code> 或 <code>Comparator.reverseOrder()</code>。</li>
+    <li><strong>堆大小忘控制在 K。</strong>写 <code>add</code> 后必须判断 <code>size() &gt; k</code> 再 <code>poll</code>，否则堆里装了全部 n 个元素，既浪费空间又没起到「只留 k 个」的作用。</li>
+    <li><strong>堆不支持随机删除。</strong>堆只能删堆顶。如果想删中间某个特定元素，得自己维护额外映射或换数据结构（如 <code>TreeSet</code>）。别想当然 <code>heap.remove(x)</code>（虽然 PriorityQueue 有但 O(n) 慢）。</li>
+    <li><strong>堆不保证整体有序。</strong>只保证堆顶最值。<code>poll</code> 依次取出才是升序，不能指望 <code>peek</code> 多个元素就是排序好的。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">17.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.（概念题）为什么「求数组中第 k 大的元素」用大小为 k 的<strong>小顶堆</strong>，而不是大顶堆？堆顶代表什么？</p>
+  <div class="qa-a">小顶堆的堆顶是「当前堆里最小的」，而堆里保留的是「目前已见过的最大的 k 个数」，堆顶就是这 k 个数里最小的那个——恰好是第 k 大的候选。每来更大的数就淘汰堆顶，遍历完堆顶即答案。大顶堆的堆顶是最大元素，无法直接定位「第 k 大」。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2.（概念题）Top K 的三种解法（堆 / 快速选择 / 桶排序）分别什么时候最优？各自复杂度？</p>
+  <div class="qa-a">堆 O(n log k) 通用最稳、支持数据流；快速选择平均 O(n) 只问「第 k 个」最快；桶排序 O(n+值域) 仅在数据范围小时最优。详见 <a href="ch17.html#s6">17.6</a> 表格。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.（动手题）用大小为 k 的小顶堆思想，写一个类支持：不断 <code>add(int num)</code> 动态加入数字，并随时返回当前第 k 大的元素（力扣 703 思路）。先写框架再补细节。</p>
+  <div class="qa-a">类里持有一个 <code>PriorityQueue&lt;Integer&gt; minHeap</code> 和 <code>int k</code>。每次 <code>add</code>：<code>minHeap.add(num); if (minHeap.size() &gt; k) minHeap.poll(); return minHeap.peek();</code>。初始化时若已有数组，逐个 add 即可。注意 k 可能大于已加入元素数，此时 peek 可能为 null，需按题意处理。</div>
+</div>
+
+<div class="goal">学完这章，你应该能回答：堆的物理结构是什么、为什么 peek/poll/add 是 O(log n)；Top K 为什么用小顶堆；K 路归并怎么用堆把 O(k²n) 降到 O(n log k)；以及堆 / 快选 / 桶排序三种 Top K 解法怎么选型。</div>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 02 · 哈希表 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link active" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <div class="sb-sub">
+      <a href="#s1">2.1 哈希表的本质：拿空间换一次查找</a>
+      <a href="#s2">2.2 Java 哈希三件套怎么选</a>
+      <a href="#s3">2.3 两数之和（简单）</a>
+      <a href="#s4">2.4 有效的字母异位词（简单）</a>
+      <a href="#s5">2.5 字母异位词分组（中等）</a>
+      <a href="#s6">2.6 最长连续序列（中等）</a>
+      <a href="#s7">2.7 本专题常见坑</a>
+      <a href="#s8">2.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 02</div>
+  <h1><span class="ch-tag">专题 02</span>哈希表</h1>
+  <p class="lead">上一章我们靠「两个指针协同」省掉了嵌套循环；这一章换一个思路：<strong>用哈希表把一次查找从 O(n) 压成 O(1)</strong>，
+  于是「两层数组循环里找一个数」直接变成「一层循环 + 一次查找」。
+  哈希表的本质就一句话——<strong>拿空间换时间</strong>。这一章你会反复看到同一句话：
+  「能不能把『待查找的东西』先用哈希记下来，这样需要它的时候一查就有？」</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">理解 O(1) 查找、会用三种哈希容器、独立写 4 题</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 01 双指针、Java 泛型基础</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 道题的推导 + 可提交 Java 代码</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">5–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">2.1</span>哈希表的本质：拿空间换一次查找</h2>
+
+<p>很多数组题的暴力解长这样：「对第 <code>i</code> 个数，再扫一遍后面的数，看有没有我要找的那个」。
+内层这遍扫描，是 O(n) 的<strong>查找</strong>。哈希表要解决的，就是把这次查找变成 O(1)。</p>
+
+<h3>O(1) 是怎么来的</h3>
+
+<p>哈希表内部是一个数组（叫「桶」）。它用一个<strong>哈希函数</strong>把 key 算成一个整数下标，直接定位到桶里的位置：
+存的时候放进去，查的时候用同样的哈希函数算下标、一步拿到。只要哈希函数足够均匀、冲突不多，
+<code>put</code> 和 <code>get</code> 都接近常数时间。</p>
+
+<table>
+  <thead><tr><th style="width:260px">做法</th><th style="width:200px">查找一个数</th><th>整体复杂度</th></tr></thead>
+  <tbody>
+    <tr><td>暴力：在数组里从头扫</td><td>O(n)</td><td>两层循环 O(n²)</td></tr>
+    <tr><td>哈希：先存进 HashMap 再查</td><td>O(1) 均摊</td><td>一层循环 O(n)</td></tr>
+  </tbody>
+</table>
+
+<h3>「拿空间换时间」到底换了什么</h3>
+
+<p>代价是<strong>额外内存</strong>：你为那 n 个数额外开了哈希表（大约 O(n) 空间）。收益是<strong>时间</strong>：
+把 O(n²) 砍成 O(n)。刷题（和面试）里，这个交换几乎是永远划算的——除非题目明说「O(1) 空间」。</p>
+
+<div class="tip">
+  <strong>一个判断信号：</strong>当你写题时冒出「我需要在已遍历的元素里找某个东西」「需要快速判断某值存不存在」「需要给某 key 计数」
+  这类念头，立刻想到哈希表。它是这类需求的默认答案。
+</div>
+
+<h3>一个直觉例子（先不写代码）</h3>
+
+<p>假设要找一个数组里「有没有两个数加起来等于 10」。暴力是两层循环枚举所有对。
+换哈希思路：<strong>一边遍历，一边把走过的数记到哈希表里</strong>；每走到一个新数 <code>x</code>，就查一下 <code>10 - x</code> 在不在表里。
+在，就找到了；不在，就把 <code>x</code> 存进去继续。整个过程中，每个数只被看一次，查找是 O(1)——这正是下一节两数之和的思路。</p>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">2.2</span>Java 哈希三件套怎么选</h2>
+
+<p>Java 里「哈希」相关工具有好几个，初学者最容易乱用。其实按需求选，只有三件：</p>
+
+<h3>① HashMap：键值对，要「通过 key 找 value」</h3>
+
+<p>当你需要「记住某个东西，并且以后通过它反查另一个东西」时用。典型：两数之和里存「数值 → 下标」。</p>
+
+<pre><code class="nohl">Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();
+map.put(7, 1);            // 把 7 和下标 1 绑定
+int idx = map.get(7);     // O(1) 拿到 1</code></pre>
+
+<h3>② HashSet：只要「存在性」，不关心对应的值</h3>
+
+<p>当你只需要回答「这个数我见过没有」，不需要记下标或其他信息，用 <code>HashSet</code>（它其实就是 value 被忽略的 HashMap）。
+典型：最长连续序列里判断「x+1 在不在」。注意 <code>Set.contains</code> 才是 O(1)，<code>List.contains</code> 是 O(n)，别用错容器。</p>
+
+<pre><code class="nohl">Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+set.add(3);
+boolean seen = set.contains(3);  // O(1)</code></pre>
+
+<h3>③ int[26] / int[128] 数组计数：键是小范围整数时最快</h3>
+
+<p>如果「键」是<strong>有限的、范围小的整数</strong>（比如小写字母只有 26 个、ASCII 128 个），<strong>直接用数组当下标</strong>比 HashMap 还快：
+数组访问是纯机器层面的 O(1)，没有哈希计算、没有装箱。<strong>这是面试加分项</strong>——看到「字母频次」就条件反射用 <code>int[26]</code>。</p>
+
+<pre><code class="nohl">int[] count = new int[26];
+count[s.charAt(i) - 'a']++;   // 'a'→0, 'b'→1 ... 直接当下标</code></pre>
+
+<table>
+  <thead><tr><th style="width:240px">你的需求</th><th style="width:200px">选哪个</th><th>理由</th></tr></thead>
+  <tbody>
+    <tr><td>通过 key 找另一个 value</td><td>HashMap</td><td>需要键值映射</td></tr>
+    <tr><td>只判断「见过没」</td><td>HashSet</td><td>省去无用的 value</td></tr>
+    <tr><td>统计小范围整数（字母/ASCII）频次</td><td>int[26] / int[128]</td><td>比 HashMap 更快、更省、代码更短</td></tr>
+    <tr><td>键是字符串或任意大整数</td><td>HashMap / HashSet</td><td>数组下标装不下</td></tr>
+  </tbody>
+</table>
+
+<h3>一个具体对比：数一下「a」出现了几次</h3>
+
+<p>假设要统计字符串里字母 <code>'a'</code> 的出现次数，两种写法都正确，但差别一目了然：</p>
+
+<pre><code class="nohl">// 写法 A：HashMap（通用但啰嗦、有装箱开销）
+Map&lt;Character, Integer&gt; m = new HashMap&lt;&gt;();
+m.put('a', m.getOrDefault('a', 0) + 1);
+
+// 写法 B：int[26]（键是小写字母时的首选）
+int[] count = new int[26];
+count['a' - 'a']++;   // 直接当下标，无哈希、无装箱</code></pre>
+
+<p>写法 B 没有哈希计算、没有 <code>Integer</code> 装箱拆箱，数组访问就是一次加法取址，又快又省。
+<strong>面试信号：</strong>看到「字母 / ASCII / 0~10⁵ 小范围整数 + 频次统计」就先想数组，再用 HashMap 兜底——
+这个下意识的的选择本身就能给面试官留下好印象。</p>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">2.3</span>两数之和（简单，力扣 1）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：边遍历边查 complement</span></p>
+
+<p><strong>题意：</strong>给定数组 <code>nums</code> 和整数 <code>target</code>，找出<strong>和为 target 的两个元素</strong>的下标（假设恰好一组解，且不能重复使用同一个元素）。
+<strong>例：</strong><code>nums = [2,7,11,15], target = 9</code>，因为 <code>2 + 7 = 9</code>，返回 <code>[0, 1]</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，暴力。</strong>两层循环枚举所有 <code>(i, j)</code>，看 <code>nums[i] + nums[j] == target</code>，O(n²)。<code>n</code> 到 10⁴ 就超时。</p>
+
+<p><strong>第二步，把内层循环翻译成查找。</strong>固定 <code>i</code> 时，我们要找的其实是「<code>target - nums[i]</code> 这个值，在数组里出现过吗，下标是多少」。
+这就是 2.1 节说的「在已遍历元素里找一个数」。如果我们能把「走过的数 → 它的下标」用哈希记下来，
+这层查找就是 O(1)。</p>
+
+<p><strong>第三步，边走边查、先查后存。</strong>遍历到第 <code>i</code> 个时，先算 <code>need = target - nums[i]</code>，去哈希表查 <code>need</code>：
+查到了，说明前面有个下标 <code>j</code> 满足 <code>nums[j] == need</code>，而 <code>nums[j] + nums[i] == target</code>，直接返回 <code>[j, i]</code>；
+查不到，就把当前 <code>(nums[i], i)</code> 存进表，继续。</p>
+
+<p><strong>为什么「先查后存」能保证不重复使用同一元素？</strong>因为当前元素 <code>nums[i]</code> 在查的时候<em>还没</em>被存进表，
+所以不可能和自己配对（<code>need</code> 若等于 <code>nums[i]</code>，表里没有它，不会误返回 <code>[i, i]</code>）。</p>
+
+<table>
+  <thead><tr><th style="width:70px">i</th><th style="width:110px">nums[i]</th><th style="width:90px">need</th><th>表状态 / 动作</th></tr></thead>
+  <tbody>
+    <tr><td>0</td><td>2</td><td>7</td><td>表空，查 7 没有 → 存入 (2→0)</td></tr>
+    <tr><td>1</td><td>7</td><td>2</td><td>查 2 命中下标 0 → 返回 [0, 1]</td></tr>
+  </tbody>
+</table>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span>[] twoSum(<span class="kw">int</span>[] nums, <span class="kw">int</span> target) {
+        Map&lt;Integer, Integer&gt; map = <span class="kw">new</span> HashMap&lt;&gt;(); <span class="cm">// 数值 → 下标</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; nums.length; i++) {
+            <span class="kw">int</span> need = target - nums[i];             <span class="cm">// 我们要找的另一个数</span>
+            <span class="kw">if</span> (map.containsKey(need)) {             <span class="cm">// 它在之前出现过吗？</span>
+                <span class="kw">return</span> <span class="kw">new</span> <span class="kw">int</span>[]{map.get(need), i};  <span class="cm">// 出现过，返回两个下标</span>
+            }
+            map.put(nums[i], i);                     <span class="cm">// 没出现，把当前值和下标记下来</span>
+        }
+        <span class="kw">return</span> <span class="kw">new</span> <span class="kw">int</span>[]{};                          <span class="cm">// 题目保证有解，这里只是语法兜底</span>
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(n) 时间（只遍历一遍，查找均摊 O(1)），O(n) 空间（哈希表最多存 n 个数）。相比暴力 O(n²)，这是哈希换时间的典型胜利。</p>
+
+<div class="warn">
+  <strong>边界自查：</strong>① 有重复值如 <code>[3,3], target=6</code>：i=0 存入 (3→0)，i=1 查 need=3 命中返回 <code>[0,1]</code>，正确，<strong>不会</strong>因「先查后存」漏掉。
+  ② 单元素/空数组按题意不会出现（保证有解）。  ③ 返回顺序无所谓，但注意 <code>map.get(need)</code> 是较早的下标、<code>i</code> 是较晚的。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>两数之和 II - 输入有序数组（力扣 167，中等）</strong>——与本题共用「边遍历边查找 complement」技巧；差异在数组已升序，可用对撞指针替代哈希，空间降到 O(1)（提示：left/right 向中间夹，<code>nums[left]+nums[right]</code> 比 target 大就 right--、小就 left++）。</li>
+    <li><strong>和为 K 的子数组（力扣 560，中等）</strong>——与本题共用「存见过的状态再查 complement」技巧；差异在查找对象变成「前缀和」而非单个数（提示：边走边把前缀和出现次数存进哈希，查 <code>sum - k</code>，别忘初始 <code>put(0, 1)</code>；详见专题 13）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">2.4</span>有效的字母异位词（简单，力扣 242）</h2>
+
+<p><span class="pill teal">简单</span> <span class="pill">核心：数组计数取代 HashMap</span></p>
+
+<p><strong>题意：</strong>给定两个字符串 <code>s</code> 和 <code>t</code>，判断它们是否<strong>字母异位词</strong>——
+即<em>包含完全相同的字母、且每种字母出现次数相同</em>，只是顺序可以不同。字符串只含小写字母。
+<strong>例：</strong><code>s="anagram", t="nagaram"</code> → true；<code>s="rat", t="car"</code> → false。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，暴力 / 排序。</strong>把两个串排序后直接比是否相等，O(n log n)。能过，但不是最优，且没用到「只有小写字母」这个条件。</p>
+
+<p><strong>第二步，异位词的等价定义。</strong>两串是异位词 ⇔ <strong>每个字母的出现次数一模一样</strong>。
+那我们只要各自数出 26 个字母的频次，比对频次数组即可。</p>
+
+<p><strong>第三步，为什么用 int[26] 而不是 HashMap。</strong>字母只有 26 种，固定且范围小，用数组当下标最快：
+<code>count[ch - 'a']</code> 就是字母 <code>ch</code> 的桶。我们甚至<strong>可以只用一个数组</strong>：遍历 <code>s</code> 时对应桶 +1，遍历 <code>t</code> 时对应桶 -1，
+最后数组全为 0 说明两串频次完全抵消、是异位词。先比长度能提前剪枝（长度不同必不是）。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">boolean</span> isAnagram(String s, String t) {
+        <span class="kw">if</span> (s.length() != t.length()) <span class="kw">return</span> <span class="kw">false</span>; <span class="cm">// 长度不同，必不是异位词，直接返回</span>
+        <span class="kw">int</span>[] count = <span class="kw">new</span> <span class="kw">int</span>[26];                   <span class="cm">// 26 个小写字母的计数桶</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; s.length(); i++) {
+            count[s.charAt(i) - <span class="st">'a'</span>]++;              <span class="cm">// s 里出现一次，对应桶 +1</span>
+            count[t.charAt(i) - <span class="st">'a'</span>]--;              <span class="cm">// t 里出现一次，对应桶 -1</span>
+        }
+        <span class="kw">for</span> (<span class="kw">int</span> c : count) {
+            <span class="kw">if</span> (c != 0) <span class="kw">return</span> <span class="kw">false</span>;                <span class="cm">// 有任何一个桶不为 0，频次不一致</span>
+        }
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(n) 时间（两遍遍历 + 一遍查 26 个桶），O(1) 空间（固定 26 长度数组，与 n 无关）。比排序法更快且更体现「小范围整数用数组」的意识。</p>
+
+<div class="tip">
+  <strong>扩展：</strong>如果字符串含<strong>任意 Unicode 字符</strong>（不止小写字母），<code>int[26]</code> 装不下，就改用 <code>Map&lt;Character, Integer&gt;</code> 计数，思路完全一样；或者仍然排序后比较。  本题默认小写字母，用数组最香。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>字母异位词分组（力扣 49，中等）</strong>——与本题共用「频次比较」技巧；差异在不是比两个串，而是给每个串算「频次签名」当 key 做分组（提示：把串排序或拼计数字符串当 key，相同 key 的原串放进同一个列表）。</li>
+    <li><strong>赎金信（力扣 383，简单）</strong>——与本题共用 <code>int[26]</code> 计数技巧；差异在只判断 magazine 能否覆盖 ransomNote 的字符，magazine 的桶只减不加（提示：遍历 ransomNote，对应桶减到负数立刻返回 false，否则最后返回 true）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">2.5</span>字母异位词分组（中等，力扣 49）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：设计「签名」当 key</span></p>
+
+<p><strong>题意：</strong>给定字符串数组 <code>strs</code>，把其中<strong>互为字母异位词</strong>的字符串分到同一组，返回分组结果（组内顺序、组间顺序不限）。
+<strong>例：</strong><code>strs = ["eat","tea","tan","ate","nat","bat"]</code> →
+<code>[["eat","tea","ate"], ["tan","nat"], ["bat"]]</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，暴力。</strong>每两个串比较是否异位词（复用 2.4 的计数法），O(n²·k)，<code>n</code> 大必超时，而且「比较」本身很笨重。</p>
+
+<p><strong>第二步，关键洞察——异位词有共同的「签名」。</strong>如果把一个串的字母<strong>排序</strong>，那么所有互为异位词的串，排序后一定得到<strong>同一个字符串</strong>。
+比如 <code>"eat"、"tea"、"ate"</code> 排序后都是 <code>"aet"</code>。这个排序串就是它们的「分组身份证」。</p>
+
+<p><strong>第三步，用 HashMap 把同签名归拢。</strong><code>key = 排序后的串</code>，<code>value = 这组原串的列表</code>。
+遍历每个串，算它的签名，把原串加进对应列表。最后把所有列表收回来就是答案。
+<strong>为什么这样对？</strong>因为签名相同的串必然互为异位词（排序结果相同 ⇔ 字母频次相同），签名不同的一定不是——分组恰好正确。</p>
+
+<p><strong>第四步，key 的设计还有更优解（面试加分）。</strong>排序串要对每个串做 O(k log k)（k 是串长）。
+其实可以改用<strong>「计数串」</strong>当 key：统计 26 字母频次，拼成 <code>"a1e1t1"</code> 这样的字符串当 key，只需 O(k)。
+两者思路一致，计数串避免排序、常数更优，面试时提一句能显得你考虑过效率。</p>
+
+<h3>参考代码（排序串为 key）</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> List&lt;List&lt;String&gt;&gt; groupAnagrams(String[] strs) {
+        Map&lt;String, List&lt;String&gt;&gt; map = <span class="kw">new</span> HashMap&lt;&gt;();
+        <span class="kw">for</span> (String s : strs) {
+            <span class="kw">char</span>[] cs = s.toCharArray();
+            Arrays.sort(cs);                 <span class="cm">// 异位词排序后一定相同，作为分组 key</span>
+            String key = <span class="kw">new</span> String(cs);
+            <span class="cm">// 没有这个 key 就新建列表，有就直接把原串加进去</span>
+            map.computeIfAbsent(key, k -&gt; <span class="kw">new</span> ArrayList&lt;&gt;()).add(s);
+        }
+        <span class="kw">return</span> <span class="kw">new</span> ArrayList&lt;&gt;(map.values()); <span class="cm">// 把所有分组作为结果返回</span>
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>排序串方案：O(n · k log k)（n 个串、每个排序 O(k log k)），O(n·k) 空间（存 key 和原串）。
+计数串方案：O(n·k) 时间，更优。两种都能过。</p>
+
+<div class="tip">
+  <strong>关于 <code>computeIfAbsent</code>：</strong>它是 JDK 8 的语法糖，等价于「key 不在就 put 一个空列表再返回，在就直接返回」，一行搞定「存在则追加、不存在则新建」，
+  比手写 <code>if (!map.containsKey(key)) map.put(...)</code> 更简洁。面试写出来很利落，  但手写版面试官也能看懂，别为了炫技写错。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>最长连续序列（力扣 128，中等）</strong>——与本题共用「哈希/集合记录见过的元素」技巧；差异在从「频次相同」变成「数值连续」（提示：用 HashSet 存全部数，只从「前驱 x-1 不在集合」的起点往后数连续段）。</li>
+    <li><strong>两数之和（力扣 1，简单）</strong>——与本题共用「哈希表存 key 与关联值」技巧；差异在 key 是数值、value 是下标，而非排序串与列表（提示：依然是「先查后存」的哈希思维，查到 complement 就返回两个下标）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">2.6</span>最长连续序列（中等，力扣 128）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：HashSet + 只从起点数</span></p>
+
+<p><strong>题意：</strong>给定<strong>未排序</strong>的整数数组 <code>nums</code>，找出<strong>最长连续递增序列</strong>的长度
+（序列中的数字必须连续且按数值递增，如 <code>[1,2,3,4]</code> 长度 4，但 <code>[1,2,4]</code> 不算连续因缺 3）。
+<strong>例：</strong><code>nums = [100,4,200,1,3,2]</code> → 最长连续序列是 <code>[1,2,3,4]</code>，返回 <code>4</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，排序法。</strong>先排序再数连续段，O(n log n)。题目要求<strong>进阶 O(n)</strong>，所以要想办法去掉排序。</p>
+
+<p><strong>第二步，用 HashSet 把查找变 O(1)。</strong>把所有数丢进 <code>HashSet</code>，这样「x 在不在数组里」一查便知。
+连续序列的本质是：从某个数 <code>x</code> 出发，不断检查 <code>x+1, x+2, ...</code> 在不在。</p>
+
+<p><strong>第三步，灵魂优化——只从「序列起点」开始数。</strong>什么叫起点？就是<strong>数组里没有 <code>x-1</code> 这个数</strong>的 <code>x</code>。
+为什么只数起点就够了？因为对于任意一个连续段（比如 1,2,3,4），我们<em>只在最前面的 1 处</em>才会发起「往后数 2,3,4」；
+而 2、3、4 这些非起点（它们的前一个数都在数组里）我们<strong>主动跳过</strong>，不去重复发起计数。
+这样每个数最多被「数」一次，总工作量 O(n)。</p>
+
+<p><strong>第四步，正确性直觉。</strong>每个连续段只在它的最小元素处被完整数一遍；段内其他元素因「前驱存在」被跳过，不会漏数也不会重复数。
+<code>max</code> 记录历史最长即可。</p>
+
+<table>
+  <thead><tr><th style="width:80px">x</th><th style="width:170px">x-1 在 set？</th><th>动作</th></tr></thead>
+  <tbody>
+    <tr><td>100</td><td>99 不在</td><td>是起点，数 100,101(无) → 长度 1</td></tr>
+    <tr><td>4</td><td>3 在</td><td>非起点，跳过</td></tr>
+    <tr><td>200</td><td>199 不在</td><td>是起点，数 200,201(无) → 长度 1</td></tr>
+    <tr><td>1</td><td>0 不在</td><td>是起点，数 1,2,3,4,5(无) → 长度 4（更新 max）</td></tr>
+    <tr><td>3</td><td>2 在</td><td>非起点，跳过</td></tr>
+    <tr><td>2</td><td>1 在</td><td>非起点，跳过</td></tr>
+  </tbody>
+</table>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> longestConsecutive(<span class="kw">int</span>[] nums) {
+        Set&lt;Integer&gt; set = <span class="kw">new</span> HashSet&lt;&gt;();
+        <span class="kw">for</span> (<span class="kw">int</span> x : nums) set.add(x);     <span class="cm">// 全部入集合，后续查找 O(1)</span>
+        <span class="kw">int</span> ans = 0;
+        <span class="kw">for</span> (<span class="kw">int</span> x : set) {
+            <span class="kw">if</span> (set.contains(x - 1)) <span class="kw">continue</span>; <span class="cm">// x 不是序列起点（前面还有），跳过</span>
+            <span class="kw">int</span> cur = x, len = 1;
+            <span class="kw">while</span> (set.contains(cur + 1)) {     <span class="cm">// 从 x 往后数连续的数</span>
+                cur++; len++;
+            }
+            ans = Math.max(ans, len);           <span class="cm">// 更新历史最长</span>
+        }
+        <span class="kw">return</span> ans;
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(n) 平均时间（每个数入集合一次、被「数」最多一次，HashSet 操作均摊 O(1)），O(n) 空间（集合）。这是「HashSet 去重 + 起点剪枝」的典范。</p>
+
+<div class="warn">
+  <strong>易错点：</strong>① 必须 <code>for (int x : set)</code> 而不是 <code>for (int x : nums)</code> 后再判断起点——
+  用 <code>set</code> 遍历能天然去重（如 <code>[1,1,2]</code> 不会因重复 1 多算）；用 <code>nums</code> 遍历也行但要小心重复触发。
+  ② 空数组 <code>set</code> 为空，循环不进，返回 0，正确。③ <code>int</code> 溢出：若 <code>cur</code> 接近 <code>Integer.MAX_VALUE</code>，<code>cur+1</code> 会溢出变负，极端用例需注意（一般面试不卡这个，知道即可）。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>和为 K 的子数组（力扣 560，中等）</strong>——与本题共用「用哈希记住见过的状态」技巧；差异在状态从「数值是否出现过」变成「前缀和出现的次数」（提示：边走边把前缀和频率存进 HashMap，查 <code>sum - k</code>，初始化 <code>put(0,1)</code>）。</li>
+    <li><strong>缺失的第一个正数（力扣 41，中等）</strong>——与本题共用「把数据当下标当哈希」技巧；差异在利用原数组自身做「原地哈希」，把数值放到对应下标（提示：<code>while nums[i] != i+1</code> 且在范围内就交换，最后第一个 <code>nums[i] != i+1</code> 处即答案）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">2.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>坑一：自动装箱开销。</strong>用 <code>HashMap&lt;Integer, Integer&gt;</code> 频繁 <code>put/get</code> 会触发 <code>int↔Integer</code> 的自动装箱拆箱，常数比数组大。
+    两数之和这种必须用（要存下标），可接受；但若只是「计数」，且键是小范围整数，优先 <code>int[]</code> 数组，又快又省。</li>
+    <li><strong>坑二：以为 hashCode 相同就是相等。</strong>哈希冲突时不同 key 可能落到同一桶，HashMap 会用 <code>equals</code> 再比一次。自己写自定义对象当 key 时，<strong>必须同时正确重写 <code>hashCode</code> 和 <code>equals</code></strong>，否则查不到或查错。本题用的 <code>Integer</code>/<code>String</code> 已经帮你写好了，别自己造轮子当 key。</li>
+    <li><strong>坑三：遍历中改 map 抛异常。</strong>用增强 for 循环遍历 HashMap 的同时 <code>put</code>/<code>remove</code>，会抛 <code>ConcurrentModificationException</code>。
+    需要边遍历边删，用 <code>Iterator</code> 的 <code>remove()</code>，或先把要删的 key 收集到列表里、遍历完再删。</li>
+    <li><strong>坑四：数组计数 vs HashMap 选错。</strong>键是 26 字母、128 ASCII、或 0~10⁵ 的小范围整数时，<code>int[]</code> 远胜 HashMap；
+    键是字符串或任意大整数时才用 HashMap。看到「频次统计」先问：键的范围我能用数组下标表示吗？</li>
+    <li><strong>坑五：把 List.contains 当 O(1)。</strong><code>List.contains</code> 是 O(n) 遍历，<code>Set.contains</code> 才是 O(1)。需要判存在性请务必用 <code>HashSet</code>，别因为顺手写了 <code>ArrayList</code> 把 O(n) 优化打回原形。</li>
+    <li><strong>坑六：两数之和返回顺序。</strong>题目要求返回两个下标，不是两个值；且注意「先查后存」保证不会同一个元素用两次，别为了省事写成「先全存再查」导致可能用到自己。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">2.8</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 两数之和为什么「先查 complement 再把自己 put 进表」，而不是「先把所有数都 put 进去再查」？</p>
+    <div class="qa-a">
+      <p>「先全存再查」本身能找到解，但在 <code>target</code> 为偶数、且存在 <code>nums[i] == target/2</code> 的情况（如 <code>[3,3], target=6</code>）下，
+      查到的是<strong>自己那个下标</strong>，违反「不能用同一个元素两次」。</p>
+      <p>「先查后存」保证：查 <code>need</code> 时，当前元素<strong>还没</strong>进表，所以命中的一定是<em>前面</em>某个不同的下标，天然满足「两个不同元素」。这是更稳妥的写法。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q2. 字母异位词分组里，为什么用「排序串」当 key 就能保证同组一定是异位词？</p>
+    <div class="qa-a">
+      <p>排序操作只改变顺序、不改变字母及频次。两串互为异位词 ⇔ 字母频次完全相同 ⇔ 排序后字符串完全相同。</p>
+      <p>所以「排序后串相同」是「互为异位词」的<strong>充要条件</strong>：相同的一定是一组，不同的一定不是一组，分组既不多也不漏。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q3. 最长连续序列里，如果不用「只从起点数」，而是对每个数都往后数一遍，复杂度会变成多少？为什么起点剪枝能救回来？</p>
+    <div class="qa-a">
+      <p>若每个数都数，最坏情况（如 <code>[1,2,3,...,n]</code>）每个数都触发一条长到 n 的计数链，退化成 O(n²)。</p>
+      <p>起点剪枝后：连续段 <code>[x, x+1, ..., x+k]</code> <strong>只在最小元素 <code>x</code> 处</strong>发起一次长度为 k 的计数；
+      段内其余 k 个元素因「前驱在集合里」被 <code>continue</code> 跳过，<strong>不再发起任何计数</strong>。于是所有元素的「被数次数」之和 = 各连续段长度之和 ≤ n，总复杂度回到 O(n)。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q4. 有效字母异位词用 <code>int[26]</code> 计数，如果题目改成「可能含大写字母和空格」，该怎么调整？</p>
+    <div class="qa-a">
+      <p>① 若仍是固定小字符集（如只大写+小写+空格共 53 个左右），可把下标映射改宽：例如用 <code>int[58]</code> 或统一转小写后 <code>int[26]</code>，
+      但空格/符号要单独设计映射。② 若字符集不可预知（任意 Unicode），<code>int[]</code> 下标装不下，必须改用 <code>Map&lt;Character, Integer&gt;</code> 计数，思路不变。</p>
+      <p>结论：<strong>「小范围整数用数组」是锦上添花，前提是键的范围确实有限且可当下标</strong>；否则老实上 HashMap。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】不参考代码，写出「两数之和」的完整 Java 方法，并手推输入 <code>nums=[3,2,4], target=6</code> 的每一步（表的状态、返回结果）。</p>
+    <div class="qa-a">
+      <p>方法见 <a href="ch02.html#s3">2.3 节</a>。手推：</p>
+      <p>i=0, nums[0]=3, need=3，表空→存入 (3→0)；<br>
+      i=1, nums[1]=2, need=4，表只有 3→存入 (2→1)；<br>
+      i=2, nums[2]=4, need=2，表含 2（下标 1）→ 返回 <code>[1, 2]</code>。验证：<code>nums[1]+nums[2]=2+4=6</code> ✓。</p>
+      <p>卡住自查：是否「先查后存」？是否返回 <code>[map.get(need), i]</code>（较早下标在前）？边界空数组按题意不会出现。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>学完这章，你应该能回答：</strong>
+  <ul style="margin-bottom:0">
+    <li>哈希表「O(1) 查找」靠的是什么，它付出的代价是什么？</li>
+    <li>HashMap / HashSet / int[] 数组计数 三者的适用边界，能否脱口而出？</li>
+    <li>两数之和「先查后存」为什么不会重复用同一元素？</li>
+    <li>分组类问题怎么设计「key」（排序串 / 计数串）？</li>
+    <li>最长连续序列「只从起点数」的剪枝，为什么能把 O(n²) 救回 O(n)？</li>
+    <li>能脱稿写出本章 4 道题中任意一道的 Java 代码。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="ch01.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 01 · 数组与双指针</div></a>
+  <a class="next" href="ch03.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 03 · 滑动窗口</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 2 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

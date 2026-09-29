@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 10 · 动态规划（进阶）：子序列与背包 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link active" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <div class="sb-sub">
+      <a href="#s1">10.1 DP 的两大主线：子序列与背包</a>
+      <a href="#s2">10.2 最长递增子序列（中等）</a>
+      <a href="#s3">10.3 最长公共子序列（中等）</a>
+      <a href="#s4">10.4 分割等和子集：01 背包（中等）</a>
+      <a href="#s5">10.5 零钱兑换：完全背包（中等）</a>
+      <a href="#s6">10.6 背包问题一张表总结</a>
+      <a href="#s7">10.7 本专题常见坑</a>
+      <a href="#s8">10.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 10</div>
+  <h1><span class="ch-tag">专题 10</span>动态规划（进阶）：子序列与背包</h1>
+  <p class="lead">专题 09 你学会了「一维 DP 五步法」。这一章进入 DP 面试真正的深水区——<strong>子序列</strong>和<strong>背包</strong>。
+  这两类题占了中等/困难 DP 的大头，而且套路极其固定：子序列靠「二维 dp + 字符相等与否的分支」，背包靠「一维数组 + 遍历顺序决定 01 还是完全」。
+  本章重点不教你怎么背，而是让你<strong>看懂「为什么 01 背包必须倒序、完全背包必须正序」</strong>这个最常被问、也最常被糊弄过去的点。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握 LIS/LCS 与 01、完全背包</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 09 的 DP 五步法</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">4 道子序列/背包题 + 一张背包对照表</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">8–10 小时</div></div>
+</div>
+
+<hr>
+
+<h2 id="s1"><span class="h2-num">10.1</span>DP 的两大主线：子序列与背包</h2>
+
+<p>进阶 DP 看起来题海茫茫，其实绝大多数都能归到两条主线上。先一句话分清它们的形态差异，后面就不乱了：</p>
+
+<table>
+  <thead><tr><th style="width:160px">主线</th><th>问题长什么样</th><th>典型题型</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>子序列型</strong></td>
+      <td>给定一/两个序列，问「最长的 / 最多的 / 能不能拼出」某种<em>保持相对顺序</em>的子序列。</td>
+      <td>最长递增子序列、最长公共子序列、编辑距离</td>
+    </tr>
+    <tr>
+      <td><strong>背包型</strong></td>
+      <td>给定一堆「物品」（有重量/价值/数量），问在容量限制下怎么选，求最大价值或能否凑出某数。</td>
+      <td>分割等和子集、零钱兑换、组合总和 IV</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>判别诀窍：</strong>题目里出现「<em>顺序不能乱</em>」「<em>子序列</em>」这类词，多半是子序列型（二维 dp）；
+  出现「<em>选若干个数</em>」「<em>恰好凑出</em>」「<em>最少几个硬币</em>」，多半是背包型（一维 dp）。
+  两条线的核心技巧完全不同，本章分两半讲。
+</div>
+
+<h3>先分清「子序列」和「子串」</h3>
+
+<p>这两个词经常被混用，但 DP 写法天差地别，面试也常考你这个区分：</p>
+
+<table>
+  <thead><tr><th style="width:120px">概念</th><th>含义</th><th>是否连续</th><th>例题</th></tr></thead>
+  <tbody>
+    <tr><td><strong>子串</strong></td><td>原串中<strong>连续</strong>的一段</td><td>必须连续</td><td>最长重复子串、无重复字符的最长子串（见专题 03）</td></tr>
+    <tr><td><strong>子序列</strong></td><td>删掉若干字符后剩下的，<strong>保持原顺序但不必连续</strong></td><td>可不连续</td><td>最长递增子序列、最长公共子序列（本题）</td></tr>
+  </tbody>
+</table>
+
+<p>一句话：<strong>子串用「滑动窗口/双指针」</strong>（因为连续，左右边界能滑动）；
+  <strong>子序列用「二维 DP」</strong>（因为不连续，必须枚举「以谁结尾 / 前面配对到哪」）。看到「子序列」三个字，基本就该往本章的二维 dp 上想了。</p>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">10.2</span>最长递增子序列（中等，力扣 300）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：以谁结尾 + 递推</span></p>
+
+<p><strong>题意：</strong>给你一个整数数组，找出其中<strong>严格递增</strong>的最长子序列的长度（子序列不要求连续）。
+  例如 nums = [10,9,2,5,3,7,101,18]，最长递增子序列是 [2,3,7,101] 或 [2,5,7,101]，长度 4。</p>
+
+<h3>思路推导</h3>
+
+<p>暴力枚举所有子序列是指数级的，显然不行。关键观察：<strong>一个递增子序列一定「以某个数结尾」</strong>。
+  那我们换个角度——不去想「全局最长是哪个」，而是先算「以每个位置 i 结尾，最长能多长」，最后再取全局最大。</p>
+
+<p><strong>状态：</strong>dp[i] = 以 nums[i] 结尾的最长递增子序列的长度。</p>
+
+<p>怎么求 dp[i]？看 i 前面所有比 nums[i] 小的数 j（即 nums[j] &lt; nums[i]）。
+  如果选了 nums[i]，那它一定能接在以 nums[j] 结尾的递增子序列后面，长度变成 dp[j] + 1。
+  我们取所有满足条件的 j 里 dp[j]+1 的最大值；如果前面没有更小的，那 nums[i] 自己开头，长度为 1：</p>
+
+<pre><code class="nohl">dp[i] = 1
+对每一个 j &lt; i 且 nums[j] &lt; nums[i]：
+    dp[i] = max(dp[i], dp[j] + 1)</code></pre>
+
+<p><strong>初始化：</strong>每个 dp[i] 至少是 1（只包含自己）。<strong>答案：</strong>不是 dp[n-1]，而是整个 dp 数组的<strong>最大值</strong>——因为最长子序列不一定以最后一个元素结尾。</p>
+
+<h3>参考代码（O(n²) 定义法）</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> lengthOfLIS(<span class="kw">int</span>[] nums) {
+        <span class="kw">int</span> n = nums.length;
+        <span class="cm">// dp[i] 表示以 nums[i] 结尾的最长递增子序列长度</span>
+        <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="kw">int</span>[n];
+        <span class="kw">int</span> ans = 1;                         <span class="cm">// 至少有一个元素，长度至少 1</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) {
+            dp[i] = 1;                       <span class="cm">// 初始化：自身构成一个长度为 1 的子序列</span>
+            <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; i; j++) {
+                <span class="kw">if</span> (nums[j] &lt; nums[i]) {     <span class="cm">// 只有更小的才能接在后面</span>
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = Math.max(ans, dp[i]);       <span class="cm">// 全局最大值，不一定在末尾</span>
+        }
+        <span class="kw">return</span> ans;
+    }
+}</code></pre>
+
+<p><strong>复杂度（O(n²) 版）：</strong>时间 O(n²)（两层循环），空间 O(n)。n ≤ 2500 时可通过。</p>
+
+<h3>进阶：O(n log n) 的贪心 + 二分（理解优先级低）</h3>
+
+<p>有一个更快但更绕的思路：维护一个数组 tails，tails[k] 表示「长度为 k+1 的递增子序列，其结尾元素能取到的最小值」。
+  遍历 nums，对每个 x 用二分在 tails 里找第一个 ≥ x 的位置替换掉（保持 tails 递增），x 比所有都大就追加。
+  tails 的最终长度就是答案。下面给出代码，<strong>面试通常 O(n²) 已够，这段代码看懂即可，不必强背</strong>：</p>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> lengthOfLIS(<span class="kw">int</span>[] nums) {
+        <span class="cm">// tails[k] 存「长度为 k+1 的 LIS 的最小可能结尾」</span>
+        <span class="kw">int</span>[] tails = <span class="kw">new</span> <span class="kw">int</span>[nums.length];
+        <span class="kw">int</span> size = 0;                        <span class="cm">// 当前tails有效长度</span>
+        <span class="kw">for</span> (<span class="kw">int</span> x : nums) {
+            <span class="kw">int</span> lo = 0, hi = size;
+            <span class="kw">while</span> (lo &lt; hi) {                <span class="cm">// 二分找第一个 &gt;= x 的位置</span>
+                <span class="kw">int</span> mid = (lo + hi) / 2;
+                <span class="kw">if</span> (tails[mid] &lt; x) lo = mid + 1;
+                <span class="kw">else</span> hi = mid;
+            }
+            tails[lo] = x;                   <span class="cm">// 替换（或追加）以维持「更小结尾」</span>
+            <span class="kw">if</span> (lo == size) size++;          <span class="cm">// 找到了更长的序列</span>
+        }
+        <span class="kw">return</span> size;
+    }
+}</code></pre>
+
+<div class="tip">
+  <strong>关键点：</strong>「<em>以谁结尾</em>」是子序列 DP 的核心视角转换。
+  不要总想着全局最优，先固定结尾、算局部最优，最后再聚合。这个思路在「最长公共子序列」「最长摆动子序列」里都复用。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>最长递增子序列的个数（力扣 673，中等）</strong>——与本题共用「以谁结尾 + 递推」技巧；差异在除了求最长长度，还要统计达到该长度的方案数（提示：再维护一个 cnt[i] 表示以 i 结尾的 LIS 个数，长度更新时分「严格变长」与「相等刷新」两种情况处理）。</li>
+    <li><strong>最长公共子序列（力扣 1143，中等）</strong>——与本题共用「子序列型 DP」视角；差异在本题是「两个序列」求公共子序列，状态变成二维 dp[i][j]，转移靠「相等取左上+1、不等取 max(左,上)」（提示：可先在本章 10.3 学完再回来对照）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">10.3</span>最长公共子序列（中等，力扣 1143）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：相等取左上 +1，否则取左/上最大</span></p>
+
+<p><strong>题意：</strong>给定两个字符串 text1、text2，求它们的<strong>最长公共子序列</strong>（LCS）长度，子序列可不连续。
+  例如 text1 = "abcde"，text2 = "ace"，LCS 是 "ace"，长度 3。</p>
+
+<h3>思路推导</h3>
+
+<p>两个序列，自然想到二维 dp。<strong>状态：</strong>dp[i][j] = text1 的前 i 个字符（下标 0..i-1）与 text2 的前 j 个字符（下标 0..j-1）的 LCS 长度。</p>
+
+<p>核心在两字符「相等与否」分两种情形（这是子序列型二维 DP 的标志性分支）：</p>
+
+<ul>
+  <li><strong>若 text1[i-1] == text2[j-1]：</strong>这两个字符可以一起作为公共子序列的结尾。
+    那么 dp[i][j] = 「去掉这两个字符后的 LCS」+ 1，即 <code>dp[i][j] = dp[i-1][j-1] + 1</code>。
+    为什么是「左上」？因为 dp[i-1][j-1] 正好是两边都「各退一格」的状态。</li>
+  <li><strong>若不相等：</strong>这对字符不能同时选。那 LCS 要么来自「text1 退一格」（dp[i-1][j]），要么来自「text2 退一格」（dp[i][j-1]），
+    取较大的：<code>dp[i][j] = max(dp[i-1][j], dp[i][j-1])</code>。</li>
+</ul>
+
+<p><strong>为什么相等时取「左上 +1」？</strong>因为当前这对匹配字符，是在「两者都还没用到这对字符」的基础上延长出来的公共子序列，
+  而「两者都没用这对字符」的状态恰好就是同时去掉最后一个字符——即 dp[i-1][j-1]（左上方格）。它不是 dp[i-1][j] 也不是 dp[i][j-1]，
+  那两个都只退了一边，会把刚匹配的那个字符算漏或重复。</p>
+
+<p><strong>初始化：</strong>第 0 行、第 0 列表示「有一个字符串为空」，LCS 长度自然是 0，所以 dp 数组默认 0 即可，不必额外赋值。
+  从 i=1、j=1 开始填。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> longestCommonSubsequence(String text1, String text2) {
+        <span class="kw">int</span> m = text1.length(), n = text2.length();
+        <span class="cm">// dp[i][j]：text1前i个字符 与 text2前j个字符 的 LCS 长度</span>
+        <span class="kw">int</span>[][] dp = <span class="kw">new</span> <span class="kw">int</span>[m + 1][n + 1];   <span class="cm">// 默认全 0，正好是第0行/列=0</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= m; i++) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = 1; j &lt;= n; j++) {
+                <span class="kw">if</span> (text1.charAt(i - 1) == text2.charAt(j - 1)) {
+                    <span class="cm">// 两字符相等：左上方状态 + 1</span>
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } <span class="kw">else</span> {
+                    <span class="cm">// 不相等：退掉一边，取较大者</span>
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        <span class="kw">return</span> dp[m][n];
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(m×n)，空间 O(m×n)。两字符串长度都 ≤ 1000，约 10⁶ 次操作，稳。</p>
+
+<h3>亲手填一遍：text1="abc"、text2="ac"</h3>
+
+<p>把 dp 表画出来，你会更确信「相等取左上、不相等取 max(左,上)」：</p>
+
+<pre><code class="nohl">      ""  a   c        （表头是 text2 的前 j 个字符）
+""    0   0   0
+a     0   1   1        a==a -&gt; 左上0+1=1；a!=c -&gt; max(左1,上0)=1
+b     0   1   1        b!=a -&gt; max(0,1)=1；b!=c -&gt; max(1,1)=1
+c     0   1   2        c!=a -&gt; max(0,1)=1；c==c -&gt; 左上1+1=2</code></pre>
+
+<p>右下角是 2，对应 LCS "ac"。注意第 3 行 c 列：text1 的 'c' 遇到 text2 的 'c' 相等，取的是<strong>左上方</strong> dp[2][1]=1 再加 1 = 2——
+  左上方正是「text1 前 2 个字符 'ab' 与 text2 前 1 个字符 'a' 的 LCS」，把这对匹配的 'c' 接到它后面，长度 +1。这就是「左上 +1」的几何意义。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>「相等取左上 +1、不相等取 max(左, 上)」这个公式是子序列二维 DP 的通用骨架。
+  后面遇到「编辑距离」「最长重复子数组」都是它的近亲，先把这题的转移画到纸上彻底想通。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>两个字符串的删除操作（力扣 583，中等）</strong>——与本题共用「相等取左上+1、不等取 max」二维 DP 框架；差异在求的是「让两串变成相同所需最少删除字符数」，答案 = 两串长度之和 − 2 × LCS 长度（提示：先算出 LCS，再用总长减去两倍 LCS；也可直接 DP 求最小删除数）。</li>
+    <li><strong>两个字符串的最小 ASCII 删除和（力扣 712，中等）</strong>——与本题共用「两串二维 DP + 相等/不等分支」；差异在代价从「次数」变成「ASCII 值之和」，求删除字符的 ASCII 和最小（提示：dp[i][j] 存最小删除代价，相等时直接继承左上，不等时取「删左」与「删右」的较小值）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">10.4</span>分割等和子集：01 背包（中等，力扣 416）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：为什么一维背包必须倒序遍历</span></p>
+
+<p><strong>题意：</strong>给你一个正整数数组 nums，问能否把它分成和相等的两部分。例如 nums = [1,5,11,5]，可以分成 [1,5,5] 和 [11]，和都是 11，返回 true。</p>
+
+<h3>思路推导（把问题翻译成背包）</h3>
+
+<p>能平分，意味着存在一个子集，其和恰好等于 <code>sum / 2</code>。如果 sum 是奇数，直接不可能（返回 false）。
+  所以问题变成：<strong>从数组里选若干个（每个最多选一次）数，能否恰好凑出 sum/2？</strong></p>
+
+<p>这正是一个<strong>01 背包</strong>：每个数是一件「物品」，它的「重量」和「价值」都等于自己，背包容量 = sum/2，
+  问能否装满（价值能否达到容量）。每个物品<em>只能选一次</em>，所以是「01」背包（0 个或 1 个）。</p>
+
+<p><strong>状态：</strong>用一维数组 dp[j] 表示「能否凑出总和 j」（布尔）。初始化 dp[0] = true（凑出 0 总是可以的，一个都不选）。</p>
+
+<p><strong>转移：</strong>对每个数 num，我们要看「选了 num 之后，哪些 j 变得可凑」：如果 dp[j - num] 本来可凑，那 dp[j] 也可凑（j - num + num = j）。即 <code>dp[j] = dp[j] || dp[j - num]</code>。</p>
+
+<h3>为什么必须「倒序」遍历 j —— 本题最该讲清的点</h3>
+
+<p>关键就在这：每个数 <strong>只能选一次</strong>。如果我们<strong>正序</strong>从 num 遍历到容量 target，会发生什么？</p>
+
+<pre><code class="nohl">正序（错误）：for j = num -&gt; target:
+    dp[j] = dp[j] || dp[j - num]
+// 当处理到某个 j 时，dp[j-num] 已经被本轮这个 num 更新过了！
+// 意味着同一个 num 被「再次使用」了，等价于完全背包，错。</code></pre>
+
+<p>举例：num = 3，target = 6。正序时 j=3 把 dp[3] 置 true；接着 j=6 看 dp[3] 已经是 true，于是 dp[6] 也变 true——
+  但这是「用了两次 3」（3+3=6），而 01 背包里 3 只有一个！所以正序会让一个物品被重复选。</p>
+
+<p><strong>倒序</strong>则从大到小遍历：当更新 dp[j] 时，它依赖的 dp[j - num] 还是<strong>上一轮（没考虑当前 num）的旧值</strong>，
+  从而保证当前 num 在这一轮里最多贡献一次：</p>
+
+<pre><code class="nohl">倒序（正确）：for j = target -&gt; num (步长 -1):
+    dp[j] = dp[j] || dp[j - num]
+// 更新 dp[j] 时，dp[j-num] 尚未被本轮修改，仍是上一轮结果</code></pre>
+
+<p>一句话记忆：<em>要「每个物品只用一次」就倒序；要「每个物品可用无限次」就正序</em>（后者是 10.5 的完全背包）。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">boolean</span> canPartition(<span class="kw">int</span>[] nums) {
+        <span class="kw">int</span> sum = 0;
+        <span class="kw">for</span> (<span class="kw">int</span> x : nums) sum += x;
+        <span class="kw">if</span> (sum % 2 != 0) <span class="kw">return</span> <span class="kw">false</span>;        <span class="cm">// 和是奇数，无法平分</span>
+        <span class="kw">int</span> target = sum / 2;
+        <span class="cm">// dp[j] 表示「能否凑出总和 j」</span>
+        <span class="kw">boolean</span>[] dp = <span class="kw">new</span> <span class="kw">boolean</span>[target + 1];
+        dp[0] = <span class="kw">true</span>;                           <span class="cm">// 凑 0 总是可以（什么都不选）</span>
+        <span class="kw">for</span> (<span class="kw">int</span> num : nums) {                  <span class="cm">// 外层遍历每个物品（每个只能选一次）</span>
+            <span class="cm">// 内层倒序：避免同一个 num 被重复使用</span>
+            <span class="kw">for</span> (<span class="kw">int</span> j = target; j &gt;= num; j--) {
+                dp[j] = dp[j] || dp[j - num];
+            }
+        }
+        <span class="kw">return</span> dp[target];
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(n × target)，空间 O(target)。n ≤ 200，target ≤ 20000 量级，约 400 万次，稳。</p>
+
+<div class="warn">
+  <strong>最重要的一点：</strong>01 背包内层循环<em>必须倒序</em>，这是「物品不重复」的几何保证。
+  把上面「正序会重复使用」的小例子在纸上推一遍，比背十遍都管用。面试被追问「为什么倒序」时，就举 3+3=6 这个反例。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>目标和（力扣 494，中等）</strong>——与本题共用「01 背包 + 倒序遍历」技巧；差异在把数组分成正负两堆使差为 target，可转化为「选若干个数使其和等于 (sum−target)/2」的背包计数（提示：dp[j] 存方案数，转移 dp[j] += dp[j−num]，仍是 01 倒序，最后取 dp[目标]）。</li>
+    <li><strong>最后一块石头的重量 II（力扣 1049，中等）</strong>——与本题共用「凑出 sum/2 的 01 背包」思路；差异在把石头分成两堆使重量差最小，即尽量让一堆接近总和的一半（提示：用本题背包求「最大能凑到多接近 sum/2」的载重，答案 = sum − 2 × 最大可凑值）。</li>
+  </ul>
+</div>
+
+<h3>为什么能压成一维（顺便理解倒序）</h3>
+
+<p>01 背包最原始的写法是二维：dp[i][j] 表示「考虑前 i 个物品、容量 j 时能否凑出」。
+  转移是 <code>dp[i][j] = dp[i-1][j] || dp[i-1][j-num]</code>——注意它<strong>只用到上一行</strong> dp[i-1]，从不依赖本行更前的格子。
+  既然每次只用到上一行，我们就能把两行合并成一行：边算边覆盖，但必须保证「覆盖前用的还是上一行的值」。</p>
+
+<p>倒序遍历恰好满足这点：更新 dp[j] 时，dp[j] 和 dp[j-num] 都还是「还没被第 i 个物品改过」的旧值（即上一行的 dp[i-1]）。
+  如果正序，dp[j-num] 已经被第 i 个物品改成新值（本行），那就等于用了 dp[i][j-num]，违背了「只用上一行」的前提——
+  也就是允许了重复选。所以「倒序」不是玄学，它是「二维压一维时，保证只读上一行」的直接后果。</p>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">10.5</span>零钱兑换：完全背包（中等，力扣 322）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：与 01 背包唯一区别 = 正序</span></p>
+
+<p><strong>题意：</strong>给定不同面额的硬币 coins 和总金额 amount，每种硬币<strong>无限个</strong>，求凑出 amount 的<strong>最少硬币数</strong>；凑不出返回 -1。
+  例如 coins = [1,2,5], amount = 11，最优 5+5+1 = 11，用 3 个硬币，返回 3。</p>
+
+<h3>思路推导</h3>
+
+<p>这题和 10.4 几乎一样，只是两点不同：(1) 每种硬币<strong>无限个</strong>（完全背包）；(2) 求的是「最少个数」而不是「能否」。
+  把 dp 含义改成「凑出金额 j 的最少硬币数」：</p>
+
+<ul>
+  <li><strong>初始化：</strong>dp[0] = 0（凑 0 用 0 个硬币）；其余设为一个很大的数（表示「暂时凑不出」），用 <code>amount + 1</code> 作上界即可。</li>
+  <li><strong>转移：</strong>对每个硬币 coin，<code>dp[j] = min(dp[j], dp[j - coin] + 1)</code>。含义：要么不用这枚硬币（保持 dp[j]），要么用一枚 coin（dp[j-coin] + 1）。</li>
+</ul>
+
+<h3>完全背包为什么「正序」</h3>
+
+<p>因为硬币无限，我们<strong>希望</strong>同一个 coin 能被反复使用。正序遍历时，更新 dp[j] 用到的 dp[j-coin] 已经包含了「本轮这个 coin」的贡献，
+  于是 coin 自然可以叠加多次——这恰恰是我们要的。所以完全背包的内层是<strong>正序</strong>，与 01 背包恰好相反。</p>
+
+<p>另外注意：本题 coins 在<strong>外层</strong>循环（每个面额分别处理），amount 在内层。这和「求组合数」的写法（amount 在外、coins 在内）不同，
+  本题求的是最少个数，两种循环顺序对结果无影响，习惯上把 coins 放外层更直观。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span> coinChange(<span class="kw">int</span>[] coins, <span class="kw">int</span> amount) {
+        <span class="cm">// dp[j] 表示凑出金额 j 的最少硬币数</span>
+        <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="kw">int</span>[amount + 1];
+        <span class="cm">// 初始化为一个不可能的大数，表示「暂不可凑出」</span>
+        <span class="kw">for</span> (<span class="kw">int</span> j = 1; j &lt;= amount; j++) dp[j] = amount + 1;
+        dp[0] = 0;                              <span class="cm">// 凑 0 元用 0 个硬币</span>
+        <span class="kw">for</span> (<span class="kw">int</span> coin : coins) {               <span class="cm">// 外层：每种面额</span>
+            <span class="cm">// 内层正序：同一 coin 可重复使用（完全背包）</span>
+            <span class="kw">for</span> (<span class="kw">int</span> j = coin; j &lt;= amount; j++) {
+                dp[j] = Math.min(dp[j], dp[j - coin] + 1);
+            }
+        }
+        <span class="cm">// 若仍是初始大数，说明凑不出</span>
+        <span class="kw">return</span> dp[amount] &gt; amount ? -1 : dp[amount];
+    }
+}</code></pre>
+
+<p><strong>复杂度：</strong>时间 O(coins.length × amount)，空间 O(amount)。amount ≤ 10⁴，完全够。</p>
+
+<div class="tip">
+  <strong>关键点：</strong>完全背包与 01 背包<em>唯一</em>的代码差别就是内层循环的<strong>方向</strong>。
+  01 倒序（防重复）、完全正序（允重复）。把这一个差别记住，两类背包题就通了。
+  求「能否」用布尔数组、求「最少」用大数初始化——见 10.7 的坑三。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>零钱兑换 II（力扣 518，中等）</strong>——与本题共用「完全背包 + 正序遍历」框架；差异在求的是「凑出 amount 的组合数」而非最少个数（提示：dp[j] 存方案数，转移 dp[j] += dp[j−coin]，且须把 amount 放外层、coins 放内层以保证不重复计数顺序）。</li>
+    <li><strong>完全平方数（力扣 279，中等）</strong>——与本题共用「完全背包求最少个数」；差异在「物品」不是给定硬币，而是 1²、2²、3²…这些完全平方数且可无限使用（提示：把平方数当作 coin 列表，直接套本题完全背包正序求最小数量即可）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">10.6</span>背包问题一张表总结</h2>
+
+<p>背包装类题经常混，下面这张表把「01 vs 完全」「遍历顺序」「适用问题」一次性列清，建议截图背下来：</p>
+
+<table>
+  <thead><tr><th style="width:120px">维度</th><th style="width:200px">01 背包（每物 1 个）</th><th>完全背包（每物无限）</th></tr></thead>
+  <tbody>
+    <tr><td><strong>物品含义</strong></td><td>每个物品最多选 1 次（如分割等和子集）</td><td>每个物品可选任意多次（如零钱兑换）</td></tr>
+    <tr><td><strong>内层顺序</strong></td><td><strong>倒序</strong> j = cap → w</td><td><strong>正序</strong> j = w → cap</td></tr>
+    <tr><td><strong>为什么</strong></td><td>倒序保证 dp[j-w] 是上一轮旧值，物品不重复</td><td>正序让 dp[j-w] 含本轮贡献，物品可重复</td></tr>
+    <tr><td><strong>求「能否」</strong></td><td>dp 用 boolean，dp[0]=true</td><td>同左</td></tr>
+    <tr><td><strong>求「最少/最大」</strong></td><td>dp 用 int，dp[0]=0，其余 ±∞</td><td>同左</td></tr>
+    <tr><td><strong>典型题</strong></td><td>416 分割等和、474 一和零、494 目标和</td><td>322 零钱兑换、518 零钱组合、279 完全平方数</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>速记：</strong><em>「01 倒、完全正；能否布尔、最值大数」</em>。
+  拿到背包题先判是 01 还是完全，再判求「能否」还是「最值」，然后套这张表，基本不会写错遍历方向。
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">10.7</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>坑一：一维背包方向写反。</strong>
+      01 写了正序、或完全写了倒序，结果一个物品被重复/无法使用。解法：写循环前先在注释里写清「这是 01 还是完全」，再决定方向。</li>
+    <li><strong>坑二：LCS 的 0 行 0 列含义不清。</strong>
+      dp 数组开成 (m+1)×(n+1)，第 0 行/列代表「有一个串为空」，LCS 必为 0，正好用默认值 0，<strong>不要</strong>开成 m×n 然后手动处理边界，极易越界。</li>
+    <li><strong>坑三：求「能否」与求「最少」初始化不同。</strong>
+      「能否凑出」用 <code>boolean[]</code>，dp[0]=true；「最少硬币」用 <code>int[]</code>，dp[0]=0、其余设 <code>amount+1</code>（或 Integer.MAX_VALUE，但相加会溢出，故用 amount+1 更安全）。混用会导致永远凑不出或溢出。</li>
+    <li><strong>坑四：LIS 答案取错位置。</strong>
+      LIS 的最长不一定以最后一个元素结尾，必须全程维护全局最大值，不能 return dp[n-1]。</li>
+    <li><strong>坑五：背包容量边界。</strong>
+      完全背包内层从 j=coin 开始（j &lt; coin 放不下），01 背包倒序到 j=num 停。从 0 开始会数组越界（j-coin 为负）。</li>
+    <li><strong>坑六：忽略「整除/不可达」特判。</strong>
+      分割等和子集 sum 为奇数直接 false；零钱兑换最后要检查是否仍为大数再返回 -1，否则会返回错误的大数。</li>
+  </ul>
+</div>
+
+<div class="warn">
+  <strong>自检：</strong>背包题写完，问自己三句——是 01 还是完全（决定方向）？求能否还是最值（决定初始化）？
+  不可达/奇数/越界这些边界处理了吗？三句都答上，提交前就有底了。
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">10.8</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.【动手题】把 10.4 的「能否分割等和子集」改成「求子集和等于 target 的<strong>方案数</strong>」（即组合总和），dp 含义和转移怎么改？</p>
+  <div class="qa-a">
+    <p>dp[j] 改为「凑出 j 的方案数」，用 int（或 long）数组，dp[0]=1，其余 0。
+      转移：<code>dp[j] += dp[j - num]</code>（不再是 ||）。注意这变成「求组合数」时通常把 amount 放外层、物品放内层；
+      若仍 01 风格（物品外层、倒序），得到的是考虑顺序的组合数。题目若问「子集个数」用 01 倒序即可。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 为什么 01 背包「倒序」能保证不重复，而正序的 dp[j-coin] 就一定被本物品更新过？用 num=2、target=4 推一遍。</p>
+  <div class="qa-a">
+    <p>倒序 j=4,3,2：先算 dp[4] 用到的 dp[2] 是<strong>上一轮</strong>（没考虑当前 num=2）的旧值；
+      再算 dp[3]、dp[2] 时 dp[2] 仍未被本轮改（因为是从大到小，dp[2] 在 dp[4] 之后才轮到）。所以 2 只贡献一次。
+      正序则 j=2 先把 dp[2] 置 true（选了一个 2），随后 j=4 看 dp[2] 已是 true，于是再叠一个 2 得到 4——同一物品用了两次。</p>
+  </div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3.【动手题】力扣 518「零钱兑换 II」求组合数，和 10.5 求最少个数的遍历顺序有何不同？为什么？</p>
+  <div class="qa-a">
+    <p>求「最少个数」时 coins 内外层无所谓；求「组合数」（把 1+2 和 2+1 视为同一种）必须 <strong>amount 在外层、coins 在内层、coins 正序</strong>，
+      这样保证「先固定用哪几种面额的组合」，避免把顺序不同的同一种组合重复计数。若 coins 在外、amount 在内，会把不同顺序算成不同方案。</p>
+  </div>
+</div>
+
+<div class="goal">
+  学完这章，你应该能回答：<em>「01 背包和完全背包，代码上到底差哪一行？为什么？」</em>
+  答案：差在<strong>内层循环的遍历方向</strong>——01 倒序（dp[j] 用到的 dp[j-w] 是上一轮旧值，保证每件最多一次），
+  完全正序（dp[j-w] 已含本轮贡献，允许重复）。再补一句：求最值用大数初始化、求能否用布尔。
+  能讲清这点，就可以进 <a href="ch11.html#s1">专题 11 · 贪心算法</a>，用 DP 作对比理解「贪心为什么敢贪」。
+</div>
+
+<div class="navfoot">
+  <a href="ch09.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 09 · 动态规划（入门）</div></a>
+  <a class="next" href="ch11.html"><div class="dir-label">下一节 →</div><div class="dir-name">专题 11 · 贪心算法</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 10 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

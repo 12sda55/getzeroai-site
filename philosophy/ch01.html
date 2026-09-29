@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 章 · 哲学与 AI 的真实交界 | 哲学 × AI 学习指南</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="philosophy">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">哲</span>
+    <span>哲学 × AI 学习指南<small>把哲学变成工程判断力</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="章节跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 哲学与 AI 的交界</option>
+    <option value="ch02.html">02 · 认识论 I</option>
+    <option value="ch03.html">03 · 认识论 II</option>
+    <option value="ch04.html">04 · 心灵哲学 I</option>
+    <option value="ch05.html">05 · 心灵哲学 II</option>
+    <option value="ch06.html">06 · 语言与意义</option>
+    <option value="ch07.html">07 · 逻辑与推理边界</option>
+    <option value="ch08.html">08 · 伦理学 I</option>
+    <option value="ch09.html">09 · 伦理学 II</option>
+    <option value="ch10.html">10 · 现象学与具身认知</option>
+    <option value="ch11.html">11 · 落地方法</option>
+    <option value="appendix.html">附录 · 书单与速查</option>
+  </select>
+  <a class="tb-link" href="appendix.html">书单</a>
+  <a class="tb-link" href="ch11.html">落地清单</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 学习路线</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">十一章节</div>
+    <a class="sb-link active" href="ch01.html"><span class="num">1</span><span>哲学与 AI 的真实交界</span></a>
+    <div class="sb-sub">
+      <a href="#s1">1.1 一个反直觉的事实</a>
+      <a href="#s2">1.2 三类问题的分界</a>
+      <a href="#s3">1.3 十一个难题的哲学出处</a>
+      <a href="#s4">1.4 两类常见误解</a>
+      <a href="#s5">1.5 哲学给你的三种能力</a>
+      <a href="#s6">1.6 哲学不能给你什么</a>
+      <a href="#s7">1.7 动手：翻译你的项目</a>
+      <a href="#s8">1.8 自测题</a>
+    </div>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>认识论 I · 知识、信念与不确定性</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>认识论 II · 归纳与幻觉的根源</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>心灵哲学 I · 意识与中文房间</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>心灵哲学 II · 意向性与符号接地</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>语言与意义 · 从维特根斯坦到词向量</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>逻辑与推理的边界</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>伦理学 I · 三大框架与 AI 对齐</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>伦理学 II · 情感陪伴 AI 的伦理</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>现象学与具身认知 · 沉浸与 BCI</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>落地 · 把哲学变成工程决策</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 书单 / 术语 / 映射</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">哲学 × AI 指南</a> / 第 1 章</div>
+  <h1><span class="ch-tag">CH 01</span>哲学与 AI 的真实交界</h1>
+  <p class="lead">这一章不教你任何哲学理论，只做一件事：<strong>让你看见哲学问题在你代码里的实际位置</strong>。
+  核心结论先给你——AI 领域里那些吵得最凶、看起来最像「口水战」的争论，
+  几乎没有一个是纯粹的技术争论；它们之所以吵不出结果，是因为争论双方对<strong>「什么是智能」「什么是理解」「什么是对的」</strong>
+  有不同但都没说出口的前提。这一章教你把这些前提挖出来。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">能分辨工程问题与哲学问题</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">无 · 本章是全书入口</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">你项目的 3 个哲学问题</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">3–4 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">1.1</span>一个反直觉的事实：AI 的难题大半是哲学难题</h2>
+
+<p>先看几个你可能真的遇到过的问题，试着判断它们是不是「技术问题」：</p>
+
+<table>
+  <thead><tr><th style="width:44px">#</th><th>你遇到的问题</th><th style="width:200px">常识判断</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>模型的幻觉率降到 0.5% 就再也降不下去了，团队讨论「0.5% 可不可以接受」</td><td>技术问题</td></tr>
+    <tr><td>2</td><td>两位同事为一个功能吵了两周：一方说「这是欺骗用户」，一方说「这是产品设计」</td><td>意见分歧</td></tr>
+    <tr><td>3</td><td>你把 benchmark 刷到 92 分，但用户实际满意度没变</td><td>技术问题</td></tr>
+    <tr><td>4</td><td>老板问「我们的模型到底有没有『理解』」</td><td>哲学问题（承认了）</td></tr>
+    <tr><td>5</td><td>同样的提示词，今天有效明天失效，你找不到规律</td><td>技术问题</td></tr>
+  </tbody>
+</table>
+
+<p>现在逐条重新判断——<strong>关键是看这个问题的「难」来自哪里</strong>：</p>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h4>第 1 题：0.5% 可不可以接受</h4>
+    <p style="font-size:13.5px"><strong>表面</strong>：一个阈值决策。<strong>实际</strong>：你在问「这个系统被允许犯多少错」——
+    这是个<strong>规范性</strong>问题，不是测量问题。测量的部分是「错误率是多少」（技术），
+    但「多少算可接受」取决于后果严重程度、谁承担代价、有没有兜底机制。
+    没有哪个测试能告诉你答案。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>它属于</strong>：伦理学 + 风险判断。→ <a href="ch08.html">第 8 章</a></p>
+  </div>
+  <div class="card">
+    <h4>第 3 题：benchmark 92 分但用户不满意</h4>
+    <p style="font-size:13.5px"><strong>表面</strong>：指标选错了，换一个。<strong>实际</strong>：你先得说清「你在测什么」。
+    benchmark 测的是「在预定义题目上答对的比例」，用户满意度来自「实际问题被解决」——<strong>这是两个不同的对象</strong>。
+    把它们混为一谈，是把「代理指标」当成了「目标本身」。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>它属于</strong>：认识论（什么算「知道」）+ 价值论（什么算「好」）。→ <a href="ch05.html#s6">5.6</a></p>
+  </div>
+  <div class="card">
+    <h4>第 5 题：提示词时灵时不灵</h4>
+    <p style="font-size:13.5px"><strong>表面</strong>：模型不稳定。<strong>实际</strong>：你在用「一句话」传递「一个意图」，
+    而这两者之间从来不是一对一关系。你的那句提示词，在训练数据里可能对应几十种不同语境下的用法——
+    模型每次都从里面挑一个。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>它属于</strong>：语言哲学（意义如何确定）。→ <a href="ch06.html#s8">6.8</a></p>
+  </div>
+  <div class="card">
+    <h4>第 2 题：这是欺骗吗</h4>
+    <p style="font-size:13.5px"><strong>表面</strong>：团队意见分歧。<strong>实际</strong>：双方在「欺骗」的定义上没对齐。
+    一方用<strong>后果论</strong>标准（用户实际上没受损，算什么欺骗），
+    一方用<strong>义务论</strong>标准（隐瞒真实身份本身就构成欺骗，跟在不在伤害无关）。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>它属于</strong>：规范伦理学的框架冲突。→ <a href="ch09.html#s3">9.3</a></p>
+  </div>
+</div>
+
+<div class="warn">
+  <strong>关键洞察：</strong>这五题里，<strong>没有一道是「纯技术问题」</strong>，但也没有一道是「纯哲学问题」。
+  它们都是<strong>混合问题</strong>——技术上可测的那部分被清清楚楚地测量着，
+  而真正卡住决策的那部分，没人给它命名，于是它就变成了「意见分歧」。
+  <strong>给它命名，就是本章的全部目的。</strong>
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">1.2</span>三类问题的分界：怎么区分工程问题和哲学问题</h2>
+
+<p>不是所有问题都值得哲学化——过度哲学化会变成空谈。你需要一把尺子。
+下面这个判断标准，是本指南最实用的工具之一，值得背下来：</p>
+
+<table>
+  <thead><tr><th style="width:150px">类型</th><th style="width:300px">判断标准</th><th>处理方式</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>工程问题</strong></td>
+      <td><strong>存在公认的检验方法</strong>，两个人对结论有分歧时，可以跑一次实验分出对错。</td>
+      <td>去做实验。别讨论。</td>
+    </tr>
+    <tr>
+      <td><strong>哲学问题</strong></td>
+      <td><strong>没有公认的检验方法</strong>，而且<strong>不是暂时没有，是原则上讨论不清</strong>——
+      因为争论双方对「什么算检验」本身就有分歧。</td>
+      <td>别指望解决它。改为<strong>明确立场 + 说明代价</strong>。</td>
+    </tr>
+    <tr>
+      <td><strong>混合问题</strong></td>
+      <td>大部分问题。有一部分可测，另一部分不可测，但<strong>不可测的那部分决定了你怎么解读可测的部分</strong>。</td>
+      <td>拆开：能测的去测，不能测的<strong>写进文档并公开</strong>。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>用这把尺子过一遍刚才五题</h3>
+
+<table>
+  <thead><tr><th style="width:44px">#</th><th style="width:200px">可测的部分（工程）</th><th>不可测的部分（哲学）</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>幻觉率、错误类型分布、不同场景下的差异</td><td>「可接受」的门槛定在哪、谁来承担误判代价</td></tr>
+    <tr><td>2</td><td>用户调研数据、投诉率、留存变化</td><td>隐瞒身份是否构成欺骗、用户的「同意」怎样才算有效</td></tr>
+    <tr><td>3</td><td>benchmark 分数、A/B 结果、人工评分</td><td>「用户满意」是不是这个系统的正当目标</td></tr>
+    <tr><td>4</td><td>行为测试的表现、内部表征的可解释性分析</td><td>「理解」用什么标准定义 —— 行为标准？机制标准？还是体验标准？</td></tr>
+    <tr><td>5</td><td>方差统计、温度参数影响、上下文长度影响</td><td>「这句话的意思」是由说话人决定的，还是由语境决定的</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>实用价值：</strong>下次讨论卡住时，先问一句——<strong>「我们争的这个，有公认的检验方法吗？」</strong>
+  如果答案是「没有」，继续争论就是在消耗时间。这时候正确的动作是：
+  <strong>停下来，把双方的前提写下来，选择一条，并写明选它的代价</strong>。
+  这不是妥协，这是工程上正确的做法：<strong>在信息不足时必须做决策，那就让决策的依据可见</strong>。
+</div>
+
+<h3>一个反例：什么情况下「哲学化」是有害的</h3>
+
+<p>如果你把<strong>工程问题</strong>当成哲学问题讨论，会造成真实的损害。常见的情形：</p>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>「延迟到底重不重要」</strong> —— 这是个可测问题。用户在不同延迟下的行为差异，做一次实验就有数据。讨论「体验的本质」是浪费团队两周。</li>
+    <li><strong>「我们的检索该用哪种相似度」</strong> —— 可测。建一个标注集，跑一遍就知道。
+    讨论「相似性的形而上学」在你这个规模上没有任何产出。</li>
+    <li><strong>「模型参数调到多少合适」</strong> —— 可测。别把「不确定性」当成不做实验的借口。</li>
+  </ul>
+</div>
+
+<div class="quote">
+  <p>哲学化<em>工程可测问题</em>是逃避动手；技术化<em>不可测问题</em>是用数字掩盖判断。</p>
+  <span class="who">—— 两种错误都常见，第二种更隐蔽，因为它披着「数据驱动」的外衣</span>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">1.3</span>十一个难题的哲学出处</h2>
+
+<p>下面这张表是全章的骨干。左列是 AI 领域至今没有定论的问题，
+中间是它在哲学史上的<strong>原型问题</strong>，右列是这个原型问题最早由谁清楚提出。
+<strong>注意：哲学并没有解决这些问题</strong>——它的价值在于<strong>把问题问准</strong>，
+而问准了的问题，才有可能被工程手段部分绕过。</p>
+
+<table>
+  <thead><tr><th style="width:260px">AI 领域的问题</th><th style="width:250px">哲学原型</th><th>提出者 / 出处</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>「模型知道 X 吗」这个问题怎么判定</td>
+      <td>知识是什么：得到辩护的真信念</td>
+      <td>柏拉图《泰阿泰德篇》；葛梯尔 1963 年的反例</td>
+    </tr>
+    <tr>
+      <td>置信度与实际正确率不一致</td>
+      <td>信念的程度问题、主观概率</td>
+      <td>贝叶斯（18 世纪）、拉姆齐、德菲内蒂</td>
+    </tr>
+    <tr>
+      <td>训练集好、测试集好、真实世界崩</td>
+      <td><strong>归纳问题</strong>：从有限观察推出普遍规律，凭什么</td>
+      <td>休谟《人性论》（1739）</td>
+    </tr>
+    <tr>
+      <td>「分布外」这个概念本身有多可靠</td>
+      <td>绿蓝悖论：同一组观察支持互相矛盾的规律</td>
+      <td>古德曼《事实、虚构与预测》（1955）</td>
+    </tr>
+    <tr>
+      <td>幻觉为什么删不干净</td>
+      <td>真与「看起来像真的」是两回事</td>
+      <td>贯穿整个认识论传统；现代形式见戈德曼</td>
+    </tr>
+    <tr>
+      <td>模型有没有意识 / 该用什么标准判定</td>
+      <td>心身问题、「他心问题」</td>
+      <td>笛卡尔《第一哲学沉思集》（1641）</td>
+    </tr>
+    <tr>
+      <td>「行为上分不出来」是否等于「真的具备」</td>
+      <td>图灵测试式的行为主义标准</td>
+      <td>图灵 1950《计算机器与智能》</td>
+    </tr>
+    <tr>
+      <td>LLM 是「真理解」还是「高级模仿」</td>
+      <td>中文房间、意向性</td>
+      <td>塞尔 1980；布伦塔诺的意向性概念</td>
+    </tr>
+    <tr>
+      <td>向量相似能代表「意思相近」吗</td>
+      <td>意义由什么决定：指称？观念？还是用法</td>
+      <td>弗雷格、维特根斯坦《哲学研究》（1953）</td>
+    </tr>
+    <tr>
+      <td>模型会「推理」吗，CoT 算推理吗</td>
+      <td>推理的界定、形式系统的能力边界</td>
+      <td>弗雷格、哥德尔（1931）、图灵（1936）</td>
+    </tr>
+    <tr>
+      <td>「价值对齐」到底要对齐什么</td>
+      <td>什么使一个行为在道德上正确</td>
+      <td>边沁/密尔、康德、亚里士多德（三大框架）</td>
+    </tr>
+    <tr>
+      <td>AI 出错时责任怎么划</td>
+      <td>责任归属、意图与后果的关系</td>
+      <td>韦伯、阿伦特；当代见 Jonas《责任原理》</td>
+    </tr>
+    <tr>
+      <td>沉浸式体验里「真实感」是什么</td>
+      <td>经验如何被构成、身体在知觉中的角色</td>
+      <td>胡塞尔、海德格尔、梅洛-庞蒂</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">哲学原型</div>
+    <div class="ttl">休谟的归纳问题（1739）</div>
+    <div class="txt">「太阳明天会升起」这个信念，无法被任何数量的过往观察<strong>证明</strong>为真。你只能假设「未来像过去」——但这个假设本身来自归纳，于是循环了。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">AI 里的同构问题</div>
+    <div class="ttl">泛化凭什么成立</div>
+    <div class="txt">你的模型在训练分布上表现好，你凭什么相信它在部署分布上也行？<strong>这个「凭什么」在数学上没有被证明</strong>——它建立在「部署数据和训练数据同分布」这个假设上，而这个假设通常既没被测过，也不成立。</div>
+  </div>
+</div>
+
+<p>看出这张映射表的价值了吗？<strong>它让你能提前预判失败</strong>。
+如果我知道「泛化 = 归纳，而归纳需要同分布假设」，那么在设计阶段我就会问：
+<strong>我的部署分布和训练分布差在哪？</strong>——这个问题在模型上线前就能问，不必等事故报告。</p>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">1.4</span>两类常见误解</h2>
+
+<p>在 AI 圈讨论哲学，通常有两种失败方式。</p>
+
+<h3>误解 A：「这些争论都是词语之争，实际不影响技术」</h3>
+
+<p>这个说法有一半是对的——<strong>有些</strong>哲学争论确实是措辞之争。但它错在以为全都如此。举一个反例：</p>
+
+<div class="qbox">
+  <span class="qb-t">「理解」这个词之争带来的实际后果</span>
+  <p>假设团队要判定「模型是否理解了这份合同」。如果「理解」按<strong>行为标准</strong>定义（能正确回答关于合同的问题），
+  那评测就是问答准确率，今天就能做。</p>
+  <p>如果按<strong>机制标准</strong>定义（内部要有某种结构化的、可追溯的语义表征），那评测必须换成可解释性分析——
+  这是完全不同的工程量，可能需要几个月。</p>
+  <p class="qb-q">同一个词，两种定义，两条完全不同的技术路线和工时预算。<strong>这不是措辞之争，这是排期之争。</strong></p>
+</div>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">概念分歧</div>
+    <div class="ttl">「理解」用哪种标准</div>
+    <div class="txt">行为标准 vs 机制标准 vs 体验标准。三种定义在哲学上都有人主张，且没有公认方法能判定哪个「正确」。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">工程后果</div>
+    <div class="ttl">决定你的验收方式与预算</div>
+    <div class="txt">行为标准 → 造问答测试集，两周。<br>机制标准 → 需要可解释性工具链，可能数月，且结论仍有争议。<br><strong>选哪个必须先说清，否则排期会议永远开不完。</strong></div>
+  </div>
+</div>
+
+<h3>误解 B：「哲学给的是答案」</h3>
+
+<p>这是更危险的误解，因为它让人把哲学当成<strong>裁决工具</strong>：
+「康德说过人是目的不是手段，所以这个功能不能做」——这类引用的问题是，
+<strong>康德的对立面同样有哲学家支持</strong>，而哲学本身没有终审法庭。</p>
+
+<p>哲学真正的产出不是答案，是<strong>问题的精确化</strong>。它把「这个功能该不该做」
+拆成「它侵犯了谁的什么？这个侵害是必然的还是可避免的？谁有权同意？」——
+拆完之后，你可能仍然不同意同事，但你们<strong>至少能在同一个问题上分歧</strong>，
+而不是各说各的。</p>
+
+<div class="note">
+  <strong>一个实用的心态：</strong>把哲学家当成<strong>论证方式的供应商</strong>，而不是<strong>结论的权威</strong>。
+  你需要的是「用后果论看会怎样、用义务论看会怎样」这两种<strong>视角的获得</strong>，
+  而不是「哪个哲学家赢了」。视角越多，你越可能发现自己之前漏掉的那一方。
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">1.5</span>哲学给你的三种可迁移能力</h2>
+
+<p>去掉所有具体知识点，哲学训练对工程师的真正价值是三种能力。这三种能力都可以单独练，不必先读完哲学史。</p>
+
+<div class="grid grid-3">
+  <div class="card">
+    <h4>① 概念拆解</h4>
+    <p style="font-size:13.5px">把一个含混的大词（「智能」「对齐」「理解」「安全」）拆成几个<strong>可分别讨论的小问题</strong>，
+    并指出每个小问题该用什么标准回答。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>在工程里对应</strong>：把一个模糊需求写成可验收的条目。
+    这是需求分析的核心技能，而它其实是分析哲学的基本功。</p>
+  </div>
+  <div class="card">
+    <h4>② 前提暴露</h4>
+    <p style="font-size:13.5px">听一段论证后，能说出<strong>它依赖了哪些没被讲出来的假设</strong>，
+    以及如果某个假设不成立，结论会怎样崩塌。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>在工程里对应</strong>：评审一个方案时问出「这个方案在什么情况下会失效」。
+    比「我觉得不行」有用得多。</p>
+  </div>
+  <div class="card">
+    <h4>③ 立场自觉</h4>
+    <p style="font-size:13.5px">能意识到<strong>自己正在持有一个立场</strong>（而不是在陈述客观事实），
+    并主动说出这个立场的代价。</p>
+    <p style="font-size:13.5px;margin-bottom:0"><strong>在工程里对应</strong>：写决策文档时能写出「我们选择了 A，
+    代价是放弃了 B 和 C 的哪些好处」。这是技术负责人和普通工程师的分界线之一。</p>
+  </div>
+</div>
+
+<h3>这三种能力可以现在就练，不用读书</h3>
+
+<table>
+  <thead><tr><th style="width:170px">能力</th><th>今天的练习（15 分钟）</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>概念拆解</td>
+      <td>拿「我们的模型很聪明」这句话，问自己：聪明是指答得对、答得快、还是会处理新问题？分别怎么测？</td>
+    </tr>
+    <tr>
+      <td>前提暴露</td>
+      <td>找一条你最近认同的技术论断（比如「RAG 比微调更好」），写出它暗含的三个前提。</td>
+    </tr>
+    <tr>
+      <td>立场自觉</td>
+      <td>写下你对「AI 生成内容该不该标注」的立场，然后强制自己写出反方最强的理由，不许写弱智版本。</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">1.6</span>哲学不能给你什么</h2>
+
+<p>为了避免误解，明确划出边界。下面这些事情，<strong>读哲学解决不了</strong>：</p>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>不会提升模型的任何指标。</strong>幻觉率、准确率、延迟、成本——一个都不会因为你想清楚了而改善。这些靠工程手段。</li>
+    <li><strong>不会让你在技术争论中「赢」。</strong>哲学没有终审法庭。你只能说「我基于 A 立场，代价是接受 B」，对方不同意 A，讨论就到此为止。</li>
+    <li><strong>不会替你承担责任。</strong>想清楚了「为什么这样做是合理的」，不等于这样做就真的对。判断的责任仍在做决策的人身上。</li>
+    <li><strong>不会让你成为一个「有思想」的人。</strong>这个目标本身就是有问题的——它把哲学当成身份装饰。有用的哲学是工具，不是徽章。</li>
+    <li><strong>不能替代领域知识。</strong>讨论医疗 AI 的伦理，你得先懂医疗；讨论金融风控的公平性，你得先懂风控。哲学给的是框架，填入内容需要你自己的领域知识。</li>
+  </ul>
+</div>
+
+<div class="quote">
+  <p>哲学不能让你少做错事，但能让你<em>知道自己正在做什么</em>——包括知道自己正在做一件坏事，而不是骗自己说那是技术限制。</p>
+  <span class="who">—— 这是本指南认为哲学对工程师最重要的价值</span>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">1.7</span>动手：把你手上的项目翻译成哲学问题</h2>
+
+<p>这一节是本章唯一必须完成的部分。<strong>不写下来，前面的内容就是阅读材料；写下来，它才会变成能力。</strong></p>
+
+<ol class="steps">
+  <li>
+    <strong>选一个你正在做的（或想做的）AI 项目。</strong>
+    不必是真实上线的，课程作业、个人项目都行。写下一句话描述它。
+    <br><span class="hash">例：一个帮助学生整理课程笔记的问答工具。</span>
+  </li>
+  <li>
+    <strong>列出这个项目里 3 个「让你犹豫过」的地方。</strong>
+    犹豫说明这里存在未被解决的问题。<strong>不要挑那些你已经知道怎么做的部分。</strong>
+    <br><span class="hash">例：① 学生问的问题不在资料范围内时，该直接说不知道还是用常识作答？<br>
+    ② 有人问「这门课我能得多少分」，这算越界吗？<br>
+    ③ 学生的笔记里有隐私内容，我要不要用来改进检索效果？</span>
+  </li>
+  <li>
+    <strong>对每个犹豫，用 1.2 节的尺子分类。</strong>标出：哪部分是工程问题（可测）、哪部分是哲学问题（不可测）。
+    <br><span class="hash">例：① 「不知道就说不知道」的准确率——工程问题，可测；
+    但「该不该用常识作答」是哲学问题——它涉及工具的可信度边界。</span>
+  </li>
+  <li>
+    <strong>给每个哲学部分写出你的立场 + 代价。</strong>格式固定：
+    <strong>我选择 ___，因为 ___；代价是 ___。</strong>
+    <br><span class="hash">例：我选择在资料范围外明确说「我的资料里没有」而不补常识，
+    因为学生用它是为了核对课程内容，错误信息比没有信息更有害；
+    代价是遇到「课程外的延伸问题」时体验会显得笨。</span>
+  </li>
+  <li>
+    <strong>检查一件事：你的三个立场互相矛盾吗？</strong>这是最有价值的步骤。
+    很多团队的问题不是没立场，而是<strong>不同功能的立场互相打架</strong>——
+    在 A 功能里坚持「不猜测」，在 B 功能里默认「补全合理内容」，用户感受到的是产品人格分裂。
+  </li>
+</ol>
+
+<div class="tip">
+  <strong>这个练习的产出物请保存好。</strong>它是第 11 章「伦理设计文档」的雏形。
+  第 11 章会把这份粗糙的草稿变成一份能提交给团队评审的正式文档。
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">1.8</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 同事说「我们的对齐方案应该参考康德的义务论」。这句话里，哪些是哲学主张，哪些是工程主张？</p>
+    <div class="qa-a">
+      <p>「应该参考义务论」是<strong>哲学主张</strong>——它在提议一套判断行为对错的标准（有些事无论如何不能做）。</p>
+      <p>但它后面<strong>必然跟着工程主张</strong>：义务论要怎么写成规则？写成硬约束还是软提示？违规时是拒答、还是降级、还是记录？这些是<strong>可测、可实现的</strong>决策。</p>
+      <p><strong>关键点</strong>：哲学选择决定了工程约束的<strong>形状</strong>。选义务论 → 你会倾向于硬约束和明确拒答；选后果论 → 你会倾向于按预期损益做加权判断。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q2. 怎么判断「模型有没有理解这段话」这个问题是工程问题还是哲学问题？</p>
+    <div class="qa-a">
+      <p>先反问：<strong>「理解」在这个团队里的操作定义是什么？</strong></p>
+      <p>如果答案是「能正确回答关于这段话的问题」，那它就是<strong>工程问题</strong>——造测试集、算准确率，今天就能做。</p>
+      <p>如果答案是「它的内部表征应该和人处理这段话的方式相似」，那它就是<strong>混合问题</strong>——「相似」的标准本身没有公认检验方法（这是哲学部分），但可以用可解释性工具测量某些具体指标（这是工程部分）。</p>
+      <p><strong>结论</strong>：问题的类型不取决于问题的字面，而取决于<strong>你为关键词选了什么操作定义</strong>。所以问「这是工程问题还是哲学问题」之前，先问「我们把关键词定义清楚了吗」。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q3. 「哲学讨论不影响技术决策」这个说法哪里错了？</p>
+    <div class="qa-a">
+      <p>它把「概念分歧」当成了「措辞分歧」。当双方对某个词的操作定义不同时，<strong>分歧会直接转化为不同的技术路线</strong>——
+      1.4 节的「理解」例子就是：行为标准两周能验收，机制标准可能要做几个月。</p>
+      <p>更隐蔽的后果是<strong>排期与人力估算失真</strong>：如果团队里两个人对验收标准的心智模型不同，
+      他们给出的工时估算会差好几倍，而会议记录上写的却是同一个词。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q4. 为什么说哲学的价值是「把问题问准」而不是「回答问题」？</p>
+    <div class="qa-a">
+      <p>因为哲学问题<strong>没有公认的检验方法</strong>——这不是暂时的技术限制，是这类问题的特征本身。
+      没有检验方法，就谈不上「解决」，只能谈「有哪些立场」。</p>
+      <p>但「问准」有巨大价值：一个问准了的问题<strong>可以被工程手段部分绕过</strong>。
+      「AI 有没有意识」无法解决，但拆成「哪些行为指标能反映内部状态的稳定性」「用户对它的信任度是否合理」之后，
+      后两个都是可以测、可以设计的。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】用 1.2 节的尺子，判断下面这个问题，并说明你的判断依据。<br>
+    「我们的情感陪伴产品，用户平均每天使用 90 分钟，这个时长正常吗？」</p>
+    <div class="qa-a">
+      <p><strong>这是混合问题，而且不可测的那部分才是关键。</strong></p>
+      <p><strong>可测部分</strong>：90 分钟在同品类产品中处于什么分位？使用时长的分布是长尾还是集中？使用时长与用户情绪状态的相关性？——这些都是数据问题。</p>
+      <p><strong>不可测部分</strong>：「正常」的判据是什么？这里至少有三种互相冲突的标准，且没有公认方法判定谁对：</p>
+      <ul>
+        <li><strong>产品标准</strong>：时长越长说明用户越投入，是好的。</li>
+        <li><strong>福祉标准</strong>：对陪伴产品，长时间使用可能意味着用户在逃避现实社交，越长越糟。</li>
+        <li><strong>自主性标准</strong>：关键在于用户是否<strong>能够</strong>停止。如果 90 分钟是自主选择的结果，就不同于「无法停止」。</li>
+      </ul>
+      <p><strong>工程后果</strong>：选哪种标准，直接决定你的北极星指标、推荐策略，甚至要不要加「使用时长提醒」。
+      如果你的团队在用第一种标准优化，而你以为大家在用第二种，那么<strong>越努力优化，你越可能做出你本来想避免的产品</strong>。
+      这就是为什么这类问题必须在写代码之前说清。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能用 1.2 节的尺子，把任意一个技术讨论拆成「可测部分」与「不可测部分」。</li>
+    <li>能说出至少 5 个 AI 难题及其哲学原型（不必记年份，但要能说清问题本身）。</li>
+    <li>完成 1.7 节的练习，得到<strong>你项目的 3 个哲学问题</strong>，每个都写了「立场 + 代价」。</li>
+    <li>能举例说明「同一个词的不同操作定义，如何导致不同的技术路线」。</li>
+    <li>知道哲学不能提供什么——尤其是<strong>它不提供答案，只提供视角</strong>。</li>
+  </ul>
+</div>
+
+<div class="navfoot">
+  <a href="index.html"><div class="dir-label">← 上一节</div><div class="dir-name">总览 · 为什么工程师要读哲学</div></a>
+  <a class="next" href="ch02.html"><div class="dir-label">下一节 →</div><div class="dir-name">第 2 章 · 认识论 I：知识、信念与不确定性</div></a>
+</div>
+
+<div class="footer">哲学 × AI 学习指南 · 第 1 章 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

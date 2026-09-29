@@ -1,0 +1,670 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">哲学 × AI 指南</a> / 第 5 章</div>
+  <h1><span class="ch-tag">CH 05</span>心灵哲学 II：意向性、表征与符号接地</h1>
+  <p class="lead">上一章讲了「意识」为什么测不出。这一章讲一个<strong>更贴近工程</strong>的问题：
+  「理解」和「意义」是怎么可能的？——「随机鹦鹉」「它只是在预测下一个词」这类批评，
+  它们的学术出处全在这一章。学完之后你能做两件事：
+  <strong>① 判断一场「LLM 到底懂不懂」的争论里，双方各自在哪个立场上；
+  ② 知道为什么「工具调用」在哲学上比纯对话更接近理解</strong>——这不是营销话术，它有明确的哲学根据。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">理解「意义」的来源之争</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 4 章的中文房间</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">评测的「证明了什么」说明</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–5 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">5.1</span>意向性：心智的「关于性」</h2>
+
+<p>先澄清一个极易混淆的术语问题，因为它会影响你读文献。</p>
+
+<table>
+  <thead><tr><th style="width:130px">词</th><th style="width:130px">英文</th><th>含义</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>意向性</strong></td>
+      <td>intentionality</td>
+      <td>心理状态<strong>指向某个对象</strong>的特征。信念是关于某事的，欲望是关于某事的，恐惧是关于某事的。</td>
+    </tr>
+    <tr>
+      <td><strong>意图</strong></td>
+      <td>intention</td>
+      <td>打算做某事。这是意向性的<strong>一个子类</strong>，不是同一个概念。</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <strong>这个术语来自布伦塔诺（1874）。</strong>他主张心理现象与物理现象的根本区别在于：
+  物理现象只是<strong>在那里</strong>，而心理现象<strong>总是指向某个东西</strong>。
+  他用的表述是「意向的内存在」——一个信念的对象不必真实存在（我可以相信独角兽存在），
+  但信念<strong>必须有一个对象</strong>。
+  <br><br>
+  <strong>所以「意向性」问的不是「有没有打算」，而是「有没有指向」。</strong>
+  一个词有没有意向性，指的是：它<strong>是不是关于某个东西的</strong>。
+</div>
+
+<h3>关键区分：内在意向性 vs 派生意向性</h3>
+
+<p>这是本节最重要的一张表。这个区分是塞尔提出的，它<strong>直接决定了「模型有没有理解」这个问题的问法</strong>。</p>
+
+<table>
+  <thead><tr><th style="width:150px">类型</th><th style="width:280px">含义</th><th>例子</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>内在意向性</strong></td>
+      <td>系统<strong>自己</strong>具有的指向能力，不依赖别的解释者</td>
+      <td>你的信念、你的恐惧——它们本来就是关于某些东西的</td>
+    </tr>
+    <tr>
+      <td><strong>派生意向性</strong></td>
+      <td>本身没有指向能力，<strong>意义是从外界借来的</strong></td>
+      <td>「红」这个字有意义，是因为<strong>有人在用它指红色</strong>。
+      字本身没有意图。<strong>意义是从使用者那里派生的。</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">塞尔的区分</div>
+    <div class="ttl">内在意向性 vs 派生意向性</div>
+    <div class="txt">书上的文字有派生意向性（来自作者与读者）；人的信念有内在意向性。
+    这个区分的关键问题是：<strong>一个系统能不能只靠派生意向性运转？</strong></div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">这就是「LLM 到底懂不懂」的争论焦点</div>
+    <div class="ttl">模型的「意义」是派生的还是内在的</div>
+    <div class="txt"><strong>「随机鹦鹉」立场</strong>：模型输出像书上的文字——有派生意向性（因为人类训练数据里带着意义），
+    但没有内在意向性。<strong>反驳立场</strong>：派生意向性和内在意向性的界线本身就没有被说清，
+    而人类的意义有多少不是从社会继承的？
+    <strong>注意：这不是一个「谁对谁错」的问题，它是这场争论的核心分歧点。</strong></div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">5.2</span>符号接地问题</h2>
+
+<p>1990 年，哈纳德把这个问题形式化，它成为认知科学里最有影响力的难题之一。</p>
+
+<div class="qbox">
+  <span class="qb-t">符号接地问题（Harnad, 1990）</span>
+  <p>一个纯符号系统的符号意义，<strong>只能来自其他符号</strong>。这就导致一个循环：</p>
+  <p>假设你完全不懂中文，给你一本<strong>中文-中文词典</strong>。
+  你查「红」，得到「像血或火的颜色」。你不认识「血」，于是去查「血」，得到「红色液体」。</p>
+  <p>你在符号之间来回查找，<strong>永远走不出符号的圈子</strong>。
+  任何一个定义都指向其他符号，而它们最终都必须<strong>落到某个非符号的东西上</strong>——
+  一个你亲眼见过的红、亲身体验过的疼。</p>
+  <p class="qb-q">结论：符号的意义必须<strong>最终接在非符号的经验上</strong>，否则就是空的。
+  问题是——<strong>模型的符号接在哪里？</strong>它接在<em>更多符号</em>上。
+  这是「随机鹦鹉」论证的技术版本。</p>
+</div>
+
+<p>注意这个论证的力量：它<strong>不是</strong>说「模型不够好」，
+而是说「<strong>如果意义必须接地，而模型只在符号层面运作，那么它就不可能获得意义</strong>」。</p>
+
+<h3>但这里有一个必须检查的前提</h3>
+
+<div class="warn">
+  <strong>符号接地问题的说服力，依赖一个前提：意义必须接地。</strong>
+  而这个前提本身是可以质疑的。
+  <br><br>
+  <strong>质疑的方式有两种：</strong>
+  <ul style="margin-bottom:0">
+    <li><strong>① 也许「接地」不必是直接的。</strong>
+    你的「红」概念也不是直接体验——你从父母、老师、书本那里学来的，那些都是<strong>符号传递</strong>。
+    你是通过大量符号媒介（语言）学会「红」的。<strong>如果人类的接口也是符号，那符号为何不能承载意义？</strong></li>
+    <li><strong>② 也许「接地」不必是感官的。</strong>
+    如果「与世界的因果关系」可以算接地，那么一个能<strong>执行动作、接收反馈</strong>的系统
+    就在某种意义上接地了——即使它的动作是调用 API。<strong>这正是工具调用的哲学意义（见 5.7）。</strong></li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">5.3</span>德雷福斯的批判</h2>
+
+<p>休伯特·德雷福斯在 1972 年出版《计算机不能做什么》，对当时的符号 AI 提出了系统性批判。
+这本书常被当作「过时的悲观论」，但它提出的几个论点<strong>至今没有被完全回应</strong>，而且很值得读。</p>
+
+<h3>他攻击的四个假设</h3>
+
+<table>
+  <thead><tr><th style="width:150px">假设</th><th style="width:280px">内容</th><th>德雷福斯的反驳</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>生物学假设</strong></td>
+      <td>大脑是离散符号处理器，可以用形式规则模拟</td>
+      <td>大脑更像是<strong>连续、并行、模拟</strong>的，形式化可能丢掉了关键性质</td>
+    </tr>
+    <tr>
+      <td><strong>心理学假设</strong></td>
+      <td>人可以描述自己的认知规则，这些规则可以被程序化</td>
+      <td>大量技能是<strong>无法被明确表述</strong>的——你能骑车，但说不出完整的物理规则</td>
+    </tr>
+    <tr>
+      <td><strong>认识论假设</strong></td>
+      <td>知识可以形式化为规则 + 事实</td>
+      <td><strong>知识不是规则的集合，是背景技能</strong>。人对「相关」的判断依赖无法穷举的背景</td>
+    </tr>
+    <tr>
+      <td><strong>本体论假设</strong></td>
+      <td>世界可以被切分成明确的、不依赖语境的元素</td>
+      <td>什么东西算一个「对象」本身<strong>依赖语境</strong>——
+      「杯子」的边界在哪？你还没碰到把手？这些判断没有明确规则</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>他最有力的论点：框架问题</h3>
+
+<p>德雷福斯指出了一个对符号 AI 特别致命的问题，这个问题后来被称为<strong>「框架问题」</strong>：</p>
+
+<div class="note">
+  <strong>要执行一个动作，你必须知道它会产生什么影响。</strong>
+  但要列出全部影响，你就必须把「所有与此无关、因此不需要考虑的东西」也列出来。
+  <br><br>
+  而「什么算相关」这件事，<strong>本身依赖于具体的语境</strong>，无法预先穷举。
+  你把杯子拿起来时不需要考虑「这会不会改变杯子的颜色」「这会不会影响太阳系运行」——
+  你<strong>不假思索地知道</strong>这些无关。但这个「知道」没有被表述成任何规则。
+  <br><br>
+  <strong>德雷福斯称这类能力为「背景技能」，并认为它是形式化路线的根本障碍。</strong>
+</div>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">德雷福斯的批判</div>
+    <div class="ttl">背景技能无法被形式化</div>
+    <div class="txt">人的常识判断依赖大量无法表述的背景，它不是「还没被写出来的规则」，
+    而是<strong>本质上不适合用规则表达</strong>的那类能力。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">今天的形态</div>
+    <div class="ttl">为什么「常识」和「语境敏感」仍然最难</div>
+    <div class="txt">有趣的是，<strong>德雷福斯的批判针对的是符号 AI（GOFAI），而不是神经网络</strong>。
+    统计学习的方式恰恰是<strong>不依赖明确规则</strong>——
+    这某种程度上绕过了他的批判，但代价是：<strong>你不知道它学到了什么</strong>。
+    今天的语境敏感失败、常识失败、跨领域迁移失败，仍然带有他所说的「背景」问题的影子。</div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">5.4</span>具身认知：没有身体就没有理解吗</h2>
+
+<p>德雷福斯的批判指向一个更强的立场：<strong>认知可能根本上依赖于身体</strong>。
+这一立场叫<strong>具身认知</strong>，在 1990 年代被系统地提出来。</p>
+
+<div class="quote">
+  <p>认知不是一个发生在头脑里的、与身体无关的计算过程；<strong>它是身体与环境交互的产物</strong>。
+  身体的结构、感官通道的特性和行动能力，<strong>塑造了</strong>认知的内容和形式。</p>
+  <span class="who">—— 具身认知 / 生成主义（Varela, Thompson &amp; Rosch 1991 等）的核心主张</span>
+</div>
+
+<h3>三个具体论据</h3>
+
+<table>
+  <thead><tr><th style="width:170px">论据</th><th>内容</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>概念的身体性</strong></td>
+      <td>大量抽象概念是通过身体经验隐喻地构造的——
+      「温暖的人」「沉重的决定」「高的地位」。如果概念真的构造于身体经验，
+      那么一个没有身体的系统能否获得这些概念？</td>
+    </tr>
+    <tr>
+      <td><strong>感知是主动的</strong></td>
+      <td>知觉不是被动接收信息，而是<strong>身体主动探索的结果</strong>。
+      你看到深度，是因为你在动、有两只眼睛、能移动位置。没有行动能力，感知会是什么样？</td>
+    </tr>
+    <tr>
+      <td><strong>生成主义</strong></td>
+      <td>认知不是「表征外部世界」，而是<strong>通过行动与环境耦合、共同生成</strong>的。
+      意义不在头脑里，在交互中。这一立场对「表征」这个概念本身提出质疑。</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">具身认知的主张</div>
+    <div class="ttl">理解需要身体与环境的耦合</div>
+    <div class="txt">如果这一立场成立，那么纯文本训练的模型<strong>原则上</strong>就缺少理解的必要条件——
+    不是因为它不聪明，而是因为它缺少身体这个载体。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">对技术路线的直接影响</div>
+    <div class="ttl">多模态、机器人、Agent 的哲学根据</div>
+    <div class="txt">如果具身认知是对的，那么：
+    <strong>多模态</strong>（获得感官通道）、<strong>机器人</strong>（获得身体与行动）、
+    <strong>工具调用 / Agent</strong>（获得与世界的因果交互）
+    就不只是「功能扩展」，而是<strong>弥补理解的必要条件</strong>。
+    <br><br>
+    <strong>但这不是定论</strong>：也有大量研究者认为这些是「锦上添花」而非「必要条件」。
+    你需要知道的是：<strong>这个技术路线选择背后有一个哲学分歧，而不只是工程取舍。</strong></div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">5.5</span>符号主义与连接主义之争</h2>
+
+<p>1980 到 1990 年代，AI 领域爆发了一场著名的争论，它的哲学含量极高，
+而且<strong>胜负到今天都没有分明</strong>——只是形式上改变了。</p>
+
+<table>
+  <thead><tr><th style="width:140px">阵营</th><th style="width:230px">主张</th><th>代表</th><th>今天的形式</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>符号主义</strong></td>
+      <td>智能的本质是符号操作，认知必须基于<b>结构化的、可组合的表征</b></td>
+      <td>纽厄尔、西蒙、福多</td>
+      <td>知识图谱、形式化推理、神经符号、符号约束</td>
+    </tr>
+    <tr>
+      <td><strong>连接主义</strong></td>
+      <td>智能从大量简单单元的并行交互中<strong>涌现</strong>，
+      不必有明确的符号表征</td>
+      <td>Rumelhart、McClelland、辛顿</td>
+      <td>神经网络、深度学习、LLM</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>福多与皮利辛的最强批判：系统性</h3>
+
+<p>1988 年，福多和皮利辛发表了一篇对连接主义影响极大的批判文章。他们的核心论点是<strong>系统性（systematicity）</strong>：</p>
+
+<div class="note">
+  <strong>观察：</strong>如果你的认知能处理「张三爱李四」，那它必然也能处理「李四爱张三」。
+  这种能力是<strong>系统性的</strong>——它随结构自动生成，不是一个个学来的。
+  <br><br>
+  <strong>他们的论证：</strong>这种系统性只能被<strong>具有组合结构</strong>的表征系统解释。
+  因为「张三爱李四」和「李四爱张三」共享成分（张三、李四、爱），
+  只是排列不同。只有把表征看作<strong>有句法结构的、可分解的</strong>东西，才能解释这种系统性。
+  <br><br>
+  <strong>结论：</strong>如果认知是系统性的，那么认知架构必须是符号式的（有组合结构）。
+  他们在文章里宣称，纯粹分布式表征<strong>难以解释</strong>这种系统性。
+</div>
+
+<div class="warn">
+  <strong>这场争论今天怎么算？</strong>
+  严格来说<strong>没有分出胜负</strong>。但有两个发展值得注意：
+  <ul style="margin-bottom:0">
+    <li><strong>连接主义的回应</strong>：神经网络可以<strong>学会</strong>表征组合结构——
+    注意力机制、词序敏感的表征，都能表现出一定程度的系统性。
+    而且有实验证据显示，训练玩棋盘游戏的模型<strong>内部自发形成了棋盘状态的表征</strong>，
+    这至少说明「分布式系统学不出结构化表征」这个论断过强了。</li>
+    <li><strong>符号主义的回应</strong>：连接主义的系统性能力<strong>是有限的、脆弱的</strong>——
+    换一种表面形式（比如改变问法、加入无关从句）就可能失败。
+    这恰恰说明它<strong>没有真正获得</strong>组合结构，只是在统计上模仿了它。</li>
+  </ul>
+</div>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">这场争论的核心问题</div>
+    <div class="ttl">组合性能力必须来自组合性结构吗</div>
+    <div class="txt">一边说「只有结构化表征才能产生系统性的泛化」，
+    一边说「统计学习可以从数据中涌现出等价的能力」。
+    双方对「什么算真正具备」有不同标准。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">它决定的工程问题</div>
+    <div class="ttl">要不要加符号层</div>
+    <div class="txt">如果你认为统计学习不足以获得可靠的结构化能力，
+    你会在关键环节<strong>加规则约束、加验证器、加结构化输出校验</strong>。
+    如果你认为够用，你会倾向于<strong>端到端 + 数据规模</strong>。
+    <br><br>
+    <strong>纯工程判断无法解决这个分歧，因为它的分歧点在「什么算足够可靠」这个标准上。</strong>
+    实际上成熟的工程做法是<strong>混合</strong>：用统计模型处理语义，用符号约束守住底线。</div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">5.6</span>【工程锚点】LLM 的「理解」问题怎么判</h2>
+
+<p>现在把前面五节收束到一个可操作的判断框架上。你要面对的真实问题是：
+<strong>「我们的模型到底理解了没有」——这个问题该怎么处理？</strong></p>
+
+<h3>先分清五层，再谈「理解」</h3>
+
+<p>「理解」这个词在不同的技术宣称里指完全不同的东西。把它们分开，你会发现大部分争论瞬间变得可讨论：</p>
+
+<table>
+  <thead><tr><th style="width:130px">层次</th><th style="width:260px">内容</th><th style="width:100px">可测性</th><th>测法</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 行为对齐</strong></td>
+      <td>输出在表面上符合期望</td>
+      <td>✅ 高</td>
+      <td>标准测试集、人工评分</td>
+    </tr>
+    <tr>
+      <td><strong>② 泛化</strong></td>
+      <td>在<strong>未见过但同分布</strong>的输入上也符合期望</td>
+      <td>✅ 高</td>
+      <td>留出集、交叉验证</td>
+    </tr>
+    <tr>
+      <td><strong>③ 系统性</strong></td>
+      <td>对结构变换保持能力（改问法、加干扰、换序）</td>
+      <td>🟡 中</td>
+      <td>对照实验、扰动测试</td>
+    </tr>
+    <tr>
+      <td><strong>④ 内部表征</strong></td>
+      <td>内部形成了关于问题结构的有用表征</td>
+      <td>🟡 中</td>
+      <td>探针任务、表征相似性分析、可解释性工具</td>
+    </tr>
+    <tr>
+      <td><strong>⑤ 内在意向性</strong></td>
+      <td>符号<strong>自己</strong>指向世界（不是借来的意义）</td>
+      <td>🔴 <strong>不可测</strong></td>
+      <td>——（这是哲学问题，见 5.1）</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>实用结论：</strong>①②③④都可以设计实验，⑤不能。
+  <strong>所以当有人说「LLM 不理解」或「LLM 理解了」时，正确回应是问：</strong>
+  「你说的是哪一层？如果是前三层，我们可以设计实验；如果是第五层，那它是哲学问题，
+  我们现在做的任何测试都不构成对它的证据。」
+  <br><br>
+  <strong>这个拆解本身就是你的产出。</strong>它能立刻把一场无解的争论，
+  变成几组可设计的实验。
+</div>
+
+<h3>一个真实且重要的实验类别：探针分析</h3>
+
+<p>第 ④ 层有一个很有说服力的检验方法，值得你知道它长什么样。</p>
+
+<div class="note">
+  <strong>思路：</strong>如果模型真的形成了关于问题结构的内部表征，
+  那么它的<strong>中间层激活值</strong>应该<strong>包含</strong>这个结构的信息。
+  <br><br>
+  <strong>做法：</strong>用一个独立的小模型（「探针」）去尝试从某层激活值中<strong>预测</strong>这个结构。
+  如果探针能高准确率地预测出来（而这个结构在输入里并不直接可见），
+  说明模型的内部确实<strong>编码</strong>了它。
+  <br><br>
+  <strong>经典案例：</strong>研究者让模型学习玩一种棋类游戏（只给走法序列，不给棋盘），
+  然后用探针检查它的内部激活值——结果能从中<strong>相当准确地重建出棋盘状态</strong>。
+  这类实验为「模型形成了世界模型」提供了<strong>可检验的证据</strong>——
+  这比「我觉得它在推理」强得多，也比「它只是统计」更站得住脚。
+</div>
+
+<h3>评测文档该写什么</h3>
+
+<p>这是本章最有交付价值的产出。每次报告模型能力时，用这张表自查：</p>
+
+<table>
+  <thead><tr><th style="width:170px">该写清的</th><th>错误写法</th><th>正确写法</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>测的是哪一层</strong></td>
+      <td>「模型理解了任务」</td>
+      <td>「模型在留出集上准确率 87%（第 ② 层泛化）；在扰动测试上下降到 62%（第 ③ 层系统性不足）」</td>
+    </tr>
+    <tr>
+      <td><strong>证明了什么</strong></td>
+      <td>「说明模型具备推理能力」</td>
+      <td>「说明在该题型分布内、多步约束条件下，模型能维持一致性」</td>
+    </tr>
+    <tr>
+      <td><strong>没证明什么</strong></td>
+      <td>（通常不写）</td>
+      <td>「未测试：跨题型迁移、干扰条件下的稳定性、内部表征的可解释性」</td>
+    </tr>
+    <tr>
+      <td><strong>失效条件</strong></td>
+      <td>（通常不写）</td>
+      <td>「加入无关从句后准确率下降明显；问题措辞换为口语化表达时下降」</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>特别注意第二列那种写法。</strong>「模型具备推理能力」这句话看起来只是描述，
+  但它实际上是一个<strong>超出证据的推断</strong>——评测测的是行为，而这句话声称的是能力。
+  这两者之间的落差，是所有「评测很好但上线就崩」事故的共同根源。
+  <br><br>
+  <strong>一个可操作的规则</strong>：在评测结论里，<strong>把「能力」这个词全部替换成
+  「在何种条件下的何种表现」</strong>。如果替换后句子读起来别扭，说明原句超出了证据。
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">5.7</span>【工程锚点】工具调用为什么更接近理解</h2>
+
+<p>回到 4.6 节的「机器人回复」和 5.2 节的接地问题。
+如果「与世界的因果连接」是理解的可能条件，那么一个能执行动作、接收真实反馈的系统，
+<strong>在哲学上就比纯文本系统更接近这个条件</strong>。这不是营销话术，它有明确来源。</p>
+
+<h3>三条具体的差别</h3>
+
+<table>
+  <thead><tr><th style="width:150px">维度</th><th style="width:250px">纯对话系统</th><th>有工具调用的系统</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>符号的来源</strong></td>
+      <td>符号只与其他符号关联（<strong>5.2 的循环</strong>）</td>
+      <td>工具返回的<strong>是世界的状态</strong>：数据库里的真实记录、API 的真实响应、代码的真实执行结果</td>
+    </tr>
+    <tr>
+      <td><strong>可被检验性</strong></td>
+      <td>输出无法被系统自己验证，只能靠外部评判</td>
+      <td><strong>动作的后果是可观察的</strong>。查询返回空、代码报错、API 拒绝——
+      这些都是<strong>来自世界的反馈信号</strong></td>
+    </tr>
+    <tr>
+      <td><strong>错误的代价</strong></td>
+      <td>幻觉只停留在文本里</td>
+      <td>错误的动作会产生<strong>真实后果</strong>，这迫使系统在不确定时采取保守策略</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">哲学条件</div>
+    <div class="ttl">理解需要与世界的因果交互</div>
+    <div class="txt">「机器人回复」提出：符号必须真正指向世界上的东西。
+    这要求感知、行动、以及行为带来的后果——而不只是符号之间的相互指涉。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">工程含义</div>
+    <div class="ttl">工具调用不只是功能扩展</div>
+    <div class="txt">在哲学上，把工具调用理解成「给模型加能力」是<strong>不完整</strong>的。
+    更重要的是它<strong>提供了接地的通道</strong>：
+    模型第一次能收到<strong>不是来自人类文本的反馈</strong>。
+    <br><br>
+    <strong>这也是为什么「让它去查，而不是让它猜」这个简单原则威力巨大</strong>——
+    它把系统从符号循环里拉了出来。</div>
+  </div>
+</div>
+
+<h3>但这带来一个必须主动管理的风险</h3>
+
+<div class="pit">
+  <strong>接地通道一旦打开，错误也会变得「有后果」。</strong>
+  <br><br>
+  纯对话系统的幻觉只伤害信息；有工具的系统可能：
+  <ul style="margin-bottom:0">
+    <li>向错误的地址发了真实邮件</li>
+    <li>在数据库里写了错误的数据</li>
+    <li>执行了无法回滚的操作（删除、支付、提交）</li>
+    <li>调用了有费用或配额的接口，产生真实成本</li>
+  </ul>
+</div>
+
+<p>所以设计工具调用时，需要一条明确的分界线：</p>
+
+<table>
+  <thead><tr><th style="width:150px">操作类型</th><th style="width:230px">处理原则</th><th>具体做法</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>只读</strong></td>
+      <td>可以较自由地让模型自主调用</td>
+      <td>查询、检索、计算。风险是信息错误，可以交叉验证</td>
+    </tr>
+    <tr>
+      <td><strong>幂等可重试</strong></td>
+      <td>需要记录，但可以自动执行</td>
+      <td>创建草稿、写日志、上传文件。关键是有正确性校验与去重机制</td>
+    </tr>
+    <tr>
+      <td><strong>有副作用</strong></td>
+      <td><strong>必须人工确认</strong>或严格的白名单限制</td>
+      <td>发送、支付、删除、对外发布。<strong>不能让模型自主决定</strong>，
+      因为错误的后果不可逆，而模型的错误率不为零</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>一个判断口诀：</strong>问自己「<strong>如果模型这次错了，我能撤销吗？</strong>」
+  <br>
+  能撤销 → 可以让它自主做。不能撤销 → 必须加确认环节。
+  <br><br>
+  这条规则看起来保守，但它是<strong>建立信任的唯一路径</strong>——
+  用户对一个会发错邮件的助手，不会给第二次机会。
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">5.8</span>动手练习</h2>
+
+<ol class="steps">
+  <li>
+    <strong>写一份「我的评测证明了什么」说明。</strong>
+    拿你最近一次模型评测结果，用 5.6 节的四行表格写清：测的是哪一层、证明了什么、
+    没证明什么、失效条件。这份文档可以直接进评审材料。
+  </li>
+  <li>
+    <strong>做一次系统性测试（第 ③ 层）。</strong>选 20 个你的模型能正确回答的问题，然后：
+    ① 改变措辞（正式→口语）② 加入一句无关的从句 ③ 调换问题里的条件顺序。
+    分别重测，看准确率变化。
+    <br><span class="hash">如果②导致明显下降，说明它的能力对「表面形式」高度敏感——这是第 ③ 层薄弱的最直接证据</span>
+  </li>
+  <li>
+    <strong>检查你的工具调用的「可撤销性」。</strong>列出你的系统能调用的所有工具，
+    逐个标注：只读 / 幂等 / 有副作用。凡是「有副作用」的，检查有没有人工确认环节。
+    <br><span class="hash">产出：一份工具风险分级表 + 缺失的确认环节清单</span>
+  </li>
+  <li>
+    <strong>做一次接地对比实验。</strong>选 10 个问题，用两种方式各跑一遍：
+    ① 让模型直接回答 ② 让模型必须先调用工具查询再回答。
+    比较两者的错误率，特别注意<strong>「工具查不到时」模型的反应</strong>——
+    它会如实说「查不到」，还是会用常识补一个答案？后者说明接地的效果是脆弱的。
+  </li>
+</ol>
+
+<hr>
+
+<h2 id="s9"><span class="h2-num">5.9</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 意向性和意图有什么区别？为什么这个区分重要？</p>
+    <div class="qa-a">
+      <p><strong>意向性（intentionality）</strong>指心理状态<strong>指向某个对象</strong>的特征——
+      信念总关于某事，恐惧总关于某事。这是「关于性」。</p>
+      <p><strong>意图（intention）</strong>指打算做某事，是意向性的一个子类。</p>
+      <p><strong>为什么重要</strong>：因为关于 AI 的争论用的是前一个概念。
+      「模型有没有意向性」问的是「它的符号是不是真的指向世界上的东西」，
+      而不是「它有没有打算」。混淆这两个词会让你在文献里迷路。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q2. 符号接地问题是什么？它依赖什么前提？</p>
+    <div class="qa-a">
+      <p><strong>问题</strong>：纯符号系统的符号意义只能来自其他符号，形成循环——
+      就像用中文-中文词典学中文，如果完全不懂中文，永远走不出来。
+      意义必须最终接在<strong>非符号的东西</strong>上。</p>
+      <p><strong>它依赖的前提</strong>：意义必须接地。
+      这个前提可以质疑：①人类的语言学习同样大量依赖符号传递，
+      如果人的接口也是符号，符号为何不能承载意义？
+      ②如果「与世界的因果交互」算接地，那么能执行动作、接收反馈的系统就已经接地了。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q3. 德雷福斯的「框架问题」在说什么？它针对的是什么路线？</p>
+    <div class="qa-a">
+      <p><strong>框架问题</strong>：执行一个动作必须知道它的影响，而要知道影响就必须区分「相关的」和「无关的」。
+      但「什么算相关」依赖语境，无法预先穷举成规则。
+      人能瞬间不假思索地做出这种区分，这个能力（背景技能）<strong>没有被表述成任何规则</strong>。</p>
+      <p><strong>针对的路线</strong>：符号 AI（GOFAI）——依赖明确规则与知识表示的路线。
+      <strong>有意思的是</strong>，统计学习恰恰不依赖明确规则，某种程度上绕过了这个批判；
+      但代价是你不知道它学到了什么，而且今天的常识失败、上下文敏感失败，
+      仍然带有「背景」问题的影子。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q4. 福多和皮利辛的「系统性」论证主张什么？连接主义如何回应？</p>
+    <div class="qa-a">
+      <p><strong>主张</strong>：认知能力是系统性的——能处理「张三爱李四」就必然能处理「李四爱张三」。
+      这种系统性地随结构自动生成的能力，只能用<strong>具有组合结构的表征系统</strong>来解释。
+      所以认知架构必须是符号式的。</p>
+      <p><strong>连接主义的回应</strong>：神经网络可以<strong>学会</strong>表征组合结构，
+      注意力机制与词序敏感表征表现出一定程度的系统性；而且有实验显示模型内部能自发形成结构化表征。</p>
+      <p><strong>符号主义的再回应</strong>：这种系统性是<strong>脆弱的</strong>——
+      换表面形式就失败，说明它没有真正获得组合结构，只是在统计上模仿。</p>
+      <p><strong>今天的状况</strong>：没有分出胜负。但工程上的成熟做法是<strong>混合</strong>——
+      统计模型处理语义，符号约束守住底线。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】同事说「我们的模型只是随机鹦鹉，不可能真理解，所以做 Agent 是浪费时间」。
+    你会怎么回应？</p>
+    <div class="qa-a">
+      <p><strong>先拆主张强度。</strong>「只是随机鹦鹉」有两种读法：</p>
+      <ul>
+        <li><strong>弱读法</strong>：当前模型缺少某些理解的关键要素（如与世界的因果连接）。
+        这是<strong>可以支持的</strong>——符号接地问题、具身认知都给出了理由。</li>
+        <li><strong>强读法</strong>：符号操作原则上不可能产生理解。这是<strong>塞尔的强主张</strong>，
+        至今争议极大，没有被普遍接受。</li>
+      </ul>
+      <p><strong>然后指出论证的缺口</strong>：即使接受弱读法，「所以做 Agent 是浪费时间」也不成立。
+      恰恰相反——</p>
+      <ul>
+        <li>如果理解的障碍是<strong>缺少与世界的因果连接</strong>（机器人回复的论点），
+        那么<strong>Agent 正是补上这个连接的方式</strong>。「做 Agent 浪费时间」和这个诊断是矛盾的。</li>
+        <li>而且工程上，Agent 的价值<strong>不依赖</strong>「模型是否真理解」这个哲学问题的答案。
+        能调用工具核实事实、能执行多步任务的系统，<strong>在有用性上是可测的</strong>——
+        你不需要先解决「什么是理解」才能测量「工单解决率提高了多少」。</li>
+      </ul>
+      <p><strong>最后给出可检验的分歧点。</strong>把争论转化为实验：
+      「我们来测一下——同一个任务，加工具调用和不加，错误率差多少？
+      在工具查不到的情况下，它会不会编造？」<strong>这些是可以跑出结果的，而『是不是鹦鹉』不是。</strong></p>
+      <p><strong>注意这个回应的结构</strong>：不否认对方的前提（模型确实缺少某些东西），
+      但指出<strong>从前提推不到结论</strong>，并把争论转到可检验的问题上。
+      这比争论「它到底懂不懂」有效得多。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能区分意向性与意图，并解释内在意向性与派生意向性的差别。</li>
+    <li>能复述符号接地问题的循环结构，并说出它依赖的前提是什么。</li>
+    <li>能用「理解的五个层次」拆解任何一场「LLM 懂不懂」的争论，指出双方实际在哪一层。</li>
+    <li>完成一份<strong>「我的评测证明了什么」</strong>说明，包含「没证明什么」和「失效条件」两栏。</li>
+    <li>完成工具风险分级，所有「有副作用」的工具都有确认环节。</li>
+    <li>能说明工具调用在哲学上（而不只是功能上）的意义：<strong>它建立了接地通道</strong>。</li>
+  </ul>
+</div>

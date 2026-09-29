@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>专题 24 · 进阶速览：单调队列、设计题与抽样 | 力扣算法解析</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-tut="leetcode">
+
+<header class="topbar">
+  <button class="menu-btn" type="button" aria-label="菜单">☰</button>
+  <a class="brand" href="index.html">
+    <span class="logo">算</span>
+    <span>力扣算法解析<small>按专题吃透，不做题海</small></span>
+  </a>
+  <span class="spacer"></span>
+  <select class="tb-select" aria-label="专题跳转">
+    <option value="index.html">总览与路线</option>
+    <option value="ch01.html">01 · 数组与双指针</option>
+    <option value="ch02.html">02 · 哈希表</option>
+    <option value="ch03.html">03 · 滑动窗口</option>
+    <option value="ch04.html">04 · 二分查找</option>
+    <option value="ch05.html">05 · 链表</option>
+    <option value="ch06.html">06 · 栈与队列</option>
+    <option value="ch07.html">07 · 二叉树</option>
+    <option value="ch08.html">08 · 递归与回溯</option>
+    <option value="ch09.html">09 · 动态规划（入门）</option>
+    <option value="ch10.html">10 · 动态规划（进阶）</option>
+    <option value="ch11.html">11 · 贪心算法</option>
+    <option value="ch12.html">12 · 图论入门</option>
+    <option value="ch13.html">13 · 前缀和与差分</option>
+    <option value="ch14.html">14 · 位运算</option>
+    <option value="ch15.html">15 · 数学与模拟</option>
+    <option value="ch16.html">16 · 排序与分治</option>
+    <option value="ch17.html">17 · 堆（优先队列）</option>
+    <option value="ch18.html">18 · 二叉搜索树</option>
+    <option value="ch19.html">19 · Trie 前缀树</option>
+    <option value="ch20.html">20 · 并查集</option>
+    <option value="ch21.html">21 · 字符串算法</option>
+    <option value="ch22.html">22 · 最短路与最小生成树</option>
+    <option value="ch23.html">23 · DP 高阶</option>
+    <option value="ch24.html">24 · 进阶速览</option>
+    <option value="appendix.html">附录 · 速查与路线</option>
+  </select>
+  <a class="tb-link" href="appendix.html">速查</a>
+  <a class="tb-link" href="appendix.html#a4">90 天路线</a>
+  <a class="tb-home" href="../index.html">⌂ 全部教程</a>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-group">
+    <div class="sb-title">开始</div>
+    <a class="sb-link" href="index.html"><span class="num">0</span><span>总览 · 怎么刷题</span></a>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">全部专题</div>
+    <a class="sb-link" href="ch01.html"><span class="num">1</span><span>数组与双指针</span></a>
+    <a class="sb-link" href="ch02.html"><span class="num">2</span><span>哈希表</span></a>
+    <a class="sb-link" href="ch03.html"><span class="num">3</span><span>滑动窗口</span></a>
+    <a class="sb-link" href="ch04.html"><span class="num">4</span><span>二分查找</span></a>
+    <a class="sb-link" href="ch05.html"><span class="num">5</span><span>链表</span></a>
+    <a class="sb-link" href="ch06.html"><span class="num">6</span><span>栈与队列</span></a>
+    <a class="sb-link" href="ch07.html"><span class="num">7</span><span>二叉树</span></a>
+    <a class="sb-link" href="ch08.html"><span class="num">8</span><span>递归与回溯</span></a>
+    <a class="sb-link" href="ch09.html"><span class="num">9</span><span>DP 入门</span></a>
+    <a class="sb-link" href="ch10.html"><span class="num">10</span><span>DP 进阶</span></a>
+    <a class="sb-link" href="ch11.html"><span class="num">11</span><span>贪心算法</span></a>
+    <a class="sb-link" href="ch12.html"><span class="num">12</span><span>图论入门</span></a>
+    <a class="sb-link" href="ch13.html"><span class="num">13</span><span>前缀和与差分</span></a>
+    <a class="sb-link" href="ch14.html"><span class="num">14</span><span>位运算</span></a>
+    <a class="sb-link" href="ch15.html"><span class="num">15</span><span>数学与模拟</span></a>
+    <a class="sb-link" href="ch16.html"><span class="num">16</span><span>排序与分治</span></a>
+    <a class="sb-link" href="ch17.html"><span class="num">17</span><span>堆与优先队列</span></a>
+    <a class="sb-link" href="ch18.html"><span class="num">18</span><span>二叉搜索树</span></a>
+    <a class="sb-link" href="ch19.html"><span class="num">19</span><span>Trie 前缀树</span></a>
+    <a class="sb-link" href="ch20.html"><span class="num">20</span><span>并查集</span></a>
+    <a class="sb-link" href="ch21.html"><span class="num">21</span><span>字符串算法</span></a>
+    <a class="sb-link" href="ch22.html"><span class="num">22</span><span>最短路 / 最小生成树</span></a>
+    <a class="sb-link" href="ch23.html"><span class="num">23</span><span>DP 高阶</span></a>
+    <a class="sb-link active" href="ch24.html"><span class="num">24</span><span>进阶速览</span></a>
+    <div class="sb-sub">
+      <a href="#s1">24.1 单调队列：滑动窗口最大值（困难）</a>
+      <a href="#s2">24.2 LRU 缓存：哈希表 + 双向链表（中等）</a>
+      <a href="#s3">24.3 LFU 缓存思路（困难，选学）</a>
+      <a href="#s4">24.4 链表随机节点：蓄水池抽样（中等）</a>
+      <a href="#s5">24.5 树状数组与线段树是什么（概念）</a>
+      <a href="#s6">24.6 本专题常见坑</a>
+      <a href="#s7">24.7 自测题</a>
+    </div>
+  </div>
+  <div class="sb-group">
+    <div class="sb-title">附录</div>
+    <a class="sb-link" href="appendix.html"><span class="num">A</span><span>附录 · 速查 / 路线</span></a>
+  </div>
+</aside>
+
+<main class="main">
+
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 专题 24</div>
+  <h1><span class="ch-tag">专题 24</span>进阶速览：单调队列、设计题与抽样</h1>
+  <p class="lead">这是进阶卷的最后一站，我们快速过几类「面试常客但自成体系」的考点。它们不像前面那样能塞进某个大主题，但几乎每场面试都可能冒出来：
+  <strong>单调队列</strong>（滑动窗口最大值的 O(n) 解法，是 <a href="ch03.html#s1">专题 03</a> 滑窗的近亲）、<strong>设计题</strong>（LRU / LFU 缓存，考你数据结构组合能力）、<strong>蓄水池抽样</strong>（长度未知的流式数据等概率抽样）。
+  末尾再给你一个「树状数组与线段树」的概念速览——这是竞赛向的提速武器，面试只要知道它解决什么即可。本章以「速览 + 可直接提交的模板」为主，帮你把工具箱补齐。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">掌握单调队列、LRU、蓄水池抽样</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">专题 03 滑窗、专题 06 单调栈、链表基础</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">239 / 146 / 382 完整代码 + 概念卡</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">8–10 小时</div></div>
+</div>
+
+<hr>
+
+<h2 id="s1"><span class="h2-num">24.1</span>单调队列：滑动窗口最大值（困难，力扣 239）</h2>
+
+<p><span class="pill purple">困难</span> <span class="pill">核心：Deque 存下标 · 候选集淘汰</span></p>
+
+<p><strong>题意：</strong>给你一个数组 <code>nums</code> 和窗口大小 <code>k</code>，窗口从最左滑到最右，求<strong>每个窗口里的最大值</strong>，返回数组。<strong>例：</strong><code>nums=[1,3,-1,-3,5,3,6,7], k=3</code> → 各窗口最大为 <code>[3,3,5,5,6,7]</code>。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，暴力与 naive 滑窗的代价。</strong>每滑一次重新找最大是 O(k)，总 O(nk)。能不能每个元素只处理一次？关键是维护一个「<strong>当前窗口候选最大值集合</strong>」。</p>
+
+<p><strong>第二步，核心直觉——「候选集淘汰」。</strong>用双端队列 <code>Deque</code> 存<strong>下标</strong>（必须存下标，才能判断它是否滑出窗口），且保持队列里<strong>下标对应的数值从队头到队尾严格递减</strong>（队头永远是当前窗口最大）。</p>
+
+<p><strong>第三步，入队时从队尾淘汰。</strong>当新元素 <code>nums[i]</code> 要进窗口，它<strong>比队尾元素大</strong>时，队尾那些元素「这辈子都不可能再成为最大值了」——因为 <code>nums[i]</code> 更晚进、也更晚出，只要它还在窗口，队尾那些更小的就永远被压着。所以<strong>从队尾不断弹出比 <code>nums[i]</code> 小的</strong>，再把 <code>i</code> 压入。这样队头始终是最大值。</p>
+
+<p><strong>第四步，出队头判过期。</strong>每步检查队头下标是否 <code>&le; i - k</code>（已滑出左边界），是则弹出。窗口形成后（<code>i >= k-1</code>），队头就是当前窗口最大值，记录。</p>
+
+<p><strong>第五步，与单调栈对比（承接 <a href="ch06.html#s1">专题 06</a>）。</strong>单调<em>栈</em>是「只从栈顶进、只从栈顶出」（处理「下一个更大元素」）；单调<em>队列</em>是「从队尾进、队头队尾都能出」（队头出是因为过期、队尾出是因为被淘汰）。<strong>一个只进不出端不同</strong>，用途也不同。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    <span class="kw">public</span> <span class="kw">int</span>[] maxSlidingWindow(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+        <span class="kw">int</span> n = nums.length;
+        <span class="kw">int</span>[] ans = <span class="kw">new</span> <span class="kw">int</span>[n - k + 1];
+        Deque&lt;Integer&gt; dq = <span class="kw">new</span> ArrayDeque&lt;&gt;();   <span class="cm">// 存下标，队头=当前最大</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) {
+            <span class="cm">// ① 队尾淘汰：弹出所有比 nums[i] 小的（它们永无出头之日）</span>
+            <span class="kw">while</span> (!dq.isEmpty() &amp;&amp; nums[dq.peekLast()] &lt;= nums[i]) {
+                dq.pollLast();
+            }
+            dq.offerLast(i);                       <span class="cm">// ② 下标入队尾</span>
+            <span class="cm">// ③ 队头过期就弹出（滑出窗口左边界）</span>
+            <span class="kw">if</span> (dq.peekFirst() &lt;= i - k) {
+                dq.pollFirst();
+            }
+            <span class="cm">// ④ 窗口形成后，队头即当前窗口最大值</span>
+            <span class="kw">if</span> (i &gt;= k - 1) {
+                ans[i - k + 1] = nums[dq.peekFirst()];
+            }
+        }
+        <span class="kw">return</span> ans;
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(n) 时间（每个下标最多入队一次、出队一次），O(k) 空间（队列长度不超过窗口）。把 O(nk) 压到 O(n)，是单调队列的招牌应用。</p>
+
+<div class="tip">
+  <strong>存下标不存值：</strong>队列里必须存<strong>下标</strong>而非数值，否则无法判断「队头元素是否已经滑出窗口」。这是单调队列题的第一铁律（见 <a href="ch24.html#s6">24.6 节</a>坑一）。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>队列的最大值（剑指 Offer 59-II，简单）</strong>——单调队列的简化版；差异在<strong>动态 push/pop 而非固定窗口</strong>（提示：维护一个递减双端队列，push 时从队尾淘汰小的，pop 时若弹出的是队头则同步出队）。</li>
+    <li><strong>和至少为 K 的最短子数组（力扣 862，困难）</strong>——前缀和 + 单调队列；差异在<strong>找最小长度使区间和 ≥K</strong>（提示：维护前缀和的递增队列，对每个 j 找最小的 i 使 <code>pre[j]-pre[i]≥K</code>，即队头尽可能小）。</li>
+    <li><strong>绝对差不超过限制的最长连续子数组（力扣 1438，中等）</strong>——两个单调队列；差异在<strong>同时维护窗口最大和最小</strong>（提示：一个递减队列存最大、一个递增队列存最小，二者差 >limit 就缩左边界）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">24.2</span>LRU 缓存：哈希表 + 双向链表（中等，力扣 146）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：HashMap + 自制双向链表</span></p>
+
+<p><strong>题意：</strong>设计一个数据结构，支持：<code>get(key)</code> 取值（不存在返回 -1）、<code>put(key, value)</code> 写入；容量满时<strong>淘汰最久没用过</strong>的（LRU = Least Recently Used）。两个操作都要 O(1)。<strong>例：</strong>容量 2，依次 <code>put(1,1), put(2,2), get(1), put(3,3)</code> → 此时淘汰 key2（最久未用），再 <code>get(2)</code> 返回 -1。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，为什么单向链表不够。</strong>要 O(1) 删除「任意节点」（比如某个 key 被访问后要从原位置摘下、移到头部），需要知道它的<strong>前驱</strong>。单向链表找前驱要遍历，破坏 O(1)。所以必须用<strong>双向链表</strong>：每个节点有 prev/next，删除/插入都 O(1)。</p>
+
+<p><strong>第二步，组合两个结构。</strong><code>HashMap&lt;key, Node&gt;</code> 负责<strong>按 key 秒查节点</strong>（O(1) 定位）；双向链表负责<strong>维护使用顺序</strong>——最近用的放<strong>头部</strong>，最久未用的在<strong>尾部</strong>。淘汰时删尾节点，并从 map 移除。</p>
+
+<p><strong>第三步，哨兵节点简化边界。</strong>链表头尾各放一个「 dummy 哨兵」（head、tail），这样真正的元素永远在中间，<code>addToHead</code> / <code>removeNode</code> 不用特判空指针，代码干净很多。</p>
+
+<p><strong>第四步，get / put 的套路。</strong>
+<code>get</code>：map 查到 → 把节点<strong>移到头部</strong>（删原位置 + 加到头）并返回值；查不到返回 -1。
+<code>put</code>：若 key 已存在 → <strong>更新值并移到头部</strong>（注意不是新增！见坑）；若不存在 → 新建节点加到头部，map 放入；若超容量 → <strong>删尾部节点</strong>并从 map 移除。</p>
+
+<h3>参考代码（完整可提交）</h3>
+
+<pre><code><span class="kw">class</span> LRUCache {
+    <span class="cm">// 双向链表节点</span>
+    <span class="kw">class</span> Node {
+        <span class="kw">int</span> key, val;
+        Node prev, next;
+        Node(<span class="kw">int</span> k, <span class="kw">int</span> v) { key = k; val = v; }
+    }
+
+    <span class="kw">private</span> <span class="kw">int</span> capacity, size = 0;
+    <span class="kw">private</span> Map&lt;Integer, Node&gt; map = <span class="kw">new</span> HashMap&lt;&gt;();
+    <span class="kw">private</span> Node head, tail;               <span class="cm">// 哨兵，head 最近、tail 最久</span>
+
+    <span class="kw">public</span> LRUCache(<span class="kw">int</span> capacity) {
+        <span class="kw">this</span>.capacity = capacity;
+        head = <span class="kw">new</span> Node(0, 0); tail = <span class="kw">new</span> Node(0, 0);
+        head.next = tail; tail.prev = head; <span class="cm">// 串起两个哨兵</span>
+    }
+
+    <span class="cm">// 把节点 x 加到 head 之后（最新位置）</span>
+    <span class="kw">private</span> <span class="kw">void</span> addToHead(Node x) {
+        x.prev = head; x.next = head.next;
+        head.next.prev = x; head.next = x;
+    }
+    <span class="cm">// 从链表中摘除 x</span>
+    <span class="kw">private</span> <span class="kw">void</span> remove(Node x) {
+        x.prev.next = x.next; x.next.prev = x.prev;
+    }
+    <span class="cm">// 把已有节点移到头部（先删后加）</span>
+    <span class="kw">private</span> <span class="kw">void</span> moveToHead(Node x) {
+        remove(x); addToHead(x);
+    }
+
+    <span class="kw">public</span> <span class="kw">int</span> get(<span class="kw">int</span> key) {
+        Node x = map.get(key);
+        <span class="kw">if</span> (x == <span class="kw">null</span>) <span class="kw">return</span> -1;
+        moveToHead(x);                     <span class="cm">// 访问过 → 变最新</span>
+        <span class="kw">return</span> x.val;
+    }
+
+    <span class="kw">public</span> <span class="kw">void</span> put(<span class="kw">int</span> key, <span class="kw">int</span> value) {
+        Node x = map.get(key);
+        <span class="kw">if</span> (x != <span class="kw">null</span>) {                   <span class="cm">// 已存在：更新并移到头部（非新增！）</span>
+            x.val = value;
+            moveToHead(x);
+        } <span class="kw">else</span> {
+            Node node = <span class="kw">new</span> Node(key, value);
+            map.put(key, node);
+            addToHead(node);
+            size++;
+            <span class="kw">if</span> (size &gt; capacity) {          <span class="cm">// 超容量：淘汰最久（尾前节点）</span>
+                Node old = tail.prev;
+                remove(old);
+                map.remove(old.key);
+                size--;
+            }
+        }
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>get / put 均 O(1)（哈希定位 + 链表常数操作），空间 O(capacity)。这是面试设计题的标杆模板。</p>
+
+<div class="tip">
+  <strong>边界自查：</strong>① 容量为 1 时，put 新 key 会先淘汰再插入，始终只剩一个。② <code>get</code> 不存在返回 -1 且<strong>不</strong>改变顺序。③ <code>put</code> 已存在的 key 只是更新 + 移到头，<strong>size 不增、不触发淘汰</strong>（常见错：重复计数导致误淘汰）。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>常数时间插入、删除和获取随机元素（力扣 380，中等）</strong>——哈希 + 数组组合；差异在<strong>还要 O(1) 随机返回</strong>（提示：用 <code>ArrayList</code> 存值、<code>HashMap</code> 记值→下标，删除时与末尾交换再删，保证随机均匀）。</li>
+    <li><strong>全 O(1) 的数据流（力扣 432，困难）</strong>——LRU 的升级；差异在<strong>支持插入/删除任意值、查最大频率</strong>（提示：双向链表存 (值, 频次) 节点，配合 map 定位，逻辑同 LRU 但操作更杂）。</li>
+    <li><strong>LFU 缓存（力扣 460，困难，选学）</strong>——见 <a href="ch24.html#s3">24.3 节</a>，在 LRU 基础上再按「使用频率」分层。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">24.3</span>LFU 缓存思路（困难，力扣 460，选学）</h2>
+
+<p><span class="pill purple">困难</span> <span class="pill">核心：频率桶 + 每桶内 LRU</span> <span class="pill">选学</span></p>
+
+<p><strong>它解决什么：</strong>LRU 淘汰「最久没用」的；LFU（Least Frequently Used）淘汰「<strong>使用次数最少</strong>」的——若多个都用得少，再比谁更久没用。适用于「热点数据应常驻」的场景。</p>
+
+<h3>设计骨架（不给完整实现）</h3>
+
+<p>关键难点是既要按频率分层、又要同频内按时间排序，且所有操作 O(1)。经典骨架：</p>
+<ul>
+  <li><strong>频率桶：</strong>用一个 <code>Map&lt;freq, 双向链表&gt;</code>，每个频率值对应一个<strong>双向链表</strong>，链表内按 LRU 顺序（头新尾旧）排该频率下的 key；</li>
+  <li><strong>每个 key 的记录：</strong><code>Map&lt;key, (value, freq)&gt;</code> 存值与当前频率；</li>
+  <li><strong>minFreq 维护：</strong>单独记录「当前最小频率」，淘汰时直接去 <code>minFreq</code> 对应的链表<strong>删尾节点</strong>（最久未用且频率最低）。get/put 命中后把节点从旧频率桶移到新频率桶头部，若旧桶空且恰是 minFreq 则 minFreq++。</li>
+</ul>
+
+<div class="tip">
+  <strong>选学定位：</strong>LFU 的完整实现细节多、易错（频率桶的增删、minFreq 的更新、同频 LRU），面试中直接让写 LFU 的题较少，且常允许先讲思路。能说出「<em>频率桶 + 桶内双向链表 + 维护 minFreq</em>」三件套即可得分，不必背完整代码。
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">24.4</span>链表随机节点：蓄水池抽样（中等，力扣 382）</h2>
+
+<p><span class="pill orange">中等</span> <span class="pill">核心：第 i 个以 1/i 概率替换</span></p>
+
+<p><strong>题意：</strong>给一个单向链表（长度未知、可能极大，不允许先遍历计数再随机），要求实现 <code>getRandom()</code>：<strong>等概率</strong>返回链表中的任一节点值。多次调用，每个节点被返回的概率相同。</p>
+
+<h3>思路推导</h3>
+
+<p><strong>第一步，为什么不能直接随机下标。</strong>单向链表不能 O(1) 按 index 取，且题目常隐含「数据流式到来、总长度未知或太大」。必须先遍历一遍才能知道长度，但那样 <code>getRandom</code> 每次都要重遍历，太慢；若数据无限流更不可能。</p>
+
+<p><strong>第二步，蓄水池抽样思想——边走边定。</strong>只遍历<strong>一次</strong>，一边走一边维护「当前候选」。规则：</p>
+<ul>
+  <li>第 1 个节点，直接选它（概率 1）；</li>
+  <li>第 2 个节点，以 <code>1/2</code> 的概率替换候选；</li>
+  <li>第 3 个节点，以 <code>1/3</code> 的概率替换候选；</li>
+  <li>……第 i 个节点，以 <code>1/i</code> 的概率替换候选。</li>
+</ul>
+
+<p><strong>第三步，为什么这样能保证等概率（一句话直觉）。</strong>每个节点「最终存活」的概率 = 「它被选入的概率」×「之后所有节点都没把它换掉的概率」= <code>(1/i) × (i/(i+1)) × ((i+1)/(i+2)) × … × ((n-1)/n) = 1/n</code>。望远镜式约分后，每个节点恰好 <code>1/n</code>。妙在<strong>不需要事先知道 n</strong>。</p>
+
+<p><strong>第四步，循环从 i=1 还是 i=0。</strong>若用「已遍历计数 cnt」，第一个节点 cnt=1 概率 1/1 直接选；之后 cnt 递增，第 cnt 个以 1/cnt 替换。注意 <code>cnt</code> 从 1 开始（不是 0），否则会出现除以 0 或概率错（见 <a href="ch24.html#s6">24.6 节</a>坑三）。</p>
+
+<h3>参考代码</h3>
+
+<pre><code><span class="kw">class</span> Solution {
+    ListNode head;
+    Random rand = <span class="kw">new</span> Random();
+
+    <span class="kw">public</span> Solution(ListNode head) { <span class="kw">this</span>.head = head; }
+
+    <span class="kw">public</span> <span class="kw">int</span> getRandom() {
+        <span class="kw">int</span> ans = 0;                  <span class="cm">// 当前候选值</span>
+        <span class="kw">int</span> cnt = 0;                  <span class="cm">// 已遍历节点数（从 1 开始）</span>
+        ListNode p = head;
+        <span class="kw">while</span> (p != <span class="kw">null</span>) {
+            cnt++;                    <span class="cm">// 第 cnt 个节点</span>
+            <span class="cm">// 以 1/cnt 的概率把候选替换为当前节点</span>
+            <span class="kw">if</span> (rand.nextInt(cnt) == 0) {   <span class="cm">// 等价于 Math.random() &lt; 1.0/cnt</span>
+                ans = p.val;
+            }
+            p = p.next;
+        }
+        <span class="kw">return</span> ans;
+    }
+}</code></pre>
+
+<h3>复杂度</h3>
+
+<p>O(n) 时间（每次 getRandom 遍历一遍链表），O(1) 额外空间。代价是每次调用都走一遍，但换来了「不依赖总长、等概率」的能力，是流式抽样的标配。</p>
+
+<div class="tip">
+  <strong>适用场景一句话：</strong>当你面对「长度未知 / 太大不能全存 / 流式到来」的数据，又想<strong>等概率抽一个（或 k 个）</strong>，就用蓄水池抽样——它把「先数总数再随机」变成了「一次遍历边走边定」。
+</div>
+
+<div class="drill">
+  <p><strong>巩固练习</strong>（先自己想 15 分钟，卡住再看括号里的提示）</p>
+  <ul>
+    <li><strong>随机数索引（力扣 398，中等）</strong>——蓄水池的「条件版」；差异在<strong>只从等于 target 的节点里等概率抽</strong>（提示：遍历时只对值 == target 的节点做计数 cnt，第 cnt 个以 1/cnt 替换，其余节点不参与）。</li>
+    <li><strong>按权重随机选择（力扣 528，中等）</strong>——前缀和 + 二分；差异在<strong>每个元素有不同权重</strong>（提示：算权重前缀和，rand 出一个数后二分定位落在哪个区间，等价「带权抽签」）。</li>
+    <li><strong>随机点（力扣 497，中等）</strong>——二维蓄水池/前缀和；差异在<strong>矩形网格里随机选一个 1 的格子</strong>（提示：把格子拍平成一维，用前缀和记录 1 的累计数，rand 后二分定位）。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">24.5</span>树状数组与线段树是什么（概念）</h2>
+
+<p><span class="pill">核心：单点改 + 区间和</span> <span class="pill">竞赛向</span></p>
+
+<p><strong>它们解决什么：</strong>一类「动态」问题——数组会<strong>频繁单点修改</strong>，又频繁问「某段区间的和 / 最值」。朴素做法：修改 O(1) 但区间求和 O(n)，或前缀和 O(1) 查询但修改 O(n)。<strong>树状数组（Fenwick Tree）和线段树（Segment Tree）把两者都压到 O(log n)</strong>。</p>
+
+<h3>两个思想的直觉（不写实现）</h3>
+
+<p><strong>① 树状数组 = 「前缀和的分块倍增」。</strong>它不存完整前缀和，而是把下标按「二进制最低位 1 的位置」分块，每个节点管一段长度为 2ᵏ 的区间。修改时只更新「覆盖到它的几个块」，查询前缀和时把「几个不重叠的块」拼起来，都是沿着 lowbit 跳转，O(log n)。<strong>优点：代码极短、常数小；缺点：主要擅长「前缀和 / 单点改」，区间最值不自然。</strong></p>
+
+<p><strong>② 线段树 = 「区间的二分树」。</strong>把区间 <code>[1, n]</code> 不断对半拆成左右子区间，建成一棵二叉树，每个节点存对应区间的聚合值（和 / 最大 / 最小皆可）。修改和查询都沿树下钻到 O(log n) 个节点。<strong>优点：通用，区间最值、区间修改都能做；缺点：代码比树状数组长。</strong></p>
+
+<h3>怎么选、面试到什么程度</h3>
+
+<table>
+  <thead><tr><th style="width:160px">场景</th><th style="width:200px">推荐</th><th>理由</th></tr></thead>
+  <tbody>
+    <tr><td>单点改 + 前缀/区间和</td><td>树状数组</td><td>代码短、常数小</td></tr>
+    <tr><td>区间改 / 区间最值 / 更复杂聚合</td><td>线段树</td><td>通用性强</td></tr>
+    <tr><td>面试</td><td>知道概念即可</td><td>多数面试不要求默写建树，能说清「解决单点改+区间查询、O(log n)」即可</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>面试够用版本：</strong>能说出——「当数组既要频繁单点修改、又要频繁区间求和/最值时，朴素法顾此失彼；树状数组和线段树都能把修改和查询都做到 O(log n)。树状数组靠 lowbit 分块、代码短；线段树是区间二分树、更通用。」<strong>不要求写实现</strong>，知道它是什么、解决什么，就是合格的面试回答。
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">24.6</span>本专题常见坑</h2>
+
+<div class="pit">
+  <ul>
+    <li><strong>坑一：单调队列存值忘存下标。</strong>只存数值无法判断队头是否已滑出窗口，导致返回过期的旧最大值。务必存<strong>下标</strong>，用 <code>dq.peekFirst() &le; i - k</code> 判过期（见 <a href="ch24.html#s1">24.1 节</a>）。</li>
+    <li><strong>坑二：LRU 的 put 已存在 key 时忘更新并移到头部。</strong>常见两种错：① 当成新增，size 重复 +1 触发误淘汰；② 只更新值却没 <code>moveToHead</code>，破坏「最近使用」语义。正确做法是「更新 val + 移到头部」，size 不变。</li>
+    <li><strong>坑三：蓄水池抽样循环从 i=0 还是 i=1。</strong>计数 cnt 必须从 1 开始（第一个节点概率 1/1 直接选），若从 0 开始会出现 <code>rand.nextInt(0)</code> 报错或概率分母错。记住「第 cnt 个以 1/cnt 替换，cnt 从 1 起」。</li>
+    <li><strong>坑四：LFU 忘维护 minFreq。</strong>淘汰时要知道当前最小频率在哪，若只维护频率桶却不跟踪 minFreq，淘汰时得全桶扫描退化为 O(n)。minFreq 在节点频率升档、旧桶变空时需同步更新。</li>
+    <li><strong>坑五：单调队列的「等于」是否弹出。</strong>求最大值时，<code>nums[dq.peekLast()] &lt;= nums[i]</code> 的等于号通常要弹（相同值留新的更晚过期更优）；但若题目要求「严格递减去重」则改 <code>&lt;</code>。看清题目对相等元素的处理。</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">24.7</span>自测题</h2>
+
+<div class="qa">
+  <p class="qa-q">Q1.【动手题】用单调队列求滑动窗口最大值，当 nums=[1,3,-1,-3,5,3,6,7], k=3 时，写出队列在 i=0,1,2,3 各步后的内容（存的是下标），并指出每次记录的窗口最大值。</p>
+  <div class="qa-a">i=0: 队[0]，窗未成；i=1: 弹0(3&le;3)入1，队[1]，窗未成；i=2: 入2(-1≤3留)，队[1,2]，i≥2记队头nums[1]=3；i=3: 弹2(-3≤-3)入3，队[1,3]，记nums[1]=3。后续 i=4 队头1过期弹出入4记5；i=5 入5(3≤5弹3)队[4,5]记5；i=6 弹5入6记6；i=7 队[6,7]记7。结果 [3,3,5,5,6,7]。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q2. 为什么 LRU 缓存必须用双向链表而不是单向链表？</p>
+  <div class="qa-a">因为 O(1) 删除「任意被访问的节点」需要知道它的<strong>前驱</strong>。单向链表找前驱要 O(n) 遍历，破坏 O(1) 要求；双向链表每个节点有 prev/next，删除和头尾插入都是常数时间，配合 HashMap 定位才能实现 get/put 全 O(1)。</div>
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q3. 蓄水池抽样为什么不需要事先知道数据总长度 n？给出每个节点最终被选中的概率推导。</p>
+  <div class="qa-a">因为它边遍历边以 <code>1/i</code> 概率替换候选，不用先数总数。节点 i 最终存活概率 = 被选入(1/i) × 之后都没被换掉 = (1/i)×(i/(i+1))×…×((n-1)/n) = 1/n，望远镜约分后每个节点恰为 1/n，与先知道 n 再随机等价。</div>
+</div>
+
+<div class="goal">学完这章，你应该能回答：① 单调队列如何用「队尾淘汰 + 队头判过期」在 O(n) 内求窗口最大值，并与单调栈区分？② 手写 LRU（HashMap + 双向链表 + 哨兵）并保证 get/put 全 O(1)？③ 用蓄水池抽样在长度未知时等概率抽一个？④（选学）说出 LFU 与树状数组/线段树分别解决什么、到什么程度够面试。</div>
+
+<div class="navfoot">
+  <a href="ch23.html"><div class="dir-label">← 上一节</div><div class="dir-name">专题 23 · 动态规划高阶：区间、树形与状态压缩</div></a>
+  <a class="next" href="appendix.html"><div class="dir-label">下一节 →</div><div class="dir-name">附录 · 模板速查、API 速查与 90 天路线</div></a>
+</div>
+
+<div class="footer">力扣算法解析 · 专题 24 · <span class="ver">内容版本 2026-09-28 16:30</span></div>
+
+</main>
+</div>
+
+<script src="../assets/app.js"></script>
+</body>
+</html>

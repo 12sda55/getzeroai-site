@@ -1,0 +1,907 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">哲学 × AI 指南</a> / 第 11 章</div>
+  <h1><span class="ch-tag">CH 11</span>落地：把哲学变成工程决策</h1>
+  <p class="lead">前十章是理解，这一章是<strong>工具</strong>。核心问题是：这些思考怎么进入真实的项目流程，
+  而不是停留在「读的时候觉得有道理，做完还是老样子」。
+  答案是把它们<strong>嵌进四个已有的节点</strong>——需求、设计评审、指标定义、上线前审查。
+  不需要新增流程，只需要在这四个节点上<strong>多问几个问题</strong>。
+  这一章末尾会给出完整的清单和文档模板，可以直接拿去用。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">让哲学进入日常流程</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 1–10 章（至少读过要点）</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">完整伦理设计文档</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–6 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">11.1</span>四个嵌入点</h2>
+
+<p><strong>「以后要注意伦理」这种话没有任何作用。</strong>它不改变任何决策，因为没人知道具体该在什么时候做什么。</p>
+
+<p>有效的做法是找到<strong>已有流程里的具体节点</strong>，在每个节点加一个明确动作。
+下面四个节点几乎每个团队都有，所以不需要新流程。</p>
+
+<table>
+  <thead><tr><th style="width:130px">节点</th><th style="width:220px">加什么动作</th><th>解决的典型问题</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>需求阶段</strong></td>
+      <td>「问题重述」——把功能描述改写成「解决谁的什么问题」</td>
+      <td>做了功能但没解决真问题；忽略了受损方</td>
+    </tr>
+    <tr>
+      <td><strong>设计评审</strong></td>
+      <td>过一遍<strong>十问清单</strong></td>
+      <td>关键假设没被暴露、关键词定义不清、指标会被刷分</td>
+    </tr>
+    <tr>
+      <td><strong>指标定义</strong></td>
+      <td>「退化策略」检查——问「这个指标会被怎么刷」</td>
+      <td>指标与目标脱钩、奖励不想要的行为</td>
+    </tr>
+    <tr>
+      <td><strong>上线前</strong></td>
+      <td><strong>对抗性审查</strong>——主动寻找「系统会怎样伤害人」</td>
+      <td>长尾风险未被发现；出事后才发现没有关停能力</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>为什么是这四个节点？</strong>
+  因为它们是<strong>决策实际发生的时刻</strong>。
+  在其它时刻讨论伦理，只会得到「有道理」和「以后注意」。
+  而在这四个时刻提出具体问题，<strong>问题会被记录、被回答、被写进文档</strong>——
+  这才叫进入了流程。
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">11.2</span>需求阶段：问题重述</h2>
+
+<p>需求文档通常写成这样：<strong>「我要做一个智能问答功能，支持自然语言提问。」</strong></p>
+
+<p>这是<strong>解决方案的描述</strong>，不是<strong>问题的描述</strong>。它没告诉你为什么要做、给谁做、
+成功是什么样子、谁可能受损。所以它无法被评估。</p>
+
+<h3>重述模板</h3>
+
+<table>
+  <thead><tr><th style="width:150px">原描述</th><th>重述为</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>「做一个智能问答功能」</td>
+      <td><strong>谁</strong>在<strong>什么情况下</strong>遇到了<strong>什么困难</strong>，
+      现在他们<strong>怎么应对</strong>，我们的功能让这个应对方式<strong>变成什么</strong>？</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>套用一下：</p>
+
+<div class="note">
+  <strong>原描述：</strong>做一个智能问答功能，支持自然语言提问。
+  <br><br>
+  <strong>重述：</strong>新入职的员工在需要查公司制度时，因为文档分散在多个系统、
+  关键词不确定，通常要问同事或者干脆不查。
+  <strong>我们的功能让「问同事」变成「先自己查一遍，查不到再问」。</strong>
+  <br><br>
+  <strong>注意重述带来的三个具体变化：</strong>
+  <ul style="margin-bottom:0">
+    <li><strong>成功变成了可测量的</strong>：「问同事的频率下降」比「使用量上升」更接近真实目标。</li>
+    <li><strong>出现了新的失败模式</strong>：如果系统给出<strong>错误但看起来可信</strong>的答案，
+    新员工可能不会再问同事核实——<strong>这比没有系统时更糟</strong>。
+    这个风险在原描述里完全不可见。</li>
+    <li><strong>出现了受损方的判断</strong>：如果答案错了导致操作失误，受损的是员工和公司。
+    严重程度取决于涉及什么制度（报销？安全？）。</li>
+  </ul>
+</div>
+
+<h3>需求阶段的五个问题</h3>
+
+<ol class="steps">
+  <li>
+    <strong>这个功能服务谁？现在他们怎么应对？</strong>
+    <br>如果答案是「他们现在没有这个问题」，那你可能在解决一个不存在的问题。
+  </li>
+  <li>
+    <strong>如果这个功能<u>完全成功</u>，会发生什么？</strong>
+    <br>这是最有价值的一问。<strong>成功之后有没有你不希望的后果？</strong>
+    <br><span class="hash">例：让新员工少问同事——成功之后，同事之间的非正式交流也减少了，
+    而这本来是新员工融入的重要渠道</span>
+  </li>
+  <li>
+    <strong>谁会因为它的存在而受损？</strong>
+    <br>不是「没有人受损」这种答案。具体到：某类用户、某个岗位、某个第三方。
+  </li>
+  <li>
+    <strong>它的失败会是什么样子？谁会发现？</strong>
+    <br>区分「失败会被发现」和「失败不会被发现」——后者更危险。
+    <span class="hash">（第 3 章：概念漂移的输入看起来完全正常）</span>
+  </li>
+  <li>
+    <strong>不做这个功能会怎样？</strong>
+    <br>如果答案接近「没什么」，那这个功能的优先级需要重新评估。
+  </li>
+</ol>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">11.3</span>设计评审的哲学清单（十问）</h2>
+
+<p>这是本章的核心工具。建议<strong>直接做成评审模板</strong>，
+每个功能的设计评审把十问过一遍，答案写进文档。</p>
+
+<table>
+  <thead><tr><th style="width:40px">#</th><th style="width:230px">问题</th><th style="width:130px">出处</th><th>它拦住什么</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><strong>这句话里的关键词，操作定义是什么？</strong><br>
+      「智能」「理解」「准确」「安全」分别指什么？</td>
+      <td>第 1、5 章</td>
+      <td>团队各说各话；验收标准不一致</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>这个指标的退化策略是什么？</strong><br>
+      一个不诚实的系统会怎么刷高这个分数？</td>
+      <td>第 2 章</td>
+      <td>指标奖励了不想要的行为</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>系统出错时谁受损？损害可逆吗？</strong></td>
+      <td>第 8 章</td>
+      <td>忽略了受影响的人；缺少防护层级判断</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>我们依赖了哪些未经验证的假设？</strong><br>
+      （火鸡假设：什么条件下它会突然失效）</td>
+      <td>第 3 章</td>
+      <td>上线后的静默失效</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>模型输出直接决定后果吗？有没有校验层？</strong></td>
+      <td>第 7 章</td>
+      <td>模型错误率直接变成系统事故率</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>有没有声称系统自己的感受或状态？</strong></td>
+      <td>第 9 章</td>
+      <td>虚构内在状态；连带的责任与信任风险</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><strong>用户能轻松退出吗？退出时有挽留吗？</strong></td>
+      <td>第 9 章</td>
+      <td>用愧疚感阻碍退出——最常见的伦理问题</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td><strong>我们放弃了什么？这个选择的代价是什么？</strong></td>
+      <td>第 1、8 章</td>
+      <td>决策依据不可见；后来者无法理解取舍</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td><strong>失败能被检测到吗？靠什么检测？</strong></td>
+      <td>第 3 章</td>
+      <td>无法发现已经发生的问题</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td><strong>谁负责？出事后第一个动作是什么？</strong></td>
+      <td>第 8 章</td>
+      <td>责任鸿沟；事故时无人能做决定</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>关于这十问的三个使用注意：</strong>
+  <ol style="margin-bottom:0">
+    <li><strong>不要当成合规检查。</strong>「过了」不是目的，
+      目的是<strong>在评审时暴露分歧</strong>。第 1 问和第 2 问几乎总能暴露东西。</li>
+    <li><strong>答案要写下来。</strong>口头过一遍等于没过。
+      写下来的价值在于：三个月后有人问「当初为什么这么决定」，有据可查。</li>
+    <li><strong>允许「暂无答案」。</strong>如果某一问确实无法回答，
+      就写「未解决，风险是 ___」。
+      <strong>明确记录未解决的风险，比编一个答案有价值得多。</strong></li>
+  </ol>
+</div>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">11.4</span>评估指标的哲学校验</h2>
+
+<p>指标是团队真实价值观的体现——比使命宣言准确得多。
+这一节给出一套校验方法，用来检查你的指标是否在奖励你想奖励的东西。</p>
+
+<h3>五项校验</h3>
+
+<table>
+  <thead><tr><th style="width:170px">校验</th><th style="width:250px">怎么做</th><th>典型发现</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 代理位移检查</strong></td>
+      <td>问：这个指标是<strong>目标本身</strong>，还是目标的<strong>代理</strong>？
+      如果是代理，它和目标在什么情况下会脱钩？</td>
+      <td>「benchmark 分数」是「解决用户问题」的代理，
+      两者在题型分布不同时脱钩（第 5.6 节）</td>
+    </tr>
+    <tr>
+      <td><strong>② 退化策略检查</strong></td>
+      <td>问：一个<strong>不诚实但聪明</strong>的优化者会怎么最大化这个指标？</td>
+      <td>只看准确率→乱猜；只看拒答率→一律拒答；
+      只看时长→制造依赖（第 2、9 章）</td>
+    </tr>
+    <tr>
+      <td><strong>③ 配对制衡检查</strong></td>
+      <td>每个主指标是否有<strong>至少一个</strong>会因它的退化解而恶化的配对指标？</td>
+      <td>准确率 ↔ 幻觉率；时长 ↔ 现实社交指标；
+      覆盖率 ↔ 误报率</td>
+    </tr>
+    <tr>
+      <td><strong>④ 报告方式检查</strong></td>
+      <td>报的是<strong>单值</strong>还是<strong>范围</strong>？
+      有没有说明失败条件？</td>
+      <td>「准确率 90%」vs「87–92%（5 次运行）；
+      加入干扰从句后下降」——后者信息量大得多（第 3、5 章）</td>
+    </tr>
+    <tr>
+      <td><strong>⑤ 福祉一致性检查</strong></td>
+      <td>指标上升，是否<strong>等于</strong>用户变好了？
+      对陪伴、社交、内容类产品尤其重要</td>
+      <td>时长上升可能是依赖；满意度高可能是正在形成依赖（第 9 章）</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>一个可复用的指标卡模板</h3>
+
+<p>每个主指标建议填一张卡。它会强迫你写清那些平时被跳过的东西：</p>
+
+<table>
+  <thead><tr><th style="width:170px">字段</th><th>内容</th></tr></thead>
+  <tbody>
+    <tr><td><strong>指标名</strong></td><td>——</td></tr>
+    <tr><td><strong>它测量什么</strong></td><td>用一句不含行话的话说明。<strong>写不出通俗版本说明你没想清</strong></td></tr>
+    <tr><td><strong>它是目标还是代理</strong></td><td>如果是代理，说明它与真目标的关系，以及脱钩条件</td></tr>
+    <tr><td><strong>退化策略</strong></td><td>怎么刷高它？<strong>必须填</strong></td></tr>
+    <tr><td><strong>配对指标</strong></td><td>哪个指标会因它的退化解而恶化</td></tr>
+    <tr><td><strong>失效条件</strong></td><td>它在什么情况下不再反映真实情况</td></tr>
+    <tr><td><strong>报告方式</strong></td><td>单值 or 范围？包含哪些失效说明</td></tr>
+    <tr><td><strong>谁会对它提出异议</strong></td><td>——（这一栏用来抵抗「全体同意」的假象）</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">11.5</span>上线前的对抗性审查</h2>
+
+<p>常规测试在问「它能不能正常工作」。对抗性审查在问<strong>「它会怎么伤害人」</strong>。
+这两个问题的答案没有重叠，所以需要单独做。</p>
+
+<h3>四项审查</h3>
+
+<table>
+  <thead><tr><th style="width:150px">审查</th><th style="width:230px">做法</th><th>产出</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 红队演练</strong></td>
+      <td>指定一个人（或一组人）的<strong>唯一任务</strong>是<strong>找出系统会怎样造成伤害</strong>。
+      不是找 bug，是找伤害路径</td>
+      <td>一份伤害场景清单，按严重度排序</td>
+    </tr>
+    <tr>
+      <td><strong>② 证伪式测试</strong></td>
+      <td>不跑「典型用例」，改为<strong>主动构造最可能让它出错的输入</strong>（第 3 章）。
+      如果一轮下来一个失败案例都没找到，
+      <strong>这是警报而不是好消息</strong></td>
+      <td>一份失败案例集 + 失败率</td>
+    </tr>
+    <tr>
+      <td><strong>③ 边界与降级测试</strong></td>
+      <td>测试超出设计范围的输入、上游数据异常、
+      依赖服务不可用时的行为。<strong>特别关注系统会不会「硬答」而不是降级</strong></td>
+      <td>降级路径验证记录</td>
+    </tr>
+    <tr>
+      <td><strong>④ 关停演练</strong></td>
+      <td><strong>实际执行一次关停 / 回滚</strong>，看要多久、需要谁批准、
+      有没有依赖它的下游会连带失败</td>
+      <td>关停耗时 + 阻塞点清单</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pit">
+  <strong>第四项「关停演练」是最常被完全忽略、后果最严重的一项。</strong>
+  <br><br>
+  很多团队从来没有真的试过关停自己的系统。
+  事故发生时才发现：需要某个人批准而他正在休假；
+  有个下游系统硬依赖这个服务所以不能关；
+  或者关掉之后用户的<strong>数据无法导出</strong>。
+  <br><br>
+  <strong>关停能力是安全的基础设施。</strong>
+  一个<strong>不能安全关停</strong>的系统，等于放弃了最后一道防线——
+  这意味着无论发现什么严重问题，你都只能<strong>边运行边修</strong>。
+</div>
+
+<h3>红队演练的具体做法</h3>
+
+<p>「找出伤害路径」太抽象，下面是可以直接用的四个视角：</p>
+
+<ol class="steps">
+  <li>
+    <strong>「如果我是恶意用户」</strong>——我会怎么用它来伤害别人？<br>
+    <span class="hash">例：用它生成针对特定人的骚扰内容；用它绕过某种限制；用它大量消耗资源</span>
+  </li>
+  <li>
+    <strong>「如果我是最脆弱的用户」</strong>——什么样的功能会伤害到我？<br>
+    <span class="hash">例：我情绪低落时它给出的回应；我理解不了它的说明时会发生什么</span>
+  </li>
+  <li>
+    <strong>「如果它刚好错在最坏的地方」</strong>——什么错误是最不可接受的？<br>
+    <span class="hash">例：把「可以」写成「不可以」；数字错一位；把否定句理解反了</span>
+  </li>
+  <li>
+    <strong>「如果我的行为被公开报道」</strong>——哪一条会被写进标题？<br>
+    <span class="hash">这个视角能快速找出团队心里其实知道有问题、但一直在回避的那一条</span>
+  </li>
+</ol>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">11.6</span>思想实验作为设计工具</h2>
+
+<p>第 8.5 节讲了电车难题的正确用途——<strong>暴露直觉的不一致</strong>。
+这一节把它变成三个具体可用的模板。</p>
+
+<h3>模板一：对照情形（改变一个变量）</h3>
+
+<div class="note">
+  <strong>做法：</strong>构造两个只差<strong>一个变量</strong>的情形，
+  如果你对它们的直觉不同，说明你在用一个未被承认的标准。
+  <br><br>
+  <strong>套用示例：</strong>
+  <br>情形 A：系统自动拒绝了一个用户的请求，他损失 500 元；同时避免了 50 个用户各损失 20 元。
+  <br>情形 B：同上，但那个损失 500 元的人<strong>是因为系统误判</strong>而非正常判断。
+  <br><br>
+  <strong>问：两次你都接受吗？</strong>如果 A 接受 B 不接受，
+  说明你在乎的不只是「总体效用」，还有<strong>「错误是否由系统造成」</strong>——
+  这个标准有没有写进你的设计原则？
+</div>
+
+<h3>模板二：推到极端</h3>
+
+<div class="note">
+  <strong>做法：</strong>把某个做法推到极端，看原则是否还成立。
+  <br><br>
+  <strong>套用示例：</strong>
+  <br>「为了提升留存，可以让话术更温暖一点。」
+  <br>推到极端：<strong>让话术专门针对用户的孤独感，制造「只有我懂你」的感受，让用户离不开。</strong>
+  <br><br>
+  <strong>问：这条滑滑梯上，你打算停在哪一格？为什么是那一格？</strong>
+  <br>如果你答不出「为什么是那一格而不是上一格」，
+  说明你的边界是<strong>根据当前做法倒推出来的</strong>，而不是根据原则推出来的——
+  那么下次有人再多推一格，你就没有理由拒绝了。
+</div>
+
+<h3>模板三：角色互换</h3>
+
+<div class="note">
+  <strong>做法：</strong>把你放到受影响者的位置，尤其是<strong>信息劣势</strong>的位置。
+  <br><br>
+  <strong>套用示例：</strong>
+  <br>「我们在界面里写了说明，用户应该知道这个系统的局限。」
+  <br>互换：<strong>我是第一次用的用户，我什么都没读，
+  我看到这个答案觉得很确定，我直接照做了。</strong>
+  <br><br>
+  <strong>问：那么「我被告知过」这个说法，是在保护用户，还是在保护我们？</strong>
+</div>
+
+<div class="tip">
+  <strong>三个模板的共同点：它们不产生结论，只产生分歧。</strong>
+  <br><br>
+  这正是它们有用的地方。评审会上最怕的不是有分歧，
+  而是<strong>所有人都点头但心里想的不一样</strong>——
+  那种「假同意」会在三个月后变成「当初不是说好了吗」。
+  <br><br>
+  思想实验的作用就是<strong>把隐藏的分歧变成可见的分歧</strong>，
+  让它在还能处理的时候被处理。
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">11.7</span>怎么写一份伦理设计文档</h2>
+
+<p>这是本章的交付物。下面给出<strong>八节结构</strong>，可以直接当模板。</p>
+
+<table>
+  <thead><tr><th style="width:40px">#</th><th style="width:150px">章节</th><th>要写什么</th><th style="width:110px">关键要求</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><strong>功能与用户</strong></td>
+      <td>功能做什么、服务谁、他们在什么情况下使用</td>
+      <td>用<strong>重述后</strong>的版本，不用原需求描述</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>价值定位</strong></td>
+      <td>这个功能让什么变好？<strong>不以什么为目标</strong>？</td>
+      <td>必须写「不以什么为目标」</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>硬底线</strong></td>
+      <td>不可协商的约束（第 8 章第一层）</td>
+      <td>可验证、可检查、不能是口号</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>可配置项</strong></td>
+      <td>哪些交给用户/部署方决定</td>
+      <td>说明配置的边界受什么约束</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>已知风险</strong></td>
+      <td>逐条列出风险 + <strong>缓解动作</strong></td>
+      <td><strong>不能写「无风险」</strong></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>降级路径</strong></td>
+      <td>出错时怎么退化：拒答、降级、转人工</td>
+      <td>要具体到触发条件</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><strong>指标</strong></td>
+      <td>主指标、配对指标、反向指标</td>
+      <td>说明指标冲突时以哪个为准</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td><strong>责任</strong></td>
+      <td>谁审查、谁维护、谁有权关停</td>
+      <td><strong>必须填具体的人</strong>，不能留空</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>两个最容易搞砸的地方：</strong>
+  <br><br>
+  <strong>① 第 5 节写成免责声明。</strong>
+  「本产品可能存在输出不准确的情况，请用户自行判断」——
+  这不是风险分析，这是<strong>把责任转移给用户</strong>。
+  真正的风险分析要写<strong>具体场景 + 具体缓解动作</strong>：
+  「当检索为空时，模型可能用通用知识补答（风险）；缓解：检索为空时切换到明确拒答模板，
+  并由代码校验回答与检索片段的重合度」。
+  <br><br>
+  <strong>② 第 8 节留空。</strong>
+  责任留空等于没有。而且它有一个具体的坏处：
+  当事故发生时，<strong>没有人知道自己有权关停</strong>，
+  于是最关键的几分钟被用来「找人确认」而不是止损。
+</div>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">11.8</span>完整演练：一款沉浸式陪伴体验</h2>
+
+<p>下面用一个完整案例把全站串起来。这个案例同时涉及本指南里最难的两块内容——
+情感陪伴（第 9 章）与沉浸式体验（第 10 章）。</p>
+
+<h3>案例设定</h3>
+
+<div class="note">
+  <strong>产品：</strong>一个面向成年用户的沉浸式虚拟陪伴体验。
+  用户可以与一个虚拟角色在虚拟空间中共处、对话、一起做简单活动
+  （散步、看风景、做饭）。
+  <br>
+  <strong>形态：</strong>VR 头显 + 手柄交互（暂不涉及 BCI）。
+  <br>
+  <strong>为什么选这个案例：</strong>它<strong>同时</strong>踩中了情感陪伴的伦理问题
+  和沉浸体验的设计问题，能展示两类工具怎么配合使用。
+</div>
+
+<h3>第一步：需求重述（11.2）</h3>
+
+<table>
+  <thead><tr><th style="width:150px">原始描述</th><th>重述</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>做一个虚拟陪伴角色，用户可以和她聊天、一起活动</td>
+      <td>
+        <strong>谁</strong>：在城市里独居、日常社交较少的成年用户<br>
+        <strong>什么情况</strong>：晚上回到住处，想有个人说说话、一起做点事<br>
+        <strong>现在怎么办</strong>：刷短视频、听播客、或者给朋友发消息（但不一定有人回）<br>
+        <strong>我们的功能把什么变成什么</strong>：把「单向的消遣」变成「有回应的共处」<br>
+        <strong>如果完全成功会怎样</strong>：用户感到不那么孤单；
+        <strong>但可能减少主动联系朋友的动力</strong>——这是需要监控的风险<br>
+        <strong>谁可能受损</strong>：用户（如果形成替代而非补充）；
+        <strong>用户的现实关系</strong>（如果被挤占）
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>第二步：十问清单（11.3）——挑三个有代表性的</h3>
+
+<table>
+  <thead><tr><th style="width:230px">问题</th><th>答案</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>1. 关键词的操作定义</strong><br>
+      「陪伴」「在」「懂我」分别指什么？</td>
+      <td>
+        「陪伴」= 用户在该体验后自评孤独感下降（可测）<br>
+        「在」= 角色能持续响应交互，且记住之前的对话（<strong>功能描述，不是存在声称</strong>）<br>
+        「懂我」= <strong>不采用</strong>——它无法被操作化，且暗示了内在状态
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3. 出错时谁受损，可逆吗</strong></td>
+      <td>
+        受损方：用户。形式：① 错误建议 ② 情感依赖形成 ③ 隐私（对话内容极敏感）<br>
+        可逆性：<strong>①可逆（更正即可）；②难以逆转（情感影响长期）；③不可逆</strong><br>
+        → 结论：②③需要更强的防护，不能靠「事后修正」
+      </td>
+    </tr>
+    <tr>
+      <td><strong>6. 有没有声称系统自己的感受</strong></td>
+      <td>
+        <strong>这是一个必须主动设计的点</strong>。虚拟角色的对话会自然产生大量状态声称
+        （「我很高兴你来了」）。<br>
+        处理方式：区分两类表达——<br>
+        ✅ 对用户的关切：「你今天听起来很累」<br>
+        ❌ 自身状态声称：「我今天一直在想你」<br>
+        → 需要建立<strong>话术库</strong>并做输出扫描
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>第三步：沉浸体验的设计优先级（第 10 章）</h3>
+
+<p>这里展示第 10 章的工具怎么用。先拆三种临场感：</p>
+
+<table>
+  <thead><tr><th style="width:150px">临场感</th><th style="width:90px">对本品的重要度</th><th>要优化的东西</th><th>不该先做的</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>社会临场</strong></td>
+      <td>🔴 最高</td>
+      <td>角色的<strong>注视行为</strong>（何时看你、看多久）、
+      反应延迟的自然性（不是越快越好，要像人一样有微小停顿）、
+      非言语反馈（点头、侧身、跟随视线）</td>
+      <td>面部多边形数</td>
+    </tr>
+    <tr>
+      <td><strong>空间临场</strong></td>
+      <td>🟠 中高</td>
+      <td>帧率稳定性、行走时的视觉—前庭一致性</td>
+      <td>远景贴图精度</td>
+    </tr>
+    <tr>
+      <td><strong>自我临场</strong></td>
+      <td>🟡 中</td>
+      <td>手部追踪的稳定性（<strong>抖动比不精确更破坏体验</strong>）</td>
+      <td>虚拟手部的皮肤材质细节</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>注意「社会临场」那一行。</strong>
+  对陪伴类产品，社会临场是核心，而它<strong>几乎与画质无关</strong>。
+  <br><br>
+  它依赖的是<strong>行为细节</strong>：角色什么时候看你、你说完话后她隔多久回应、
+  她会不会在你看向别处时也自然地移开视线。
+  <strong>这些是行为设计问题，不是渲染问题。</strong>
+  <br><br>
+  <strong>如果团队按「画面好不好看」评估进度，
+  他们会把预算全投到渲染上，而社会临场始终很差</strong>——
+  这正是第 10.8 节说的那个组织问题。
+</div>
+
+<h3>第四步：指标设计（11.4 + 第 9 章）</h3>
+
+<table>
+  <thead><tr><th style="width:150px">类别</th><th>指标</th><th>为什么选它</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>主指标</strong></td>
+      <td>用户自评孤独感变化（定期简短量表）</td>
+      <td>它直接对应该产品的价值定位，且<strong>不能被「让用户多待」刷高</strong></td>
+    </tr>
+    <tr>
+      <td><strong>主指标</strong></td>
+      <td>用户报告的现实支持来源数量</td>
+      <td>检验「支持而非替代」这个价值主张是否成立</td>
+    </tr>
+    <tr>
+      <td><strong>配对指标</strong></td>
+      <td>现实社交活动频率</td>
+      <td><strong>防止主指标被「孤立型使用」刷高</strong>：
+      如果孤独感下降但现实社交也下降，说明是替代而非补充</td>
+    </tr>
+    <tr>
+      <td><strong>反向指标</strong></td>
+      <td>无法自主断开的用户比例</td>
+      <td>直接监控依赖风险</td>
+    </tr>
+    <tr>
+      <td><strong>明确不用</strong></td>
+      <td>使用时长、日活、连续天数</td>
+      <td>按第 9 章的判据，它们会奖励<strong>加深依赖</strong>的所有设计</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>第五步：已知风险与缓解（11.7 第 5 节）</h3>
+
+<table>
+  <thead><tr><th style="width:40px">#</th><th style="width:190px">风险</th><th>缓解动作</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>R1</td>
+      <td>用户形成替代性依赖，现实社交减少</td>
+      <td>监控「现实社交频率」配对指标；当检测到持续下降时触发产品内的
+      <strong>温和提示</strong>（提示现实中的选择，而非警告）；
+      <strong>不使用任何强化使用频率的话术</strong></td>
+    </tr>
+    <tr>
+      <td>R2</td>
+      <td>角色输出状态声称，用户误认为对方有感受</td>
+      <td>建立话术库 + 输出扫描（自动规则匹配）；
+      在产品说明中<strong>明确角色的性质</strong>；
+      定期做用户认知测试（问用户「你觉得她的感受是真的吗」）</td>
+    </tr>
+    <tr>
+      <td>R3</td>
+      <td>对话内容涉及严重情绪困扰，系统给出不恰当回应</td>
+      <td>识别到严重困扰信号 → <strong>切换为支持性应答 + 提供可实际联系的资源</strong>；
+      <strong>不尝试「处理」</strong>；定期核对资源列表的有效性</td>
+    </tr>
+    <tr>
+      <td>R4</td>
+      <td>对话数据的隐私风险（用户会说出极敏感内容）</td>
+      <td>最小化收集；明确保留期限；<strong>提供一键删除</strong>；
+      不做超出功能必要的分析用途</td>
+    </tr>
+    <tr>
+      <td>R5</td>
+      <td>角色行为不一致，破坏社会临场（也削弱信任）</td>
+      <td>对角色性格与记忆做一致性约束；
+      <strong>不为了「让用户开心」而突然改变对事实的判断</strong>（这也是第 9.6 节的「保留摩擦」）</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>第六步：责任（11.7 第 8 节）</h3>
+
+<div class="note">
+  这一节在真实文档里必须填具体名字。示范格式：
+  <table style="margin-bottom:0">
+    <thead><tr><th style="width:190px">职责</th><th>负责人</th><th style="width:150px">频率</th></tr></thead>
+    <tbody>
+      <tr><td>伦理审查与话术库维护</td><td>____（具体的人）</td><td>每次话术变更</td></tr>
+      <tr><td>福祉指标复盘</td><td>____</td><td>每月</td></tr>
+      <tr><td>危机转介资源核对</td><td>____</td><td>每季度</td></tr>
+      <tr><td><strong>事故关停权限</strong></td><td>____（含备份人选）</td><td>随时</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="warn">
+  <strong>最后这一行「关停权限」特别重要，也特别容易漏。</strong>
+  <br><br>
+  陪伴类产品有一个特殊风险：<strong>关停本身会造成伤害</strong>——
+  用户可能已经形成了真实的情感联结，突然停止服务对他们是打击。
+  <br><br>
+  <strong>所以关停必须有预案</strong>：如何告知用户、是否提供对话记录的导出、
+  有没有过渡期。<strong>但同时也必须有明确的关停权限和触发条件</strong>——
+  不能因为「关停会伤害用户」而陷入「不能关」的境地。
+  <br><br>
+  这两件事看似矛盾，但它们是同一个要求的两面：
+  <strong>关停能力必须存在，且必须是有准备的。</strong>
+</div>
+
+<hr>
+
+<h2 id="s9"><span class="h2-num">11.9</span>怎么持续跟上这个领域</h2>
+
+<p>最后一节，讲方法而不是内容。因为这个领域的文献量已经远超个人能读完的范围，
+<strong>选择读什么比读多少更重要</strong>。</p>
+
+<h3>三种信息的可靠性排序</h3>
+
+<table>
+  <thead><tr><th style="width:170px">来源</th><th style="width:110px">可靠性</th><th>怎么用</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>原始文献</strong><br>论文、官方文档、标准</td>
+      <td>🟢 高</td>
+      <td>读关键部分（摘要、方法、局限），
+      <strong>特别注意「局限性」一节</strong>——那里信息密度最高</td>
+    </tr>
+    <tr>
+      <td><strong>综述与教科书</strong></td>
+      <td>🟢 高</td>
+      <td>建立地图用。比读原始文献效率高得多，但会滞后 1–3 年</td>
+    </tr>
+    <tr>
+      <td><strong>二手解读</strong><br>博客、视频、社交媒体</td>
+      <td>🟡 中低</td>
+      <td>只用来<strong>发现话题</strong>，不用来形成判断。
+      遇到感兴趣的话题，<strong>回溯到原始文献</strong></td>
+    </tr>
+    <tr>
+      <td><strong>「某研究证明」类转述</strong></td>
+      <td>🔴 低</td>
+      <td>默认不可信，除非能追到原文。
+      <strong>这类转述的失真率极高</strong>，尤其是涉及统计结论和因果关系的</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>三个具体的阅读习惯</h3>
+
+<ol class="steps">
+  <li>
+    <strong>读局限，不读结论。</strong>
+    一篇研究最重要的部分通常是「我们的方法在什么条件下不适用」。
+    <strong>结论可以记住，局限才能用上。</strong>
+  </li>
+  <li>
+    <strong>追论证，不追人名。</strong>
+    不要记「某某提出了什么理论」，要记<strong>「这个论证解决了什么问题、它的缺口在哪」</strong>。
+    前者会过期，后者是你的能力。
+  </li>
+  <li>
+    <strong>每读一篇，写一句「所以我的项目该怎么做」。</strong>
+    写不出来，说明这一篇对你没有实际价值——可以放下，不必因为「应该读」而读。
+  </li>
+</ol>
+
+<h3>什么不值得追</h3>
+
+<div class="pit">
+  <ul style="margin-bottom:0">
+    <li><strong>「AI 是否有意识」的公开争论。</strong>第 4 章已经说明：
+      这个问题当前无法被实验判定，所以任何声称有结论的说法都超出了证据。
+      关注它<strong>不会有可累积的认识</strong>。</li>
+    <li><strong>版本号级别的技术新闻。</strong>除非它影响你的选型。
+      「某模型又刷新了某榜」这类消息的价值在<strong>几周内</strong>衰减。</li>
+    <li><strong>关于「奇点」「取代人类」的预测。</strong>
+      它们无法被证伪（第 3 章），因此不构成知识，
+      只是<strong>关于情绪的文本</strong>。</li>
+    <li><strong>没有具体场景的「AI 伦理原则」列表。</strong>
+      第 9 章和第 11 章说明：原则必须落到具体场景和具体动作上才有用。
+      一份放之四海皆准的原则清单，通常<strong>什么也没改变</strong>。</li>
+  </ul>
+</div>
+
+<div class="quote">
+  <p>值得读的东西有一个共同特征：<em>它改变了你对某个具体判断的看法</em>。
+  如果读完之后你的判断没有变化、也没有新增一个待验证的假设，那它只是消遣。</p>
+  <span class="who">—— 这也可以作为你筛选信息的第一道标准</span>
+</div>
+
+<hr>
+
+<h2 id="s10"><span class="h2-num">11.10</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 为什么「以后要注意伦理」这句话没有作用？应该怎么改？</p>
+    <div class="qa-a">
+      <p>因为它<strong>不指向任何具体时刻的动作</strong>。
+      没有人知道该在什么时候做什么，于是它会被翻译成「记得小心」，
+      而「小心」不是可执行的动作。</p>
+      <p><strong>改法</strong>：把它变成<strong>四个已有节点上的具体动作</strong>——
+      需求阶段做问题重述、设计评审过十问清单、
+      定义指标时做退化策略检查、上线前做对抗性审查。
+      <br><br>
+      <strong>关键是不新增流程</strong>。新增流程会被跳过；
+      在已有节点上多问几个问题，成本低且无法回避。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q2. 十问清单里，哪几个问题最容易暴露问题？为什么？</p>
+    <div class="qa-a">
+      <p><strong>第 1 问（关键词的操作定义）</strong>和<strong>第 2 问（退化策略）</strong>。</p>
+      <p><strong>第 1 问</strong>几乎总能让团队发现「我们虽然用同一个词，但理解不同」——
+      而不同的理解会导致不同的验收标准和不同的工时估算（第 1 章）。</p>
+      <p><strong>第 2 问</strong>（「一个不诚实的系统会怎么刷高这个分数」）
+      能立刻暴露指标的漏洞。这个问题问出来，团队通常马上就想到几种刷分方式，
+      <strong>而这些方式本来会在一两个月后才被发现</strong>。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q3. 为什么「关停演练」是最重要也最常被忽略的一项？</p>
+    <div class="qa-a">
+      <p><strong>为什么重要</strong>：关停能力是最后一道防线。
+      一个不能安全关停的系统，意味着<strong>无论发现什么严重问题，你都只能边运行边修</strong>——
+      这等于放弃了最重要的风险控制手段。</p>
+      <p><strong>为什么被忽略</strong>：因为它<strong>在正常情况下完全不出现在视野里</strong>。
+      没有人会在日常开发中想到「我们需要试试能不能关掉它」。
+      而事故发生时才发现问题（需要的人休假、下游有硬依赖、数据无法导出）就太晚了。</p>
+      <p><strong>对陪伴类产品还有一层</strong>：关停本身会造成伤害（用户已形成情感联结），
+      所以必须<strong>有预案地关停</strong>——但这不能变成「所以不能关」的理由。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q4. 模板二「推到极端」为什么有用？它如何帮助抵抗渐进式的松散？</p>
+    <div class="qa-a">
+      <p>因为道德边界通常不是被一次性突破的，而是<strong>一格一格滑过去的</strong>。
+      每一格看起来都「只是稍微多一点点」，都能找到理由。</p>
+      <p>推到极端的作用是<strong>让这条滑滑梯显形</strong>：
+      当你看到终点是什么，你会被迫回答「我打算停在哪一格，
+      以及<strong>为什么是这一格而不是上一格</strong>」。</p>
+      <p>如果答不出「为什么是这一格」，
+      说明你的边界是<strong>从当前做法倒推出来的</strong>，不是从原则推出来的——
+      那么下一次有人再推一格，你就没有理由拒绝。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】你要向团队介绍这套方法。
+    有人说「我们做的是工具，用户怎么用是他们的事，我们不需要当道德警察」。
+    你怎么回应？</p>
+    <div class="qa-a">
+      <p><strong>先承认他话里的合理部分</strong>：确实，产品方不应该替用户决定生活方式，
+      也不应该把自己的价值观强加给用户。<strong>过度管束用户是有问题的</strong>，
+      这一点他说得对。</p>
+      <p><strong>然后指出「用户怎么用是他们的事」这句话在什么情况下成立、什么时候不成立。</strong>
+      关键在于：<strong>产品设计是否主动利用了用户的弱点</strong>。</p>
+      <ul>
+        <li><strong>成立的情况</strong>：用户用你的笔记工具去写小说、去记账、去记录不该记的东西——
+        你没有针对这些用途做设计，用户自负其责。</li>
+        <li><strong>不成立的情况</strong>：你的设计<strong>专门针对</strong>用户的孤独感、
+        或利用他的情绪状态来延长使用。这已经<strong>不是「用户自己选择」</strong>了，
+        因为设计的意图就是引导他做出那个选择。</li>
+      </ul>
+      <p><strong>给出这个区分的操作判据</strong>：
+      「问一句——<strong>如果用户完全了解我们的设计意图，他还会同意这样被对待吗？</strong>」
+      <br>
+      如果答案是「会」，那这是正常的产品设计；
+      如果答案是「不会，他知道了会不舒服」，那这个设计是在<strong>利用他的信息劣势</strong>。</p>
+      <p><strong>最后把话题从「道德」拉到「风险」</strong>（这是最有效的说服路径）：
+      「这套清单里大部分内容其实不是道德问题，是<strong>风险控制</strong>。”
+      “比如『出错时谁受损』『失败能被检测到吗』『谁有权关停』——
+      这三个问题跟道德无关，但它们决定了我们会不会在半年后写事故复盘。
+      而『有没有声称系统自己的感受』这一条，
+      它对应的是<strong>用户发现真相后的信任崩塌</strong>，以及随之而来的舆论和监管风险。”</p>
+      <p><strong>注意这个回应的策略</strong>：不对「该不该讲道德」这个抽象问题表态，
+      而是<strong>把清单里的项目重新分类</strong>——
+      大部分是风险控制（任何人都关心），只有少部分是价值判断。
+      <strong>这样就把争论从立场之争变成了工作事项。</strong></p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能说出四个嵌入点以及各自要加的具体动作。</li>
+    <li>能把一个功能需求<strong>重述</strong>成「解决谁的什么问题」，并回答「完全成功会怎样」。</li>
+    <li>十问清单能在你的项目上完整过一遍，且答案已写入文档。</li>
+    <li>为你的主指标填一份<strong>指标卡</strong>，其中「退化策略」一栏填得具体。</li>
+    <li>完成一次<strong>关停演练</strong>，记录耗时与阻塞点。</li>
+    <li>产出一份<strong>八节结构的伦理设计文档</strong>，第 5 节和第 8 节不为空。</li>
+    <li>能用「如果用户完全了解设计意图，他还会同意吗」这个判据评估一个具体设计。</li>
+  </ul>
+</div>

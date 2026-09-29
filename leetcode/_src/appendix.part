@@ -1,0 +1,192 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">力扣算法解析</a> / 附录</div>
+  <h1><span class="ch-tag">附录</span>模板速查、API 速查与 90 天路线</h1>
+  <p class="lead">刷题时最常翻的三样东西集中在这里：<strong>复杂度对照表</strong>（判断思路能不能过）、
+  <strong>Java API 速查</strong>（不用背 API，会用就行）、<strong>全部模板的索引</strong>（默写级清单），
+  以及一条可以直接照着走的 <strong>90 天刷题路线</strong>。</p>
+</div>
+
+<h2 id="a1"><span class="h2-num">A.1</span>复杂度速查</h2>
+
+<h3>各专题核心技巧的复杂度</h3>
+
+<table>
+  <thead><tr><th style="width:170px">技巧</th><th style="width:130px">时间</th><th style="width:120px">空间</th><th>代表题</th></tr></thead>
+  <tbody>
+    <tr><td>哈希查找</td><td>O(n)</td><td>O(n)</td><td>1 两数之和</td></tr>
+    <tr><td>对撞双指针</td><td>O(n)</td><td>O(1)</td><td>11 盛最多水的容器</td></tr>
+    <tr><td>滑动窗口</td><td>O(n)</td><td>O(k)</td><td>3 无重复字符的最长子串</td></tr>
+    <tr><td>二分查找</td><td>O(log n)</td><td>O(1)</td><td>704 / 33</td></tr>
+    <tr><td>链表快慢指针</td><td>O(n)</td><td>O(1)</td><td>141 / 142 环形链表</td></tr>
+    <tr><td>单调栈</td><td>O(n)</td><td>O(n)</td><td>739 每日温度</td></tr>
+    <tr><td>二叉树递归</td><td>O(n)</td><td>O(h)</td><td>104 / 236（h 为树高）</td></tr>
+    <tr><td>回溯</td><td>O(指数级)</td><td>O(递归深度)</td><td>46 全排列 O(n·n!)</td></tr>
+    <tr><td>线性 DP</td><td>O(n)</td><td>O(n) 可压 O(1)</td><td>70 / 198</td></tr>
+    <tr><td>二维 DP / LCS</td><td>O(n·m)</td><td>O(n·m)</td><td>62 / 1143</td></tr>
+    <tr><td>01 / 完全背包</td><td>O(n·V)</td><td>O(V)</td><td>416 / 322（V 为容量）</td></tr>
+    <tr><td>网格 DFS / BFS</td><td>O(n·m)</td><td>O(n·m)</td><td>200 / 994</td></tr>
+    <tr><td>拓扑排序</td><td>O(V+E)</td><td>O(V+E)</td><td>207 课程表</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  配合总览 0.4 的数据范围表使用：先看 n 的范围定目标复杂度，再查这里哪个技巧能达成——
+  这就是大多数题的解题路径。
+</div>
+
+<hr>
+
+<h2 id="a2"><span class="h2-num">A.2</span>Java 刷题 API 速查</h2>
+
+<h3>数组与排序</h3>
+
+<pre><code>int[] a = new int[n];                 // 全零数组
+int[] b = {3, 1, 2};
+Arrays.sort(b);                       // 升序 O(n log n)
+// 降序要给比较器（只能对 Integer[] 或 List 用）
+Integer[] c = {3, 1, 2};
+Arrays.sort(c, (x, y) -> y - x);
+Arrays.fill(a, -1);                   // 整个数组填 -1（DP 初始化常用）
+int[] d = Arrays.copyOfRange(b, 1, 3);// 截取 [1,3)</code></pre>
+
+<h3>字符串</h3>
+
+<pre><code>String s = "abc";
+s.length();  s.charAt(0);             // 长度 / 第 i 个字符
+char[] cs = s.toCharArray();          // 转字符数组（要修改时）
+String t = new String(cs);
+StringBuilder sb = new StringBuilder();
+sb.append('x');  sb.reverse();  sb.toString();  // 拼接/反转，O(1) 均摊
+s.substring(1, 3);                    // 子串 [1,3)
+String[] parts = "a,b".split(",");    // 分割
+s.trim();  s.equals(t);  s.compareTo(t);  // 去空白 / 比较（别用 ==）
+Character.isLetterOrDigit(ch);  Character.toLowerCase(ch);</code></pre>
+
+<h3>集合三件套</h3>
+
+<pre><code>Map<String, Integer> map = new HashMap<>();
+map.put("a", 1);  map.get("a");
+map.getOrDefault("b", 0);             // 计数场景标配：getOrDefault(key, 0) + 1
+map.containsKey("a");  map.remove("a");
+for (var e : map.entrySet()) e.getKey() + "=" + e.getValue();
+map.keySet();  map.values();
+
+Set<Integer> set = new HashSet<>();
+set.add(1);  set.contains(1);  set.remove(1);
+
+// 计数小技巧：merge 一行完成「存在则加，不存在则放」
+map.merge(ch, 1, Integer::sum);</code></pre>
+
+<h3>栈、队列、堆（Deque / Queue / PriorityQueue）</h3>
+
+<pre><code>// 栈：用 Deque，别用遗留的 Stack 类
+Deque<Integer> stack = new ArrayDeque<>();
+stack.push(1);   stack.pop();   stack.peek();      // 压 / 弹 / 看顶
+
+// 队列：Queue 接口
+Queue<Integer> queue = new ArrayDeque<>();
+queue.offer(1);  queue.poll();  queue.peek();      // 入 / 出 / 看头
+
+// 双端队列（滑窗、单调队列用）
+Deque<Integer> dq = new ArrayDeque<>();
+dq.offerLast(1);  dq.pollLast();  dq.pollFirst();  dq.peekFirst();
+
+// 堆：小顶堆默认；大顶堆给反向比较器
+PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> b - a);
+minHeap.offer(1);  minHeap.poll();  minHeap.peek();</code></pre>
+
+<div class="warn">
+  <strong>两个高频坑：</strong>
+  ① <code>(a, b) -&gt; b - a</code> 这种相减写法在「极大值减极小值」时会整型溢出，
+  稳妥写法是 <code>Integer.compare(a, b)</code>（升序）或 <code>Integer.compare(b, a)</code>（降序）；
+  ② <code>int[]</code> 数组不能做 <code>HashMap</code> 的 key（比较的是引用不是内容），
+  需要时先包成 <code>String</code> 或 <code>List&lt;Integer&gt;</code>。
+</div>
+
+<hr>
+
+<h2 id="a3"><span class="h2-num">A.3</span>全部模板索引</h2>
+
+<p>以下模板建议做到<strong>脱稿默写</strong>。点击跳到对应专题的完整讲解：</p>
+
+<table>
+  <thead><tr><th style="width:170px">模板</th><th style="width:120px">所在专题</th><th>默写检验标准</th></tr></thead>
+  <tbody>
+    <tr><td>对撞 / 快慢指针</td><td><a href="ch01.html#s2">01 双指针</a></td><td>能不假思索写出「while (l &lt; r) 里移动哪个、为什么」</td></tr>
+    <tr><td>哈希计数</td><td><a href="ch02.html#s2">02 哈希表</a></td><td>merge 一行计数、数组计数 int[26]</td></tr>
+    <tr><td>滑动窗口</td><td><a href="ch03.html#s2">03 滑动窗口</a></td><td>右扩-收缩-更新三步顺序不乱，求最长/最短两种变体</td></tr>
+    <tr><td>二分（含左右边界）</td><td><a href="ch04.html#s2">04 二分查找</a></td><td>闭区间模板 + 找第一个 ≥ target 的写法，不死循环</td></tr>
+    <tr><td>虚拟头节点</td><td><a href="ch05.html#s2">05 链表</a></td><td>知道什么时候必须用 dummy</td></tr>
+    <tr><td>反转链表（迭代）</td><td><a href="ch05.html#s4">05 链表</a></td><td>prev/cur/next 三行核心，30 秒写完</td></tr>
+    <tr><td>单调栈</td><td><a href="ch06.html#s6">06 栈与队列</a></td><td>「栈里存下标 + 新元素踢栈」骨架</td></tr>
+    <tr><td>层序遍历 BFS</td><td><a href="ch07.html#s5">07 二叉树</a></td><td>先取 size 再内层循环</td></tr>
+    <tr><td>回溯四件套</td><td><a href="ch08.html#s2">08 递归与回溯</a></td><td>path + 选择 + 撤销 + start/used 两个变体</td></tr>
+    <tr><td>DP 五步法</td><td><a href="ch09.html#s2">09 DP 入门</a></td><td>状态定义能说成人话</td></tr>
+    <tr><td>01 / 完全背包一维写法</td><td><a href="ch10.html#s6">10 DP 进阶</a></td><td>倒序 vs 正序，说清为什么</td></tr>
+    <tr><td>网格 DFS / 多源 BFS</td><td><a href="ch12.html#s2">12 图论</a></td><td>dirs 数组 + visited 时机</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="a4"><span class="h2-num">A.4</span>90 天刷题路线（Hot 100）</h2>
+
+<p>按本站专题排的 90 天计划（覆盖前 12 个基础专题；13~24 号进阶专题学完后按面试方向自选加练），每天 1 题、每周 6 题 + 1 天复盘，共约 75 题有效量。
+<strong>「有效」的定义见总览 0.3 五步法。</strong>题目都来自力扣 Hot 100，标注了对应专题页：</p>
+
+<table>
+  <thead><tr><th style="width:150px">阶段</th><th style="width:110px">天数</th><th>内容</th></tr></thead>
+  <tbody>
+    <tr><td><strong>第 1 周</strong></td><td>1~6</td><td><a href="ch01.html">数组与双指针</a>：283 / 26 / 11 / 15 / 42 / 复盘</td></tr>
+    <tr><td><strong>第 2 周</strong></td><td>7~12</td><td><a href="ch02.html">哈希表</a>：1 / 242 / 49 / 128 / 560 / 复盘</td></tr>
+    <tr><td><strong>第 3~4 周</strong></td><td>13~24</td><td><a href="ch03.html">滑动窗口</a>（209 / 3 / 438 / 76）+ <a href="ch04.html">二分</a>（704 / 35 / 34 / 33 / 153 / 4）</td></tr>
+    <tr><td><strong>第 5 周</strong></td><td>25~30</td><td><a href="ch05.html">链表</a>：203 / 206 / 21 / 141+142 / 19 / 复盘</td></tr>
+    <tr><td><strong>第 6 周</strong></td><td>31~36</td><td><a href="ch06.html">栈与队列</a>：20 / 155 / 232 / 739 / 394 / 复盘</td></tr>
+    <tr><td><strong>第 7~8 周</strong></td><td>37~48</td><td><a href="ch07.html">二叉树</a>：104 / 226 / 101 / 102 / 236 / 98 / 230 / 105 / 124 / 543 / 复盘 ×2</td></tr>
+    <tr><td><strong>第 9~10 周</strong></td><td>49~60</td><td><a href="ch08.html">回溯</a>：77 / 78 / 46 / 39 / 22 / 51 / 复盘 + <a href="ch09.html">DP 入门</a>：70 / 746 / 198 / 62 / 复盘</td></tr>
+    <tr><td><strong>第 11~12 周</strong></td><td>61~72</td><td><a href="ch10.html">DP 进阶</a>：300 / 1143 / 416 / 322 / 152 / 复盘 + <a href="ch11.html">贪心</a>：121 / 55 / 45 / 435 / 复盘</td></tr>
+    <tr><td><strong>第 13 周</strong></td><td>73~78</td><td><a href="ch12.html">图论</a>：200 / 994 / 207 / 210 / 复盘 ×2</td></tr>
+    <tr><td><strong>缓冲</strong></td><td>79~90</td><td>薄弱专题回炉：把之前「看了一眼题解才写出」的题全部脱稿重写一遍</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  这是<strong>校招备战型</strong>路线。如果你在备蓝桥杯 / 天梯赛，把第 11~13 周换成
+  更多 DP 与图论题；如果目标是实习面试，第 1~8 周的高频专题优先级最高。
+</div>
+
+<hr>
+
+<h2 id="a5"><span class="h2-num">A.5</span>卡住了怎么办：看题解的正确姿势</h2>
+
+<p>卡住是常态，看题解不可耻。<strong>可耻的是看完就过。</strong>按下面这个阶梯来，把每次「看题解」的价值榨干：</p>
+
+<table>
+  <thead><tr><th style="width:70px">阶梯</th><th style="width:230px">动作</th><th>什么时候升级到下一阶</th></tr></thead>
+  <tbody>
+    <tr><td><strong>1</strong></td><td>只看本站该题的<strong>思路推导</strong>部分，到「想到这个解法」为止，<strong>不看代码</strong>，合上自己写</td><td>15 分钟还是写不出</td></tr>
+    <tr><td><strong>2</strong></td><td>看代码的<strong>前几行</strong>（状态定义 / 变量命名），推断后续，再自己写完</td><td>10 分钟还是写不出</td></tr>
+    <tr><td><strong>3</strong></td><td>看完整参考代码，逐行理解后<strong>合上，从头默写</strong></td><td>默写通过所有用例</td></tr>
+    <tr><td><strong>4</strong></td><td>三天后<strong>脱稿重写</strong>（五步法第 5 步）；写不出回到阶梯 3</td><td>一次通过 → 这题真正属于你了</td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>标记你的「真不会」名单。</strong>凡是走到过阶梯 3 的题，记下来。
+  它们是你最宝贵的复习材料——面试前只复习这个名单，效率远高于盲目二刷。
+</div>
+
+<div class="qa">
+  <p class="qa-q">Q. 阶梯 3 的「默写」和死记硬背有什么区别？</p>
+  <div class="qa-a">
+    <p>检验方法是：默写时你能说出<strong>每一行在整条思路里的位置</strong>（「这行是在做滑动窗口的收缩」）。
+    如果只是手指记忆，三天后重写必挂，那就回到思路推导重新理解。宁可慢，不要背。</p>
+  </div>
+</div>
+
+<div class="goal">
+  用这份附录验收你的备考：<em>复杂度表能对着数据范围口算出「这题目标复杂度是多少、用哪个技巧」；
+  模板索引里 12 个模板全部脱稿默写通过；90 天路线你能说出自己当前在第几周、落后多少。</em>
+  三条都做到，Hot 100 的核心你就拿下了。
+</div>

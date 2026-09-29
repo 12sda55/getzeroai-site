@@ -1,0 +1,617 @@
+<div class="page-head">
+  <div class="crumb"><a href="../index.html">首页</a> / <a href="index.html">哲学 × AI 指南</a> / 第 2 章</div>
+  <h1><span class="ch-tag">CH 02</span>认识论 I：知识、信念与不确定性</h1>
+  <p class="lead">这一章要回答一个看似简单的问题：<strong>当你的系统输出一句话时，它凭什么算「知道」？</strong>
+  这个问题不是修辞。它决定了你该怎么设计置信度、怎么处理拒答、以及怎么向用户解释系统的能力边界。
+  认识论（epistemology）是关于「知识是什么、我们如何获得知识、知识的限度在哪」的学问——
+  它是全书地基，因为它管的正是<strong>「模型说的对不对」这件事的判据</strong>。</p>
+</div>
+
+<div class="grid grid-4">
+  <div class="meta-card"><div class="k">学习目标</div><div class="v">建立「知道」的判据，并用于验收</div></div>
+  <div class="meta-card"><div class="k">前置要求</div><div class="v">第 1 章的分类尺子</div></div>
+  <div class="meta-card"><div class="k">本章产出</div><div class="v">一份置信度校准检查</div></div>
+  <div class="meta-card"><div class="k">建议学时</div><div class="v">4–5 小时</div></div>
+</div>
+
+<h2 id="s1"><span class="h2-num">2.1</span>认识论在问什么</h2>
+
+<p>认识论不问「世界的真相是什么」（那是形而上学），它问的是三个更收敛的问题：</p>
+
+<table>
+  <thead><tr><th style="width:120px">问题</th><th style="width:280px">在问什么</th><th>直接对应的 AI 问题</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>知识是什么</strong></td>
+      <td>什么样的状态才算「我们知道 X」，而不只是「我们猜 X」「我们相信 X」</td>
+      <td>模型答对了，算不算「知道」？蒙对的和真懂的区别是什么？</td>
+    </tr>
+    <tr>
+      <td><strong>知识从哪来</strong></td>
+      <td>经验、推理、证言（听别人说）各自能提供什么类型的知识</td>
+      <td>训练数据是「经验」还是「证言」？从文本学来的东西能算第几手知识？</td>
+    </tr>
+    <tr>
+      <td><strong>知识的限度</strong></td>
+      <td>哪些东西我们能够知道，哪些原则上不能，哪些只是暂时不知道</td>
+      <td>系统什么时候该说「我不知道」？「不知道」是应该被优化掉的缺陷，还是必须保留的功能？</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>注意第三行。它的答案会直接改变你的产品思路：
+<strong>如果你把「不知道」当成缺陷去优化掉，你会得到一个永远自信的系统；而永远自信的系统在关键场景里是危险的。</strong></p>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">认识论问题</div>
+    <div class="ttl">「不知道」是不是一种缺陷</div>
+    <div class="txt">认识论传统里的一个核心区分：<strong>「我确信但我错了」和「我不确定且我知道自己不确定」是两种完全不同的状态</strong>。前者是知识的失败，后者恰恰是理性的表现。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">工程后果</div>
+    <div class="ttl">评估指标必须把拒答单列</div>
+    <div class="txt">如果评测只看「答对率」，那么一个从不拒答、敢猜的系统会赢过一个懂得拒答的系统。
+    正确的做法是<strong>把「拒答正确率」和「作答准确率」作为两个指标同时看</strong>——否则你的优化方向本身就在奖励鲁莽。</div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s2"><span class="h2-num">2.2</span>知识的经典定义与葛梯尔反例</h2>
+
+<p>这是认识论最著名的一个小问题，它比看起来更要紧——<strong>它直接对应「蒙对和真懂怎么区分」</strong>。</p>
+
+<div class="quote">
+  <p>知识是<em>得到辩护的真信念</em>（Justified True Belief，简称 JTB）。</p>
+  <span class="who">—— 这个定义可追溯到柏拉图的《泰阿泰德篇》，两千多年里被当作标准答案</span>
+</div>
+
+<p>拆开看，它要求三件事同时成立：</p>
+
+<ol class="steps">
+  <li><strong>信念（Belief）</strong>：你得真的相信 X。一个不相信 X 的人不可能「知道 X」。</li>
+  <li><strong>真（Truth）</strong>：X 事实上是真的。相信错误的东西不算知识，无论你多确信。</li>
+  <li><strong>辩护（Justification）</strong>：你有<strong>理由</strong>相信 X。瞎猜对了、或者被不可靠的传言说中，也不算知识。</li>
+</ol>
+
+<div class="qbox">
+  <span class="qb-t">葛梯尔反例（1963）</span>
+  <p>哲学家埃德蒙·葛梯尔在一篇仅三页的论文里指出：<strong>这三个条件同时成立，仍然可能不算知识。</strong>
+  他给了两个反例，核心结构如下：</p>
+  <p>你有一把理由充分的确信——比如你看到同事每天开车来上班，因此相信「同事有车」。
+  这个信念为真（他确实有车）、你也有辩护（你天天看到）。但你的辩护<strong>恰好是基于一个错误的信息链</strong>：
+  假设其实是他只是顺路搭别人的车，而恰好他名下也有车——你猜对了结论，但<strong>你的理由是错的</strong>。</p>
+  <p>这类案例叫「<strong>得到辩护的真信念，但因运气而成真</strong>」。葛梯尔证明了 JTB 不是知识的充分条件。</p>
+  <p class="qb-q">关键问题：如果三个条件都满足还不算知识，那知识到底还需要什么？<strong>这个问题至今没有公认答案</strong>——六十多年过去，哲学界提出了几十种修补方案，但没有一种被普遍接受。</p>
+</div>
+
+<h3>这个故事对 AI 的直接意义</h3>
+
+<p>把葛梯尔的结构套到模型上，你会发现它<strong>几乎是幻觉问题的形式化描述</strong>：</p>
+
+<table>
+  <thead><tr><th style="width:150px">JTB 条件</th><th style="width:230px">在模型上对应什么</th><th>葛梯尔式失败</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>真（Truth）</td>
+      <td>输出内容事实上正确</td>
+      <td>输出正确，但原因不对</td>
+    </tr>
+    <tr>
+      <td>辩护（Justification）</td>
+      <td>输出基于可靠的推理步骤或可靠来源</td>
+      <td><strong>推理链看起来合理，但其中一步是编造的</strong></td>
+    </tr>
+    <tr>
+      <td>信念（Belief）</td>
+      <td>——（模型没有信念，这一点很关键）</td>
+      <td>——</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>这里有一个真实的工程陷阱，叫「正确性掩蔽」：</strong>
+  你评估模型时只看最终答案对不对。<strong>但一个答案是「猜对」还是「推对」，对你的系统可靠性意味着完全不同的东西。</strong>
+  猜对的模型在下一次相似问题上会猜错，推对的模型不会。
+  <strong>只看最终答案的评测，无法区分这两者</strong>——这就是葛梯尔问题在工程上的投影。
+  <br><br>
+  应对方式：在评测里<strong>加一条「依据可追溯性」检查</strong>——要求模型给出引用来源或推理步骤，
+  然后人工抽检这些依据是否真实存在、是否真的支持结论。这一个动作能过滤掉大部分「蒙对」。
+</div>
+
+<h3>顺便回答一个常见问题：模型有「信念」吗</h3>
+
+<p>上面表格里第三行我留了空，因为这需要说清。在 JTB 的框架里，「信念」指一个<strong>可被持有、可被修正的心理状态</strong>。</p>
+
+<p>模型有没有这个，取决于你的哲学立场（第 5 章会详细展开）。但<strong>在工程上你可以绕开这个问题</strong>：
+无论模型有没有信念，它的输出都会表现出<strong>可测量的稳定性特征</strong>——
+同一个问题问十次答案是否一致？答案对上下文措辞是否敏感？换个说法会不会翻转结论？
+这些是可测的，而且它们<strong>恰好是「信念稳固程度」的工程替代品</strong>。</p>
+
+<div class="tip">
+  <strong>实用结论：</strong>不必纠结「模型有没有信念」，改为测量<strong>输出的稳定性</strong>。
+  同一个问题多次采样的一致性（self-consistency）是一个便宜且信息量很大的指标——
+  它比任何置信度输出都更可靠，因为它是<strong>行为证据</strong>而不是<strong>自我报告</strong>。
+</div>
+
+<hr>
+
+<h2 id="s3"><span class="h2-num">2.3</span>知识的三种来源</h2>
+
+<p>哲学史上关于知识来源的争论，对 AI 有一个非常具体的映射：<strong>你的模型的知识，是「经验」还是「道听途说」？</strong></p>
+
+<table>
+  <thead><tr><th style="width:130px">来源</th><th style="width:200px">主张</th><th>代表</th><th>在 AI 里的对应</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>理性主义</strong></td>
+      <td>知识的根本来源是理性推理，经验只是触发</td>
+      <td>笛卡尔、莱布尼茨</td>
+      <td>符号推理、形式化方法、定理证明器</td>
+    </tr>
+    <tr>
+      <td><strong>经验主义</strong></td>
+      <td>一切知识来自经验，心智初始是白板</td>
+      <td>洛克、贝克莱、休谟</td>
+      <td>从数据中学习、端到端训练</td>
+    </tr>
+    <tr>
+      <td><strong>康德式综合</strong></td>
+      <td>经验提供材料，但心智的<strong>先天结构</strong>负责组织它</td>
+      <td>康德</td>
+      <td><strong>架构先验</strong>：归纳偏置、注意力机制、归纳头</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>第三行是最容易被忽略、但对你理解模型最有用的一条。<strong>康德的洞察是：没有纯粹的「经验输入」——任何经验都必须被某种结构组织过，才能成为经验。</strong></p>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">康德的问题</div>
+    <div class="ttl">经验如何被组织成知识</div>
+    <div class="txt">康德认为，时间、空间、因果性这些不是从经验里学来的，而是<strong>使经验成为可能的前提条件</strong>——它们是我们认知装置的「格式」。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">架构即先验</div>
+    <div class="ttl">模型能学到什么，被架构先决定了</div>
+    <div class="txt">Transformer 的注意力机制、位置编码、层数、上下文窗口——这些<strong>不是学来的，是在训练前就定死的</strong>。
+    它们决定了哪些规律容易被学到、哪些几乎学不到。
+    <strong>换架构 ≈ 换先验，会系统性地改变模型的能力边界</strong>，而不只是「参数多了性能更好」。</div>
+  </div>
+</div>
+
+<p><strong>这个视角能解释一个常见困惑：</strong>为什么给模型更多数据，某些能力还是学不会？
+因为数据只提供「经验材料」，架构决定「能从中提取出什么」。如果需要的规律无法被当前架构的表征方式表达，
+再多数据也学不到——<strong>这不是数据量问题，是「形式」问题</strong>。康德的术语在这里意外地好用。</p>
+
+<h3>第四种来源：证言（Testimony）—— 它才是 LLM 知识的主要来源</h3>
+
+<p>哲学认识论里有一个专门分支讨论<strong>「听别人说」能不能产生知识</strong>。这个问题在 AI 时代忽然变得非常实际：</p>
+
+<div class="note">
+  <strong>你的模型的知识结构大致是这样：</strong>
+  <ul style="margin-bottom:0">
+    <li>从<strong>海量文本</strong>里学到的——这些文本是<strong>别人写的</strong>。所以模型的知识本质上是<strong>证言</strong>，不是第一手经验。</li>
+    <li>它<strong>没有</strong>验证过任何一条知识的真伪。它学的是「人们在什么语境下会这样写」，不是「这件事是不是真的」。</li>
+    <li>所以它的默认姿态是<strong>「像真的一样说」</strong>——因为训练目标奖励的是「像人类文本」，而不是「符合事实」。</li>
+  </ul>
+</div>
+
+<p>这一点是理解幻觉的关键前提（第 3 章会展开）。<strong>只要模型的知识来自证言而非验证，它就不可能天然具备「说真话」的倾向</strong>——
+「说真话」必须被<strong>额外</strong>训练出来，而且永远无法完全成功，因为它没有验证机制可以依赖。</p>
+
+<hr>
+
+<h2 id="s4"><span class="h2-num">2.4</span>确定性是如何失去的</h2>
+
+<p>十七世纪的理性主义者相信，知识的根基可以是<strong>绝对确定</strong>的。这个信念在接下来的两百年里被逐步拆掉了。
+了解这个过程对你有实际价值，因为它解释了<strong>为什么现代 AI 的评估方式长成现在这样</strong>。</p>
+
+<div class="tl">
+  <div class="tl-item">
+    <div class="y">1641</div>
+    <div class="c"><strong>笛卡尔的方法怀疑。</strong>他决定怀疑一切可以怀疑的东西——感官会骗人，所以感官提供的知识都不可靠；
+    甚至设想一个「邪恶精灵」在系统性地欺骗他。他寻找一个无法被怀疑的支点。</div>
+  </div>
+  <div class="tl-item">
+    <div class="y">1641</div>
+    <div class="c"><strong>「我思故我在」。</strong>他发现即使被骗，「正在被欺骗的<em>我</em>」也必须存在。这是他要的地基。
+    但注意：<strong>他得到的确定性只涵盖「我存在」这一件事</strong>，要把这个确定性扩展到外部世界，他必须证明上帝不会骗人——
+    这一步后来被广泛认为是失败的。</div>
+  </div>
+  <div class="tl-item">
+    <div class="y">1739</div>
+    <div class="c"><strong>休谟拆掉因果性。</strong>他指出：我们观察到的是「A 之后总是跟 B」，而不是「A 导致 B」。
+    「因果」这个观念是我们心理习惯的产物，不是从观察中读出来的。这一刀切掉了一整类「确定知识」。</div>
+  </div>
+  <div class="tl-item">
+    <div class="y">1781</div>
+    <div class="c"><strong>康德的转向。</strong>康德承认经验无法提供绝对确定性，但他提出：<strong>知识的形式</strong>（时间、空间、因果）
+    是我们认知装置的先天结构，因此具有普遍必然性。确定性从「符合外部对象」转向了「我们如何组织经验」。</div>
+  </div>
+  <div class="tl-item">
+    <div class="y">20 世纪</div>
+    <div class="c"><strong>确定性被彻底让位于概率。</strong>逻辑经验主义试图把科学建成严格形式系统，但哥德尔（1931）与后续的科学哲学发展
+    （波普尔的证伪主义、库恩的范式理论）表明这条路走不通。<strong>现代科学的认识论姿态是「可修正的最佳猜测」</strong>，
+    而不是「确定真理」。</div>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>这段历史对工程的意义：</strong>人工智能界今天用概率、用置信度、用「在测试集上的统计表现」来刻画模型的可靠性，
+  <strong>不是因为它是最好的方法，而是因为它是在失去绝对确定性之后唯一可用的方法</strong>。
+  理解这一点，你就不会对「评测分数」抱有不切实际的期望——分数是<strong>对一个受限条件下的行为样本的统计描述</strong>，
+  不是对系统能力的本质刻画。它必然是可错的、可被游戏化的、随时可能因分布变化而失效的。
+</div>
+
+<hr>
+
+<h2 id="s5"><span class="h2-num">2.5</span>【工程锚点】概率是信念的度量，不是世界的属性</h2>
+
+<p>这个区分极其重要，而且<strong>大多数工程师在直觉上搞错了</strong>。</p>
+
+<div class="dual">
+  <div class="card">
+    <h4>解读 A：概率是世界的属性（频率主义）</h4>
+    <p style="font-size:13.5px">「这枚硬币正面朝上的概率是 0.5」意思是：<strong>如果无限次抛掷，正面的频率会趋近 0.5</strong>。</p>
+    <p style="font-size:13.5px;margin-bottom:0">这是物理事实，与谁在观察无关。适合可重复实验的场景。</p>
+  </div>
+  <div class="card">
+    <h4>解读 B：概率是信念的度量（主观贝叶斯）</h4>
+    <p style="font-size:13.5px">「这件事发生的概率是 0.7」意思是：<strong>我对此的信念程度是 0.7</strong>——
+    这反映了我掌握的信息和我的推理，换个人可能给 0.5。</p>
+    <p style="font-size:13.5px;margin-bottom:0">这是拉姆齐（1926）和德菲内蒂发展出的立场。适合<strong>不可重复</strong>的场景。</p>
+  </div>
+</div>
+
+<p><strong>为什么这个区分对你重要？</strong>因为模型输出的「置信度」几乎总属于解读 B，而很多团队把它当解读 A 使用。</p>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">哲学区分</div>
+    <div class="ttl">概率是客观频率还是主观信念度</div>
+    <div class="txt">对不可重复的事件（「这份合同里有没有风险条款」），不存在「无限次重复」。
+    这时候说概率，<strong>只能是信念度的表达</strong>——它依赖于谁在看、依据什么信息。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">工程后果</div>
+    <div class="ttl">别把模型的自我报告当物理量</div>
+    <div class="txt">模型说「我有 95% 把握」，这不是一个关于世界的测量值，而是<strong>一串 token 的生成结果</strong>。
+    它可能因为提示词措辞而整体偏高或偏低。
+    <strong>正确用法是：把它当信号，用数据重新校准，而不是直接当阈值用。</strong></div>
+  </div>
+</div>
+
+<h3>拉姆齐的判据：怎么测出一个人真实的信念度</h3>
+
+<p>哲学家弗兰克·拉姆齐给了一个非常实用的操作定义，它恰好是<strong>现代评估方法的原型</strong>：</p>
+
+<div class="quote">
+  <p>要确定一个人的信念程度，就看他<em>愿意在什么赔率下押注</em>。</p>
+  <span class="who">—— 拉姆齐 1926《真理与概率》的核心思路（大意）</span>
+</div>
+
+<p>这个判据的精妙之处在于：<strong>它用行为（下注）替代了自我报告</strong>。
+一个人嘴上说「我有 99% 把握」，但当被要求押上一个月工资时改口说「其实不太确定」——<strong>真实的信念度由后者暴露</strong>。</p>
+
+<div class="bridge">
+  <div class="side p">
+    <div class="lbl">拉姆齐判据</div>
+    <div class="ttl">信念度 = 愿意押注的赔率</div>
+    <div class="txt">信念不是内部状态的直接读数，而是通过<strong>在什么条件下愿意承担什么后果</strong>反推出来的。</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="side e">
+    <div class="lbl">对应的评估设计</div>
+    <div class="ttl">别问模型「你有多确定」，设计一个它会付出代价的任务</div>
+    <div class="txt">比如：让模型在不确定时必须调用工具核实，而调用工具消耗预算。
+    <strong>一个真的不确定的模型会去查；一个只是嘴上说不确定的模型不会</strong>。
+    行为的代价暴露真实的「把握程度」，这比读 logprobs 更可信。</div>
+  </div>
+</div>
+
+<hr>
+
+<h2 id="s6"><span class="h2-num">2.6</span>【工程锚点】校准：模型说「有 90% 把握」是什么意思</h2>
+
+<p><strong>校准（calibration）</strong>是把「主观信念度」和「客观正确率」对齐的问题。这个概念在哲学里是信念度理论，在工程里有一个非常直接的检验方法。</p>
+
+<h3>校准的定义与检验方法</h3>
+
+<div class="note">
+  <strong>一个预测器是校准的，当且仅当：</strong>
+  在所有它声称「有 90% 把握」的预测里，<strong>实际正确的比例是 90%</strong>。
+  <br><br>
+  注意这里说的是<strong>分组</strong>，不是说每一个预测。单个预测无所谓校准；
+  校准是<strong>统计性质</strong>——这就是为什么必须分桶检查。
+</div>
+
+<p>具体做法（你可以今天就在自己的项目上跑）：</p>
+
+<ol class="steps">
+  <li><strong>收集一批带置信度的预测。</strong>让模型对每个问题<strong>同时输出答案和一个 0–100 的把握度</strong>，
+  或者读取它的 logprobs 换算成概率。至少 200 条，否则分桶后每组样本太少。</li>
+  <li><strong>按置信度分成 10 桶</strong>（0–10%、10–20%……90–100%）。</li>
+  <li><strong>算每桶的实际正确率。</strong>得到「平均声称把握度 vs 实际正确率」的对照。</li>
+  <li><strong>画出来看偏差方向。</strong>如果 90–100% 这桶的实际正确率只有 60%，说明模型<strong>系统性过度自信</strong>。</li>
+  <li><strong>拟合一个校正映射。</strong>把原始置信度通过一个单调函数（如保序回归 / Platt scaling）映射到校准后的值。</li>
+</ol>
+
+<table>
+  <thead><tr><th>置信度桶</th><th style="width:150px">模型声称</th><th style="width:150px">实际正确率</th><th>诊断</th></tr></thead>
+  <tbody>
+    <tr><td>90–100%</td><td>95%</td><td><strong>62%</strong></td><td>🔴 严重过度自信 —— 高置信区不可信</td></tr>
+    <tr><td>70–90%</td><td>80%</td><td>71%</td><td>🟠 偏乐观</td></tr>
+    <tr><td>50–70%</td><td>60%</td><td>58%</td><td>🟢 基本校准</td></tr>
+    <tr><td>30–50%</td><td>40%</td><td>45%</td><td>🟢 基本校准</td></tr>
+    <tr><td>10–30%</td><td>20%</td><td>33%</td><td>🔵 略保守 —— 低置信区实际比它自己想的准</td></tr>
+  </tbody>
+</table>
+
+<p>上图是一个<strong>非常典型的形状</strong>：<strong>两端偏差、中间尚可</strong>。
+也就是模型在「很自信」和「很没底」时都不可信，在「中等把握」时反而比较准。</p>
+
+<div class="warn">
+  <strong>为什么这很危险：</strong>大多数工程系统恰恰<strong>依赖高置信区</strong>——
+  你会设定「置信度 > 90% 就自动执行，否则转人工」。而高置信区如果系统性虚高，
+  你的自动执行比例会远高于预期，而错误率也随之上升。<strong>你以为你在用置信度做风控，实际上你在用一个膨胀了的数字做风控。</strong>
+</div>
+
+<h3>三类置信度来源，可靠性依次递减</h3>
+
+<table>
+  <thead><tr><th style="width:170px">来源</th><th style="width:110px">可靠性</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>多次采样一致性</strong><br><span class="pill green">行为证据</span></td>
+      <td>✅ 高</td>
+      <td>同一问题采样 N 次（温度调高），看答案的分布。<strong>一致 → 大概率稳定；分歧大 → 大概率不可靠</strong>。
+      它不依赖模型的自我报告，因此不会因为提示词措辞而整体漂移。代价是 N 倍推理成本。</td>
+    </tr>
+    <tr>
+      <td><strong>Token 概率</strong>（logprobs）<br><span class="pill blue">内部信号</span></td>
+      <td>🟡 中</td>
+      <td>能反映模型「下一个 token 有多确定」，但<strong>序列级概率与答案正确性之间没有稳定关系</strong>——
+      一句自信的错话，逐 token 概率可能都很高。且不是所有 API 都开放。</td>
+    </tr>
+    <tr>
+      <td><strong>模型的自我报告</strong><br><span class="pill orange">语言输出</span></td>
+      <td>🔴 低</td>
+      <td>「我认为这个答案的把握度是 90%」——这是<strong>生成的文本</strong>，不是读出的内部状态。
+      它受过训练、也受提示词影响。可用作排序信号，<strong>不可直接作阈值</strong>。</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="tip">
+  <strong>成本可控的实践方案：</strong>不要对所有请求都做多次采样。做法是<strong>分层</strong>——
+  日常查询用单次采样 + 自我报告的置信度做粗筛；
+  <strong>只对「会影响用户决策」的那部分请求</strong>（约占 10–20%）做多次采样核实。
+  这样额外成本可控，而高风险路径得到了行为证据级别的保障。
+</div>
+
+<hr>
+
+<h2 id="s7"><span class="h2-num">2.7</span>【工程锚点】什么时候该说「我不知道」</h2>
+
+<p>在认识论里，这涉及<strong>「可废止性」（defeasibility）</strong>：一个信念即使有辩护，也可能被新证据推翻。
+一个理性的认知者会<strong>保留「我可能错」的空间</strong>。把这个要求工程化，就是<strong>弃权（abstention）机制</strong>。</p>
+
+<h3>三种「不知道」，处理方式完全不同</h3>
+
+<table>
+  <thead><tr><th style="width:150px">类型</th><th style="width:240px">特征</th><th>正确处理</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 能力外</strong></td>
+      <td>问题超出系统设计范围（比如问笔记工具「今天股市怎么样」）</td>
+      <td><strong>明确拒答 + 说明边界</strong>。不要用通用知识硬答——那会让用户误判你的能力范围。</td>
+    </tr>
+    <tr>
+      <td><strong>② 信息不足</strong></td>
+      <td>在范围内，但现有资料里没有相关信息（RAG 检索为空或低分）</td>
+      <td><strong>说清缺什么</strong>：「我手头的资料里没有关于 X 的内容」，而不是笼统说「我不知道」。
+      后者让用户无法判断该补充什么。</td>
+    </tr>
+    <tr>
+      <td><strong>③ 存在分歧</strong></td>
+      <td>资料里有多种说法（真实世界中广泛存在，尤其人文社科）</td>
+      <td><strong>呈现分歧而非裁决</strong>：列出不同说法及其来源。
+      这一点极其重要——<strong>模型擅自裁决争议问题，是在伪造权威</strong>。</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pit">
+  <strong>最常见的错误：把三种「不知道」合并成一句「抱歉，我不知道」。</strong>
+  <br><br>
+  这看起来保守安全，实际上损害体验和信任：用户无法从中获得任何行动指引。
+  他不知道该换个问法、还是该补充资料、还是这个问题本来就没有答案。
+  <br><br>
+  对比一下——<strong>「我手头的课程资料里没有涉及 2025 年之后的研究，你可以补充相关文献，或者问我 2024 年之前的部分」</strong>
+  ——这句话同样是在说「我不知道」，但它<strong>给了用户一个可执行的下一步</strong>。
+</div>
+
+<h3>怎么在评估里正确对待拒答</h3>
+
+<p>这是本章最有实操价值的一节。用一个具体例子说明。</p>
+
+<div class="note">
+  <strong>错误做法：</strong>测试集 100 题，其中 20 题是「资料里没有答案」的。
+  只统计「答对率」。结果是：<strong>模型把所有 20 题都编了答案，其中 3 题碰巧对了</strong>，
+  最终得分反而比一个诚实拒答（少得 3 分）的模型更高。
+  <strong>你的指标在奖励撒谎。</strong>
+</div>
+
+<p>正确做法是把评估拆成两个正交的指标：</p>
+
+<table>
+  <thead><tr><th style="width:200px">指标</th><th style="width:200px">定义</th><th>作用</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>作答准确率</strong></td>
+      <td>在<em>应该作答</em>的题上答对的比例</td>
+      <td>衡量能力上限</td>
+    </tr>
+    <tr>
+      <td><strong>拒答正确率</strong></td>
+      <td>在<em>应该拒答</em>的题上正确拒答的比例</td>
+      <td><strong>衡量系统是否知道自己不知道</strong></td>
+    </tr>
+    <tr>
+      <td><strong>误拒率</strong></td>
+      <td>在<em>应该作答</em>的题上错误拒答的比例</td>
+      <td>防止系统「用拒答刷分」——这是拒答机制最常见的滥用</td>
+    </tr>
+    <tr>
+      <td><strong>幻觉率</strong></td>
+      <td>在<em>应该拒答</em>的题上编造答案的比例</td>
+      <td><strong>最关键的安全指标</strong>，比整体准确率重要得多</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>为什么必须同时看这四个？</strong>因为任何单一指标都可以被廉价地游戏化：
+  <ul style="margin-bottom:0">
+    <li>只看准确率 → 模型学会乱猜。</li>
+    <li>只看拒答率 → 模型学会什么都拒答（拒答是最安全的策略，因为它永远不会错）。</li>
+    <li>只看幻觉率 → 模型学会一律拒答。</li>
+    <li><strong>四个一起看，「乱猜」和「一律拒答」两种退化解都会同时被惩罚。</strong></li>
+  </ul>
+</div>
+
+<h3>拒答的粒度问题：一个容易被忽略的设计点</h3>
+
+<p>「拒答」不是二值的。真实产品里至少有四档，而且<strong>选择哪档本身就是个伦理决定</strong>：</p>
+
+<table>
+  <thead><tr><th style="width:130px">档位</th><th style="width:230px">行为</th><th>适用场景</th></tr></thead>
+  <tbody>
+    <tr><td><strong>硬拒答</strong></td><td>直接说明无法回答，不给任何内容</td><td>高风险领域（医疗剂量、法律条款、财务建议）</td></tr>
+    <tr><td><strong>带限制的回答</strong></td><td>给出内容，但明确标注不确定性和依据来源</td><td>中风险领域（参考资料、技术方案）</td></tr>
+    <tr><td><strong>降级回答</strong></td><td>给出更保守的版本（更概括、更少具体数字）</td><td>低风险但需要谨慎的领域</td></tr>
+    <tr><td><strong>升级转交</strong></td><td>转人工 / 提供其他求助渠道</td><td>涉及人身安全、心理健康等场景</td></tr>
+  </tbody>
+</table>
+
+<p><strong>这个表应该成为你产品文档的一部分</strong>，而且要对每个功能都填一遍。
+如果你发现自己无法为某个功能确定该用哪档，这本身就是一个信号——
+说明你还没想清楚「这个功能出错时，谁会受损」。</p>
+
+<hr>
+
+<h2 id="s8"><span class="h2-num">2.8</span>动手练习</h2>
+
+<ol class="steps">
+  <li>
+    <strong>做一次校准检查。</strong>准备 200 条你领域内的问题（可以混合「有答案」和「无答案」两类）。
+    让模型对每条输出答案和一个 0–100 的把握度。按 2.6 节的方法分 10 桶，比较声称把握度和实际正确率。
+    <br><span class="hash">产出：一张表 + 一句话结论（"高置信区偏乐观 X 个百分点"）</span>
+  </li>
+  <li>
+    <strong>加一条稳定性指标。</strong>从上面 200 条里挑 30 条，每条用较高温度采样 5 次。
+    统计每个问题的答案一致率。<strong>把一致率与「是否答对」做交叉分析</strong>——
+    你会看到「一致但错」和「不一致但对」这两类，它们的处理方式完全不同。
+  </li>
+  <li>
+    <strong>给「不知道」分档。</strong>用 2.7 节的三种类型和四档拒答，
+    给你的项目写一份<strong>拒答策略表</strong>：哪些功能用哪档、触发条件是什么。
+  </li>
+  <li>
+    <strong>检查你的指标在被谁游戏。</strong>写下你当前的主指标，然后问：
+    <strong>「一个不诚实的系统会怎么刷高这个分数？」</strong>如果答案很轻松，
+    你的指标设计有问题，需要配对指标来制衡。
+  </li>
+</ol>
+
+<div class="tip">
+  <strong>第 4 步是最有价值的一步。</strong>它把认识论里的一个洞察——「信念必须可废止」——
+  变成了一个具体的评审问题。学会问这个问题，你在设计任何评估体系时都会更警觉。
+</div>
+
+<hr>
+
+<h2 id="s9"><span class="h2-num">2.9</span>自测题</h2>
+
+<div class="card">
+  <div class="qa">
+    <p class="qa-q">Q1. 模型的答案是对的，但推理链中间一步是编造的。用 JTB 框架分析，这属于什么问题？</p>
+    <div class="qa-a">
+      <p>这是<strong>葛梯尔式的失败</strong>：结论为真（Truth 满足）、模型给出了看起来合理的依据（表面上满足 Justification），
+      但<strong>真正的辩护链是断的</strong>——那一步编造使得「得到辩护」这个条件<strong>实际不成立</strong>。</p>
+      <p>工程上的意义：<strong>这类错误无法通过「只看最终答案」的评测发现</strong>。必须增加「依据可追溯性」检查。
+      而且这类错误<strong>比直接答错更危险</strong>，因为它伴随着看似可靠的推理过程，更容易说服用户。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q2. 为什么说「模型输出 95% 置信度」不能直接当阈值使用？</p>
+    <div class="qa-a">
+      <p>因为它是<strong>主观信念度的语言表达</strong>，不是对世界的测量。作为一段生成的文本，它会<strong>受提示词措辞、上下文、训练偏好系统性影响</strong>——
+      换一种问法可能整体偏高或偏低十几个百分点。</p>
+      <p>正确用法：把它当<strong>排序信号</strong>（用来比较两个答案哪个更可信），
+      经过<strong>基于数据的重新校准</strong>之后，才可以当阈值使用。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q3. 团队只用一个「准确率」指标评估系统，会出什么问题？</p>
+    <div class="qa-a">
+      <p><strong>它会奖励撒谎。</strong>在「本应拒答」的题上，编造答案有一定概率碰巧答对，
+      而诚实拒答必定不得分。所以优化这个指标会把系统推向「从不拒答」。</p>
+      <p>解法是至少配三个指标：<strong>作答准确率、拒答正确率、幻觉率</strong>。
+      它们互相牵制——任何两个指标的优化都会恶化第三个，因此系统无法通过退化解（乱猜 / 一律拒答）刷分。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q4. 康德的「先天结构」和 Transformer 的架构有什么可比之处？</p>
+    <div class="qa-a">
+      <p>康德的论点是：经验必须被某种<strong>先在的结构</strong>组织才能成为知识，而这个结构不来自经验本身。</p>
+      <p>Transformer 的注意力机制、位置编码、归纳偏置同样<strong>不来自训练数据</strong>——
+      它们是在训练开始前就固定下来的「认知格式」，决定了哪些规律<strong>可以被学到</strong>、哪些几乎不可能。
+      所以「换个架构」不是简单的性能调整，而是<strong>换了一套先验</strong>，会系统性地改变能力边界。</p>
+      <p>这解释了一个常见现象：某些能力加再多数据也学不会——不是数据不够，是当前架构的表征方式无法承载它。</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <p class="qa-q">Q5.【动手题】你的产品加了「使用时长提醒」（连续使用 60 分钟弹提示）。
+    用户反馈「很烦」，想把阈值提到 120 分钟。你怎么判断该不该改？</p>
+    <div class="qa-a">
+      <p>先拆成可测和不可测两部分。</p>
+      <p><strong>可测部分</strong>：提醒的实际点击率、提醒后 24 小时内是否回流、抱怨用户占活跃用户的比例、
+      阈值 60 与 120 的 A/B 数据。这些能做实验。</p>
+      <p><strong>不可测部分</strong>：这个提醒<strong>是为了谁的利益</strong>？这决定了整个判断的方向：</p>
+      <ul>
+        <li>如果它服务于<strong>用户福祉</strong>（防止过度依赖），那么「烦」是设计上可接受的代价——
+        用户反馈不应该直接决定它去留，就像戒烟提示也不受欢迎。</li>
+        <li>如果它服务于<strong>合规免责</strong>（我们提示过了，责任不在我们），那它就是<strong>形式主义</strong>——
+        应该重新设计成真正有效的形式，而不是降低频率。</li>
+        <li>如果它服务于<strong>产品数据</strong>（避免单次时长过长导致的次日留存下降），
+        那阈值就该由留存数据决定，用户抱怨只是其中一个输入。</li>
+      </ul>
+      <p><strong>关键动作</strong>：把这三个目的<strong>明确写下来</strong>，选一个作为主目的，并承认放弃另外两个。
+      如果不做这个选择，「阈值该定多少」会变成无休止的立场争论——
+      因为不同人心里想的是不同的目的，而会议上讨论的却是同一个数字。</p>
+    </div>
+  </div>
+</div>
+
+<div class="goal">
+  <strong>本章验收标准：</strong>
+  <ul style="margin-bottom:0">
+    <li>能解释 JTB 三条件，并说明葛梯尔反例为什么构成挑战。</li>
+    <li>完成一次真实的<strong>置信度校准检查</strong>，能说出你的模型在哪个区间偏差最大。</li>
+    <li>能说清三种「不知道」的区别，并为你的项目写出<strong>四档拒答策略表</strong>。</li>
+    <li>能指出你的主指标「会被什么样的退化解刷分」，并给出配对的制衡指标。</li>
+    <li>理解校准是<strong>统计性质</strong>——单个预测无所谓校准，分桶才有意义。</li>
+  </ul>
+</div>
