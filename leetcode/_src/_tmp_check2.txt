@@ -1,4 +1,0 @@
-ch17 : h2=(s1,s2,s3,s4,s5,s6,s7,s8) drill=3 strong_open=36 strong_close=25
-ch18 : h2=(s1,s2,s3,s4,s5,s6,s7,s8) drill=5 strong_open=41 strong_close=25
-ch19 : h2=(s1,s2,s3,s4,s5,s6,s7) drill=3 strong_open=39 strong_close=18
-ch20 : h2=(s1,s2,s3,s4,s5,s6,s7,s8) drill=3 strong_open=36 strong_close=26

@@ -1,6 +1,0 @@
-opens=36 closes=25
-drillcount=3
-drill1 li=3
-drill2 li=3
-drill3 li=3
-hasB=False hasI=False

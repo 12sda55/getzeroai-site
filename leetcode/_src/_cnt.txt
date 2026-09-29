@@ -1,3 +1,0 @@
-CRLF count: 0
-bare LF count: 513
-has BOM: False
